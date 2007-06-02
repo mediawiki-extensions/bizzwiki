@@ -1,18 +1,19 @@
 <?php
 /*
- * SysopSidebar.php
+ * SidebarEx.php
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
  *
  * Purpose:  Provides a means of adding page links to the
- * ========  'sidebar' for the 'sysop' users.
- *           The page links are configured through:
- *           'MediaWiki:Sidebar/Sysop' 
+ * ========  'sidebar' based on group membership.
  *
  * Features:
  * *********
- *
+ * 1) all defined groups are supported (standard MW and ones defined in installation)
+ * 2) sidebar page name corresponds to 'group' name
+ * 3) No patches to standard MW installation for MW version >= 1.10
+ * 
  * DEPENDANCY:  ExtensionClass extension (>v1.5)
  * 
  * Tested Compatibility:  MW 1.10
@@ -29,31 +30,52 @@
  *
  * INSTALLATION NOTES:
  * -------------------
- * Add to LocalSettings.php
+ * Add to LocalSettings.php:
+ * 
+ * 1) Define (if desired) the base namespace where the pages will be fetched:
+ *    $bwSidebarNs = NS_ADMIN;  // must be defined prior
+ * 
+ * 2) Define (if desired) the base page where the 'sidebar' pages will be fetched:
+ *    $bwSidebarPage = 'Sidebars';
+ * 
+ * 3) Define the priority list i.e. group membership search order.
+ *    $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
+ * 
+ * 2) Include the required scripts: 
  *  require("extensions/ExtensionClass.php");
- *  require("extensions/SysopToolBox.php");
+ *  require("extensions/SidebarEx.php");
  *
+ * 
  * History:
  * - v1.0
  *
  */
 
-SysopSidebarClass::singleton();
+SidebarExClass::singleton();
 
-class SysopSidebarClass extends ExtensionClass
+class SidebarExClass extends ExtensionClass
 {
 	// constants.
-	const thisName = 'SysopSidebar';
+	const thisName = 'SidebarEx';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 	const pageName = 'MediaWiki:Sidebar/Sysop';
 
+	// default values
+	static $baseNs   = NS_MEDIAWIKI;  	// default namespace
+	static $basePage = 'Sidebar';     	// default base page
+	static $baseSearch   = array(	'sysop',
+									'user',
+									'*'
+						 		);
+
+	
 	// variables.
 	var $foundPage;
 
 	public static function &singleton( ) // required by ExtensionClass
 	{ return parent::singleton( ); }
 	
-	function SysopSidebarClass()
+	function SidebarExClass()
 	{
 		parent::__construct(); 			// required by ExtensionClass
 
@@ -67,15 +89,42 @@ class SysopSidebarClass extends ExtensionClass
 		);
 
 		$this->foundPage = false;
+		
+		// customization found?
+		global $bwSidebarNs, $bwSidebarPage, $bwSidebarSearch;
+		$this->Ns     = isset($bwSidebarNs)    ==true ? $bwSidebarNs:     self::$baseNs;
+		$this->Page   = isset($bwSidebarPage)  ==true ? $bwSidebarPage:   self::$basePage;
+		$this->Search = isset($bwSidebarSearch)==true ? $bwSidebarSearch: self::$baseSearch;				
+		
 	}
 	public function setup() { parent::setup(); } // nothing special to do in this case.
 
 	public function hSkinTemplateOutputPageBeforeExec( &$skin, &$tpl )
 	{
-		// make sure we are dealing with a 'sysop' user.
-		if (!$this->isSysop()) return true; // continue hook-chain
+		global $wgUser;
 		
-		$a = $this->getArticle(self::pageName);
+		// get group membership array
+		// even default group '*' is included as well as 'user' is logged in.
+		$gr = $wgUser->getEffectiveGroups();
+		
+		// order the list based on the search order provided
+		// Search array:  { 0->highest/first, 1-> ... }
+		//
+		// The group membership array provided by MW is assumed not to be sorted;
+		// let's walk the search array to find a matching group.
+		$page = null;
+		foreach( $this->Search as $index => $group)
+			if (in_array( $group, $gr )) $page = $group;
+			 
+		// did we find satisfaction?
+		if (!isset( $page )) return true;
+		
+		// form the path to the article:
+		// Namespace:base page/group name
+
+		$a = $this->getArticle( $this->Ns.':'.$this->Page.'/'.$page );
+
+		// is the corresponding page found?
 		if (empty($a))
 		{
 			$this->foundPage = false;
