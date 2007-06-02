@@ -114,15 +114,15 @@ class SidebarExClass extends ExtensionClass
 		// let's walk the search array to find a matching group.
 		$page = null;
 		foreach( $this->Search as $index => $group)
-			if (in_array( $group, $gr )) $page = $group;
+			if (in_array( $group, $gr )) { $page = $group; break; }
 			 
 		// did we find satisfaction?
 		if (!isset( $page )) return true;
 		
 		// form the path to the article:
 		// Namespace:base page/group name
-
-		$a = $this->getArticle( $this->Ns.':'.$this->Page.'/'.$page );
+		$ns = Namespace::getCanonicalName( $this->Ns );
+		$a = $this->getArticle( $ns.':'.$this->Page.'/'.$page );
 
 		// is the corresponding page found?
 		if (empty($a))
