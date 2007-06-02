@@ -85,7 +85,7 @@ class SidebarExClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
-			'version'     => 'v1.0 $Id$',
+			'version'     => 'v1.0 $LastChangedRevision$',
 			'author'      => 'Jean-Lou Dupont', 
 			'url'         => 'http://www.bluecortex.com',
 			'description' => 'MediaWiki:Sidebar/Sysop page '
