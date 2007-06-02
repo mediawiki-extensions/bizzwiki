@@ -50,8 +50,11 @@
  * - v1.0
  *
  */
-
-SidebarExClass::singleton();
+// Verify if 'ExtensionClass' is present.
+if ( !class_exists('ExtensionClass') )
+	echo 'SidebarEx extension: ExtensionClass missing.';	
+else
+	SidebarExClass::singleton();
 
 class SidebarExClass extends ExtensionClass
 {
