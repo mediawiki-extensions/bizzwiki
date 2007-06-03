@@ -116,26 +116,35 @@
  * Version 1.2:
  *  - Added "exclude action" functionality through the "!" metacharacter in the 
  *    "action" field.
-  *  - Corrected some corner cases
+ *  - Corrected some corner cases
+ * -------------------------------
+ * Version 1.3:
+ *  - moved to BizzWiki project
+ *  - added singleton functionality
  */
 
-$wgExtensionCredits['other'][] = array(
-    'name'    => "HierarchicalNamespacePermissions [http://www.bluecortex.com]",
-	'version' => '$LastChangedRevision$',
-	'author'  => 'Jean-Lou Dupont [http://www.bluecortex.com]' 
-);
 
-// other stuff should better be done via standard mechanism of running extensions
-global $hnpObj;
-$hnpObj = new hnpClass;
-
-/* CLASS DEFINITION
- ******************
-*/
 class hnpClass
 {
+	public static function &singleton() 
+	{
+		static $instance;
+		if ( !isset( $instance ) ) 
+			$instance = new hnpClass( );
+		return $instance;
+	}
+
 	function hnpClass()
 	{
+		global $wgExtensionCredits;
+		
+		$wgExtensionCredits['other'][] = array(
+		    'name'    => "HierarchicalNamespacePermissions [http://www.bluecortex.com]",
+			'version' => 'v1.3 $LastChangedRevision$',
+			'author'  => 'Jean-Lou Dupont [http://www.bluecortex.com]' 
+		);
+			
+	
 		global $wgHooks;
 		global $hnpObjDebug;
 		
@@ -324,6 +333,9 @@ class hnpClass
 		}
 	
 	}
+
+	// instantiate one
+	singleton();
 } # end class definition
 
 ?>
