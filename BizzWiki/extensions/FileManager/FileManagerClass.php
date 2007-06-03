@@ -83,7 +83,7 @@ class FileManagerClass extends ExtensionClass
 		
 		// we can attempt commit then.
 		$titre = $article->mTitle->getBaseText();
-		$r = file_put_contents( $IP.$titre, $text );
+		$r = file_put_contents( $IP.'/'.$titre, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
@@ -128,15 +128,16 @@ class FileManagerClass extends ExtensionClass
 		// From this point, we know the article does not
 		// exist in the database... let's check the filesystem.
 		$filename = $title->getBaseText();
-		$result   = file_exists( $IP.$filename );
-		
+		$result   = @fopen( $IP.'/'.$filename,'r' );
+		if ($result !== FALSE) $result = TRUE;
+
 		$id = $result ? 'filemanager-script-exists':'filemanager-script-notexists';
 		$message = wfMsgForContent( $id, $filename );
 
 		// display a nice message to the user about the state of the script in the filesystem.
 		global $wgOut;
 		$wgOut->setSubtitle( $message );
-		
+
 		return true; // continue hook-chain.
 	}
 	public function hEditFormPreloadText( &$text, &$title )
@@ -151,8 +152,14 @@ class FileManagerClass extends ExtensionClass
 		$ns = $title->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
 
+		// Paranoia: Is the user allowed committing??
+		// We shouldn't even get here if the 'edit' permission gets
+		// verified adequately.
+		if (! $title->userCan(self::actionCommit) ) return true;		
+
+		global $IP;
 		$filename = $title->getBaseText();
-		$text = file_get_contents( $filename );
+		$text = file_get_contents( $IP.'/'.$filename );
 	
 		return true; // be nice.
 	}
