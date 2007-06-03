@@ -50,11 +50,11 @@ class FileManagerClass extends ExtensionClass
 		# Add a new log type
 		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
 		$wgLogTypes[]                           = 'commitscript';
-		$wgLogNames  ['commitscr']              = 'commitfilelogpage';
-		$wgLogHeaders['commitscr']              = 'commitfilelogpagetext';
-		$wgLogActions['commitscr/commitscr']    = 'commitfilelogentry';
-		$wgLogActions['commitscr/commitok']     = 'commitfilelog-commitok-entry';
-		$wgLogActions['commitscr/commitfail']   = 'commitfilelog-commitfail-entry';
+		$wgLogNames  ['commitfil']              = 'commitfilelogpage';
+		$wgLogHeaders['commitfil']              = 'commitfilelogpagetext';
+		$wgLogActions['commitfil/commitfil']    = 'commitfilelogentry';
+		$wgLogActions['commitfil/commitok']     = 'commitfilelog-commitok-entry';
+		$wgLogActions['commitfil/commitfail']   = 'commitfilelog-commitfail-entry';
 		
 		global $wgMessageCache, $wgFileManagerLogMessages;
 		foreach( $wgFileManagerLogMessages as $key => $value )
@@ -63,6 +63,8 @@ class FileManagerClass extends ExtensionClass
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
 	// This hook is used to capture the source file & save it also in the file system.
 	{
+		global $IP;
+		
 		// check if we are in the right namespace
 		$ns = $article->mTitle->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true;
@@ -81,16 +83,16 @@ class FileManagerClass extends ExtensionClass
 		
 		// we can attempt commit then.
 		$titre = $article->mTitle->getBaseText();
-		$r = file_put_contents( self::$base.$titre, $text );
+		$r = file_put_contents( $IP.$titre, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
 		$action  = ($r === FALSE ? 'commitfail':'commitok' );
 		$nsname  = Namespace::getCanonicalName( $ns );	
-		$message = wfMsgForContent( 'commitscriptlog-commit-text', $nsname, $titre );
+		$message = wfMsgForContent( 'commitfilelog-commit-text', $nsname, $titre );
 		
 		// we need to limit the text to 'commitscr' because of the database schema.
-		$log = new LogPage( 'commitscr' );
+		$log = new LogPage( 'commitfil' );
 		$log->addEntry( $action, $user->getUserPage(), $message );
 		
 		return true; // continue hook-chain.
