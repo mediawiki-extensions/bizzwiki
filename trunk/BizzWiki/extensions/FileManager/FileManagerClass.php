@@ -36,7 +36,7 @@ class FileManagerClass extends ExtensionClass
 			'version'     => 'v1.01 $Id$',
 			'author'      => 'Jean-Lou Dupont', 
 			'url'         => 'http://www.bluecortex.com',
-			'description' => 'Manages the files in a Mediawiki installation';
+			'description' => 'Manages the files in a Mediawiki installation'
 		);
 	}
 	public function setup() 
