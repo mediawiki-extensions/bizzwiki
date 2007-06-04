@@ -33,7 +33,7 @@ class FileManagerClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
-			'version'     => 'v1.01 $Id$',
+			'version'     => '$Id$',
 			'author'      => 'Jean-Lou Dupont', 
 			'url'         => 'http://www.bluecortex.com',
 			'description' => 'Manages the files in a Mediawiki installation'
@@ -129,7 +129,7 @@ class FileManagerClass extends ExtensionClass
 		// exist in the database... let's check the filesystem.
 		$filename = $title->getBaseText();
 		$result   = @fopen( $IP.'/'.$filename,'r' );
-		if ($result !== FALSE) $result = TRUE;
+		if ($result !== FALSE) { $fclose($result); $result = TRUE; }
 
 		$id = $result ? 'filemanager-script-exists':'filemanager-script-notexists';
 		$message = wfMsgForContent( $id, $filename );
