@@ -2465,3 +2465,508 @@ class Article {
 		}
 	}
 
+	/**
+	 * Check if the page can be cached
+	 * @return bool
+	 */
+	function isFileCacheable() {
+		global $wgUser, $wgUseFileCache, $wgShowIPinHeader, $wgRequest, $wgLang, $wgContLang;
+		$action    = $wgRequest->getVal( 'action'    );
+		$oldid     = $wgRequest->getVal( 'oldid'     );
+		$diff      = $wgRequest->getVal( 'diff'      );
+		$redirect  = $wgRequest->getVal( 'redirect'  );
+		$printable = $wgRequest->getVal( 'printable' );
+		$page      = $wgRequest->getVal( 'page' );
+
+		//check for non-standard user language; this covers uselang, 
+		//and extensions for auto-detecting user language.
+		$ulang     = $wgLang->getCode(); 
+		$clang     = $wgContLang->getCode();
+
+		$cacheable = $wgUseFileCache
+			&& (!$wgShowIPinHeader)
+			&& ($this->getID() != 0)
+			&& ($wgUser->isAnon())
+			&& (!$wgUser->getNewtalk())
+			&& ($this->mTitle->getNamespace() != NS_SPECIAL )
+			&& (empty( $action ) || $action == 'view')
+			&& (!isset($oldid))
+			&& (!isset($diff))
+			&& (!isset($redirect))
+			&& (!isset($printable))
+			&& !isset($page)
+			&& (!$this->mRedirectedFrom)
+			&& ($ulang === $clang);
+
+		if ( $cacheable ) {
+			//extension may have reason to disable file caching on some pages.
+			$cacheable = wfRunHooks( 'IsFileCacheable', array( $this ) );
+		}
+
+		return $cacheable;
+	}
+
+	/**
+	 * Loads page_touched and returns a value indicating if it should be used
+	 *
+	 */
+	function checkTouched() {
+		if( !$this->mDataLoaded ) {
+			$this->loadPageData();
+		}
+		return !$this->mIsRedirect;
+	}
+
+	/**
+	 * Get the page_touched field
+	 */
+	function getTouched() {
+		# Ensure that page data has been loaded
+		if( !$this->mDataLoaded ) {
+			$this->loadPageData();
+		}
+		return $this->mTouched;
+	}
+
+	/**
+	 * Get the page_latest field
+	 */
+	function getLatest() {
+		if ( !$this->mDataLoaded ) {
+			$this->loadPageData();
+		}
+		return $this->mLatest;
+	}
+
+	/**
+	 * Edit an article without doing all that other stuff
+	 * The article must already exist; link tables etc
+	 * are not updated, caches are not flushed.
+	 *
+	 * @param string $text text submitted
+	 * @param string $comment comment submitted
+	 * @param bool $minor whereas it's a minor modification
+	 */
+	function quickEdit( $text, $comment = '', $minor = 0 ) {
+		wfProfileIn( __METHOD__ );
+
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->begin();
+		$revision = new Revision( array(
+			'page'       => $this->getId(),
+			'text'       => $text,
+			'comment'    => $comment,
+			'minor_edit' => $minor ? 1 : 0,
+			) );
+		$revision->insertOn( $dbw );
+		$this->updateRevisionOn( $dbw, $revision );
+		$dbw->commit();
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	/**
+	 * Used to increment the view counter
+	 *
+	 * @static
+	 * @param integer $id article id
+	 */
+	function incViewCount( $id ) {
+		$id = intval( $id );
+		global $wgHitcounterUpdateFreq, $wgDBtype;
+
+		$dbw = wfGetDB( DB_MASTER );
+		$pageTable = $dbw->tableName( 'page' );
+		$hitcounterTable = $dbw->tableName( 'hitcounter' );
+		$acchitsTable = $dbw->tableName( 'acchits' );
+
+		if( $wgHitcounterUpdateFreq <= 1 ) {
+			$dbw->query( "UPDATE $pageTable SET page_counter = page_counter + 1 WHERE page_id = $id" );
+			return;
+		}
+
+		# Not important enough to warrant an error page in case of failure
+		$oldignore = $dbw->ignoreErrors( true );
+
+		$dbw->query( "INSERT INTO $hitcounterTable (hc_id) VALUES ({$id})" );
+
+		$checkfreq = intval( $wgHitcounterUpdateFreq/25 + 1 );
+		if( (rand() % $checkfreq != 0) or ($dbw->lastErrno() != 0) ){
+			# Most of the time (or on SQL errors), skip row count check
+			$dbw->ignoreErrors( $oldignore );
+			return;
+		}
+
+		$res = $dbw->query("SELECT COUNT(*) as n FROM $hitcounterTable");
+		$row = $dbw->fetchObject( $res );
+		$rown = intval( $row->n );
+		if( $rown >= $wgHitcounterUpdateFreq ){
+			wfProfileIn( 'Article::incViewCount-collect' );
+			$old_user_abort = ignore_user_abort( true );
+
+			if ($wgDBtype == 'mysql')
+				$dbw->query("LOCK TABLES $hitcounterTable WRITE");
+			$tabletype = $wgDBtype == 'mysql' ? "ENGINE=HEAP " : '';
+			$dbw->query("CREATE TEMPORARY TABLE $acchitsTable $tabletype AS ".
+				"SELECT hc_id,COUNT(*) AS hc_n FROM $hitcounterTable ".
+				'GROUP BY hc_id');
+			$dbw->query("DELETE FROM $hitcounterTable");
+			if ($wgDBtype == 'mysql') {
+				$dbw->query('UNLOCK TABLES');
+				$dbw->query("UPDATE $pageTable,$acchitsTable SET page_counter=page_counter + hc_n ".
+					'WHERE page_id = hc_id');
+			}
+			else {
+				$dbw->query("UPDATE $pageTable SET page_counter=page_counter + hc_n ".
+					"FROM $acchitsTable WHERE page_id = hc_id");
+			}
+			$dbw->query("DROP TABLE $acchitsTable");
+
+			ignore_user_abort( $old_user_abort );
+			wfProfileOut( 'Article::incViewCount-collect' );
+		}
+		$dbw->ignoreErrors( $oldignore );
+	}
+
+	/**#@+
+	 * The onArticle*() functions are supposed to be a kind of hooks
+	 * which should be called whenever any of the specified actions
+	 * are done.
+	 *
+	 * This is a good place to put code to clear caches, for instance.
+	 *
+	 * This is called on page move and undelete, as well as edit
+	 * @static
+	 * @param $title_obj a title object
+	 */
+
+	static function onArticleCreate($title) {
+		# The talk page isn't in the regular link tables, so we need to update manually:
+		if ( $title->isTalkPage() ) {
+			$other = $title->getSubjectPage();
+		} else {
+			$other = $title->getTalkPage();
+		}
+		$other->invalidateCache();
+		$other->purgeSquid();
+
+		$title->touchLinks();
+		$title->purgeSquid();
+	}
+
+	static function onArticleDelete( $title ) {
+		global $wgUseFileCache, $wgMessageCache;
+
+		$title->touchLinks();
+		$title->purgeSquid();
+
+		# File cache
+		if ( $wgUseFileCache ) {
+			$cm = new HTMLFileCache( $title );
+			@unlink( $cm->fileCacheName() );
+		}
+
+		if( $title->getNamespace() == NS_MEDIAWIKI) {
+			$wgMessageCache->replace( $title->getDBkey(), false );
+		}
+	}
+
+	/**
+	 * Purge caches on page update etc
+	 */
+	static function onArticleEdit( $title ) {
+		global $wgDeferredUpdateList, $wgUseFileCache;
+
+		// Invalidate caches of articles which include this page
+		$update = new HTMLCacheUpdate( $title, 'templatelinks' );
+		$wgDeferredUpdateList[] = $update;
+
+		# Purge squid for this page only
+		$title->purgeSquid();
+
+		# Clear file cache
+		if ( $wgUseFileCache ) {
+			$cm = new HTMLFileCache( $title );
+			@unlink( $cm->fileCacheName() );
+		}
+	}
+
+	/**#@-*/
+
+	/**
+	 * Info about this page
+	 * Called for ?action=info when $wgAllowPageInfo is on.
+	 *
+	 * @public
+	 */
+	function info() {
+		global $wgLang, $wgOut, $wgAllowPageInfo, $wgUser;
+
+		if ( !$wgAllowPageInfo ) {
+			$wgOut->showErrorPage( 'nosuchaction', 'nosuchactiontext' );
+			return;
+		}
+
+		$page = $this->mTitle->getSubjectPage();
+
+		$wgOut->setPagetitle( $page->getPrefixedText() );
+		$wgOut->setSubtitle( wfMsg( 'infosubtitle' ));
+
+		# first, see if the page exists at all.
+		$exists = $page->getArticleId() != 0;
+		if( !$exists ) {
+			if ( $this->mTitle->getNamespace() == NS_MEDIAWIKI ) {
+				$wgOut->addHTML(wfMsgWeirdKey ( $this->mTitle->getText() ) );
+			} else {
+				$wgOut->addHTML(wfMsg( $wgUser->isLoggedIn() ? 'noarticletext' : 'noarticletextanon' ) );
+			}
+		} else {
+			$dbr = wfGetDB( DB_SLAVE );
+			$wl_clause = array(
+				'wl_title'     => $page->getDBkey(),
+				'wl_namespace' => $page->getNamespace() );
+			$numwatchers = $dbr->selectField(
+				'watchlist',
+				'COUNT(*)',
+				$wl_clause,
+				__METHOD__,
+				$this->getSelectOptions() );
+
+			$pageInfo = $this->pageCountInfo( $page );
+			$talkInfo = $this->pageCountInfo( $page->getTalkPage() );
+
+			$wgOut->addHTML( "<ul><li>" . wfMsg("numwatchers", $wgLang->formatNum( $numwatchers ) ) . '</li>' );
+			$wgOut->addHTML( "<li>" . wfMsg('numedits', $wgLang->formatNum( $pageInfo['edits'] ) ) . '</li>');
+			if( $talkInfo ) {
+				$wgOut->addHTML( '<li>' . wfMsg("numtalkedits", $wgLang->formatNum( $talkInfo['edits'] ) ) . '</li>');
+			}
+			$wgOut->addHTML( '<li>' . wfMsg("numauthors", $wgLang->formatNum( $pageInfo['authors'] ) ) . '</li>' );
+			if( $talkInfo ) {
+				$wgOut->addHTML( '<li>' . wfMsg('numtalkauthors', $wgLang->formatNum( $talkInfo['authors'] ) ) . '</li>' );
+			}
+			$wgOut->addHTML( '</ul>' );
+
+		}
+	}
+
+	/**
+	 * Return the total number of edits and number of unique editors
+	 * on a given page. If page does not exist, returns false.
+	 *
+	 * @param Title $title
+	 * @return array
+	 * @private
+	 */
+	function pageCountInfo( $title ) {
+		$id = $title->getArticleId();
+		if( $id == 0 ) {
+			return false;
+		}
+
+		$dbr = wfGetDB( DB_SLAVE );
+
+		$rev_clause = array( 'rev_page' => $id );
+
+		$edits = $dbr->selectField(
+			'revision',
+			'COUNT(rev_page)',
+			$rev_clause,
+			__METHOD__,
+			$this->getSelectOptions() );
+
+		$authors = $dbr->selectField(
+			'revision',
+			'COUNT(DISTINCT rev_user_text)',
+			$rev_clause,
+			__METHOD__,
+			$this->getSelectOptions() );
+
+		return array( 'edits' => $edits, 'authors' => $authors );
+	}
+
+	/**
+	 * Return a list of templates used by this article.
+	 * Uses the templatelinks table
+	 *
+	 * @return array Array of Title objects
+	 */
+	function getUsedTemplates() {
+		$result = array();
+		$id = $this->mTitle->getArticleID();
+		if( $id == 0 ) {
+			return array();
+		}
+
+		$dbr = wfGetDB( DB_SLAVE );
+		$res = $dbr->select( array( 'templatelinks' ),
+			array( 'tl_namespace', 'tl_title' ),
+			array( 'tl_from' => $id ),
+			'Article:getUsedTemplates' );
+		if ( false !== $res ) {
+			if ( $dbr->numRows( $res ) ) {
+				while ( $row = $dbr->fetchObject( $res ) ) {
+					$result[] = Title::makeTitle( $row->tl_namespace, $row->tl_title );
+				}
+			}
+		}
+		$dbr->freeResult( $res );
+		return $result;
+	}
+
+	/**
+	 * Return an auto-generated summary if the text provided is a redirect.
+	 *
+	 * @param  string $text The wikitext to check
+	 * @return string '' or an appropriate summary
+	 */
+	public static function getRedirectAutosummary( $text ) {
+		$rt = Title::newFromRedirect( $text );
+		if( is_object( $rt ) )
+			return wfMsgForContent( 'autoredircomment', $rt->getFullText() );
+		else
+			return '';
+	}
+
+	/**
+	 * Return an auto-generated summary if the new text is much shorter than
+	 * the old text.
+	 *
+	 * @param  string $oldtext The previous text of the page
+	 * @param  string $text    The submitted text of the page
+	 * @return string An appropriate autosummary, or an empty string.
+	 */
+	public static function getBlankingAutosummary( $oldtext, $text ) {
+		if ($oldtext!='' && $text=='') {
+			return wfMsgForContent('autosumm-blank');
+		} elseif (strlen($oldtext) > 10 * strlen($text) && strlen($text) < 500) {
+			#Removing more than 90% of the article
+			global $wgContLang;
+			$truncatedtext = $wgContLang->truncate($text, max(0, 200 - strlen(wfMsgForContent('autosumm-replace'))), '...');
+			return wfMsgForContent('autosumm-replace', $truncatedtext);
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	* Return an applicable autosummary if one exists for the given edit.
+	* @param string $oldtext The previous text of the page.
+	* @param string $newtext The submitted text of the page.
+	* @param bitmask $flags A bitmask of flags submitted for the edit.
+	* @return string An appropriate autosummary, or an empty string.
+	*/
+	public static function getAutosummary( $oldtext, $newtext, $flags ) {
+
+		# This code is UGLY UGLY UGLY.
+		# Somebody PLEASE come up with a more elegant way to do it.
+
+		#Redirect autosummaries
+		$summary = self::getRedirectAutosummary( $newtext );
+
+		if ($summary)
+			return $summary;
+
+		#Blanking autosummaries
+		if (!($flags & EDIT_NEW))
+			$summary = self::getBlankingAutosummary( $oldtext, $newtext );
+
+		if ($summary)
+			return $summary;
+
+		#New page autosummaries
+		if ($flags & EDIT_NEW && strlen($newtext)) {
+			#If they're making a new article, give its text, truncated, in the summary.
+			global $wgContLang;
+			$truncatedtext = $wgContLang->truncate(
+				str_replace("\n", ' ', $newtext),
+				max( 0, 200 - strlen( wfMsgForContent( 'autosumm-new') ) ),
+				'...' );
+			$summary = wfMsgForContent( 'autosumm-new', $truncatedtext );
+		}
+
+		if ($summary)
+			return $summary;
+
+		return $summary;
+	}
+
+	/**
+	 * Add the primary page-view wikitext to the output buffer
+	 * Saves the text into the parser cache if possible.
+	 * Updates templatelinks if it is out of date.
+	 *
+	 * @param string  $text
+	 * @param bool    $cache
+	 */
+	public function outputWikiText( $text, $cache = true ) {
+		global $wgParser, $wgUser, $wgOut;
+
+		$popts = $wgOut->parserOptions();
+		$popts->setTidy(true);
+		$parserOutput = $wgParser->parse( $text, $this->mTitle,
+			$popts, true, true, $this->getRevIdFetched() );
+		$popts->setTidy(false);
+		if ( $cache && $this && $parserOutput->getCacheTime() != -1 ) {
+			$parserCache =& ParserCache::singleton();
+			$parserCache->save( $parserOutput, $this, $wgUser );
+		}
+
+		if ( !wfReadOnly() && $this->mTitle->areRestrictionsCascading() ) {
+			// templatelinks table may have become out of sync,
+			// especially if using variable-based transclusions.
+			// For paranoia, check if things have changed and if
+			// so apply updates to the database. This will ensure
+			// that cascaded protections apply as soon as the changes
+			// are visible.
+
+			# Get templates from templatelinks
+			$id = $this->mTitle->getArticleID();
+
+			$tlTemplates = array();
+
+			$dbr = wfGetDB( DB_SLAVE );
+			$res = $dbr->select( array( 'templatelinks' ),
+				array( 'tl_namespace', 'tl_title' ),
+				array( 'tl_from' => $id ),
+				'Article:getUsedTemplates' );
+
+			global $wgContLang;
+
+			if ( false !== $res ) {
+				if ( $dbr->numRows( $res ) ) {
+					while ( $row = $dbr->fetchObject( $res ) ) {
+						$tlTemplates[] = $wgContLang->getNsText( $row->tl_namespace ) . ':' . $row->tl_title ;
+					}
+				}
+			}
+
+			# Get templates from parser output.
+			$poTemplates_allns = $parserOutput->getTemplates();
+
+			$poTemplates = array ();
+			foreach ( $poTemplates_allns as $ns_templates ) {
+				$poTemplates = array_merge( $poTemplates, $ns_templates );
+			}
+
+			# Get the diff
+			$templates_diff = array_diff( $poTemplates, $tlTemplates );
+
+			if ( count( $templates_diff ) > 0 ) {
+				# Whee, link updates time.
+				$u = new LinksUpdate( $this->mTitle, $parserOutput );
+
+				$dbw = wfGetDb( DB_MASTER );
+				$dbw->begin();
+
+				$u->doUpdate();
+
+				$dbw->commit();
+			}
+		}
+
+		$wgOut->addParserOutput( $parserOutput );
+	}
+
+}
+
+?
