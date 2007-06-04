@@ -1061,4 +1061,86 @@ class User {
 		return $triggered;
 	}
 
+	/**
+	 * Check if user is blocked
+	 * @return bool True if blocked, false otherwise
+	 */
+	function isBlocked( $bFromSlave = true ) { // hacked from false due to horrible probs on site
+		wfDebug( "User::isBlocked: enter\n" );
+		$this->getBlockedStatus( $bFromSlave );
+		return $this->mBlockedby !== 0;
+	}
+
+	/**
+	 * Check if user is blocked from editing a particular article
+	 */
+	function isBlockedFrom( $title, $bFromSlave = false ) {
+		global $wgBlockAllowsUTEdit;
+		wfProfileIn( __METHOD__ );
+		wfDebug( __METHOD__.": enter\n" );
+
+		wfDebug( __METHOD__.": asking isBlocked()\n" );
+		$blocked = $this->isBlocked( $bFromSlave );
+		# If a user's name is suppressed, they cannot make edits anywhere
+		if ( !$this->mHideName && $wgBlockAllowsUTEdit && $title->getText() === $this->getName() &&
+		  $title->getNamespace() == NS_USER_TALK ) {
+			$blocked = false;
+			wfDebug( __METHOD__.": self-talk page, ignoring any blocks\n" );
+		}
+		wfProfileOut( __METHOD__ );
+		return $blocked;
+	}
+
+	/**
+	 * Get name of blocker
+	 * @return string name of blocker
+	 */
+	function blockedBy() {
+		$this->getBlockedStatus();
+		return $this->mBlockedby;
+	}
+
+	/**
+	 * Get blocking reason
+	 * @return string Blocking reason
+	 */
+	function blockedFor() {
+		$this->getBlockedStatus();
+		return $this->mBlockreason;
+	}
+
+	/**
+	 * Get the user ID. Returns 0 if the user is anonymous or nonexistent.
+	 */
+	function getID() { 
+		$this->load();
+		return $this->mId; 
+	}
+
+	/**
+	 * Set the user and reload all fields according to that ID
+	 * @deprecated use User::newFromId()
+	 */
+	function setID( $v ) {
+		$this->mId = $v;
+		$this->clearInstanceCache( 'id' );
+	}
+
+	/**
+	 * Get the user name, or the IP for anons
+	 */
+	function getName() {
+		if ( !$this->mDataLoaded && $this->mFrom == 'name' ) {
+			# Special case optimisation
+			return $this->mName;
+		} else {
+			$this->load();
+			if ( $this->mName === false ) {
+				# Clean up IPs
+				$this->mName = IP::sanitizeIP( wfGetIP() );
+			}
+			return $this->mName;
+		}
+	}
+
 ?>
