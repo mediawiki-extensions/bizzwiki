@@ -1506,4 +1506,191 @@ class User {
 		return true;
 	}
 
+	/**
+	 * Get the list of implicit group memberships this user has.
+	 * This includes all explicit groups, plus 'user' if logged in
+	 * and '*' for all accounts.
+	 * @param boolean $recache Don't use the cache
+	 * @return array of strings
+	 */
+	function getEffectiveGroups( $recache = false ) {
+		if ( $recache || is_null( $this->mEffectiveGroups ) ) {
+			$this->load();
+			$this->mEffectiveGroups = $this->mGroups;
+			$this->mEffectiveGroups[] = '*';
+			if( $this->mId ) {
+				$this->mEffectiveGroups[] = 'user';
+				
+				global $wgAutoConfirmAge, $wgAutoConfirmCount;
+
+				$accountAge = time() - wfTimestampOrNull( TS_UNIX, $this->mRegistration );
+				if( $accountAge >= $wgAutoConfirmAge && $this->getEditCount() >= $wgAutoConfirmCount ) {
+					$this->mEffectiveGroups[] = 'autoconfirmed';
+				}
+				# Implicit group for users whose email addresses are confirmed
+				global $wgEmailAuthentication;
+				if( self::isValidEmailAddr( $this->mEmail ) ) {
+					if( $wgEmailAuthentication ) {
+						if( $this->mEmailAuthenticated )
+							$this->mEffectiveGroups[] = 'emailconfirmed';
+					} else {
+						$this->mEffectiveGroups[] = 'emailconfirmed';
+					}
+				}
+			}
+		}
+		return $this->mEffectiveGroups;
+	}
+	
+	/* Return the edit count for the user. This is where User::edits should have been */
+	function getEditCount() {
+		if ($this->mId) {
+			if ( !isset( $this->mEditCount ) ) {
+				/* Populate the count, if it has not been populated yet */
+				$this->mEditCount = User::edits($this->mId);
+			} 
+			return $this->mEditCount;
+		} else {
+			/* nil */
+			return null;
+		}
+	}
+	
+	/**
+	 * Add the user to the given group.
+	 * This takes immediate effect.
+	 * @param string $group
+	 */
+	function addGroup( $group ) {
+		$this->load();
+		$dbw = wfGetDB( DB_MASTER );
+		if( $this->getId() ) {
+			$dbw->insert( 'user_groups',
+				array(
+					'ug_user'  => $this->getID(),
+					'ug_group' => $group,
+				),
+				'User::addGroup',
+				array( 'IGNORE' ) );
+		}
+
+		$this->mGroups[] = $group;
+		$this->mRights = User::getGroupPermissions( $this->getEffectiveGroups( true ) );
+
+		$this->invalidateCache();
+	}
+
+	/**
+	 * Remove the user from the given group.
+	 * This takes immediate effect.
+	 * @param string $group
+	 */
+	function removeGroup( $group ) {
+		$this->load();
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->delete( 'user_groups',
+			array(
+				'ug_user'  => $this->getID(),
+				'ug_group' => $group,
+			),
+			'User::removeGroup' );
+
+		$this->mGroups = array_diff( $this->mGroups, array( $group ) );
+		$this->mRights = User::getGroupPermissions( $this->getEffectiveGroups( true ) );
+
+		$this->invalidateCache();
+	}
+
+
+	/**
+	 * A more legible check for non-anonymousness.
+	 * Returns true if the user is not an anonymous visitor.
+	 *
+	 * @return bool
+	 */
+	function isLoggedIn() {
+		return( $this->getID() != 0 );
+	}
+
+	/**
+	 * A more legible check for anonymousness.
+	 * Returns true if the user is an anonymous visitor.
+	 *
+	 * @return bool
+	 */
+	function isAnon() {
+		return !$this->isLoggedIn();
+	}
+
+	/**
+	 * Whether the user is a bot
+	 * @deprecated
+	 */
+	function isBot() {
+		return $this->isAllowed( 'bot' );
+	}
+
+	/**
+	 * Check if user is allowed to access a feature / make an action
+	 * @param string $action Action to be checked
+	 * @return boolean True: action is allowed, False: action should not be allowed
+	 */
+	function isAllowed($action='') {
+		if ( $action === '' )
+			// In the spirit of DWIM
+			return true;
+
+		return in_array( $action, $this->getRights() );
+	}
+
+	/**
+	 * Load a skin if it doesn't exist or return it
+	 * @todo FIXME : need to check the old failback system [AV]
+	 */
+	function &getSkin() {
+		global $wgRequest;
+		if ( ! isset( $this->mSkin ) ) {
+			wfProfileIn( __METHOD__ );
+
+			# get the user skin
+			$userSkin = $this->getOption( 'skin' );
+			$userSkin = $wgRequest->getVal('useskin', $userSkin);
+
+			$this->mSkin =& Skin::newFromKey( $userSkin );
+			wfProfileOut( __METHOD__ );
+		}
+		return $this->mSkin;
+	}
+
+	/**#@+
+	 * @param string $title Article title to look at
+	 */
+
+	/**
+	 * Check watched status of an article
+	 * @return bool True if article is watched
+	 */
+	function isWatched( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		return $wl->isWatched();
+	}
+
+	/**
+	 * Watch an article
+	 */
+	function addWatch( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		$wl->addWatch();
+		$this->invalidateCache();
+	}
+
+	/**
+	 * Stop watching an article
+	 */
+	function removeWatch( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		$wl->removeWatch();
+		$this->invalidateCache();
+	}
+
 ?>
