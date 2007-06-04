@@ -66,16 +66,35 @@ $bwAllRights = array (	'createaccount',
 
 // 4
 
-	// Sysop
 	// Sysop gets all the rights.
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;
 
 	// Anonymous
-$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;	
-	
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
+$bwAnonymousNamespaces = array( NS_MAIN, NS_MAIN_TALK,
+								NS_PROJECT, NS_PROJECT_TALK,
+								NS_HELP, NS_HELP_TALK,
+								); 
+
+foreach( $bwAnonymousNamespaces as $index => $bwx )
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+
 	// User
+$bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
+							NS_PROJECT, NS_PROJECT_TALK,
+							NS_HELP, NS_HELP_TALK,
+							NS_CATEGORY, NS_CATEGORY_TALK,
+							NS_TEMPLATE, NS_TEMPLATE_TALK,
+							NS_IMAGE, NS_IMAGE_TALK,														
+							);	
+foreach( $bwUserNamespaces as $index => $bwx )
+	{
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+	}
 	
+
 
 // *****************************************************************************************
 
