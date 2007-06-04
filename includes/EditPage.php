@@ -1,4 +1,17 @@
 <?php
+/*
+	Origin: MW 1.10
+	======
+	
+	BizzWiki: $Id$
+	
+	TODO:
+	====
+	1) Add Viewsource right
+	
+
+*/
+
 /**
  * Contains the EditPage class
  */
