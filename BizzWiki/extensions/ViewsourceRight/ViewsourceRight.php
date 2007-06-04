@@ -21,6 +21,11 @@
  * ========
  * V1.0
  *
+ * TODO:
+ * =====
+ * 1) Internationalization: add messages to message cache
+ *    Create i18n file
+ * 
  */
  
 ViewsourceRight::singleton();
