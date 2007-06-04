@@ -730,5 +730,335 @@ class User {
 			return false;
 		}
 	}
+	
+	/**
+	 * Load user and user_group data from the database
+	 * $this->mId must be set, this is how the user is identified.
+	 * 
+	 * @return true if the user exists, false if the user is anonymous
+	 * @private
+	 */
+	function loadFromDatabase() {
+		# Paranoia
+		$this->mId = intval( $this->mId );
+
+		/** Anonymous user */
+		if( !$this->mId ) {
+			$this->loadDefaults();
+			return false;
+		}
+
+		$dbr = wfGetDB( DB_MASTER );
+		$s = $dbr->selectRow( 'user', '*', array( 'user_id' => $this->mId ), __METHOD__ );
+
+		if ( $s !== false ) {
+			# Initialise user table data
+			$this->mName = $s->user_name;
+			$this->mRealName = $s->user_real_name;
+			$this->mPassword = $s->user_password;
+			$this->mNewpassword = $s->user_newpassword;
+			$this->mNewpassTime = wfTimestampOrNull( TS_MW, $s->user_newpass_time );
+			$this->mEmail = $s->user_email;
+			$this->decodeOptions( $s->user_options );
+			$this->mTouched = wfTimestamp(TS_MW,$s->user_touched);
+			$this->mToken = $s->user_token;
+			$this->mEmailAuthenticated = wfTimestampOrNull( TS_MW, $s->user_email_authenticated );
+			$this->mEmailToken = $s->user_email_token;
+			$this->mEmailTokenExpires = wfTimestampOrNull( TS_MW, $s->user_email_token_expires );
+			$this->mRegistration = wfTimestampOrNull( TS_MW, $s->user_registration );
+			$this->mEditCount = $s->user_editcount; 
+			$this->getEditCount(); // revalidation for nulls
+
+			# Load group data
+			$res = $dbr->select( 'user_groups',
+				array( 'ug_group' ),
+				array( 'ug_user' => $this->mId ),
+				__METHOD__ );
+			$this->mGroups = array();
+			while( $row = $dbr->fetchObject( $res ) ) {
+				$this->mGroups[] = $row->ug_group;
+			}
+			return true;
+		} else {
+			# Invalid user_id
+			$this->mId = 0;
+			$this->loadDefaults();
+			return false;
+		}
+	}
+
+	/**
+	 * Clear various cached data stored in this object. 
+	 * @param string $reloadFrom Reload user and user_groups table data from a 
+	 *   given source. May be "name", "id", "defaults", "session" or false for 
+	 *   no reload.
+	 */
+	function clearInstanceCache( $reloadFrom = false ) {
+		$this->mNewtalk = -1;
+		$this->mDatePreference = null;
+		$this->mBlockedby = -1; # Unset
+		$this->mHash = false;
+		$this->mSkin = null;
+		$this->mRights = null;
+		$this->mEffectiveGroups = null;
+
+		if ( $reloadFrom ) {
+			$this->mDataLoaded = false;
+			$this->mFrom = $reloadFrom;
+		}
+	}
+
+	/**
+	 * Combine the language default options with any site-specific options
+	 * and add the default language variants.
+	 * Not really private cause it's called by Language class
+	 * @return array
+	 * @static
+	 * @private
+	 */
+	static function getDefaultOptions() {
+		global $wgNamespacesToBeSearchedDefault;
+		/**
+		 * Site defaults will override the global/language defaults
+		 */
+		global $wgDefaultUserOptions, $wgContLang;
+		$defOpt = $wgDefaultUserOptions + $wgContLang->getDefaultUserOptionOverrides();
+
+		/**
+		 * default language setting
+		 */
+		$variant = $wgContLang->getPreferredVariant( false );
+		$defOpt['variant'] = $variant;
+		$defOpt['language'] = $variant;
+
+		foreach( $wgNamespacesToBeSearchedDefault as $nsnum => $val ) {
+			$defOpt['searchNs'.$nsnum] = $val;
+		}
+		return $defOpt;
+	}
+
+	/**
+	 * Get a given default option value.
+	 *
+	 * @param string $opt
+	 * @return string
+	 * @static
+	 * @public
+	 */
+	function getDefaultOption( $opt ) {
+		$defOpts = User::getDefaultOptions();
+		if( isset( $defOpts[$opt] ) ) {
+			return $defOpts[$opt];
+		} else {
+			return '';
+		}
+	}
+
+	/**
+	 * Get a list of user toggle names
+	 * @return array
+	 */
+	static function getToggles() {
+		global $wgContLang;
+		$extraToggles = array();
+		wfRunHooks( 'UserToggles', array( &$extraToggles ) );
+		return array_merge( self::$mToggles, $extraToggles, $wgContLang->getExtraUserToggles() );
+	}
+
+
+	/**
+	 * Get blocking information
+	 * @private
+	 * @param bool $bFromSlave Specify whether to check slave or master. To improve performance,
+	 *  non-critical checks are done against slaves. Check when actually saving should be done against
+	 *  master.
+	 */
+	function getBlockedStatus( $bFromSlave = true ) {
+		global $wgEnableSorbs, $wgProxyWhitelist;
+
+		if ( -1 != $this->mBlockedby ) {
+			wfDebug( "User::getBlockedStatus: already loaded.\n" );
+			return;
+		}
+
+		wfProfileIn( __METHOD__ );
+		wfDebug( __METHOD__.": checking...\n" );
+
+		$this->mBlockedby = 0; 
+		$this->mHideName = 0;
+		$ip = wfGetIP();
+
+		if ($this->isAllowed( 'ipblock-exempt' ) ) {
+			# Exempt from all types of IP-block
+			$ip = '';
+		}
+
+		# User/IP blocking
+		$this->mBlock = new Block();
+		$this->mBlock->fromMaster( !$bFromSlave );
+		if ( $this->mBlock->load( $ip , $this->mId ) ) {
+			wfDebug( __METHOD__.": Found block.\n" );
+			$this->mBlockedby = $this->mBlock->mBy;
+			$this->mBlockreason = $this->mBlock->mReason;
+			$this->mHideName = $this->mBlock->mHideName;
+			if ( $this->isLoggedIn() ) {
+				$this->spreadBlock();
+			}
+		} else {
+			$this->mBlock = null;
+			wfDebug( __METHOD__.": No block.\n" );
+		}
+
+		# Proxy blocking
+		if ( !$this->isAllowed('proxyunbannable') && !in_array( $ip, $wgProxyWhitelist ) ) {
+
+			# Local list
+			if ( wfIsLocallyBlockedProxy( $ip ) ) {
+				$this->mBlockedby = wfMsg( 'proxyblocker' );
+				$this->mBlockreason = wfMsg( 'proxyblockreason' );
+			}
+
+			# DNSBL
+			if ( !$this->mBlockedby && $wgEnableSorbs && !$this->getID() ) {
+				if ( $this->inSorbsBlacklist( $ip ) ) {
+					$this->mBlockedby = wfMsg( 'sorbs' );
+					$this->mBlockreason = wfMsg( 'sorbsreason' );
+				}
+			}
+		}
+
+		# Extensions
+		wfRunHooks( 'GetBlockedStatus', array( &$this ) );
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	function inSorbsBlacklist( $ip ) {
+		global $wgEnableSorbs, $wgSorbsUrl;
+
+		return $wgEnableSorbs &&
+			$this->inDnsBlacklist( $ip, $wgSorbsUrl );
+	}
+
+	function inDnsBlacklist( $ip, $base ) {
+		wfProfileIn( __METHOD__ );
+
+		$found = false;
+		$host = '';
+
+		$m = array();
+		if ( preg_match( '/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $ip, $m ) ) {
+			# Make hostname
+			for ( $i=4; $i>=1; $i-- ) {
+				$host .= $m[$i] . '.';
+			}
+			$host .= $base;
+
+			# Send query
+			$ipList = gethostbynamel( $host );
+
+			if ( $ipList ) {
+				wfDebug( "Hostname $host is {$ipList[0]}, it's a proxy says $base!\n" );
+				$found = true;
+			} else {
+				wfDebug( "Requested $host, not found in $base.\n" );
+			}
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $found;
+	}
+
+	/**
+	 * Is this user subject to rate limiting?
+	 *
+	 * @return bool
+	 */
+	public function isPingLimitable() {
+		global $wgRateLimitsExcludedGroups;
+		return array_intersect($this->getEffectiveGroups(), $wgRateLimitsExcludedGroups) == array();
+	}
+
+	/**
+	 * Primitive rate limits: enforce maximum actions per time period
+	 * to put a brake on flooding.
+	 *
+	 * Note: when using a shared cache like memcached, IP-address
+	 * last-hit counters will be shared across wikis.
+	 *
+	 * @return bool true if a rate limiter was tripped
+	 * @public
+	 */
+	function pingLimiter( $action='edit' ) {
+
+		# Call the 'PingLimiter' hook
+		$result = false;
+		if( !wfRunHooks( 'PingLimiter', array( &$this, $action, $result ) ) ) {
+			return $result;
+		}
+
+		global $wgRateLimits, $wgRateLimitsExcludedGroups;
+		if( !isset( $wgRateLimits[$action] ) ) {
+			return false;
+		}
+
+		# Some groups shouldn't trigger the ping limiter, ever
+		if( !$this->isPingLimitable() )
+			return false;
+
+		global $wgMemc, $wgRateLimitLog;
+		wfProfileIn( __METHOD__ );
+
+		$limits = $wgRateLimits[$action];
+		$keys = array();
+		$id = $this->getId();
+		$ip = wfGetIP();
+
+		if( isset( $limits['anon'] ) && $id == 0 ) {
+			$keys[wfMemcKey( 'limiter', $action, 'anon' )] = $limits['anon'];
+		}
+
+		if( isset( $limits['user'] ) && $id != 0 ) {
+			$keys[wfMemcKey( 'limiter', $action, 'user', $id )] = $limits['user'];
+		}
+		if( $this->isNewbie() ) {
+			if( isset( $limits['newbie'] ) && $id != 0 ) {
+				$keys[wfMemcKey( 'limiter', $action, 'user', $id )] = $limits['newbie'];
+			}
+			if( isset( $limits['ip'] ) ) {
+				$keys["mediawiki:limiter:$action:ip:$ip"] = $limits['ip'];
+			}
+			$matches = array();
+			if( isset( $limits['subnet'] ) && preg_match( '/^(\d+\.\d+\.\d+)\.\d+$/', $ip, $matches ) ) {
+				$subnet = $matches[1];
+				$keys["mediawiki:limiter:$action:subnet:$subnet"] = $limits['subnet'];
+			}
+		}
+
+		$triggered = false;
+		foreach( $keys as $key => $limit ) {
+			list( $max, $period ) = $limit;
+			$summary = "(limit $max in {$period}s)";
+			$count = $wgMemc->get( $key );
+			if( $count ) {
+				if( $count > $max ) {
+					wfDebug( __METHOD__.": tripped! $key at $count $summary\n" );
+					if( $wgRateLimitLog ) {
+						@error_log( wfTimestamp( TS_MW ) . ' ' . wfWikiID() . ': ' . $this->getName() . " tripped $key at $count $summary\n", 3, $wgRateLimitLog );
+					}
+					$triggered = true;
+				} else {
+					wfDebug( __METHOD__.": ok. $key at $count $summary\n" );
+				}
+			} else {
+				wfDebug( __METHOD__.": adding record for $key $summary\n" );
+				$wgMemc->add( $key, 1, intval( $period ) );
+			}
+			$wgMemc->incr( $key );
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $triggered;
+	}
 
 ?>
