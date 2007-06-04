@@ -1002,3 +1002,453 @@ class Article {
 		return $newid;
 	}
 
+	/**
+	 * Update the page record to point to a newly saved revision.
+	 *
+	 * @param Database $dbw
+	 * @param Revision $revision For ID number, and text used to set
+	                             length and redirect status fields
+	 * @param int $lastRevision If given, will not overwrite the page field
+	 *                          when different from the currently set value.
+	 *                          Giving 0 indicates the new page flag should
+	 *                          be set on.
+	 * @param bool $lastRevIsRedirect If given, will optimize adding and
+	 * 							removing rows in redirect table.
+	 * @return bool true on success, false on failure
+	 * @private
+	 */
+	function updateRevisionOn( &$dbw, $revision, $lastRevision = null, $lastRevIsRedirect = null ) {
+		wfProfileIn( __METHOD__ );
+
+		$text = $revision->getText();
+		$rt = Title::newFromRedirect( $text );
+
+		$conditions = array( 'page_id' => $this->getId() );
+		if( !is_null( $lastRevision ) ) {
+			# An extra check against threads stepping on each other
+			$conditions['page_latest'] = $lastRevision;
+		}
+
+		$dbw->update( 'page',
+			array( /* SET */
+				'page_latest'      => $revision->getId(),
+				'page_touched'     => $dbw->timestamp(),
+				'page_is_new'      => ($lastRevision === 0) ? 1 : 0,
+				'page_is_redirect' => $rt !== NULL ? 1 : 0,
+				'page_len'         => strlen( $text ),
+			),
+			$conditions,
+			__METHOD__ );
+
+		$result = $dbw->affectedRows() != 0;
+
+		if ($result) {
+			// FIXME: Should the result from updateRedirectOn() be returned instead?
+			$this->updateRedirectOn( $dbw, $rt, $lastRevIsRedirect );
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $result;
+	}
+
+	/**
+	 * Add row to the redirect table if this is a redirect, remove otherwise.
+	 *
+	 * @param Database $dbw
+	 * @param $redirectTitle a title object pointing to the redirect target,
+	 * 							or NULL if this is not a redirect
+	 * @param bool $lastRevIsRedirect If given, will optimize adding and
+	 * 							removing rows in redirect table.
+	 * @return bool true on success, false on failure
+	 * @private
+	 */
+	function updateRedirectOn( &$dbw, $redirectTitle, $lastRevIsRedirect = null ) {
+
+		// Always update redirects (target link might have changed)
+		// Update/Insert if we don't know if the last revision was a redirect or not
+		// Delete if changing from redirect to non-redirect
+		$isRedirect = !is_null($redirectTitle);
+		if ($isRedirect || is_null($lastRevIsRedirect) || $lastRevIsRedirect !== $isRedirect) {
+
+			wfProfileIn( __METHOD__ );
+
+			if ($isRedirect) {
+
+				// This title is a redirect, Add/Update row in the redirect table
+				$set = array( /* SET */
+					'rd_namespace' => $redirectTitle->getNamespace(),
+					'rd_title'     => $redirectTitle->getDBkey(),
+					'rd_from'      => $this->getId(),
+				);
+
+				$dbw->replace( 'redirect', array( 'rd_from' ), $set, __METHOD__ );
+			} else {
+				// This is not a redirect, remove row from redirect table
+				$where = array( 'rd_from' => $this->getId() );
+				$dbw->delete( 'redirect', $where, __METHOD__);
+			}
+
+			wfProfileOut( __METHOD__ );
+			return ( $dbw->affectedRows() != 0 );
+		}
+
+		return true;
+	}
+
+	/**
+	 * If the given revision is newer than the currently set page_latest,
+	 * update the page record. Otherwise, do nothing.
+	 *
+	 * @param Database $dbw
+	 * @param Revision $revision
+	 */
+	function updateIfNewerOn( &$dbw, $revision ) {
+		wfProfileIn( __METHOD__ );
+
+		$row = $dbw->selectRow(
+			array( 'revision', 'page' ),
+			array( 'rev_id', 'rev_timestamp', 'page_is_redirect' ),
+			array(
+				'page_id' => $this->getId(),
+				'page_latest=rev_id' ),
+			__METHOD__ );
+		if( $row ) {
+			if( wfTimestamp(TS_MW, $row->rev_timestamp) >= $revision->getTimestamp() ) {
+				wfProfileOut( __METHOD__ );
+				return false;
+			}
+			$prev = $row->rev_id;
+			$lastRevIsRedirect = (bool)$row->page_is_redirect;
+		} else {
+			# No or missing previous revision; mark the page as new
+			$prev = 0;
+			$lastRevIsRedirect = null;
+		}
+
+		$ret = $this->updateRevisionOn( $dbw, $revision, $prev, $lastRevIsRedirect );
+		wfProfileOut( __METHOD__ );
+		return $ret;
+	}
+
+	/**
+	 * @return string Complete article text, or null if error
+	 */
+	function replaceSection($section, $text, $summary = '', $edittime = NULL) {
+		wfProfileIn( __METHOD__ );
+
+		if( $section == '' ) {
+			// Whole-page edit; let the text through unmolested.
+		} else {
+			if( is_null( $edittime ) ) {
+				$rev = Revision::newFromTitle( $this->mTitle );
+			} else {
+				$dbw = wfGetDB( DB_MASTER );
+				$rev = Revision::loadFromTimestamp( $dbw, $this->mTitle, $edittime );
+			}
+			if( is_null( $rev ) ) {
+				wfDebug( "Article::replaceSection asked for bogus section (page: " .
+					$this->getId() . "; section: $section; edittime: $edittime)\n" );
+				return null;
+			}
+			$oldtext = $rev->getText();
+
+			if( $section == 'new' ) {
+				# Inserting a new section
+				$subject = $summary ? "== {$summary} ==\n\n" : '';
+				$text = strlen( trim( $oldtext ) ) > 0
+						? "{$oldtext}\n\n{$subject}{$text}"
+						: "{$subject}{$text}";
+			} else {
+				# Replacing an existing section; roll out the big guns
+				global $wgParser;
+				$text = $wgParser->replaceSection( $oldtext, $section, $text );
+			}
+
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $text;
+	}
+
+	/**
+	 * @deprecated use Article::doEdit()
+	 */
+	function insertNewArticle( $text, $summary, $isminor, $watchthis, $suppressRC=false, $comment=false ) {
+		$flags = EDIT_NEW | EDIT_DEFER_UPDATES | EDIT_AUTOSUMMARY |
+			( $isminor ? EDIT_MINOR : 0 ) |
+			( $suppressRC ? EDIT_SUPPRESS_RC : 0 );
+
+		# If this is a comment, add the summary as headline
+		if ( $comment && $summary != "" ) {
+			$text = "== {$summary} ==\n\n".$text;
+		}
+
+		$this->doEdit( $text, $summary, $flags );
+
+		$dbw = wfGetDB( DB_MASTER );
+		if ($watchthis) {
+			if (!$this->mTitle->userIsWatching()) {
+				$dbw->begin();
+				$this->doWatch();
+				$dbw->commit();
+			}
+		} else {
+			if ( $this->mTitle->userIsWatching() ) {
+				$dbw->begin();
+				$this->doUnwatch();
+				$dbw->commit();
+			}
+		}
+		$this->doRedirect( $this->isRedirect( $text ) );
+	}
+
+	/**
+	 * @deprecated use Article::doEdit()
+	 */
+	function updateArticle( $text, $summary, $minor, $watchthis, $forceBot = false, $sectionanchor = '' ) {
+		$flags = EDIT_UPDATE | EDIT_DEFER_UPDATES | EDIT_AUTOSUMMARY |
+			( $minor ? EDIT_MINOR : 0 ) |
+			( $forceBot ? EDIT_FORCE_BOT : 0 );
+
+		$good = $this->doEdit( $text, $summary, $flags );
+		if ( $good ) {
+			$dbw = wfGetDB( DB_MASTER );
+			if ($watchthis) {
+				if (!$this->mTitle->userIsWatching()) {
+					$dbw->begin();
+					$this->doWatch();
+					$dbw->commit();
+				}
+			} else {
+				if ( $this->mTitle->userIsWatching() ) {
+					$dbw->begin();
+					$this->doUnwatch();
+					$dbw->commit();
+				}
+			}
+
+			$this->doRedirect( $this->isRedirect( $text ), $sectionanchor );
+		}
+		return $good;
+	}
+
+	/**
+	 * Article::doEdit()
+	 *
+	 * Change an existing article or create a new article. Updates RC and all necessary caches,
+	 * optionally via the deferred update array.
+	 *
+	 * $wgUser must be set before calling this function.
+	 *
+	 * @param string $text New text
+	 * @param string $summary Edit summary
+	 * @param integer $flags bitfield:
+	 *      EDIT_NEW
+	 *          Article is known or assumed to be non-existent, create a new one
+	 *      EDIT_UPDATE
+	 *          Article is known or assumed to be pre-existing, update it
+	 *      EDIT_MINOR
+	 *          Mark this edit minor, if the user is allowed to do so
+	 *      EDIT_SUPPRESS_RC
+	 *          Do not log the change in recentchanges
+	 *      EDIT_FORCE_BOT
+	 *          Mark the edit a "bot" edit regardless of user rights
+	 *      EDIT_DEFER_UPDATES
+	 *          Defer some of the updates until the end of index.php
+	 *      EDIT_AUTOSUMMARY
+	 *          Fill in blank summaries with generated text where possible
+	 *
+	 * If neither EDIT_NEW nor EDIT_UPDATE is specified, the status of the article will be detected.
+	 * If EDIT_UPDATE is specified and the article doesn't exist, the function will return false. If
+	 * EDIT_NEW is specified and the article does exist, a duplicate key error will cause an exception
+	 * to be thrown from the Database. These two conditions are also possible with auto-detection due
+	 * to MediaWiki's performance-optimised locking strategy.
+	 *
+	 * @return bool success
+	 */
+	function doEdit( $text, $summary, $flags = 0 ) {
+		global $wgUser, $wgDBtransactions;
+
+		wfProfileIn( __METHOD__ );
+		$good = true;
+
+		if ( !($flags & EDIT_NEW) && !($flags & EDIT_UPDATE) ) {
+			$aid = $this->mTitle->getArticleID( GAID_FOR_UPDATE );
+			if ( $aid ) {
+				$flags |= EDIT_UPDATE;
+			} else {
+				$flags |= EDIT_NEW;
+			}
+		}
+
+		if( !wfRunHooks( 'ArticleSave', array( &$this, &$wgUser, &$text,
+			&$summary, $flags & EDIT_MINOR,
+			null, null, &$flags ) ) )
+		{
+			wfDebug( __METHOD__ . ": ArticleSave hook aborted save!\n" );
+			wfProfileOut( __METHOD__ );
+			return false;
+		}
+
+		# Silently ignore EDIT_MINOR if not allowed
+		$isminor = ( $flags & EDIT_MINOR ) && $wgUser->isAllowed('minoredit');
+		$bot = $wgUser->isAllowed( 'bot' ) || ( $flags & EDIT_FORCE_BOT );
+
+		$oldtext = $this->getContent();
+		$oldsize = strlen( $oldtext );
+
+		# Provide autosummaries if one is not provided.
+		if ($flags & EDIT_AUTOSUMMARY && $summary == '')
+			$summary = $this->getAutosummary( $oldtext, $text, $flags );
+
+		$text = $this->preSaveTransform( $text );
+		$newsize = strlen( $text );
+
+		$dbw = wfGetDB( DB_MASTER );
+		$now = wfTimestampNow();
+
+		if ( $flags & EDIT_UPDATE ) {
+			# Update article, but only if changed.
+
+			# Make sure the revision is either completely inserted or not inserted at all
+			if( !$wgDBtransactions ) {
+				$userAbort = ignore_user_abort( true );
+			}
+
+			$lastRevision = 0;
+			$revisionId = 0;
+
+			if ( 0 != strcmp( $text, $oldtext ) ) {
+				$this->mGoodAdjustment = (int)$this->isCountable( $text )
+				  - (int)$this->isCountable( $oldtext );
+				$this->mTotalAdjustment = 0;
+
+				$lastRevision = $dbw->selectField(
+					'page', 'page_latest', array( 'page_id' => $this->getId() ) );
+
+				if ( !$lastRevision ) {
+					# Article gone missing
+					wfDebug( __METHOD__.": EDIT_UPDATE specified but article doesn't exist\n" );
+					wfProfileOut( __METHOD__ );
+					return false;
+				}
+
+				$revision = new Revision( array(
+					'page'       => $this->getId(),
+					'comment'    => $summary,
+					'minor_edit' => $isminor,
+					'text'       => $text
+					) );
+
+				$dbw->begin();
+				$revisionId = $revision->insertOn( $dbw );
+
+				# Update page
+				$ok = $this->updateRevisionOn( $dbw, $revision, $lastRevision );
+
+				if( !$ok ) {
+					/* Belated edit conflict! Run away!! */
+					$good = false;
+					$dbw->rollback();
+				} else {
+					# Update recentchanges
+					if( !( $flags & EDIT_SUPPRESS_RC ) ) {
+						$rcid = RecentChange::notifyEdit( $now, $this->mTitle, $isminor, $wgUser, $summary,
+							$lastRevision, $this->getTimestamp(), $bot, '', $oldsize, $newsize,
+							$revisionId );
+
+						# Mark as patrolled if the user can do so
+						if( $GLOBALS['wgUseRCPatrol'] && $wgUser->isAllowed( 'autopatrol' ) ) {
+							RecentChange::markPatrolled( $rcid );
+							PatrolLog::record( $rcid, true );
+						}
+					}
+					$wgUser->incEditCount();
+					$dbw->commit();
+				}
+			} else {
+				// Keep the same revision ID, but do some updates on it
+				$revisionId = $this->getRevIdFetched();
+				// Update page_touched, this is usually implicit in the page update
+				// Other cache updates are done in onArticleEdit()
+				$this->mTitle->invalidateCache();
+			}
+
+			if( !$wgDBtransactions ) {
+				ignore_user_abort( $userAbort );
+			}
+
+			if ( $good ) {
+				# Invalidate cache of this article and all pages using this article
+				# as a template. Partly deferred.
+				Article::onArticleEdit( $this->mTitle );
+
+				# Update links tables, site stats, etc.
+				$changed = ( strcmp( $oldtext, $text ) != 0 );
+				$this->editUpdates( $text, $summary, $isminor, $now, $revisionId, $changed );
+			}
+		} else {
+			# Create new article
+
+			# Set statistics members
+			# We work out if it's countable after PST to avoid counter drift
+			# when articles are created with {{subst:}}
+			$this->mGoodAdjustment = (int)$this->isCountable( $text );
+			$this->mTotalAdjustment = 1;
+
+			$dbw->begin();
+
+			# Add the page record; stake our claim on this title!
+			# This will fail with a database query exception if the article already exists
+			$newid = $this->insertOn( $dbw );
+
+			# Save the revision text...
+			$revision = new Revision( array(
+				'page'       => $newid,
+				'comment'    => $summary,
+				'minor_edit' => $isminor,
+				'text'       => $text
+				) );
+			$revisionId = $revision->insertOn( $dbw );
+
+			$this->mTitle->resetArticleID( $newid );
+
+			# Update the page record with revision data
+			$this->updateRevisionOn( $dbw, $revision, 0 );
+
+			if( !( $flags & EDIT_SUPPRESS_RC ) ) {
+				$rcid = RecentChange::notifyNew( $now, $this->mTitle, $isminor, $wgUser, $summary, $bot,
+				  '', strlen( $text ), $revisionId );
+				# Mark as patrolled if the user can
+				if( $GLOBALS['wgUseRCPatrol'] && $wgUser->isAllowed( 'autopatrol' ) ) {
+					RecentChange::markPatrolled( $rcid );
+					PatrolLog::record( $rcid, true );
+				}
+			}
+			$wgUser->incEditCount();
+			$dbw->commit();
+
+			# Update links, etc.
+			$this->editUpdates( $text, $summary, $isminor, $now, $revisionId, true );
+
+			# Clear caches
+			Article::onArticleCreate( $this->mTitle );
+
+			wfRunHooks( 'ArticleInsertComplete', array( &$this, &$wgUser, $text,
+				$summary, $flags & EDIT_MINOR,
+				null, null, &$flags ) );
+		}
+
+		if ( $good && !( $flags & EDIT_DEFER_UPDATES ) ) {
+			wfDoUpdates();
+		}
+
+		wfRunHooks( 'ArticleSaveComplete',
+			array( &$this, &$wgUser, $text,
+			$summary, $flags & EDIT_MINOR,
+			null, null, &$flags ) );
+
+		wfProfileOut( __METHOD__ );
+		return $good;
+	}
+
