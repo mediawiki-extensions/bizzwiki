@@ -98,6 +98,9 @@ foreach( $bwUserNamespaces as $index => $bwx )
 
 // *****************************************************************************************
 
+// Protect critical namespaces from Templating level permission bypassing.
+$wgNonincludableNamespaces[] = NS_FILESYSTEM;
+$wgNonincludableNamespaces[] = NS_BIZZWIKI;
 
 
 ?>
