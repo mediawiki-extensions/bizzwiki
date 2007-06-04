@@ -447,3 +447,442 @@ class EditPage {
 		wfProfileOut( "$fname-business-end" );
 		wfProfileOut( $fname );
 	}
+	/**
+	 * Return true if this page should be previewed when the edit form
+	 * is initially opened.
+	 * @return bool
+	 * @private
+	 */
+	function previewOnOpen() {
+		global $wgUser;
+		return $this->section != 'new' &&
+			( ( $wgUser->getOption( 'previewonfirst' ) && $this->mTitle->exists() ) ||
+				( $this->mTitle->getNamespace() == NS_CATEGORY &&
+					!$this->mTitle->exists() ) );
+	}
+
+	/**
+	 * @todo document
+	 * @param $request
+	 */
+	function importFormData( &$request ) {
+		global $wgLang, $wgUser;
+		$fname = 'EditPage::importFormData';
+		wfProfileIn( $fname );
+
+		if( $request->wasPosted() ) {
+			# These fields need to be checked for encoding.
+			# Also remove trailing whitespace, but don't remove _initial_
+			# whitespace from the text boxes. This may be significant formatting.
+			$this->textbox1 = $this->safeUnicodeInput( $request, 'wpTextbox1' );
+			$this->textbox2 = $this->safeUnicodeInput( $request, 'wpTextbox2' );
+			$this->mMetaData = rtrim( $request->getText( 'metadata'   ) );
+			# Truncate for whole multibyte characters. +5 bytes for ellipsis
+			$this->summary   = $wgLang->truncate( $request->getText( 'wpSummary'  ), 250 );
+
+			$this->edittime = $request->getVal( 'wpEdittime' );
+			$this->starttime = $request->getVal( 'wpStarttime' );
+
+			$this->scrolltop = $request->getIntOrNull( 'wpScrolltop' );
+
+			if( is_null( $this->edittime ) ) {
+				# If the form is incomplete, force to preview.
+				wfDebug( "$fname: Form data appears to be incomplete\n" );
+				wfDebug( "POST DATA: " . var_export( $_POST, true ) . "\n" );
+				$this->preview  = true;
+			} else {
+				/* Fallback for live preview */
+				$this->preview = $request->getCheck( 'wpPreview' ) || $request->getCheck( 'wpLivePreview' );
+				$this->diff = $request->getCheck( 'wpDiff' );
+
+				// Remember whether a save was requested, so we can indicate
+				// if we forced preview due to session failure.
+				$this->mTriedSave = !$this->preview;
+
+				if ( $this->tokenOk( $request ) ) {
+					# Some browsers will not report any submit button
+					# if the user hits enter in the comment box.
+					# The unmarked state will be assumed to be a save,
+					# if the form seems otherwise complete.
+					wfDebug( "$fname: Passed token check.\n" );
+				} else if ( $this->diff ) {
+					# Failed token check, but only requested "Show Changes".
+					wfDebug( "$fname: Failed token check; Show Changes requested.\n" );
+				} else {
+					# Page might be a hack attempt posted from
+					# an external site. Preview instead of saving.
+					wfDebug( "$fname: Failed token check; forcing preview\n" );
+					$this->preview = true;
+				}
+			}
+			$this->save    = ! ( $this->preview OR $this->diff );
+			if( !preg_match( '/^\d{14}$/', $this->edittime )) {
+				$this->edittime = null;
+			}
+
+			if( !preg_match( '/^\d{14}$/', $this->starttime )) {
+				$this->starttime = null;
+			}
+
+			$this->recreate  = $request->getCheck( 'wpRecreate' );
+
+			$this->minoredit = $request->getCheck( 'wpMinoredit' );
+			$this->watchthis = $request->getCheck( 'wpWatchthis' );
+
+			# Don't force edit summaries when a user is editing their own user or talk page
+			if( ( $this->mTitle->mNamespace == NS_USER || $this->mTitle->mNamespace == NS_USER_TALK ) && $this->mTitle->getText() == $wgUser->getName() ) {
+				$this->allowBlankSummary = true;
+			} else {
+				$this->allowBlankSummary = $request->getBool( 'wpIgnoreBlankSummary' );
+			}
+
+			$this->autoSumm = $request->getText( 'wpAutoSummary' );	
+		} else {
+			# Not a posted form? Start with nothing.
+			wfDebug( "$fname: Not a posted form.\n" );
+			$this->textbox1  = '';
+			$this->textbox2  = '';
+			$this->mMetaData = '';
+			$this->summary   = '';
+			$this->edittime  = '';
+			$this->starttime = wfTimestampNow();
+			$this->preview   = false;
+			$this->save      = false;
+			$this->diff	 = false;
+			$this->minoredit = false;
+			$this->watchthis = false;
+			$this->recreate  = false;
+		}
+
+		$this->oldid = $request->getInt( 'oldid' );
+
+		# Section edit can come from either the form or a link
+		$this->section = $request->getVal( 'wpSection', $request->getVal( 'section' ) );
+
+		$this->live = $request->getCheck( 'live' );
+		$this->editintro = $request->getText( 'editintro' );
+
+		wfProfileOut( $fname );
+	}
+
+	/**
+	 * Make sure the form isn't faking a user's credentials.
+	 *
+	 * @param $request WebRequest
+	 * @return bool
+	 * @private
+	 */
+	function tokenOk( &$request ) {
+		global $wgUser;
+		if( $wgUser->isAnon() ) {
+			# Anonymous users may not have a session
+			# open. Check for suffix anyway.
+			$this->mTokenOk = ( EDIT_TOKEN_SUFFIX == $request->getVal( 'wpEditToken' ) );
+		} else {
+			$this->mTokenOk = $wgUser->matchEditToken( $request->getVal( 'wpEditToken' ) );
+		}
+		return $this->mTokenOk;
+	}
+
+	/** */
+	function showIntro() {
+		global $wgOut, $wgUser;
+		$addstandardintro=true;
+		if($this->editintro) {
+			$introtitle=Title::newFromText($this->editintro);
+			if(isset($introtitle) && $introtitle->userCanRead()) {
+				$rev=Revision::newFromTitle($introtitle);
+				if($rev) {
+					$wgOut->addSecondaryWikiText($rev->getText());
+					$addstandardintro=false;
+				}
+			}
+		}
+		if($addstandardintro) {
+			if ( $wgUser->isLoggedIn() )
+				$wgOut->addWikiText( wfMsg( 'newarticletext' ) );
+			else
+				$wgOut->addWikiText( wfMsg( 'newarticletextanon' ) );
+		}
+	}
+
+	/**
+	 * Attempt submission
+	 * @return bool false if output is done, true if the rest of the form should be displayed
+	 */
+	function attemptSave() {
+		global $wgSpamRegex, $wgFilterCallback, $wgUser, $wgOut;
+		global $wgMaxArticleSize;
+
+		$fname = 'EditPage::attemptSave';
+		wfProfileIn( $fname );
+		wfProfileIn( "$fname-checks" );
+
+		if( !wfRunHooks( 'EditPage::attemptSave', array( &$this ) ) )
+		{
+			wfDebug( "Hook 'EditPage::attemptSave' aborted article saving" );
+			return false;
+		}
+
+		# Reintegrate metadata
+		if ( $this->mMetaData != '' ) $this->textbox1 .= "\n" . $this->mMetaData ;
+		$this->mMetaData = '' ;
+
+		# Check for spam
+		$matches = array();
+		if ( $wgSpamRegex && preg_match( $wgSpamRegex, $this->textbox1, $matches ) ) {
+			$this->spamPage ( $matches[0] );
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return false;
+		}
+		if ( $wgFilterCallback && $wgFilterCallback( $this->mTitle, $this->textbox1, $this->section ) ) {
+			# Error messages or other handling should be performed by the filter function
+			wfProfileOut( $fname );
+			wfProfileOut( "$fname-checks" );
+			return false;
+		}
+		if ( !wfRunHooks( 'EditFilter', array( $this, $this->textbox1, $this->section, &$this->hookError ) ) ) {
+			# Error messages etc. could be handled within the hook...
+			wfProfileOut( $fname );
+			wfProfileOut( "$fname-checks" );
+			return false;
+		} elseif( $this->hookError != '' ) {
+			# ...or the hook could be expecting us to produce an error
+			wfProfileOut( "$fname-checks " );
+			wfProfileOut( $fname );
+			return true;
+		}
+		if ( $wgUser->isBlockedFrom( $this->mTitle, false ) ) {
+			# Check block state against master, thus 'false'.
+			$this->blockedPage();
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return false;
+		}
+		$this->kblength = (int)(strlen( $this->textbox1 ) / 1024);
+		if ( $this->kblength > $wgMaxArticleSize ) {
+			// Error will be displayed by showEditForm()
+			$this->tooBig = true;
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return true;
+		}
+
+		if ( !$wgUser->isAllowed('edit') ) {
+			if ( $wgUser->isAnon() ) {
+				$this->userNotLoggedInPage();
+				wfProfileOut( "$fname-checks" );
+				wfProfileOut( $fname );
+				return false;
+			}
+			else {
+				$wgOut->readOnlyPage();
+				wfProfileOut( "$fname-checks" );
+				wfProfileOut( $fname );
+				return false;
+			}
+		}
+
+		if ( wfReadOnly() ) {
+			$wgOut->readOnlyPage();
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return false;
+		}
+		if ( $wgUser->pingLimiter() ) {
+			$wgOut->rateLimited();
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return false;
+		}
+
+		# If the article has been deleted while editing, don't save it without
+		# confirmation
+		if ( $this->deletedSinceEdit && !$this->recreate ) {
+			wfProfileOut( "$fname-checks" );
+			wfProfileOut( $fname );
+			return true;
+		}
+
+		wfProfileOut( "$fname-checks" );
+
+		# If article is new, insert it.
+		$aid = $this->mTitle->getArticleID( GAID_FOR_UPDATE );
+		if ( 0 == $aid ) {
+
+			// Late check for create permission, just in case *PARANOIA*
+			if ( !$this->mTitle->userCan( 'create' ) ) {
+				wfDebug( "$fname: no create permission\n" );
+				$this->noCreatePermission();
+				wfProfileOut( $fname );
+				return;
+			}
+
+			# Don't save a new article if it's blank.
+			if ( ( '' == $this->textbox1 ) ) {
+					$wgOut->redirect( $this->mTitle->getFullURL() );
+					wfProfileOut( $fname );
+					return false;
+			}
+
+			$isComment=($this->section=='new');
+			$this->mArticle->insertNewArticle( $this->textbox1, $this->summary,
+				$this->minoredit, $this->watchthis, false, $isComment);
+
+			wfProfileOut( $fname );
+			return false;
+		}
+
+		# Article exists. Check for edit conflict.
+
+		$this->mArticle->clear(); # Force reload of dates, etc.
+		$this->mArticle->forUpdate( true ); # Lock the article
+
+		wfDebug("timestamp: {$this->mArticle->getTimestamp()}, edittime: {$this->edittime}\n");
+
+		if( $this->mArticle->getTimestamp() != $this->edittime ) {
+			$this->isConflict = true;
+			if( $this->section == 'new' ) {
+				if( $this->mArticle->getUserText() == $wgUser->getName() &&
+					$this->mArticle->getComment() == $this->summary ) {
+					// Probably a duplicate submission of a new comment.
+					// This can happen when squid resends a request after
+					// a timeout but the first one actually went through.
+					wfDebug( "EditPage::editForm duplicate new section submission; trigger edit conflict!\n" );
+				} else {
+					// New comment; suppress conflict.
+					$this->isConflict = false;
+					wfDebug( "EditPage::editForm conflict suppressed; new section\n" );
+				}
+			}
+		}
+		$userid = $wgUser->getID();
+
+		if ( $this->isConflict) {
+			wfDebug( "EditPage::editForm conflict! getting section '$this->section' for time '$this->edittime' (article time '" .
+				$this->mArticle->getTimestamp() . "'\n" );
+			$text = $this->mArticle->replaceSection( $this->section, $this->textbox1, $this->summary, $this->edittime);
+		}
+		else {
+			wfDebug( "EditPage::editForm getting section '$this->section'\n" );
+			$text = $this->mArticle->replaceSection( $this->section, $this->textbox1, $this->summary);
+		}
+		if( is_null( $text ) ) {
+			wfDebug( "EditPage::editForm activating conflict; section replace failed.\n" );
+			$this->isConflict = true;
+			$text = $this->textbox1;
+		}
+
+		# Suppress edit conflict with self, except for section edits where merging is required.
+		if ( ( $this->section == '' ) && ( 0 != $userid ) && ( $this->mArticle->getUser() == $userid ) ) {
+			wfDebug( "Suppressing edit conflict, same user.\n" );
+			$this->isConflict = false;
+		} else {
+			# switch from section editing to normal editing in edit conflict
+			if($this->isConflict) {
+				# Attempt merge
+				if( $this->mergeChangesInto( $text ) ){
+					// Successful merge! Maybe we should tell the user the good news?
+					$this->isConflict = false;
+					wfDebug( "Suppressing edit conflict, successful merge.\n" );
+				} else {
+					$this->section = '';
+					$this->textbox1 = $text;
+					wfDebug( "Keeping edit conflict, failed merge.\n" );
+				}
+			}
+		}
+
+		if ( $this->isConflict ) {
+			wfProfileOut( $fname );
+			return true;
+		}
+
+		$oldtext = $this->mArticle->getContent();
+
+		# Handle the user preference to force summaries here, but not for null edits
+		if( $this->section != 'new' && !$this->allowBlankSummary && $wgUser->getOption( 'forceeditsummary')
+			&&  0 != strcmp($oldtext, $text) && !Article::getRedirectAutosummary( $text )) {
+			if( md5( $this->summary ) == $this->autoSumm ) {
+				$this->missingSummary = true;
+				wfProfileOut( $fname );
+				return( true );
+			}
+		}
+
+		#And a similar thing for new sections
+		if( $this->section == 'new' && !$this->allowBlankSummary && $wgUser->getOption( 'forceeditsummary' ) ) {
+			if (trim($this->summary) == '') {
+				$this->missingSummary = true;
+				wfProfileOut( $fname );
+				return( true );
+			}
+		}
+
+		# All's well
+		wfProfileIn( "$fname-sectionanchor" );
+		$sectionanchor = '';
+		if( $this->section == 'new' ) {
+			if ( $this->textbox1 == '' ) {
+				$this->missingComment = true;
+				return true;
+			}
+			if( $this->summary != '' ) {
+				$sectionanchor = $this->sectionAnchor( $this->summary );
+			}
+		} elseif( $this->section != '' ) {
+			# Try to get a section anchor from the section source, redirect to edited section if header found
+			# XXX: might be better to integrate this into Article::replaceSection
+			# for duplicate heading checking and maybe parsing
+			$hasmatch = preg_match( "/^ *([=]{1,6})(.*?)(\\1) *\\n/i", $this->textbox1, $matches );
+			# we can't deal with anchors, includes, html etc in the header for now,
+			# headline would need to be parsed to improve this
+			if($hasmatch and strlen($matches[2]) > 0) {
+				$sectionanchor = $this->sectionAnchor( $matches[2] );
+			}
+		}
+		wfProfileOut( "$fname-sectionanchor" );
+
+		// Save errors may fall down to the edit form, but we've now
+		// merged the section into full text. Clear the section field
+		// so that later submission of conflict forms won't try to
+		// replace that into a duplicated mess.
+		$this->textbox1 = $text;
+		$this->section = '';
+
+		// Check for length errors again now that the section is merged in
+		$this->kblength = (int)(strlen( $text ) / 1024);
+		if ( $this->kblength > $wgMaxArticleSize ) {
+			$this->tooBig = true;
+			wfProfileOut( $fname );
+			return true;
+		}
+
+		# update the article here
+		if( $this->mArticle->updateArticle( $text, $this->summary, $this->minoredit,
+			$this->watchthis, '', $sectionanchor ) ) {
+			wfProfileOut( $fname );
+			return false;
+		} else {
+			$this->isConflict = true;
+		}
+		wfProfileOut( $fname );
+		return true;
+	}
+
+	/**
+	 * Initialise form fields in the object
+	 * Called on the first invocation, e.g. when a user clicks an edit link
+	 */
+	function initialiseForm() {
+		$this->edittime = $this->mArticle->getTimestamp();
+		$this->summary = '';
+		$this->textbox1 = $this->getContent(false);
+		if ($this->textbox1 === false) return false;
+
+		if ( !$this->mArticle->exists() && $this->mArticle->mTitle->getNamespace() == NS_MEDIAWIKI )
+			$this->textbox1 = wfMsgWeirdKey( $this->mArticle->mTitle->getText() );
+		wfProxyCheck();
+		return true;
+	}
