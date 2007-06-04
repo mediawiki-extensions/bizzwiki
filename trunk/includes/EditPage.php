@@ -1298,3 +1298,441 @@ END
 		$wgOut->addHTML( '</div>' );
 	}
 
+	/**
+	 * Live Preview lets us fetch rendered preview page content and
+	 * add it to the page without refreshing the whole page.
+	 * If not supported by the browser it will fall through to the normal form
+	 * submission method.
+	 *
+	 * This function outputs a script tag to support live preview, and
+	 * returns an onclick handler which should be added to the attributes
+	 * of the preview button
+	 */
+	function doLivePreviewScript() {
+		global $wgStylePath, $wgJsMimeType, $wgStyleVersion, $wgOut, $wgTitle;
+		$wgOut->addHTML( '<script type="'.$wgJsMimeType.'" src="' .
+			htmlspecialchars( "$wgStylePath/common/preview.js?$wgStyleVersion" ) .
+			'"></script>' . "\n" );
+		$liveAction = $wgTitle->getLocalUrl( 'action=submit&wpPreview=true&live=true' );
+		return "return !livePreview(" .
+			"getElementById('wikiPreview')," .
+			"editform.wpTextbox1.value," .
+			'"' . $liveAction . '"' . ")";
+	}
+
+	function getLastDelete() {
+		$dbr = wfGetDB( DB_SLAVE );
+		$fname = 'EditPage::getLastDelete';
+		$res = $dbr->select(
+			array( 'logging', 'user' ),
+			array( 'log_type',
+			       'log_action',
+			       'log_timestamp',
+			       'log_user',
+			       'log_namespace',
+			       'log_title',
+			       'log_comment',
+			       'log_params',
+			       'user_name', ),
+			array( 'log_namespace' => $this->mTitle->getNamespace(),
+			       'log_title' => $this->mTitle->getDBkey(),
+			       'log_type' => 'delete',
+			       'log_action' => 'delete',
+			       'user_id=log_user' ),
+			$fname,
+			array( 'LIMIT' => 1, 'ORDER BY' => 'log_timestamp DESC' ) );
+
+		if($dbr->numRows($res) == 1) {
+			while ( $x = $dbr->fetchObject ( $res ) )
+				$data = $x;
+			$dbr->freeResult ( $res ) ;
+		} else {
+			$data = null;
+		}
+		return $data;
+	}
+
+	/**
+	 * @todo document
+	 */
+	function getPreviewText() {
+		global $wgOut, $wgUser, $wgTitle, $wgParser;
+
+		$fname = 'EditPage::getPreviewText';
+		wfProfileIn( $fname );
+
+		if ( $this->mTriedSave && !$this->mTokenOk ) {
+			$msg = 'session_fail_preview';
+		} else {
+			$msg = 'previewnote';
+		}
+		$previewhead = '<h2>' . htmlspecialchars( wfMsg( 'preview' ) ) . "</h2>\n" .
+			"<div class='previewnote'>" . $wgOut->parse( wfMsg( $msg ) ) . "</div>\n";
+		if ( $this->isConflict ) {
+			$previewhead.='<h2>' . htmlspecialchars( wfMsg( 'previewconflict' ) ) . "</h2>\n";
+		}
+
+		$parserOptions = ParserOptions::newFromUser( $wgUser );
+		$parserOptions->setEditSection( false );
+
+		global $wgRawHtml;
+		if( $wgRawHtml && !$this->mTokenOk ) {
+			// Could be an offsite preview attempt. This is very unsafe if
+			// HTML is enabled, as it could be an attack.
+			return $wgOut->parse( "<div class='previewnote'>" .
+				wfMsg( 'session_fail_preview_html' ) . "</div>" );
+		}
+
+		# don't parse user css/js, show message about preview
+		# XXX: stupid php bug won't let us use $wgTitle->isCssJsSubpage() here
+
+		if ( $this->isCssJsSubpage ) {
+			if(preg_match("/\\.css$/", $wgTitle->getText() ) ) {
+				$previewtext = wfMsg('usercsspreview');
+			} else if(preg_match("/\\.js$/", $wgTitle->getText() ) ) {
+				$previewtext = wfMsg('userjspreview');
+			}
+			$parserOptions->setTidy(true);
+			$parserOutput = $wgParser->parse( $previewtext , $wgTitle, $parserOptions );
+			$wgOut->addHTML( $parserOutput->mText );
+			wfProfileOut( $fname );
+			return $previewhead;
+		} else {
+			$toparse = $this->textbox1;
+
+			# If we're adding a comment, we need to show the
+			# summary as the headline
+			if($this->section=="new" && $this->summary!="") {
+				$toparse="== {$this->summary} ==\n\n".$toparse;
+			}
+
+			if ( $this->mMetaData != "" ) $toparse .= "\n" . $this->mMetaData ;
+			$parserOptions->setTidy(true);
+			$parserOutput = $wgParser->parse( $this->mArticle->preSaveTransform( $toparse ) ."\n\n",
+					$wgTitle, $parserOptions );
+
+			$previewHTML = $parserOutput->getText();
+			$wgOut->addParserOutputNoText( $parserOutput );
+
+			foreach ( $parserOutput->getTemplates() as $ns => $template)
+				foreach ( array_keys( $template ) as $dbk)
+					$this->mPreviewTemplates[] = Title::makeTitle($ns, $dbk);
+
+			wfProfileOut( $fname );
+			return $previewhead . $previewHTML;
+		}
+	}
+
+	/**
+	 * Call the stock "user is blocked" page
+	 */
+	function blockedPage() {
+		global $wgOut, $wgUser;
+		$wgOut->blockedPage( false ); # Standard block notice on the top, don't 'return'
+
+		# If the user made changes, preserve them when showing the markup
+		# (This happens when a user is blocked during edit, for instance)
+		$first = $this->firsttime || ( !$this->save && $this->textbox1 == '' );
+		if( $first ) {
+			$source = $this->mTitle->exists() ? $this->getContent() : false;
+		} else {
+			$source = $this->textbox1;
+		}
+
+		# Spit out the source or the user's modified version
+		if( $source !== false ) {
+			$rows = $wgUser->getOption( 'rows' );
+			$cols = $wgUser->getOption( 'cols' );
+			$attribs = array( 'id' => 'wpTextbox1', 'name' => 'wpTextbox1', 'cols' => $cols, 'rows' => $rows, 'readonly' => 'readonly' );
+			$wgOut->addHtml( '<hr />' );
+			$wgOut->addWikiText( wfMsg( $first ? 'blockedoriginalsource' : 'blockededitsource', $this->mTitle->getPrefixedText() ) );
+			$wgOut->addHtml( wfOpenElement( 'textarea', $attribs ) . htmlspecialchars( $source ) . wfCloseElement( 'textarea' ) );
+		}
+	}
+
+	/**
+	 * Produce the stock "please login to edit pages" page
+	 */
+	function userNotLoggedInPage() {
+		global $wgUser, $wgOut;
+		$skin = $wgUser->getSkin();
+
+		$loginTitle = SpecialPage::getTitleFor( 'Userlogin' );
+		$loginLink = $skin->makeKnownLinkObj( $loginTitle, wfMsgHtml( 'loginreqlink' ), 'returnto=' . $this->mTitle->getPrefixedUrl() );
+
+		$wgOut->setPageTitle( wfMsg( 'whitelistedittitle' ) );
+		$wgOut->setRobotPolicy( 'noindex,nofollow' );
+		$wgOut->setArticleRelated( false );
+
+		$wgOut->addHtml( wfMsgWikiHtml( 'whitelistedittext', $loginLink ) );
+		$wgOut->returnToMain( false, $this->mTitle->getPrefixedUrl() );
+	}
+
+	/**
+	 * Creates a basic error page which informs the user that
+	 * they have to validate their email address before being
+	 * allowed to edit.
+	 */
+	function userNotConfirmedPage() {
+		global $wgOut;
+
+		$wgOut->setPageTitle( wfMsg( 'confirmedittitle' ) );
+		$wgOut->setRobotPolicy( 'noindex,nofollow' );
+		$wgOut->setArticleRelated( false );
+
+		$wgOut->addWikiText( wfMsg( 'confirmedittext' ) );
+		$wgOut->returnToMain( false );
+	}
+
+	/**
+	 * Creates a basic error page which informs the user that
+	 * they have attempted to edit a nonexistant section.
+	 */
+	function noSuchSectionPage() {
+		global $wgOut;
+
+		$wgOut->setPageTitle( wfMsg( 'nosuchsectiontitle' ) );
+		$wgOut->setRobotPolicy( 'noindex,nofollow' );
+		$wgOut->setArticleRelated( false );
+
+		$wgOut->addWikiText( wfMsg( 'nosuchsectiontext', $this->section ) );
+		$wgOut->returnToMain( false );
+	}
+
+	/**
+	 * Produce the stock "your edit contains spam" page
+	 *
+	 * @param $match Text which triggered one or more filters
+	 */
+	function spamPage( $match = false ) {
+		global $wgOut;
+
+		$wgOut->setPageTitle( wfMsg( 'spamprotectiontitle' ) );
+		$wgOut->setRobotPolicy( 'noindex,nofollow' );
+		$wgOut->setArticleRelated( false );
+
+		$wgOut->addWikiText( wfMsg( 'spamprotectiontext' ) );
+		if ( $match )
+			$wgOut->addWikiText( wfMsg( 'spamprotectionmatch', "<nowiki>{$match}</nowiki>" ) );
+
+		$wgOut->returnToMain( false );
+	}
+
+	/**
+	 * @private
+	 * @todo document
+	 */
+	function mergeChangesInto( &$editText ){
+		$fname = 'EditPage::mergeChangesInto';
+		wfProfileIn( $fname );
+
+		$db = wfGetDB( DB_MASTER );
+
+		// This is the revision the editor started from
+		$baseRevision = Revision::loadFromTimestamp(
+			$db, $this->mArticle->mTitle, $this->edittime );
+		if( is_null( $baseRevision ) ) {
+			wfProfileOut( $fname );
+			return false;
+		}
+		$baseText = $baseRevision->getText();
+
+		// The current state, we want to merge updates into it
+		$currentRevision =  Revision::loadFromTitle(
+			$db, $this->mArticle->mTitle );
+		if( is_null( $currentRevision ) ) {
+			wfProfileOut( $fname );
+			return false;
+		}
+		$currentText = $currentRevision->getText();
+
+		$result = '';
+		if( wfMerge( $baseText, $editText, $currentText, $result ) ){
+			$editText = $result;
+			wfProfileOut( $fname );
+			return true;
+		} else {
+			wfProfileOut( $fname );
+			return false;
+		}
+	}
+
+	/**
+	 * Check if the browser is on a blacklist of user-agents known to
+	 * mangle UTF-8 data on form submission. Returns true if Unicode
+	 * should make it through, false if it's known to be a problem.
+	 * @return bool
+	 * @private
+	 */
+	function checkUnicodeCompliantBrowser() {
+		global $wgBrowserBlackList;
+		if( empty( $_SERVER["HTTP_USER_AGENT"] ) ) {
+			// No User-Agent header sent? Trust it by default...
+			return true;
+		}
+		$currentbrowser = $_SERVER["HTTP_USER_AGENT"];
+		foreach ( $wgBrowserBlackList as $browser ) {
+			if ( preg_match($browser, $currentbrowser) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Format an anchor fragment as it would appear for a given section name
+	 * @param string $text
+	 * @return string
+	 * @private
+	 */
+	function sectionAnchor( $text ) {
+		$headline = Sanitizer::decodeCharReferences( $text );
+		# strip out HTML
+		$headline = preg_replace( '/<.*?' . '>/', '', $headline );
+		$headline = trim( $headline );
+		$sectionanchor = '#' . urlencode( str_replace( ' ', '_', $headline ) );
+		$replacearray = array(
+			'%3A' => ':',
+			'%' => '.'
+		);
+		return str_replace(
+			array_keys( $replacearray ),
+			array_values( $replacearray ),
+			$sectionanchor );
+	}
+
+	/**
+	 * Shows a bulletin board style toolbar for common editing functions.
+	 * It can be disabled in the user preferences.
+	 * The necessary JavaScript code can be found in style/wikibits.js.
+	 */
+	function getEditToolbar() {
+		global $wgStylePath, $wgContLang, $wgJsMimeType;
+
+		/**
+		 * toolarray an array of arrays which each include the filename of
+		 * the button image (without path), the opening tag, the closing tag,
+		 * and optionally a sample text that is inserted between the two when no
+		 * selection is highlighted.
+		 * The tip text is shown when the user moves the mouse over the button.
+		 *
+		 * Already here are accesskeys (key), which are not used yet until someone
+		 * can figure out a way to make them work in IE. However, we should make
+		 * sure these keys are not defined on the edit page.
+		 */
+		$toolarray = array(
+			array(	'image'	=> 'button_bold.png',
+				'id'	=> 'mw-editbutton-bold',
+				'open'	=> '\\\'\\\'\\\'',
+				'close'	=> '\\\'\\\'\\\'',
+				'sample'=> wfMsg('bold_sample'),
+				'tip'	=> wfMsg('bold_tip'),
+				'key'	=> 'B'
+			),
+			array(	'image'	=> 'button_italic.png',
+				'id'	=> 'mw-editbutton-italic',
+				'open'	=> '\\\'\\\'',
+				'close'	=> '\\\'\\\'',
+				'sample'=> wfMsg('italic_sample'),
+				'tip'	=> wfMsg('italic_tip'),
+				'key'	=> 'I'
+			),
+			array(	'image'	=> 'button_link.png',
+				'id'	=> 'mw-editbutton-link',
+				'open'	=> '[[',
+				'close'	=> ']]',
+				'sample'=> wfMsg('link_sample'),
+				'tip'	=> wfMsg('link_tip'),
+				'key'	=> 'L'
+			),
+			array(	'image'	=> 'button_extlink.png',
+				'id'	=> 'mw-editbutton-extlink',
+				'open'	=> '[',
+				'close'	=> ']',
+				'sample'=> wfMsg('extlink_sample'),
+				'tip'	=> wfMsg('extlink_tip'),
+				'key'	=> 'X'
+			),
+			array(	'image'	=> 'button_headline.png',
+				'id'	=> 'mw-editbutton-headline',
+				'open'	=> "\\n== ",
+				'close'	=> " ==\\n",
+				'sample'=> wfMsg('headline_sample'),
+				'tip'	=> wfMsg('headline_tip'),
+				'key'	=> 'H'
+			),
+			array(	'image'	=> 'button_image.png',
+				'id'	=> 'mw-editbutton-image',
+				'open'	=> '[['.$wgContLang->getNsText(NS_IMAGE).":",
+				'close'	=> ']]',
+				'sample'=> wfMsg('image_sample'),
+				'tip'	=> wfMsg('image_tip'),
+				'key'	=> 'D'
+			),
+			array(	'image'	=> 'button_media.png',
+				'id'	=> 'mw-editbutton-media',
+				'open'	=> '[['.$wgContLang->getNsText(NS_MEDIA).':',
+				'close'	=> ']]',
+				'sample'=> wfMsg('media_sample'),
+				'tip'	=> wfMsg('media_tip'),
+				'key'	=> 'M'
+			),
+			array(	'image'	=> 'button_math.png',
+				'id'	=> 'mw-editbutton-math',
+				'open'	=> "<math>",
+				'close'	=> "<\\/math>",
+				'sample'=> wfMsg('math_sample'),
+				'tip'	=> wfMsg('math_tip'),
+				'key'	=> 'C'
+			),
+			array(	'image'	=> 'button_nowiki.png',
+				'id'	=> 'mw-editbutton-nowiki',
+				'open'	=> "<nowiki>",
+				'close'	=> "<\\/nowiki>",
+				'sample'=> wfMsg('nowiki_sample'),
+				'tip'	=> wfMsg('nowiki_tip'),
+				'key'	=> 'N'
+			),
+			array(	'image'	=> 'button_sig.png',
+				'id'	=> 'mw-editbutton-signature',
+				'open'	=> '--~~~~',
+				'close'	=> '',
+				'sample'=> '',
+				'tip'	=> wfMsg('sig_tip'),
+				'key'	=> 'Y'
+			),
+			array(	'image'	=> 'button_hr.png',
+				'id'	=> 'mw-editbutton-hr',
+				'open'	=> "\\n----\\n",
+				'close'	=> '',
+				'sample'=> '',
+				'tip'	=> wfMsg('hr_tip'),
+				'key'	=> 'R'
+			)
+		);
+		$toolbar = "<div id='toolbar'>\n";
+		$toolbar.="<script type='$wgJsMimeType'>\n/*<![CDATA[*/\n";
+
+		foreach($toolarray as $tool) {
+
+			$cssId = $tool['id'];
+			$image=$wgStylePath.'/common/images/'.$tool['image'];
+			$open=$tool['open'];
+			$close=$tool['close'];
+			$sample = wfEscapeJsString( $tool['sample'] );
+
+			// Note that we use the tip both for the ALT tag and the TITLE tag of the image.
+			// Older browsers show a "speedtip" type message only for ALT.
+			// Ideally these should be different, realistically they
+			// probably don't need to be.
+			$tip = wfEscapeJsString( $tool['tip'] );
+
+			#$key = $tool["key"];
+
+			$toolbar.="addButton('$image','$tip','$open','$close','$sample','$cssId');\n";
+		}
+
+		$toolbar.="/*]]>*/\n</script>";
+		$toolbar.="\n</div>";
+		return $toolbar;
+	}
