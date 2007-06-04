@@ -9,6 +9,10 @@
  * <b>Purpose:</b>  This extension adds a 'viewsource' right.
  * Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
  *
+ * FEATURES:
+ * =========
+ * 1) No mediawiki installation source level changes
+ *
  * DEPENDANCIES:
  * =============
  * 1) ExtensionClass (>v1.3)
@@ -19,7 +23,6 @@
  *
  * HISTORY:
  * ========
- * V1.0
  *
  * TODO:
  * =====
@@ -27,9 +30,6 @@
  *    Create i18n file
  * 
  */
- 
-ViewsourceRight::singleton();
-
 class ViewsourceRight extends ExtensionClass
 {
 	const thisName = 'ViewsourceRight';
@@ -46,7 +46,7 @@ class ViewsourceRight extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'    => self::thisName, 
-			'version' => 'v1.0 $LastChangedRevision$',
+			'version' => 'v1.0 $Id$',
 			'author'  => 'Jean-Lou Dupont', 
 			'url'     => 'http://www.bluecortex.com',
 			'description' => "Status: "
@@ -134,5 +134,6 @@ class ViewsourceRight extends ExtensionClass
 
 	}
 
+	singleton();
 } // end class definition.
 ?>
