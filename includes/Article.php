@@ -1452,3 +1452,502 @@ class Article {
 		return $good;
 	}
 
+
+	/**
+	 * @deprecated wrapper for doRedirect
+	 */
+	function showArticle( $text, $subtitle , $sectionanchor = '', $me2, $now, $summary, $oldid ) {
+		$this->doRedirect( $this->isRedirect( $text ), $sectionanchor );
+	}
+
+	/**
+	 * Output a redirect back to the article.
+	 * This is typically used after an edit.
+	 *
+	 * @param boolean $noRedir Add redirect=no
+	 * @param string $sectionAnchor section to redirect to, including "#"
+	 */
+	function doRedirect( $noRedir = false, $sectionAnchor = '' ) {
+		global $wgOut;
+		if ( $noRedir ) {
+			$query = 'redirect=no';
+		} else {
+			$query = '';
+		}
+		$wgOut->redirect( $this->mTitle->getFullURL( $query ) . $sectionAnchor );
+	}
+
+	/**
+	 * Mark this particular edit as patrolled
+	 */
+	function markpatrolled() {
+		global $wgOut, $wgRequest, $wgUseRCPatrol, $wgUser;
+		$wgOut->setRobotPolicy( 'noindex,nofollow' );
+
+		# Check RC patrol config. option
+		if( !$wgUseRCPatrol ) {
+			$wgOut->errorPage( 'rcpatroldisabled', 'rcpatroldisabledtext' );
+			return;
+		}
+
+		# Check permissions
+		if( !$wgUser->isAllowed( 'patrol' ) ) {
+			$wgOut->permissionRequired( 'patrol' );
+			return;
+		}
+
+		# If we haven't been given an rc_id value, we can't do anything
+		$rcid = $wgRequest->getVal( 'rcid' );
+		if( !$rcid ) {
+			$wgOut->errorPage( 'markedaspatrollederror', 'markedaspatrollederrortext' );
+			return;
+		}
+
+		# Handle the 'MarkPatrolled' hook
+		if( !wfRunHooks( 'MarkPatrolled', array( $rcid, &$wgUser, false ) ) ) {
+			return;
+		}
+
+		$return = SpecialPage::getTitleFor( 'Recentchanges' );
+		# If it's left up to us, check that the user is allowed to patrol this edit
+		# If the user has the "autopatrol" right, then we'll assume there are no
+		# other conditions stopping them doing so
+		if( !$wgUser->isAllowed( 'autopatrol' ) ) {
+			$rc = RecentChange::newFromId( $rcid );
+			# Graceful error handling, as we've done before here...
+			# (If the recent change doesn't exist, then it doesn't matter whether
+			# the user is allowed to patrol it or not; nothing is going to happen
+			if( is_object( $rc ) && $wgUser->getName() == $rc->getAttribute( 'rc_user_text' ) ) {
+				# The user made this edit, and can't patrol it
+				# Tell them so, and then back off
+				$wgOut->setPageTitle( wfMsg( 'markedaspatrollederror' ) );
+				$wgOut->addWikiText( wfMsgNoTrans( 'markedaspatrollederror-noautopatrol' ) );
+				$wgOut->returnToMain( false, $return );
+				return;
+			}
+		}
+
+		# Mark the edit as patrolled
+		RecentChange::markPatrolled( $rcid );
+		PatrolLog::record( $rcid );
+		wfRunHooks( 'MarkPatrolledComplete', array( &$rcid, &$wgUser, false ) );
+
+		# Inform the user
+		$wgOut->setPageTitle( wfMsg( 'markedaspatrolled' ) );
+		$wgOut->addWikiText( wfMsgNoTrans( 'markedaspatrolledtext' ) );
+		$wgOut->returnToMain( false, $return );
+	}
+
+	/**
+	 * User-interface handler for the "watch" action
+	 */
+
+	function watch() {
+
+		global $wgUser, $wgOut;
+
+		if ( $wgUser->isAnon() ) {
+			$wgOut->showErrorPage( 'watchnologin', 'watchnologintext' );
+			return;
+		}
+		if ( wfReadOnly() ) {
+			$wgOut->readOnlyPage();
+			return;
+		}
+
+		if( $this->doWatch() ) {
+			$wgOut->setPagetitle( wfMsg( 'addedwatch' ) );
+			$wgOut->setRobotpolicy( 'noindex,nofollow' );
+
+			$link = wfEscapeWikiText( $this->mTitle->getPrefixedText() );
+			$text = wfMsg( 'addedwatchtext', $link );
+			$wgOut->addWikiText( $text );
+		}
+
+		$wgOut->returnToMain( true, $this->mTitle->getPrefixedText() );
+	}
+
+	/**
+	 * Add this page to $wgUser's watchlist
+	 * @return bool true on successful watch operation
+	 */
+	function doWatch() {
+		global $wgUser;
+		if( $wgUser->isAnon() ) {
+			return false;
+		}
+
+		if (wfRunHooks('WatchArticle', array(&$wgUser, &$this))) {
+			$wgUser->addWatch( $this->mTitle );
+
+			return wfRunHooks('WatchArticleComplete', array(&$wgUser, &$this));
+		}
+
+		return false;
+	}
+
+	/**
+	 * User interface handler for the "unwatch" action.
+	 */
+	function unwatch() {
+
+		global $wgUser, $wgOut;
+
+		if ( $wgUser->isAnon() ) {
+			$wgOut->showErrorPage( 'watchnologin', 'watchnologintext' );
+			return;
+		}
+		if ( wfReadOnly() ) {
+			$wgOut->readOnlyPage();
+			return;
+		}
+
+		if( $this->doUnwatch() ) {
+			$wgOut->setPagetitle( wfMsg( 'removedwatch' ) );
+			$wgOut->setRobotpolicy( 'noindex,nofollow' );
+
+			$link = wfEscapeWikiText( $this->mTitle->getPrefixedText() );
+			$text = wfMsg( 'removedwatchtext', $link );
+			$wgOut->addWikiText( $text );
+		}
+
+		$wgOut->returnToMain( true, $this->mTitle->getPrefixedText() );
+	}
+
+	/**
+	 * Stop watching a page
+	 * @return bool true on successful unwatch
+	 */
+	function doUnwatch() {
+		global $wgUser;
+		if( $wgUser->isAnon() ) {
+			return false;
+		}
+
+		if (wfRunHooks('UnwatchArticle', array(&$wgUser, &$this))) {
+			$wgUser->removeWatch( $this->mTitle );
+
+			return wfRunHooks('UnwatchArticleComplete', array(&$wgUser, &$this));
+		}
+
+		return false;
+	}
+
+	/**
+	 * action=protect handler
+	 */
+	function protect() {
+		$form = new ProtectionForm( $this );
+		$form->execute();
+	}
+
+	/**
+	 * action=unprotect handler (alias)
+	 */
+	function unprotect() {
+		$this->protect();
+	}
+
+	/**
+	 * Update the article's restriction field, and leave a log entry.
+	 *
+	 * @param array $limit set of restriction keys
+	 * @param string $reason
+	 * @return bool true on success
+	 */
+	function updateRestrictions( $limit = array(), $reason = '', $cascade = 0, $expiry = null ) {
+		global $wgUser, $wgRestrictionTypes, $wgContLang;
+
+		$id = $this->mTitle->getArticleID();
+		if( !$wgUser->isAllowed( 'protect' ) || wfReadOnly() || $id == 0 ) {
+			return false;
+		}
+
+		if (!$cascade) {
+			$cascade = false;
+		}
+
+		// Take this opportunity to purge out expired restrictions
+		Title::purgeExpiredRestrictions();
+
+		# FIXME: Same limitations as described in ProtectionForm.php (line 37);
+		# we expect a single selection, but the schema allows otherwise.
+		$current = array();
+		foreach( $wgRestrictionTypes as $action )
+			$current[$action] = implode( '', $this->mTitle->getRestrictions( $action ) );
+
+		$current = Article::flattenRestrictions( $current );
+		$updated = Article::flattenRestrictions( $limit );
+
+		$changed = ( $current != $updated );
+		$changed = $changed || ($this->mTitle->areRestrictionsCascading() != $cascade);
+		$changed = $changed || ($this->mTitle->mRestrictionsExpiry != $expiry);
+		$protect = ( $updated != '' );
+
+		# If nothing's changed, do nothing
+		if( $changed ) {
+			global $wgGroupPermissions;
+			if( wfRunHooks( 'ArticleProtect', array( &$this, &$wgUser, $limit, $reason ) ) ) {
+
+				$dbw = wfGetDB( DB_MASTER );
+
+				$encodedExpiry = Block::encodeExpiry($expiry, $dbw );
+
+				$expiry_description = '';
+				if ( $encodedExpiry != 'infinity' ) {
+					$expiry_description = ' (' . wfMsgForContent( 'protect-expiring', $wgContLang->timeanddate( $expiry ) ).')';
+				}
+
+				# Prepare a null revision to be added to the history
+				$comment = $wgContLang->ucfirst( wfMsgForContent( $protect ? 'protectedarticle' : 'unprotectedarticle', $this->mTitle->getPrefixedText() ) );
+
+				foreach( $limit as $action => $restrictions ) {
+					# Check if the group level required to edit also can protect pages
+					# Otherwise, people who cannot normally protect can "protect" pages via transclusion
+					$cascade = ( $cascade && isset($wgGroupPermissions[$restrictions]['protect']) && $wgGroupPermissions[$restrictions]['protect'] );	
+				}
+				
+				$cascade_description = '';
+				if ($cascade) {
+					$cascade_description = ' ['.wfMsg('protect-summary-cascade').']';
+				}
+
+				if( $reason )
+					$comment .= ": $reason";
+				if( $protect )
+					$comment .= " [$updated]";
+				if ( $expiry_description && $protect )
+					$comment .= "$expiry_description";
+				if ( $cascade )
+					$comment .= "$cascade_description";
+
+				$nullRevision = Revision::newNullRevision( $dbw, $id, $comment, true );
+				$nullRevId = $nullRevision->insertOn( $dbw );
+
+				# Update restrictions table
+				foreach( $limit as $action => $restrictions ) {
+					if ($restrictions != '' ) {
+						$dbw->replace( 'page_restrictions', array(array('pr_page', 'pr_type')),
+							array( 'pr_page' => $id, 'pr_type' => $action
+								, 'pr_level' => $restrictions, 'pr_cascade' => $cascade ? 1 : 0
+								, 'pr_expiry' => $encodedExpiry ), __METHOD__  );
+					} else {
+						$dbw->delete( 'page_restrictions', array( 'pr_page' => $id,
+							'pr_type' => $action ), __METHOD__ );
+					}
+				}
+
+				# Update page record
+				$dbw->update( 'page',
+					array( /* SET */
+						'page_touched' => $dbw->timestamp(),
+						'page_restrictions' => '',
+						'page_latest' => $nullRevId
+					), array( /* WHERE */
+						'page_id' => $id
+					), 'Article::protect'
+				);
+				wfRunHooks( 'ArticleProtectComplete', array( &$this, &$wgUser, $limit, $reason ) );
+
+				# Update the protection log
+				$log = new LogPage( 'protect' );
+
+				if( $protect ) {
+					$log->addEntry( 'protect', $this->mTitle, trim( $reason . " [$updated]$cascade_description$expiry_description" ) );
+				} else {
+					$log->addEntry( 'unprotect', $this->mTitle, $reason );
+				}
+
+			} # End hook
+		} # End "changed" check
+
+		return true;
+	}
+
+	/**
+	 * Take an array of page restrictions and flatten it to a string
+	 * suitable for insertion into the page_restrictions field.
+	 * @param array $limit
+	 * @return string
+	 * @private
+	 */
+	function flattenRestrictions( $limit ) {
+		if( !is_array( $limit ) ) {
+			throw new MWException( 'Article::flattenRestrictions given non-array restriction set' );
+		}
+		$bits = array();
+		ksort( $limit );
+		foreach( $limit as $action => $restrictions ) {
+			if( $restrictions != '' ) {
+				$bits[] = "$action=$restrictions";
+			}
+		}
+		return implode( ':', $bits );
+	}
+
+	/*
+	 * UI entry point for page deletion
+	 */
+	function delete() {
+		global $wgUser, $wgOut, $wgRequest;
+		$confirm = $wgRequest->wasPosted() &&
+			$wgUser->matchEditToken( $wgRequest->getVal( 'wpEditToken' ) );
+		$reason = $wgRequest->getText( 'wpReason' );
+
+		# This code desperately needs to be totally rewritten
+
+		# Check permissions
+		if( $wgUser->isAllowed( 'delete' ) ) {
+			if( $wgUser->isBlocked( !$confirm ) ) {
+				$wgOut->blockedPage();
+				return;
+			}
+		} else {
+			$wgOut->permissionRequired( 'delete' );
+			return;
+		}
+
+		if( wfReadOnly() ) {
+			$wgOut->readOnlyPage();
+			return;
+		}
+
+		$wgOut->setPagetitle( wfMsg( 'confirmdelete' ) );
+
+		# Better double-check that it hasn't been deleted yet!
+		$dbw = wfGetDB( DB_MASTER );
+		$conds = $this->mTitle->pageCond();
+		$latest = $dbw->selectField( 'page', 'page_latest', $conds, __METHOD__ );
+		if ( $latest === false ) {
+			$wgOut->showFatalError( wfMsg( 'cannotdelete' ) );
+			return;
+		}
+
+		if( $confirm ) {
+			$this->doDelete( $reason );
+			if( $wgRequest->getCheck( 'wpWatch' ) ) {
+				$this->doWatch();
+			} elseif( $this->mTitle->userIsWatching() ) {
+				$this->doUnwatch();
+			}
+			return;
+		}
+
+		# determine whether this page has earlier revisions
+		# and insert a warning if it does
+		$maxRevisions = 20;
+		$authors = $this->getLastNAuthors( $maxRevisions, $latest );
+
+		if( count( $authors ) > 1 && !$confirm ) {
+			$skin=$wgUser->getSkin();
+			$wgOut->addHTML( '<strong>' . wfMsg( 'historywarning' ) . ' ' . $skin->historyLink() . '</strong>' );
+		}
+
+		# If a single user is responsible for all revisions, find out who they are
+		if ( count( $authors ) == $maxRevisions ) {
+			// Query bailed out, too many revisions to find out if they're all the same
+			$authorOfAll = false;
+		} else {
+			$authorOfAll = reset( $authors );
+			foreach ( $authors as $author ) {
+				if ( $authorOfAll != $author ) {
+					$authorOfAll = false;
+					break;
+				}
+			}
+		}
+		# Fetch article text
+		$rev = Revision::newFromTitle( $this->mTitle );
+
+		if( !is_null( $rev ) ) {
+			# if this is a mini-text, we can paste part of it into the deletion reason
+			$text = $rev->getText();
+
+			#if this is empty, an earlier revision may contain "useful" text
+			$blanked = false;
+			if( $text == '' ) {
+				$prev = $rev->getPrevious();
+				if( $prev ) {
+					$text = $prev->getText();
+					$blanked = true;
+				}
+			}
+
+			$length = strlen( $text );
+
+			# this should not happen, since it is not possible to store an empty, new
+			# page. Let's insert a standard text in case it does, though
+			if( $length == 0 && $reason === '' ) {
+				$reason = wfMsgForContent( 'exblank' );
+			}
+
+			if( $reason === '' ) {
+				# comment field=255, let's grep the first 150 to have some user
+				# space left
+				global $wgContLang;
+				$text = $wgContLang->truncate( $text, 150, '...' );
+
+				# let's strip out newlines
+				$text = preg_replace( "/[\n\r]/", '', $text );
+
+				if( !$blanked ) {
+					if( $authorOfAll === false ) {
+						$reason = wfMsgForContent( 'excontent', $text );
+					} else {
+						$reason = wfMsgForContent( 'excontentauthor', $text, $authorOfAll );
+					}
+				} else {
+					$reason = wfMsgForContent( 'exbeforeblank', $text );
+				}
+			}
+		}
+
+		return $this->confirmDelete( '', $reason );
+	}
+
+	/**
+	 * Get the last N authors
+	 * @param int $num Number of revisions to get
+	 * @param string $revLatest The latest rev_id, selected from the master (optional)
+	 * @return array Array of authors, duplicates not removed
+	 */
+	function getLastNAuthors( $num, $revLatest = 0 ) {
+		wfProfileIn( __METHOD__ );
+
+		// First try the slave
+		// If that doesn't have the latest revision, try the master
+		$continue = 2;
+		$db = wfGetDB( DB_SLAVE );
+		do {
+			$res = $db->select( array( 'page', 'revision' ),
+				array( 'rev_id', 'rev_user_text' ),
+				array(
+					'page_namespace' => $this->mTitle->getNamespace(),
+					'page_title' => $this->mTitle->getDBkey(),
+					'rev_page = page_id'
+				), __METHOD__, $this->getSelectOptions( array(
+					'ORDER BY' => 'rev_timestamp DESC',
+					'LIMIT' => $num
+				) )
+			);
+			if ( !$res ) {
+				wfProfileOut( __METHOD__ );
+				return array();
+			}
+			$row = $db->fetchObject( $res );
+			if ( $continue == 2 && $revLatest && $row->rev_id != $revLatest ) {
+				$db = wfGetDB( DB_MASTER );
+				$continue--;
+			} else {
+				$continue = 0;
+			}
+		} while ( $continue );
+
+		$authors = array( $row->rev_user_text );
+		while ( $row = $db->fetchObject( $res ) ) {
+			$authors[] = $row->rev_user_text;
+		}
+		wfProfileOut( __METHOD__ );
+		return $authors;
+	}
+
