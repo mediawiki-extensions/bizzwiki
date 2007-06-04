@@ -1693,4 +1693,210 @@ class User {
 		$this->invalidateCache();
 	}
 
+	/**
+	 * Clear the user's notification timestamp for the given title.
+	 * If e-notif e-mails are on, they will receive notification mails on
+	 * the next change of the page if it's watched etc.
+	 */
+	function clearNotification( &$title ) {
+		global $wgUser, $wgUseEnotif;
+
+		# Do nothing if the database is locked to writes
+		if( wfReadOnly() ) {
+			return;
+		}
+
+		if ($title->getNamespace() == NS_USER_TALK &&
+			$title->getText() == $this->getName() ) {
+			if (!wfRunHooks('UserClearNewTalkNotification', array(&$this)))
+				return;
+			$this->setNewtalk( false );
+		}
+
+		if( !$wgUseEnotif ) {
+			return;
+		}
+
+		if( $this->isAnon() ) {
+			// Nothing else to do...
+			return;
+		}
+
+		// Only update the timestamp if the page is being watched.
+		// The query to find out if it is watched is cached both in memcached and per-invocation,
+		// and when it does have to be executed, it can be on a slave
+		// If this is the user's newtalk page, we always update the timestamp
+		if ($title->getNamespace() == NS_USER_TALK &&
+			$title->getText() == $wgUser->getName())
+		{
+			$watched = true;
+		} elseif ( $this->getID() == $wgUser->getID() ) {
+			$watched = $title->userIsWatching();
+		} else {
+			$watched = true;
+		}
+
+		// If the page is watched by the user (or may be watched), update the timestamp on any
+		// any matching rows
+		if ( $watched ) {
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'watchlist',
+					array( /* SET */
+						'wl_notificationtimestamp' => NULL
+					), array( /* WHERE */
+						'wl_title' => $title->getDBkey(),
+						'wl_namespace' => $title->getNamespace(),
+						'wl_user' => $this->getID()
+					), 'User::clearLastVisited'
+			);
+		}
+	}
+
+	/**#@-*/
+
+	/**
+	 * Resets all of the given user's page-change notification timestamps.
+	 * If e-notif e-mails are on, they will receive notification mails on
+	 * the next change of any watched page.
+	 *
+	 * @param int $currentUser user ID number
+	 * @public
+	 */
+	function clearAllNotifications( $currentUser ) {
+		global $wgUseEnotif;
+		if ( !$wgUseEnotif ) {
+			$this->setNewtalk( false );
+			return;
+		}
+		if( $currentUser != 0 )  {
+
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'watchlist',
+				array( /* SET */
+					'wl_notificationtimestamp' => NULL
+				), array( /* WHERE */
+					'wl_user' => $currentUser
+				), 'UserMailer::clearAll'
+			);
+
+		# 	we also need to clear here the "you have new message" notification for the own user_talk page
+		#	This is cleared one page view later in Article::viewUpdates();
+		}
+	}
+
+	/**
+	 * @private
+	 * @return string Encoding options
+	 */
+	function encodeOptions() {
+		$this->load();
+		if ( is_null( $this->mOptions ) ) {
+			$this->mOptions = User::getDefaultOptions();
+		}
+		$a = array();
+		foreach ( $this->mOptions as $oname => $oval ) {
+			array_push( $a, $oname.'='.$oval );
+		}
+		$s = implode( "\n", $a );
+		return $s;
+	}
+
+	/**
+	 * @private
+	 */
+	function decodeOptions( $str ) {
+		$this->mOptions = array();
+		$a = explode( "\n", $str );
+		foreach ( $a as $s ) {
+			$m = array();
+			if ( preg_match( "/^(.[^=]*)=(.*)$/", $s, $m ) ) {
+				$this->mOptions[$m[1]] = $m[2];
+			}
+		}
+	}
+
+	function setCookies() {
+		global $wgCookieExpiration, $wgCookiePath, $wgCookieDomain, $wgCookieSecure, $wgCookiePrefix;
+		$this->load();
+		if ( 0 == $this->mId ) return;
+		$exp = time() + $wgCookieExpiration;
+
+		$_SESSION['wsUserID'] = $this->mId;
+		setcookie( $wgCookiePrefix.'UserID', $this->mId, $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		$_SESSION['wsUserName'] = $this->getName();
+		setcookie( $wgCookiePrefix.'UserName', $this->getName(), $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		$_SESSION['wsToken'] = $this->mToken;
+		if ( 1 == $this->getOption( 'rememberpassword' ) ) {
+			setcookie( $wgCookiePrefix.'Token', $this->mToken, $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+		} else {
+			setcookie( $wgCookiePrefix.'Token', '', time() - 3600 );
+		}
+	}
+
+	/**
+	 * Logout user
+	 * Clears the cookies and session, resets the instance cache
+	 */
+	function logout() {
+		global $wgCookiePath, $wgCookieDomain, $wgCookieSecure, $wgCookiePrefix;
+		$this->clearInstanceCache( 'defaults' );
+
+		$_SESSION['wsUserID'] = 0;
+
+		setcookie( $wgCookiePrefix.'UserID', '', time() - 3600, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+		setcookie( $wgCookiePrefix.'Token', '', time() - 3600, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		# Remember when user logged out, to prevent seeing cached pages
+		setcookie( $wgCookiePrefix.'LoggedOut', wfTimestampNow(), time() + 86400, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+	}
+
+	/**
+	 * Save object settings into database
+	 * @todo Only rarely do all these fields need to be set!
+	 */
+	function saveSettings() {
+		$this->load();
+		if ( wfReadOnly() ) { return; }
+		if ( 0 == $this->mId ) { return; }
+		
+		$this->mTouched = self::newTouchedTimestamp();
+
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->update( 'user',
+			array( /* SET */
+				'user_name' => $this->mName,
+				'user_password' => $this->mPassword,
+				'user_newpassword' => $this->mNewpassword,
+				'user_newpass_time' => $dbw->timestampOrNull( $this->mNewpassTime ),
+				'user_real_name' => $this->mRealName,
+		 		'user_email' => $this->mEmail,
+		 		'user_email_authenticated' => $dbw->timestampOrNull( $this->mEmailAuthenticated ),
+				'user_options' => $this->encodeOptions(),
+				'user_touched' => $dbw->timestamp($this->mTouched),
+				'user_token' => $this->mToken
+			), array( /* WHERE */
+				'user_id' => $this->mId
+			), __METHOD__
+		);
+		$this->clearSharedCache();
+	}
+
+
+	/**
+	 * Checks if a user with the given name exists, returns the ID
+	 */
+	function idForName() {
+		$s = trim( $this->getName() );
+		if ( 0 == strcmp( '', $s ) ) return 0;
+
+		$dbr = wfGetDB( DB_SLAVE );
+		$id = $dbr->selectField( 'user', 'user_id', array( 'user_name' => $s ), __METHOD__ );
+		if ( $id === false ) {
+			$id = 0;
+		}
+		return $id;
+	}
+
 ?>
