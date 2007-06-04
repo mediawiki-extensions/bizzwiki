@@ -1365,4 +1365,145 @@ class User {
 		return true;
 	}
 
+	/**
+	 * Update the 'You have new messages!' status.
+	 * @param bool $val
+	 */
+	function setNewtalk( $val ) {
+		if( wfReadOnly() ) {
+			return;
+		}
+
+		$this->load();
+		$this->mNewtalk = $val;
+
+		if( $this->isAnon() ) {
+			$field = 'user_ip';
+			$id = $this->getName();
+		} else {
+			$field = 'user_id';
+			$id = $this->getId();
+		}
+
+		if( $val ) {
+			$changed = $this->updateNewtalk( $field, $id );
+		} else {
+			$changed = $this->deleteNewtalk( $field, $id );
+		}
+
+		if( $changed ) {
+			if( $this->isAnon() ) {
+				// Anons have a separate memcached space, since
+				// user records aren't kept for them.
+				global $wgMemc;
+				$key = wfMemcKey( 'newtalk', 'ip', $val );
+				$wgMemc->set( $key, $val ? 1 : 0 );
+			} else {
+				if( $val ) {
+					// Make sure the user page is watched, so a notification
+					// will be sent out if enabled.
+					$this->addWatch( $this->getTalkPage() );
+				}
+			}
+			$this->invalidateCache();
+		}
+	}
+	
+	/**
+	 * Generate a current or new-future timestamp to be stored in the
+	 * user_touched field when we update things.
+	 */
+	private static function newTouchedTimestamp() {
+		global $wgClockSkewFudge;
+		return wfTimestamp( TS_MW, time() + $wgClockSkewFudge );
+	}
+	
+	/**
+	 * Clear user data from memcached.
+	 * Use after applying fun updates to the database; caller's
+	 * responsibility to update user_touched if appropriate.
+	 *
+	 * Called implicitly from invalidateCache() and saveSettings().
+	 */
+	private function clearSharedCache() {
+		if( $this->mId ) {
+			global $wgMemc;
+			$wgMemc->delete( wfMemcKey( 'user', 'id', $this->mId ) );
+		}
+	}
+
+	/**
+	 * Immediately touch the user data cache for this account.
+	 * Updates user_touched field, and removes account data from memcached
+	 * for reload on the next hit.
+	 */
+	function invalidateCache() {
+		$this->load();
+		if( $this->mId ) {
+			$this->mTouched = self::newTouchedTimestamp();
+			
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'user',
+				array( 'user_touched' => $dbw->timestamp( $this->mTouched ) ),
+				array( 'user_id' => $this->mId ),
+				__METHOD__ );
+			
+			$this->clearSharedCache();
+		}
+	}
+
+	function validateCache( $timestamp ) {
+		$this->load();
+		return ($timestamp >= $this->mTouched);
+	}
+
+	/**
+	 * Encrypt a password.
+	 * It can eventuall salt a password @see User::addSalt()
+	 * @param string $p clear Password.
+	 * @return string Encrypted password.
+	 */
+	function encryptPassword( $p ) {
+		$this->load();
+		return wfEncryptPassword( $this->mId, $p );
+	}
+
+	/**
+	 * Set the password and reset the random token
+	 * Calls through to authentication plugin if necessary;
+	 * will have no effect if the auth plugin refuses to
+	 * pass the change through or if the legal password
+	 * checks fail.
+	 *
+	 * As a special case, setting the password to null
+	 * wipes it, so the account cannot be logged in until
+	 * a new password is set, for instance via e-mail.
+	 *
+	 * @param string $str
+	 * @throws PasswordError on failure
+	 */
+	function setPassword( $str ) {
+		global $wgAuth;
+		
+		if( $str !== null ) {
+			if( !$wgAuth->allowPasswordChange() ) {
+				throw new PasswordError( wfMsg( 'password-change-forbidden' ) );
+			}
+		
+			if( !$this->isValidPassword( $str ) ) {
+				global $wgMinimalPasswordLength;
+				throw new PasswordError( wfMsg( 'passwordtooshort',
+					$wgMinimalPasswordLength ) );
+			}
+		}
+
+		if( !$wgAuth->setPassword( $this, $str ) ) {
+			throw new PasswordError( wfMsg( 'externaldberror' ) );
+		}
+		
+		$this->setInternalPassword( $str );
+
+		return true;
+	}
+
 ?>
