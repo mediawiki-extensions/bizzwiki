@@ -1,7 +1,10 @@
 <?php
 
 /*
-	Origin:
+	Origin:  MW 1.10
+	-------
+	
+	BizzWiki:  $Id$
 	
 */
 
