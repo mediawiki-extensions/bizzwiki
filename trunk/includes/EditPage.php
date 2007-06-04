@@ -1736,3 +1736,304 @@ END
 		$toolbar.="\n</div>";
 		return $toolbar;
 	}
+
+	/**
+	 * Returns an array of html code of the following checkboxes:
+	 * minor and watch
+	 *
+	 * @param $tabindex Current tabindex
+	 * @param $skin Skin object
+	 * @param $checked Array of checkbox => bool, where bool indicates the checked
+	 *                 status of the checkbox
+	 *
+	 * @return array
+	 */
+	public static function getCheckboxes( &$tabindex, $skin, $checked ) {
+		global $wgUser;
+
+		$checkboxes = array();
+
+		$checkboxes['minor'] = '';
+		$minorLabel = wfMsgExt('minoredit', array('parseinline'));
+		if ( $wgUser->isAllowed('minoredit') ) {
+			$attribs = array(
+				'tabindex'  => ++$tabindex,
+				'accesskey' => wfMsg( 'accesskey-minoredit' ),
+				'id'        => 'wpMinoredit',
+			);
+			$checkboxes['minor'] =
+				Xml::check( 'wpMinoredit', $checked['minor'], $attribs ) .
+				"&nbsp;<label for='wpMinoredit'".$skin->tooltipAndAccesskey('minoredit').">{$minorLabel}</label>";
+		}
+
+		$watchLabel = wfMsgExt('watchthis', array('parseinline'));
+		$checkboxes['watch'] = '';
+		if ( $wgUser->isLoggedIn() ) {
+			$attribs = array(
+				'tabindex'  => ++$tabindex,
+				'accesskey' => wfMsg( 'accesskey-watch' ),
+				'id'        => 'wpWatchthis',
+			);
+			$checkboxes['watch'] =
+				Xml::check( 'wpWatchthis', $checked['watch'], $attribs ) .
+				"&nbsp;<label for='wpWatchthis'".$skin->tooltipAndAccesskey('watch').">{$watchLabel}</label>";
+		}
+		return $checkboxes;
+	}
+
+	/**
+	 * Returns an array of html code of the following buttons:
+	 * save, diff, preview and live
+	 *
+	 * @param $tabindex Current tabindex
+	 *
+	 * @return array
+	 */
+	public function getEditButtons(&$tabindex) {
+		global $wgLivePreview, $wgUser;
+
+		$buttons = array();
+
+		$temp = array(
+			'id'        => 'wpSave',
+			'name'      => 'wpSave',
+			'type'      => 'submit',
+			'tabindex'  => ++$tabindex,
+			'value'     => wfMsg('savearticle'),
+			'accesskey' => wfMsg('accesskey-save'),
+			'title'     => wfMsg( 'tooltip-save' ).' ['.wfMsg( 'accesskey-save' ).']',
+		);
+		$buttons['save'] = wfElement('input', $temp, '');
+
+		++$tabindex; // use the same for preview and live preview
+		if ( $wgLivePreview && $wgUser->getOption( 'uselivepreview' ) ) {
+			$temp = array(
+				'id'        => 'wpPreview',
+				'name'      => 'wpPreview',
+				'type'      => 'submit',
+				'tabindex'  => $tabindex,
+				'value'     => wfMsg('showpreview'),
+				'accesskey' => '',
+				'title'     => wfMsg( 'tooltip-preview' ).' ['.wfMsg( 'accesskey-preview' ).']',
+				'style'     => 'display: none;',
+			);
+			$buttons['preview'] = wfElement('input', $temp, '');
+
+			$temp = array(
+				'id'        => 'wpLivePreview',
+				'name'      => 'wpLivePreview',
+				'type'      => 'submit',
+				'tabindex'  => $tabindex,
+				'value'     => wfMsg('showlivepreview'),
+				'accesskey' => wfMsg('accesskey-preview'),
+				'title'     => '',
+				'onclick'   => $this->doLivePreviewScript(),
+			);
+			$buttons['live'] = wfElement('input', $temp, '');
+		} else {
+			$temp = array(
+				'id'        => 'wpPreview',
+				'name'      => 'wpPreview',
+				'type'      => 'submit',
+				'tabindex'  => $tabindex,
+				'value'     => wfMsg('showpreview'),
+				'accesskey' => wfMsg('accesskey-preview'),
+				'title'     => wfMsg( 'tooltip-preview' ).' ['.wfMsg( 'accesskey-preview' ).']',
+			);
+			$buttons['preview'] = wfElement('input', $temp, '');
+			$buttons['live'] = '';
+		}
+
+		$temp = array(
+			'id'        => 'wpDiff',
+			'name'      => 'wpDiff',
+			'type'      => 'submit',
+			'tabindex'  => ++$tabindex,
+			'value'     => wfMsg('showdiff'),
+			'accesskey' => wfMsg('accesskey-diff'),
+			'title'     => wfMsg( 'tooltip-diff' ).' ['.wfMsg( 'accesskey-diff' ).']',
+		);
+		$buttons['diff'] = wfElement('input', $temp, '');
+
+		return $buttons;
+	}
+
+	/**
+	 * Output preview text only. This can be sucked into the edit page
+	 * via JavaScript, and saves the server time rendering the skin as
+	 * well as theoretically being more robust on the client (doesn't
+	 * disturb the edit box's undo history, won't eat your text on
+	 * failure, etc).
+	 *
+	 * @todo This doesn't include category or interlanguage links.
+	 *       Would need to enhance it a bit, <s>maybe wrap them in XML
+	 *       or something...</s> that might also require more skin
+	 *       initialization, so check whether that's a problem.
+	 */
+	function livePreview() {
+		global $wgOut;
+		$wgOut->disable();
+		header( 'Content-type: text/xml; charset=utf-8' );
+		header( 'Cache-control: no-cache' );
+
+		$s =
+		'<?xml version="1.0" encoding="UTF-8" ?>' . "\n" .
+		Xml::openElement( 'livepreview' ) .
+		Xml::element( 'preview', null, $this->getPreviewText() ) .
+		Xml::element( 'br', array( 'style' => 'clear: both;' ) ) .
+		Xml::closeElement( 'livepreview' );
+		echo $s;
+	}
+
+
+	/**
+	 * Get a diff between the current contents of the edit box and the
+	 * version of the page we're editing from.
+	 *
+	 * If this is a section edit, we'll replace the section as for final
+	 * save and then make a comparison.
+	 *
+	 * @return string HTML
+	 */
+	function getDiff() {
+		$oldtext = $this->mArticle->fetchContent();
+		$newtext = $this->mArticle->replaceSection(
+			$this->section, $this->textbox1, $this->summary, $this->edittime );
+		$newtext = $this->mArticle->preSaveTransform( $newtext );
+		$oldtitle = wfMsgExt( 'currentrev', array('parseinline') );
+		$newtitle = wfMsgExt( 'yourtext', array('parseinline') );
+		if ( $oldtext !== false  || $newtext != '' ) {
+			$de = new DifferenceEngine( $this->mTitle );
+			$de->setText( $oldtext, $newtext );
+			$difftext = $de->getDiff( $oldtitle, $newtitle );
+		} else {
+			$difftext = '';
+		}
+
+		return '<div id="wikiDiff">' . $difftext . '</div>';
+	}
+
+	/**
+	 * Filter an input field through a Unicode de-armoring process if it
+	 * came from an old browser with known broken Unicode editing issues.
+	 *
+	 * @param WebRequest $request
+	 * @param string $field
+	 * @return string
+	 * @private
+	 */
+	function safeUnicodeInput( $request, $field ) {
+		$text = rtrim( $request->getText( $field ) );
+		return $request->getBool( 'safemode' )
+			? $this->unmakesafe( $text )
+			: $text;
+	}
+
+	/**
+	 * Filter an output field through a Unicode armoring process if it is
+	 * going to an old browser with known broken Unicode editing issues.
+	 *
+	 * @param string $text
+	 * @return string
+	 * @private
+	 */
+	function safeUnicodeOutput( $text ) {
+		global $wgContLang;
+		$codedText = $wgContLang->recodeForEdit( $text );
+		return $this->checkUnicodeCompliantBrowser()
+			? $codedText
+			: $this->makesafe( $codedText );
+	}
+
+	/**
+	 * A number of web browsers are known to corrupt non-ASCII characters
+	 * in a UTF-8 text editing environment. To protect against this,
+	 * detected browsers will be served an armored version of the text,
+	 * with non-ASCII chars converted to numeric HTML character references.
+	 *
+	 * Preexisting such character references will have a 0 added to them
+	 * to ensure that round-trips do not alter the original data.
+	 *
+	 * @param string $invalue
+	 * @return string
+	 * @private
+	 */
+	function makesafe( $invalue ) {
+		// Armor existing references for reversability.
+		$invalue = strtr( $invalue, array( "&#x" => "&#x0" ) );
+
+		$bytesleft = 0;
+		$result = "";
+		$working = 0;
+		for( $i = 0; $i < strlen( $invalue ); $i++ ) {
+			$bytevalue = ord( $invalue{$i} );
+			if( $bytevalue <= 0x7F ) { //0xxx xxxx
+				$result .= chr( $bytevalue );
+				$bytesleft = 0;
+			} elseif( $bytevalue <= 0xBF ) { //10xx xxxx
+				$working = $working << 6;
+				$working += ($bytevalue & 0x3F);
+				$bytesleft--;
+				if( $bytesleft <= 0 ) {
+					$result .= "&#x" . strtoupper( dechex( $working ) ) . ";";
+				}
+			} elseif( $bytevalue <= 0xDF ) { //110x xxxx
+				$working = $bytevalue & 0x1F;
+				$bytesleft = 1;
+			} elseif( $bytevalue <= 0xEF ) { //1110 xxxx
+				$working = $bytevalue & 0x0F;
+				$bytesleft = 2;
+			} else { //1111 0xxx
+				$working = $bytevalue & 0x07;
+				$bytesleft = 3;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Reverse the previously applied transliteration of non-ASCII characters
+	 * back to UTF-8. Used to protect data from corruption by broken web browsers
+	 * as listed in $wgBrowserBlackList.
+	 *
+	 * @param string $invalue
+	 * @return string
+	 * @private
+	 */
+	function unmakesafe( $invalue ) {
+		$result = "";
+		for( $i = 0; $i < strlen( $invalue ); $i++ ) {
+			if( ( substr( $invalue, $i, 3 ) == "&#x" ) && ( $invalue{$i+3} != '0' ) ) {
+				$i += 3;
+				$hexstring = "";
+				do {
+					$hexstring .= $invalue{$i};
+					$i++;
+				} while( ctype_xdigit( $invalue{$i} ) && ( $i < strlen( $invalue ) ) );
+
+				// Do some sanity checks. These aren't needed for reversability,
+				// but should help keep the breakage down if the editor
+				// breaks one of the entities whilst editing.
+				if ((substr($invalue,$i,1)==";") and (strlen($hexstring) <= 6)) {
+					$codepoint = hexdec($hexstring);
+					$result .= codepointToUtf8( $codepoint );
+				} else {
+					$result .= "&#x" . $hexstring . substr( $invalue, $i, 1 );
+				}
+			} else {
+				$result .= substr( $invalue, $i, 1 );
+			}
+		}
+		// reverse the transform that we made for reversability reasons.
+		return strtr( $result, array( "&#x0" => "&#x" ) );
+	}
+
+	function noCreatePermission() {
+		global $wgOut;
+		$wgOut->setPageTitle( wfMsg( 'nocreatetitle' ) );
+		$wgOut->addWikiText( wfMsg( 'nocreatetext' ) );
+	}
+
+}
+
+?>
