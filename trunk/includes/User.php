@@ -393,4 +393,342 @@ class User {
 		return true;
 	}
 
+	/**
+	 * Is the input a valid username?
+	 *
+	 * Checks if the input is a valid username, we don't want an empty string,
+	 * an IP address, anything that containins slashes (would mess up subpages),
+	 * is longer than the maximum allowed username size or doesn't begin with
+	 * a capital letter.
+	 *
+	 * @param string $name
+	 * @return bool
+	 * @static
+	 */
+	static function isValidUserName( $name ) {
+		global $wgContLang, $wgMaxNameChars;
+
+		if ( $name == ''
+		|| User::isIP( $name )
+		|| strpos( $name, '/' ) !== false
+		|| strlen( $name ) > $wgMaxNameChars
+		|| $name != $wgContLang->ucfirst( $name ) )
+			return false;
+
+		// Ensure that the name can't be misresolved as a different title,
+		// such as with extra namespace keys at the start.
+		$parsed = Title::newFromText( $name );
+		if( is_null( $parsed )
+			|| $parsed->getNamespace()
+			|| strcmp( $name, $parsed->getPrefixedText() ) )
+			return false;
+		
+		// Check an additional blacklist of troublemaker characters.
+		// Should these be merged into the title char list?
+		$unicodeBlacklist = '/[' .
+			'\x{0080}-\x{009f}' . # iso-8859-1 control chars
+			'\x{00a0}' .          # non-breaking space
+			'\x{2000}-\x{200f}' . # various whitespace
+			'\x{2028}-\x{202f}' . # breaks and control chars
+			'\x{3000}' .          # ideographic space
+			'\x{e000}-\x{f8ff}' . # private use
+			']/u';
+		if( preg_match( $unicodeBlacklist, $name ) ) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Usernames which fail to pass this function will be blocked
+	 * from user login and new account registrations, but may be used
+	 * internally by batch processes.
+	 *
+	 * If an account already exists in this form, login will be blocked
+	 * by a failure to pass this function.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	static function isUsableName( $name ) {
+		global $wgReservedUsernames;
+		return
+			// Must be a usable username, obviously ;)
+			self::isValidUserName( $name ) &&
+			
+			// Certain names may be reserved for batch processes.
+			!in_array( $name, $wgReservedUsernames );
+	}
+	
+	/**
+	 * Usernames which fail to pass this function will be blocked
+	 * from new account registrations, but may be used internally
+	 * either by batch processes or by user accounts which have
+	 * already been created.
+	 *
+	 * Additional character blacklisting may be added here
+	 * rather than in isValidUserName() to avoid disrupting
+	 * existing accounts.
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
+	static function isCreatableName( $name ) {
+		return
+			self::isUsableName( $name ) &&
+			
+			// Registration-time character blacklisting...
+			strpos( $name, '@' ) === false;
+	}
+
+	/**
+	 * Is the input a valid password?
+	 *
+	 * @param string $password
+	 * @return bool
+	 */
+	function isValidPassword( $password ) {
+		global $wgMinimalPasswordLength, $wgContLang;
+
+		$result = null;
+		if( !wfRunHooks( 'isValidPassword', array( $password, &$result ) ) ) return $result;
+		if ($result === false) return false;
+		return (strlen( $password ) >= $wgMinimalPasswordLength) &&
+			($wgContLang->lc( $password ) !== $wgContLang->lc( $this->mName ));
+	}
+
+	/**
+	 * Does the string match roughly an email address ?
+	 *
+	 * There used to be a regular expression here, it got removed because it
+	 * rejected valid addresses. Actually just check if there is '@' somewhere
+	 * in the given address.
+	 *
+	 * @todo Check for RFC 2822 compilance (bug 959)
+	 *
+	 * @param string $addr email address
+	 * @static
+	 * @return bool
+	 */
+	static function isValidEmailAddr ( $addr ) {
+		return ( trim( $addr ) != '' ) &&
+			(false !== strpos( $addr, '@' ) );
+	}
+
+	/**
+	 * Given unvalidated user input, return a canonical username, or false if 
+	 * the username is invalid.
+	 * @param string $name
+	 * @param mixed $validate Type of validation to use:
+	 *                         false        No validation
+	 *                         'valid'      Valid for batch processes
+	 *                         'usable'     Valid for batch processes and login
+	 *                         'creatable'  Valid for batch processes, login and account creation
+	 */
+	static function getCanonicalName( $name, $validate = 'valid' ) {
+		# Force usernames to capital
+		global $wgContLang;
+		$name = $wgContLang->ucfirst( $name );
+
+		# Clean up name according to title rules
+		$t = Title::newFromText( $name );
+		if( is_null( $t ) ) {
+			return false;
+		}
+
+		# Reject various classes of invalid names
+		$name = $t->getText();
+		global $wgAuth;
+		$name = $wgAuth->getCanonicalName( $t->getText() );
+
+		switch ( $validate ) {
+			case false:
+				break;
+			case 'valid':
+				if ( !User::isValidUserName( $name ) ) {
+					$name = false;
+				}
+				break;
+			case 'usable':
+				if ( !User::isUsableName( $name ) ) {
+					$name = false;
+				}
+				break;
+			case 'creatable':
+				if ( !User::isCreatableName( $name ) ) {
+					$name = false;
+				}
+				break;
+			default:
+				throw new MWException( 'Invalid parameter value for $validate in '.__METHOD__ );
+		}
+		return $name;
+	}
+
+	/**
+	 * Count the number of edits of a user
+	 *
+	 * It should not be static and some day should be merged as proper member function / deprecated -- domas
+	 * 
+	 * @param int $uid The user ID to check
+	 * @return int
+	 * @static
+	 */
+	static function edits( $uid ) {
+		wfProfileIn( __METHOD__ );
+		$dbr = wfGetDB( DB_SLAVE );
+		// check if the user_editcount field has been initialized
+		$field = $dbr->selectField(
+			'user', 'user_editcount',
+			array( 'user_id' => $uid ),
+			__METHOD__
+		);
+
+		if( $field === null ) { // it has not been initialized. do so.
+			$dbw = wfGetDb( DB_MASTER );
+			$count = $dbr->selectField(
+				'revision', 'count(*)',
+				array( 'rev_user' => $uid ),
+				__METHOD__
+			);
+			$dbw->update(
+				'user',
+				array( 'user_editcount' => $count ),
+				array( 'user_id' => $uid ),
+				__METHOD__
+			);
+		} else {
+			$count = $field;
+		}
+		wfProfileOut( __METHOD__ );
+		return $count;
+	}
+
+	/**
+	 * Return a random password. Sourced from mt_rand, so it's not particularly secure.
+	 * @todo hash random numbers to improve security, like generateToken()
+	 *
+	 * @return string
+	 * @static
+	 */
+	static function randomPassword() {
+		global $wgMinimalPasswordLength;
+		$pwchars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
+		$l = strlen( $pwchars ) - 1;
+
+		$pwlength = max( 7, $wgMinimalPasswordLength );
+		$digit = mt_rand(0, $pwlength - 1);
+		$np = '';
+		for ( $i = 0; $i < $pwlength; $i++ ) {
+			$np .= $i == $digit ? chr( mt_rand(48, 57) ) : $pwchars{ mt_rand(0, $l)};
+		}
+		return $np;
+	}
+
+	/**
+	 * Set cached properties to default. Note: this no longer clears 
+	 * uncached lazy-initialised properties. The constructor does that instead.
+	 *
+	 * @private
+	 */
+	function loadDefaults( $name = false ) {
+		wfProfileIn( __METHOD__ );
+
+		global $wgCookiePrefix;
+
+		$this->mId = 0;
+		$this->mName = $name;
+		$this->mRealName = '';
+		$this->mPassword = $this->mNewpassword = '';
+		$this->mNewpassTime = null;
+		$this->mEmail = '';
+		$this->mOptions = null; # Defer init
+
+		if ( isset( $_COOKIE[$wgCookiePrefix.'LoggedOut'] ) ) {
+			$this->mTouched = wfTimestamp( TS_MW, $_COOKIE[$wgCookiePrefix.'LoggedOut'] );
+		} else {
+			$this->mTouched = '0'; # Allow any pages to be cached
+		}
+
+		$this->setToken(); # Random
+		$this->mEmailAuthenticated = null;
+		$this->mEmailToken = '';
+		$this->mEmailTokenExpires = null;
+		$this->mRegistration = wfTimestamp( TS_MW );
+		$this->mGroups = array();
+
+		wfProfileOut( __METHOD__ );
+	}
+	
+	/**
+	 * Initialise php session
+	 * @deprecated use wfSetupSession()
+	 */
+	function SetupSession() {
+		wfSetupSession();
+	}
+
+	/**
+	 * Load user data from the session or login cookie. If there are no valid
+	 * credentials, initialises the user as an anon.
+	 * @return true if the user is logged in, false otherwise
+	 */
+	private function loadFromSession() {
+		global $wgMemc, $wgCookiePrefix;
+
+		if ( isset( $_SESSION['wsUserID'] ) ) {
+			if ( 0 != $_SESSION['wsUserID'] ) {
+				$sId = $_SESSION['wsUserID'];
+			} else {
+				$this->loadDefaults();
+				return false;
+			}
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}UserID"] ) ) {
+			$sId = intval( $_COOKIE["{$wgCookiePrefix}UserID"] );
+			$_SESSION['wsUserID'] = $sId;
+		} else {
+			$this->loadDefaults();
+			return false;
+		}
+		if ( isset( $_SESSION['wsUserName'] ) ) {
+			$sName = $_SESSION['wsUserName'];
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}UserName"] ) ) {
+			$sName = $_COOKIE["{$wgCookiePrefix}UserName"];
+			$_SESSION['wsUserName'] = $sName;
+		} else {
+			$this->loadDefaults();
+			return false;
+		}
+
+		$passwordCorrect = FALSE;
+		$this->mId = $sId;
+		if ( !$this->loadFromId() ) {
+			# Not a valid ID, loadFromId has switched the object to anon for us
+			return false;
+		}
+		
+		if ( isset( $_SESSION['wsToken'] ) ) {
+			$passwordCorrect = $_SESSION['wsToken'] == $this->mToken;
+			$from = 'session';
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}Token"] ) ) {
+			$passwordCorrect = $this->mToken == $_COOKIE["{$wgCookiePrefix}Token"];
+			$from = 'cookie';
+		} else {
+			# No session or persistent login cookie
+			$this->loadDefaults();
+			return false;
+		}
+
+		if ( ( $sName == $this->mName ) && $passwordCorrect ) {
+			wfDebug( "Logged in from $from\n" );
+			return true;
+		} else {
+			# Invalid credentials
+			wfDebug( "Can't log in from $from, invalid credentials\n" );
+			$this->loadDefaults();
+			return false;
+		}
+	}
+
 ?>
