@@ -275,18 +275,6 @@ class hnpClass
 	
 	static function testRightsWildcard( $q, $rights )
 	{	
-		/*
-		global $hnpObjDebug;
-		if ($hnpObjDebug)
-		{
-			echo "Key =";
-			var_dump($q);
-			echo "<br />";			
-			echo "Rights = ";
-			var_dump($rights);
-			echo "<br />";
-		}
-		*/
 		if (empty($rights))
 			return false;
 			
