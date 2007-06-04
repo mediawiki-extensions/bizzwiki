@@ -1951,3 +1951,517 @@ class Article {
 		return $authors;
 	}
 
+	/**
+	 * Output deletion confirmation dialog
+	 */
+	function confirmDelete( $par, $reason ) {
+		global $wgOut, $wgUser;
+
+		wfDebug( "Article::confirmDelete\n" );
+
+		$sub = htmlspecialchars( $this->mTitle->getPrefixedText() );
+		$wgOut->setSubtitle( wfMsg( 'deletesub', $sub ) );
+		$wgOut->setRobotpolicy( 'noindex,nofollow' );
+		$wgOut->addWikiText( wfMsg( 'confirmdeletetext' ) );
+
+		$formaction = $this->mTitle->escapeLocalURL( 'action=delete' . $par );
+
+		$confirm = htmlspecialchars( wfMsg( 'deletepage' ) );
+		$delcom = htmlspecialchars( wfMsg( 'deletecomment' ) );
+		$token = htmlspecialchars( $wgUser->editToken() );
+		$watch = Xml::checkLabel( wfMsg( 'watchthis' ), 'wpWatch', 'wpWatch', $wgUser->getBoolOption( 'watchdeletion' ) || $this->mTitle->userIsWatching(), array( 'tabindex' => '2' ) );
+
+		$wgOut->addHTML( "
+<form id='deleteconfirm' method='post' action=\"{$formaction}\">
+	<table border='0'>
+		<tr>
+			<td align='right'>
+				<label for='wpReason'>{$delcom}:</label>
+			</td>
+			<td align='left'>
+				<input type='text' size='60' name='wpReason' id='wpReason' value=\"" . htmlspecialchars( $reason ) . "\" tabindex=\"1\" />
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>$watch</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+				<input type='submit' name='wpConfirmB' id='wpConfirmB' value=\"{$confirm}\" tabindex=\"3\" />
+			</td>
+		</tr>
+	</table>
+	<input type='hidden' name='wpEditToken' value=\"{$token}\" />
+</form>\n" );
+
+		$wgOut->returnToMain( false );
+
+		$this->showLogExtract( $wgOut );
+	}
+
+
+	/**
+	 * Fetch deletion log
+	 */
+	function showLogExtract( &$out ) {
+		# Show relevant lines from the deletion log:
+		$out->addHTML( "<h2>" . htmlspecialchars( LogPage::logName( 'delete' ) ) . "</h2>\n" );
+		$logViewer = new LogViewer(
+			new LogReader(
+				new FauxRequest(
+					array( 'page' => $this->mTitle->getPrefixedText(),
+					       'type' => 'delete' ) ) ) );
+		$logViewer->showList( $out );
+	}
+
+
+	/**
+	 * Perform a deletion and output success or failure messages
+	 */
+	function doDelete( $reason ) {
+		global $wgOut, $wgUser;
+		wfDebug( __METHOD__."\n" );
+
+		if (wfRunHooks('ArticleDelete', array(&$this, &$wgUser, &$reason))) {
+			if ( $this->doDeleteArticle( $reason ) ) {
+				$deleted = wfEscapeWikiText( $this->mTitle->getPrefixedText() );
+
+				$wgOut->setPagetitle( wfMsg( 'actioncomplete' ) );
+				$wgOut->setRobotpolicy( 'noindex,nofollow' );
+
+				$loglink = '[[Special:Log/delete|' . wfMsg( 'deletionlog' ) . ']]';
+				$text = wfMsg( 'deletedtext', $deleted, $loglink );
+
+				$wgOut->addWikiText( $text );
+				$wgOut->returnToMain( false );
+				wfRunHooks('ArticleDeleteComplete', array(&$this, &$wgUser, $reason));
+			} else {
+				$wgOut->showFatalError( wfMsg( 'cannotdelete' ) );
+			}
+		}
+	}
+
+	/**
+	 * Back-end article deletion
+	 * Deletes the article with database consistency, writes logs, purges caches
+	 * Returns success
+	 */
+	function doDeleteArticle( $reason ) {
+		global $wgUseSquid, $wgDeferredUpdateList;
+		global $wgUseTrackbacks;
+
+		wfDebug( __METHOD__."\n" );
+
+		$dbw = wfGetDB( DB_MASTER );
+		$ns = $this->mTitle->getNamespace();
+		$t = $this->mTitle->getDBkey();
+		$id = $this->mTitle->getArticleID();
+
+		if ( $t == '' || $id == 0 ) {
+			return false;
+		}
+
+		$u = new SiteStatsUpdate( 0, 1, -(int)$this->isCountable( $this->getContent() ), -1 );
+		array_push( $wgDeferredUpdateList, $u );
+
+		// For now, shunt the revision data into the archive table.
+		// Text is *not* removed from the text table; bulk storage
+		// is left intact to avoid breaking block-compression or
+		// immutable storage schemes.
+		//
+		// For backwards compatibility, note that some older archive
+		// table entries will have ar_text and ar_flags fields still.
+		//
+		// In the future, we may keep revisions and mark them with
+		// the rev_deleted field, which is reserved for this purpose.
+		$dbw->insertSelect( 'archive', array( 'page', 'revision' ),
+			array(
+				'ar_namespace'  => 'page_namespace',
+				'ar_title'      => 'page_title',
+				'ar_comment'    => 'rev_comment',
+				'ar_user'       => 'rev_user',
+				'ar_user_text'  => 'rev_user_text',
+				'ar_timestamp'  => 'rev_timestamp',
+				'ar_minor_edit' => 'rev_minor_edit',
+				'ar_rev_id'     => 'rev_id',
+				'ar_text_id'    => 'rev_text_id',
+				'ar_text'       => '\'\'', // Be explicit to appease
+				'ar_flags'      => '\'\'', // MySQL's "strict mode"...
+				'ar_len'		=> 'rev_len'
+			), array(
+				'page_id' => $id,
+				'page_id = rev_page'
+			), __METHOD__
+		);
+
+		# Delete restrictions for it
+		$dbw->delete( 'page_restrictions', array ( 'pr_page' => $id ), __METHOD__ );
+
+		# Now that it's safely backed up, delete it
+		$dbw->delete( 'page', array( 'page_id' => $id ), __METHOD__);
+
+		# If using cascading deletes, we can skip some explicit deletes
+		if ( !$dbw->cascadingDeletes() ) {
+
+			$dbw->delete( 'revision', array( 'rev_page' => $id ), __METHOD__ );
+
+			if ($wgUseTrackbacks)
+				$dbw->delete( 'trackbacks', array( 'tb_page' => $id ), __METHOD__ );
+
+			# Delete outgoing links
+			$dbw->delete( 'pagelinks', array( 'pl_from' => $id ) );
+			$dbw->delete( 'imagelinks', array( 'il_from' => $id ) );
+			$dbw->delete( 'categorylinks', array( 'cl_from' => $id ) );
+			$dbw->delete( 'templatelinks', array( 'tl_from' => $id ) );
+			$dbw->delete( 'externallinks', array( 'el_from' => $id ) );
+			$dbw->delete( 'langlinks', array( 'll_from' => $id ) );
+			$dbw->delete( 'redirect', array( 'rd_from' => $id ) );
+		}
+
+		# If using cleanup triggers, we can skip some manual deletes
+		if ( !$dbw->cleanupTriggers() ) {
+
+			# Clean up recentchanges entries...
+			$dbw->delete( 'recentchanges', array( 'rc_namespace' => $ns, 'rc_title' => $t ), __METHOD__ );
+		}
+
+		# Clear caches
+		Article::onArticleDelete( $this->mTitle );
+
+		# Log the deletion
+		$log = new LogPage( 'delete' );
+		$log->addEntry( 'delete', $this->mTitle, $reason );
+
+		# Clear the cached article id so the interface doesn't act like we exist
+		$this->mTitle->resetArticleID( 0 );
+		$this->mTitle->mArticleID = 0;
+		return true;
+	}
+
+	/**
+	 * Revert a modification
+	 */
+	function rollback() {
+		global $wgUser, $wgOut, $wgRequest, $wgUseRCPatrol;
+
+		if( $wgUser->isAllowed( 'rollback' ) ) {
+			if( $wgUser->isBlocked() ) {
+				$wgOut->blockedPage();
+				return;
+			}
+		} else {
+			$wgOut->permissionRequired( 'rollback' );
+			return;
+		}
+
+		if ( wfReadOnly() ) {
+			$wgOut->readOnlyPage( $this->getContent() );
+			return;
+		}
+		if( !$wgUser->matchEditToken( $wgRequest->getVal( 'token' ),
+			array( $this->mTitle->getPrefixedText(),
+				$wgRequest->getVal( 'from' ) )  ) ) {
+			$wgOut->setPageTitle( wfMsg( 'rollbackfailed' ) );
+			$wgOut->addWikiText( wfMsg( 'sessionfailure' ) );
+			return;
+		}
+		$dbw = wfGetDB( DB_MASTER );
+
+		# Enhanced rollback, marks edits rc_bot=1
+		$bot = $wgRequest->getBool( 'bot' );
+
+		# Replace all this user's current edits with the next one down
+
+		# Get the last editor
+		$current = Revision::newFromTitle( $this->mTitle );
+		if( is_null( $current ) ) {
+			# Something wrong... no page?
+			$wgOut->addHTML( wfMsg( 'notanarticle' ) );
+			return;
+		}
+
+		$from = str_replace( '_', ' ', $wgRequest->getVal( 'from' ) );
+		if( $from != $current->getUserText() ) {
+			$wgOut->setPageTitle( wfMsg('rollbackfailed') );
+			$wgOut->addWikiText( wfMsg( 'alreadyrolled',
+				htmlspecialchars( $this->mTitle->getPrefixedText()),
+				htmlspecialchars( $from ),
+				htmlspecialchars( $current->getUserText() ) ) );
+			if( $current->getComment() != '') {
+				$wgOut->addHTML(
+					wfMsg( 'editcomment',
+					$wgUser->getSkin()->formatComment( $current->getComment() ) ) );
+			}
+			return;
+		}
+
+		# Get the last edit not by this guy
+		$user = intval( $current->getUser() );
+		$user_text = $dbw->addQuotes( $current->getUserText() );
+		$s = $dbw->selectRow( 'revision',
+			array( 'rev_id', 'rev_timestamp' ),
+			array(
+				'rev_page' => $current->getPage(),
+				"rev_user <> {$user} OR rev_user_text <> {$user_text}"
+			), __METHOD__,
+			array(
+				'USE INDEX' => 'page_timestamp',
+				'ORDER BY'  => 'rev_timestamp DESC' )
+			);
+		if( $s === false ) {
+			# Something wrong
+			$wgOut->setPageTitle(wfMsg('rollbackfailed'));
+			$wgOut->addHTML( wfMsg( 'cantrollback' ) );
+			return;
+		}
+
+		$set = array();
+		if ( $bot ) {
+			# Mark all reverted edits as bot
+			$set['rc_bot'] = 1;
+		}
+		if ( $wgUseRCPatrol ) {
+			# Mark all reverted edits as patrolled
+			$set['rc_patrolled'] = 1;
+		}
+
+		if ( $set ) {
+			$dbw->update( 'recentchanges', $set,
+				array( /* WHERE */
+					'rc_cur_id'    => $current->getPage(),
+					'rc_user_text' => $current->getUserText(),
+					"rc_timestamp > '{$s->rev_timestamp}'",
+				), __METHOD__
+			);
+		}
+
+		# Get the edit summary
+		$target = Revision::newFromId( $s->rev_id );
+		$newComment = wfMsgForContent( 'revertpage', $target->getUserText(), $from );
+		$newComment = $wgRequest->getText( 'summary', $newComment );
+
+		# Save it!
+		$wgOut->setPagetitle( wfMsg( 'actioncomplete' ) );
+		$wgOut->setRobotpolicy( 'noindex,nofollow' );
+		$wgOut->addHTML( '<h2>' . htmlspecialchars( $newComment ) . "</h2>\n<hr />\n" );
+
+		$this->updateArticle( $target->getText(), $newComment, 1, $this->mTitle->userIsWatching(), $bot );
+
+		$wgOut->returnToMain( false );
+	}
+
+
+	/**
+	 * Do standard deferred updates after page view
+	 * @private
+	 */
+	function viewUpdates() {
+		global $wgDeferredUpdateList;
+
+		if ( 0 != $this->getID() ) {
+			global $wgDisableCounters;
+			if( !$wgDisableCounters ) {
+				Article::incViewCount( $this->getID() );
+				$u = new SiteStatsUpdate( 1, 0, 0 );
+				array_push( $wgDeferredUpdateList, $u );
+			}
+		}
+
+		# Update newtalk / watchlist notification status
+		global $wgUser;
+		$wgUser->clearNotification( $this->mTitle );
+	}
+
+	/**
+	 * Do standard deferred updates after page edit.
+	 * Update links tables, site stats, search index and message cache.
+	 * Every 1000th edit, prune the recent changes table.
+	 *
+	 * @private
+	 * @param $text New text of the article
+	 * @param $summary Edit summary
+	 * @param $minoredit Minor edit
+	 * @param $timestamp_of_pagechange Timestamp associated with the page change
+	 * @param $newid rev_id value of the new revision
+	 * @param $changed Whether or not the content actually changed
+	 */
+	function editUpdates( $text, $summary, $minoredit, $timestamp_of_pagechange, $newid, $changed = true ) {
+		global $wgDeferredUpdateList, $wgMessageCache, $wgUser, $wgParser;
+
+		wfProfileIn( __METHOD__ );
+
+		# Parse the text
+		$options = new ParserOptions;
+		$options->setTidy(true);
+		$poutput = $wgParser->parse( $text, $this->mTitle, $options, true, true, $newid );
+
+		# Save it to the parser cache
+		$parserCache =& ParserCache::singleton();
+		$parserCache->save( $poutput, $this, $wgUser );
+
+		# Update the links tables
+		$u = new LinksUpdate( $this->mTitle, $poutput );
+		$u->doUpdate();
+
+		if ( wfRunHooks( 'ArticleEditUpdatesDeleteFromRecentchanges', array( &$this ) ) ) {
+			wfSeedRandom();
+			if ( 0 == mt_rand( 0, 999 ) ) {
+				# Periodically flush old entries from the recentchanges table.
+				global $wgRCMaxAge;
+
+				$dbw = wfGetDB( DB_MASTER );
+				$cutoff = $dbw->timestamp( time() - $wgRCMaxAge );
+				$recentchanges = $dbw->tableName( 'recentchanges' );
+				$sql = "DELETE FROM $recentchanges WHERE rc_timestamp < '{$cutoff}'";
+				$dbw->query( $sql );
+			}
+		}
+
+		$id = $this->getID();
+		$title = $this->mTitle->getPrefixedDBkey();
+		$shortTitle = $this->mTitle->getDBkey();
+
+		if ( 0 == $id ) {
+			wfProfileOut( __METHOD__ );
+			return;
+		}
+
+		$u = new SiteStatsUpdate( 0, 1, $this->mGoodAdjustment, $this->mTotalAdjustment );
+		array_push( $wgDeferredUpdateList, $u );
+		$u = new SearchUpdate( $id, $title, $text );
+		array_push( $wgDeferredUpdateList, $u );
+
+		# If this is another user's talk page, update newtalk
+		# Don't do this if $changed = false otherwise some idiot can null-edit a
+		# load of user talk pages and piss people off, nor if it's a minor edit
+		# by a properly-flagged bot.
+		if( $this->mTitle->getNamespace() == NS_USER_TALK && $shortTitle != $wgUser->getTitleKey() && $changed
+			&& !($minoredit && $wgUser->isAllowed('nominornewtalk') ) ) {
+			if (wfRunHooks('ArticleEditUpdateNewTalk', array(&$this)) ) {
+				$other = User::newFromName( $shortTitle );
+				if( is_null( $other ) && User::isIP( $shortTitle ) ) {
+					// An anonymous user
+					$other = new User();
+					$other->setName( $shortTitle );
+				}
+				if( $other ) {
+					$other->setNewtalk( true );
+				}
+			}
+		}
+
+		if ( $this->mTitle->getNamespace() == NS_MEDIAWIKI ) {
+			$wgMessageCache->replace( $shortTitle, $text );
+		}
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	/**
+	 * Perform article updates on a special page creation.
+	 *
+	 * @param Revision $rev
+	 *
+	 * @todo This is a shitty interface function. Kill it and replace the
+	 * other shitty functions like editUpdates and such so it's not needed
+	 * anymore.
+	 */
+	function createUpdates( $rev ) {
+		$this->mGoodAdjustment = $this->isCountable( $rev->getText() );
+		$this->mTotalAdjustment = 1;
+		$this->editUpdates( $rev->getText(), $rev->getComment(),
+			$rev->isMinor(), wfTimestamp(), $rev->getId(), true );
+	}
+
+	/**
+	 * Generate the navigation links when browsing through an article revisions
+	 * It shows the information as:
+	 *   Revision as of \<date\>; view current revision
+	 *   \<- Previous version | Next Version -\>
+	 *
+	 * @private
+	 * @param string $oldid		Revision ID of this article revision
+	 */
+	function setOldSubtitle( $oldid=0 ) {
+		global $wgLang, $wgOut, $wgUser;
+
+		if ( !wfRunHooks( 'DisplayOldSubtitle', array(&$this, &$oldid) ) ) {
+				return;
+		}
+
+		$revision = Revision::newFromId( $oldid );
+
+		$current = ( $oldid == $this->mLatest );
+		$td = $wgLang->timeanddate( $this->mTimestamp, true );
+		$sk = $wgUser->getSkin();
+		$lnk = $current
+			? wfMsg( 'currentrevisionlink' )
+			: $lnk = $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'currentrevisionlink' ) );
+		$curdiff = $current
+			? wfMsg( 'diff' )
+			: $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'diff' ), 'diff=cur&oldid='.$oldid );
+		$prev = $this->mTitle->getPreviousRevisionID( $oldid ) ;
+		$prevlink = $prev
+			? $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'previousrevision' ), 'direction=prev&oldid='.$oldid )
+			: wfMsg( 'previousrevision' );
+		$prevdiff = $prev
+			? $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'diff' ), 'diff=prev&oldid='.$oldid )
+			: wfMsg( 'diff' );
+		$nextlink = $current
+			? wfMsg( 'nextrevision' )
+			: $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'nextrevision' ), 'direction=next&oldid='.$oldid );
+		$nextdiff = $current
+			? wfMsg( 'diff' )
+			: $sk->makeKnownLinkObj( $this->mTitle, wfMsg( 'diff' ), 'diff=next&oldid='.$oldid );
+
+		$userlinks = $sk->userLink( $revision->getUser(), $revision->getUserText() )
+						. $sk->userToolLinks( $revision->getUser(), $revision->getUserText() );
+
+		$r = "\n\t\t\t\t<div id=\"mw-revision-info\">" . wfMsg( 'revision-info', $td, $userlinks ) . "</div>\n" .
+		     "\n\t\t\t\t<div id=\"mw-revision-nav\">" . wfMsg( 'revision-nav', $prevdiff, $prevlink, $lnk, $curdiff, $nextlink, $nextdiff ) . "</div>\n\t\t\t";
+		$wgOut->setSubtitle( $r );
+	}
+
+	/**
+	 * This function is called right before saving the wikitext,
+	 * so we can do things like signatures and links-in-context.
+	 *
+	 * @param string $text
+	 */
+	function preSaveTransform( $text ) {
+		global $wgParser, $wgUser;
+		return $wgParser->preSaveTransform( $text, $this->mTitle, $wgUser, ParserOptions::newFromUser( $wgUser ) );
+	}
+
+	/* Caching functions */
+
+	/**
+	 * checkLastModified returns true if it has taken care of all
+	 * output to the client that is necessary for this request.
+	 * (that is, it has sent a cached version of the page)
+	 */
+	function tryFileCache() {
+		static $called = false;
+		if( $called ) {
+			wfDebug( "Article::tryFileCache(): called twice!?\n" );
+			return;
+		}
+		$called = true;
+		if($this->isFileCacheable()) {
+			$touched = $this->mTouched;
+			$cache = new HTMLFileCache( $this->mTitle );
+			if($cache->isFileCacheGood( $touched )) {
+				wfDebug( "Article::tryFileCache(): about to load file\n" );
+				$cache->loadFromFileCache();
+				return true;
+			} else {
+				wfDebug( "Article::tryFileCache(): starting buffer\n" );
+				ob_start( array(&$cache, 'saveToFileCache' ) );
+			}
+		} else {
+			wfDebug( "Article::tryFileCache(): not cacheable\n" );
+		}
+	}
+
