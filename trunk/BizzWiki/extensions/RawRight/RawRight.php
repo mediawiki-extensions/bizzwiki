@@ -28,6 +28,10 @@
  * ========
  * V1.0
  *
+ * TODO
+ * ====
+ * 1) Internationalization: add messages to cache
+ *    i18n file
  */
  
 RawRight::singleton();
