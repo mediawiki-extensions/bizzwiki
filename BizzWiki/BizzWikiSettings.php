@@ -102,5 +102,9 @@ foreach( $bwUserNamespaces as $index => $bwx )
 $wgNonincludableNamespaces[] = NS_FILESYSTEM;
 $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 
+// *****************************************************************************************
+
+// readfile & commitfile rights
+require('extensions/FileManager/FileManager.php');
 
 ?>
