@@ -1,0 +1,17 @@
+$Id$
+
+Permission functionality:
+-------------------------
+
+a1) Raw page viewing:    add 'raw' right
+a2) Source page viewing: add 'viewsource' right
+a3) Namespace level permission (Hierarchical Namespace Permissions extension)
+
+Installation File Management functionality
+------------------------------------------
+Be able to remotely manage the installation files (i.e. all the files of a Mediawiki installation)
+
+b1) Commit a file to the filesystem
+b2) Read a file from the filesystem
+b3) Change a file from the filesystem
+
