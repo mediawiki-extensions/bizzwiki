@@ -5,9 +5,15 @@
 	
 	BizzWiki: $Id$
 
+	TODO:
+	=====
+	1) Page Deletion: change to work on a namespace level
+	2) 
+
+
 	History:
 	========
-
+	- 
 
 */
 
