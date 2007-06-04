@@ -264,4 +264,133 @@ class User {
 	}
 
 
+	/**
+	 * Factory method to fetch whichever user has a given email confirmation code.
+	 * This code is generated when an account is created or its e-mail address
+	 * has changed.
+	 *
+	 * If the code is invalid or has expired, returns NULL.
+	 *
+	 * @param string $code
+	 * @return User
+	 * @static
+	 */
+	static function newFromConfirmationCode( $code ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		$id = $dbr->selectField( 'user', 'user_id', array(
+			'user_email_token' => md5( $code ),
+			'user_email_token_expires > ' . $dbr->addQuotes( $dbr->timestamp() ),
+			) );
+		if( $id !== false ) {
+			return User::newFromId( $id );
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Create a new user object using data from session or cookies. If the
+	 * login credentials are invalid, the result is an anonymous user.
+	 *
+	 * @return User
+	 * @static
+	 */
+	static function newFromSession() {
+		$user = new User;
+		$user->mFrom = 'session';
+		return $user;
+	}
+
+	/**
+	 * Get username given an id.
+	 * @param integer $id Database user id
+	 * @return string Nickname of a user
+	 * @static
+	 */
+	static function whoIs( $id ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		return $dbr->selectField( 'user', 'user_name', array( 'user_id' => $id ), 'User::whoIs' );
+	}
+
+	/**
+	 * Get real username given an id.
+	 * @param integer $id Database user id
+	 * @return string Realname of a user
+	 * @static
+	 */
+	static function whoIsReal( $id ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		return $dbr->selectField( 'user', 'user_real_name', array( 'user_id' => $id ), 'User::whoIsReal' );
+	}
+
+	/**
+	 * Get database id given a user name
+	 * @param string $name Nickname of a user
+	 * @return integer|null Database user id (null: if non existent
+	 * @static
+	 */
+	static function idFromName( $name ) {
+		$nt = Title::newFromText( $name );
+		if( is_null( $nt ) ) {
+			# Illegal name
+			return null;
+		}
+		$dbr = wfGetDB( DB_SLAVE );
+		$s = $dbr->selectRow( 'user', array( 'user_id' ), array( 'user_name' => $nt->getText() ), __METHOD__ );
+
+		if ( $s === false ) {
+			return 0;
+		} else {
+			return $s->user_id;
+		}
+	}
+
+	/**
+	 * Does the string match an anonymous IPv4 address?
+	 *
+	 * This function exists for username validation, in order to reject
+	 * usernames which are similar in form to IP addresses. Strings such
+	 * as 300.300.300.300 will return true because it looks like an IP 
+	 * address, despite not being strictly valid.
+	 * 
+	 * We match \d{1,3}\.\d{1,3}\.\d{1,3}\.xxx as an anonymous IP
+	 * address because the usemod software would "cloak" anonymous IP
+	 * addresses like this, if we allowed accounts like this to be created
+	 * new users could get the old edits of these anonymous users.
+	 *
+	 * @static
+	 * @param string $name Nickname of a user
+	 * @return bool
+	 */
+	static function isIP( $name ) {
+		return preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.(?:xxx|\d{1,3})$/',$name) || User::isIPv6($name);
+		/*return preg_match("/^
+			(?:[01]?\d{1,2}|2(:?[0-4]\d|5[0-5]))\.
+			(?:[01]?\d{1,2}|2(:?[0-4]\d|5[0-5]))\.
+			(?:[01]?\d{1,2}|2(:?[0-4]\d|5[0-5]))\.
+			(?:[01]?\d{1,2}|2(:?[0-4]\d|5[0-5]))
+		$/x", $name);*/
+	}
+
+	/**
+	 * Check if $name is an IPv6 IP.
+	 */
+	static function isIPv6($name) {
+		/* 
+		 * if it has any non-valid characters, it can't be a valid IPv6  
+		 * address.
+		 */
+		if (preg_match("/[^:a-fA-F0-9]/", $name))
+			return false;
+
+		$parts = explode(":", $name);
+		if (count($parts) < 3)
+			return false;
+		foreach ($parts as $part) {
+			if (!preg_match("/^[0-9a-fA-F]{0,4}$/", $part))
+				return false;
+		}
+		return true;
+	}
+
 ?>
