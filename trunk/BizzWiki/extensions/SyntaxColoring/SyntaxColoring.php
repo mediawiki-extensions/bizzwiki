@@ -32,6 +32,9 @@ class SyntaxColoring extends ExtensionClass
 	const thisName = 'SyntaxColoring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 
+	var $found;
+	var $text;
+
 	public static function &singleton( )
 	{ return parent::singleton( ); }
 	
@@ -51,20 +54,43 @@ class SyntaxColoring extends ExtensionClass
 	public function setup()
 	{
 		parent::setup();
+		
+		$this->text  = null;
+		$this->found = false;
 	}
 
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	// wfRunHooks( 'ParserBeforeStrip', array( &$this, &$text, &$this->mStripState ) );
 	{
+		// first round of checks
 		if (!$this->isPHP( $parser )) return true; // continue hook-chain
 		
-		echo 'here ';
+		// second round
+		$p= '<?php';
+		if (strncmp($text, $p, strlen( $p ) ) !== 0 ) return true;
+		
+		$this->found = true;
+		$this->text = $text;
+		
+		$text = '';
 		
 		// if we are dealing with PHP:
-		$text = '<pre>'.$text.'</pre>';
+		// $text = '<pre>'.$text.'</pre>';
 		
 		return true;		
 	}
+	public function hParserAfterTidy( &$parser, &$text )
+	{
+		if (! $this->found ) return true;
+		$this->found = false;
+		
+		$text = highlight_string( $this->text );
+		
+		$this->text = '';
+		
+		return true;	
+	}
+	
 	private function isPHP( &$parser )
 	{
 		// is the namespace defined at all??
@@ -77,7 +103,7 @@ class SyntaxColoring extends ExtensionClass
 		$titre = $parser->mTitle->getText();
 		
 		// does the filename matches a valid PHP file extension??
-		$ext   = strtolower( strtr( $titre, -4, 4) );
+		$ext   = strtolower( substr( $titre, -4, 4) );
 		if ( $ext != '.php' ) return false;
 		
 		return true;
