@@ -145,8 +145,8 @@ class hnpClass
 
 	function hnpClass()
 	{
-		$this->lNsD = null;
-		$this->lNsI = null;
+		$this->lNsD = array();
+		$this->lNsI = array();
 		
 		global $wgExtensionCredits;
 		
@@ -168,11 +168,19 @@ class hnpClass
 			
 		$this->initGroups();
 	}
-	public function addNamespaceDependantRights( $rights )   { $this->lNsD = array_merge( $rights, $this->lNsD ); }
-	public function addNamespaceIndependantRights( $rights ) { $this->lNsI = array_merge( $rights, $this->lNsI ); }
+	public function addNamespaceDependantRights( $rights )   
+	{ 
+		$this->lNsD = array_merge( $rights, $this->lNsD ); 
+	}
+	public function addNamespaceIndependantRights( $rights ) 
+	{ 
+		$this->lNsI = array_merge( $rights, $this->lNsI ); 
+	}
 	
 	function hUserIsAllowed( &$user, $ns=null, $titre=null, &$action, &$result )
 	{
+		if ($action == '') return true;
+		
 		// Namespace independant right ??
 		if ( in_array( $action, $this->lNsI ) )
 		{
