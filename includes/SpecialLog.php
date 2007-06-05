@@ -8,10 +8,11 @@
 	TODO:
 	=====
 	1) Namespace level permission policing.
+	2) Fix user right checking for the buttons... assume non-namespace level semantic....
 	
 	HISTORY:
 	========
-	1) 
+	1) Added 'readlog' right
 */
 
 # Copyright (C) 2004 Brion Vibber <brion@pobox.com>
@@ -42,6 +43,19 @@
  */
 function wfSpecialLog( $par = '' ) {
 	global $wgRequest;
+	
+	// BizzWiki begin {{
+	global $wgOut, $wgUser;
+
+	if ( !$wgUser->isAllowed('readlog') )
+	{
+		$skin = $wgUser->getSkin();
+		$wgOut->setPageTitle( wfMsg( 'readlog' ) );
+		$wgOut->addWikiText( wfMsg( 'readlogprohibited' ) );
+		return;
+	}
+	// BizzWiki end }}
+	
 	$logReader = new LogReader( $wgRequest );
 	if( $wgRequest->getVal( 'type' ) == '' && $par != '' ) {
 		$logReader->limitType( $par );
@@ -510,6 +524,5 @@ class LogViewer {
 		$out->addHTML( '<p>' . $html . '</p>' );
 	}
 }
-
 
 ?>

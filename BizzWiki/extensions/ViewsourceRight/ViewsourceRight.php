@@ -28,6 +28,7 @@
  * =====
  * 1) Internationalization: add messages to message cache
  *    Create i18n file
+ *    'viewsourceprohibited' message.
  * 
  */
 
@@ -77,7 +78,7 @@ class ViewsourceRight extends ExtensionClass
 		return true; // continue hook-chain.
 	}
 	
-	public function hAlternateEditHook( &$ep )
+	public function hAlternateEdit( &$ep )
 	{
 		global $wgUser;
 		
@@ -98,7 +99,7 @@ class ViewsourceRight extends ExtensionClass
 				
 					$skin = $wgUser->getSkin();
 					$wgOut->setPageTitle( wfMsg( 'viewsource' ) );
-					$wgOut->setSubtitle( wfMsg( 'viewsourcefor', $skin->makeKnownLinkObj( $wgTitle ) ) );
+					$wgOut->setSubtitle( wfMsg( 'viewsourcefor', $skin->makeKnownLinkObj( $title ) ) );
 					$wgOut->addWikiText( wfMsg( 'viewsourceprohibited' ) );
 					
 					return false; // stop normal processing flow.
