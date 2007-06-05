@@ -862,3 +862,460 @@ class User {
 			return '';
 		}
 	}
+	/**
+	 * Get a list of user toggle names
+	 * @return array
+	 */
+	static function getToggles() {
+		global $wgContLang;
+		$extraToggles = array();
+		wfRunHooks( 'UserToggles', array( &$extraToggles ) );
+		return array_merge( self::$mToggles, $extraToggles, $wgContLang->getExtraUserToggles() );
+	}
+
+
+	/**
+	 * Get blocking information
+	 * @private
+	 * @param bool $bFromSlave Specify whether to check slave or master. To improve performance,
+	 *  non-critical checks are done against slaves. Check when actually saving should be done against
+	 *  master.
+	 */
+	function getBlockedStatus( $bFromSlave = true ) {
+		global $wgEnableSorbs, $wgProxyWhitelist;
+
+		if ( -1 != $this->mBlockedby ) {
+			wfDebug( "User::getBlockedStatus: already loaded.\n" );
+			return;
+		}
+
+		wfProfileIn( __METHOD__ );
+		wfDebug( __METHOD__.": checking...\n" );
+
+		$this->mBlockedby = 0; 
+		$this->mHideName = 0;
+		$ip = wfGetIP();
+
+		if ($this->isAllowed( 'ipblock-exempt' ) ) {
+			# Exempt from all types of IP-block
+			$ip = '';
+		}
+
+		# User/IP blocking
+		$this->mBlock = new Block();
+		$this->mBlock->fromMaster( !$bFromSlave );
+		if ( $this->mBlock->load( $ip , $this->mId ) ) {
+			wfDebug( __METHOD__.": Found block.\n" );
+			$this->mBlockedby = $this->mBlock->mBy;
+			$this->mBlockreason = $this->mBlock->mReason;
+			$this->mHideName = $this->mBlock->mHideName;
+			if ( $this->isLoggedIn() ) {
+				$this->spreadBlock();
+			}
+		} else {
+			$this->mBlock = null;
+			wfDebug( __METHOD__.": No block.\n" );
+		}
+
+		# Proxy blocking
+		if ( !$this->isAllowed('proxyunbannable') && !in_array( $ip, $wgProxyWhitelist ) ) {
+
+			# Local list
+			if ( wfIsLocallyBlockedProxy( $ip ) ) {
+				$this->mBlockedby = wfMsg( 'proxyblocker' );
+				$this->mBlockreason = wfMsg( 'proxyblockreason' );
+			}
+
+			# DNSBL
+			if ( !$this->mBlockedby && $wgEnableSorbs && !$this->getID() ) {
+				if ( $this->inSorbsBlacklist( $ip ) ) {
+					$this->mBlockedby = wfMsg( 'sorbs' );
+					$this->mBlockreason = wfMsg( 'sorbsreason' );
+				}
+			}
+		}
+
+		# Extensions
+		wfRunHooks( 'GetBlockedStatus', array( &$this ) );
+
+		wfProfileOut( __METHOD__ );
+	}
+
+	function inSorbsBlacklist( $ip ) {
+		global $wgEnableSorbs, $wgSorbsUrl;
+
+		return $wgEnableSorbs &&
+			$this->inDnsBlacklist( $ip, $wgSorbsUrl );
+	}
+
+	function inDnsBlacklist( $ip, $base ) {
+		wfProfileIn( __METHOD__ );
+
+		$found = false;
+		$host = '';
+
+		$m = array();
+		if ( preg_match( '/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $ip, $m ) ) {
+			# Make hostname
+			for ( $i=4; $i>=1; $i-- ) {
+				$host .= $m[$i] . '.';
+			}
+			$host .= $base;
+
+			# Send query
+			$ipList = gethostbynamel( $host );
+
+			if ( $ipList ) {
+				wfDebug( "Hostname $host is {$ipList[0]}, it's a proxy says $base!\n" );
+				$found = true;
+			} else {
+				wfDebug( "Requested $host, not found in $base.\n" );
+			}
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $found;
+	}
+
+	/**
+	 * Is this user subject to rate limiting?
+	 *
+	 * @return bool
+	 */
+	public function isPingLimitable() {
+		global $wgRateLimitsExcludedGroups;
+		return array_intersect($this->getEffectiveGroups(), $wgRateLimitsExcludedGroups) == array();
+	}
+
+	/**
+	 * Primitive rate limits: enforce maximum actions per time period
+	 * to put a brake on flooding.
+	 *
+	 * Note: when using a shared cache like memcached, IP-address
+	 * last-hit counters will be shared across wikis.
+	 *
+	 * @return bool true if a rate limiter was tripped
+	 * @public
+	 */
+	function pingLimiter( $action='edit' ) {
+
+		# Call the 'PingLimiter' hook
+		$result = false;
+		if( !wfRunHooks( 'PingLimiter', array( &$this, $action, $result ) ) ) {
+			return $result;
+		}
+
+		global $wgRateLimits, $wgRateLimitsExcludedGroups;
+		if( !isset( $wgRateLimits[$action] ) ) {
+			return false;
+		}
+
+		# Some groups shouldn't trigger the ping limiter, ever
+		if( !$this->isPingLimitable() )
+			return false;
+
+		global $wgMemc, $wgRateLimitLog;
+		wfProfileIn( __METHOD__ );
+
+		$limits = $wgRateLimits[$action];
+		$keys = array();
+		$id = $this->getId();
+		$ip = wfGetIP();
+
+		if( isset( $limits['anon'] ) && $id == 0 ) {
+			$keys[wfMemcKey( 'limiter', $action, 'anon' )] = $limits['anon'];
+		}
+
+		if( isset( $limits['user'] ) && $id != 0 ) {
+			$keys[wfMemcKey( 'limiter', $action, 'user', $id )] = $limits['user'];
+		}
+		if( $this->isNewbie() ) {
+			if( isset( $limits['newbie'] ) && $id != 0 ) {
+				$keys[wfMemcKey( 'limiter', $action, 'user', $id )] = $limits['newbie'];
+			}
+			if( isset( $limits['ip'] ) ) {
+				$keys["mediawiki:limiter:$action:ip:$ip"] = $limits['ip'];
+			}
+			$matches = array();
+			if( isset( $limits['subnet'] ) && preg_match( '/^(\d+\.\d+\.\d+)\.\d+$/', $ip, $matches ) ) {
+				$subnet = $matches[1];
+				$keys["mediawiki:limiter:$action:subnet:$subnet"] = $limits['subnet'];
+			}
+		}
+
+		$triggered = false;
+		foreach( $keys as $key => $limit ) {
+			list( $max, $period ) = $limit;
+			$summary = "(limit $max in {$period}s)";
+			$count = $wgMemc->get( $key );
+			if( $count ) {
+				if( $count > $max ) {
+					wfDebug( __METHOD__.": tripped! $key at $count $summary\n" );
+					if( $wgRateLimitLog ) {
+						@error_log( wfTimestamp( TS_MW ) . ' ' . wfWikiID() . ': ' . $this->getName() . " tripped $key at $count $summary\n", 3, $wgRateLimitLog );
+					}
+					$triggered = true;
+				} else {
+					wfDebug( __METHOD__.": ok. $key at $count $summary\n" );
+				}
+			} else {
+				wfDebug( __METHOD__.": adding record for $key $summary\n" );
+				$wgMemc->add( $key, 1, intval( $period ) );
+			}
+			$wgMemc->incr( $key );
+		}
+
+		wfProfileOut( __METHOD__ );
+		return $triggered;
+	}
+
+	/**
+	 * Check if user is blocked
+	 * @return bool True if blocked, false otherwise
+	 */
+	function isBlocked( $bFromSlave = true ) { // hacked from false due to horrible probs on site
+		wfDebug( "User::isBlocked: enter\n" );
+		$this->getBlockedStatus( $bFromSlave );
+		return $this->mBlockedby !== 0;
+	}
+
+	/**
+	 * Check if user is blocked from editing a particular article
+	 */
+	function isBlockedFrom( $title, $bFromSlave = false ) {
+		global $wgBlockAllowsUTEdit;
+		wfProfileIn( __METHOD__ );
+		wfDebug( __METHOD__.": enter\n" );
+
+		wfDebug( __METHOD__.": asking isBlocked()\n" );
+		$blocked = $this->isBlocked( $bFromSlave );
+		# If a user's name is suppressed, they cannot make edits anywhere
+		if ( !$this->mHideName && $wgBlockAllowsUTEdit && $title->getText() === $this->getName() &&
+		  $title->getNamespace() == NS_USER_TALK ) {
+			$blocked = false;
+			wfDebug( __METHOD__.": self-talk page, ignoring any blocks\n" );
+		}
+		wfProfileOut( __METHOD__ );
+		return $blocked;
+	}
+
+	/**
+	 * Get name of blocker
+	 * @return string name of blocker
+	 */
+	function blockedBy() {
+		$this->getBlockedStatus();
+		return $this->mBlockedby;
+	}
+
+	/**
+	 * Get blocking reason
+	 * @return string Blocking reason
+	 */
+	function blockedFor() {
+		$this->getBlockedStatus();
+		return $this->mBlockreason;
+	}
+
+	/**
+	 * Get the user ID. Returns 0 if the user is anonymous or nonexistent.
+	 */
+	function getID() { 
+		$this->load();
+		return $this->mId; 
+	}
+
+	/**
+	 * Set the user and reload all fields according to that ID
+	 * @deprecated use User::newFromId()
+	 */
+	function setID( $v ) {
+		$this->mId = $v;
+		$this->clearInstanceCache( 'id' );
+	}
+
+	/**
+	 * Get the user name, or the IP for anons
+	 */
+	function getName() {
+		if ( !$this->mDataLoaded && $this->mFrom == 'name' ) {
+			# Special case optimisation
+			return $this->mName;
+		} else {
+			$this->load();
+			if ( $this->mName === false ) {
+				# Clean up IPs
+				$this->mName = IP::sanitizeIP( wfGetIP() );
+			}
+			return $this->mName;
+		}
+	}
+
+	/**
+	 * Set the user name. 
+	 *
+	 * This does not reload fields from the database according to the given 
+	 * name. Rather, it is used to create a temporary "nonexistent user" for
+	 * later addition to the database. It can also be used to set the IP 
+	 * address for an anonymous user to something other than the current 
+	 * remote IP.
+	 *
+	 * User::newFromName() has rougly the same function, when the named user
+	 * does not exist.
+	 */
+	function setName( $str ) {
+		$this->load();
+		$this->mName = $str;
+	}
+
+	/**
+	 * Return the title dbkey form of the name, for eg user pages.
+	 * @return string
+	 * @public
+	 */
+	function getTitleKey() {
+		return str_replace( ' ', '_', $this->getName() );
+	}
+
+	function getNewtalk() {
+		$this->load();
+
+		# Load the newtalk status if it is unloaded (mNewtalk=-1)
+		if( $this->mNewtalk === -1 ) {
+			$this->mNewtalk = false; # reset talk page status
+
+			# Check memcached separately for anons, who have no
+			# entire User object stored in there.
+			if( !$this->mId ) {
+				global $wgMemc;
+				$key = wfMemcKey( 'newtalk', 'ip', $this->getName() );
+				$newtalk = $wgMemc->get( $key );
+				if( $newtalk != "" ) {
+					$this->mNewtalk = (bool)$newtalk;
+				} else {
+					$this->mNewtalk = $this->checkNewtalk( 'user_ip', $this->getName() );
+					$wgMemc->set( $key, (int)$this->mNewtalk, time() + 1800 );
+				}
+			} else {
+				$this->mNewtalk = $this->checkNewtalk( 'user_id', $this->mId );
+			}
+		}
+
+		return (bool)$this->mNewtalk;
+	}
+
+	/**
+	 * Return the talk page(s) this user has new messages on.
+	 */
+	function getNewMessageLinks() {
+		$talks = array();
+		if (!wfRunHooks('UserRetrieveNewTalks', array(&$this, &$talks)))
+			return $talks;
+
+		if (!$this->getNewtalk())
+			return array();
+		$up = $this->getUserPage();
+		$utp = $up->getTalkPage();
+		return array(array("wiki" => wfWikiID(), "link" => $utp->getLocalURL()));
+	}
+
+		
+	/**
+	 * Perform a user_newtalk check on current slaves; if the memcached data
+	 * is funky we don't want newtalk state to get stuck on save, as that's
+	 * damn annoying.
+	 *
+	 * @param string $field
+	 * @param mixed $id
+	 * @return bool
+	 * @private
+	 */
+	function checkNewtalk( $field, $id ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		$ok = $dbr->selectField( 'user_newtalk', $field,
+			array( $field => $id ), __METHOD__ );
+		return $ok !== false;
+	}
+
+	/**
+	 * Add or update the
+	 * @param string $field
+	 * @param mixed $id
+	 * @private
+	 */
+	function updateNewtalk( $field, $id ) {
+		if( $this->checkNewtalk( $field, $id ) ) {
+			wfDebug( __METHOD__." already set ($field, $id), ignoring\n" );
+			return false;
+		}
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->insert( 'user_newtalk',
+			array( $field => $id ),
+			__METHOD__,
+			'IGNORE' );
+		wfDebug( __METHOD__.": set on ($field, $id)\n" );
+		return true;
+	}
+
+	/**
+	 * Clear the new messages flag for the given user
+	 * @param string $field
+	 * @param mixed $id
+	 * @private
+	 */
+	function deleteNewtalk( $field, $id ) {
+		if( !$this->checkNewtalk( $field, $id ) ) {
+			wfDebug( __METHOD__.": already gone ($field, $id), ignoring\n" );
+			return false;
+		}
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->delete( 'user_newtalk',
+			array( $field => $id ),
+			__METHOD__ );
+		wfDebug( __METHOD__.": killed on ($field, $id)\n" );
+		return true;
+	}
+
+	/**
+	 * Update the 'You have new messages!' status.
+	 * @param bool $val
+	 */
+	function setNewtalk( $val ) {
+		if( wfReadOnly() ) {
+			return;
+		}
+
+		$this->load();
+		$this->mNewtalk = $val;
+
+		if( $this->isAnon() ) {
+			$field = 'user_ip';
+			$id = $this->getName();
+		} else {
+			$field = 'user_id';
+			$id = $this->getId();
+		}
+
+		if( $val ) {
+			$changed = $this->updateNewtalk( $field, $id );
+		} else {
+			$changed = $this->deleteNewtalk( $field, $id );
+		}
+
+		if( $changed ) {
+			if( $this->isAnon() ) {
+				// Anons have a separate memcached space, since
+				// user records aren't kept for them.
+				global $wgMemc;
+				$key = wfMemcKey( 'newtalk', 'ip', $val );
+				$wgMemc->set( $key, $val ? 1 : 0 );
+			} else {
+				if( $val ) {
+					// Make sure the user page is watched, so a notification
+					// will be sent out if enabled.
+					$this->addWatch( $this->getTalkPage() );
+				}
+			}
+			$this->invalidateCache();
+		}
+	}
