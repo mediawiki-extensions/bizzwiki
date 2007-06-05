@@ -86,7 +86,10 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								); 
 
 foreach( $bwAnonymousNamespaces as $index => $bwx )
+{	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
+}
 
 	// User
 $bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
@@ -99,7 +102,7 @@ $bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
 foreach( $bwUserNamespaces as $index => $bwx )
 	{
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 	}
 	
 
