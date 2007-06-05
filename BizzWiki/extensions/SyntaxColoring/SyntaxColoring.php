@@ -72,15 +72,17 @@ class SyntaxColoring extends ExtensionClass
 		$this->found = true;
 		$this->text = $text;
 		
+		// don't waste time for nothing.
 		$text = '';
-		
-		// if we are dealing with PHP:
-		// $text = '<pre>'.$text.'</pre>';
 		
 		return true;		
 	}
 	public function hParserAfterTidy( &$parser, &$text )
 	{
+		// the parser gets called two times in one transaction
+		// when editing/creating an article.
+		// Use ParserCacheControl extension or patched Article::editUpdates.
+
 		if (! $this->found ) return true;
 		$this->found = false;
 		
@@ -88,8 +90,6 @@ class SyntaxColoring extends ExtensionClass
 		highlight_string( $this->text );
 		$text = ob_get_contents();
 		ob_end_clean();
-		
-		$this->text = '';
 		
 		return true;	
 	}

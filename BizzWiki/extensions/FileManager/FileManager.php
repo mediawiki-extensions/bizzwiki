@@ -32,8 +32,8 @@
  *
  * TODO:
  * =====
- * - verify that NS_FILESYSTEM namespace is defined.
- * 
+ * - internationalization
+ * - add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
  */
 
 // Verify if 'ExtensionClass' is present.
