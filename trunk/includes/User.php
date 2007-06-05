@@ -6,6 +6,9 @@
 	
 	BizzWiki:  $Id$
 	
+	TODO:
+	=====
+	
 	HISTORY:
 	========
 	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
