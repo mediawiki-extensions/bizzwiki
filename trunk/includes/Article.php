@@ -8,12 +8,12 @@
 	TODO:
 	=====
 	1) Page Deletion: change to work on a namespace level
-	2) 
+	
 
 
 	History:
 	========
-	- 
+	- disable save article in parser cache upon article creation/update
 
 */
 
@@ -2307,9 +2307,11 @@ class Article {
 		$options->setTidy(true);
 		$poutput = $wgParser->parse( $text, $this->mTitle, $options, true, true, $newid );
 
+		// BizzWiki begin {{
 		# Save it to the parser cache
-		$parserCache =& ParserCache::singleton();
-		$parserCache->save( $poutput, $this, $wgUser );
+		#$parserCache =& ParserCache::singleton();
+		#$parserCache->save( $poutput, $this, $wgUser );
+		// BizzWiki end }}
 
 		# Update the links tables
 		$u = new LinksUpdate( $this->mTitle, $poutput );

@@ -84,7 +84,10 @@ class SyntaxColoring extends ExtensionClass
 		if (! $this->found ) return true;
 		$this->found = false;
 		
-		$text = highlight_string( $this->text );
+		ob_start();
+		highlight_string( $this->text );
+		$text = ob_get_contents();
+		ob_end_clean();
 		
 		$this->text = '';
 		
