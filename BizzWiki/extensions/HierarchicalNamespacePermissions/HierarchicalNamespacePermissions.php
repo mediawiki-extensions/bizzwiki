@@ -164,7 +164,7 @@ class hnpClass
 	function hUserIsAllowed( &$user, $ns=null, &$action, &$result )
 	{
 		// are we asked to check for a specific action in a specific namespace??
-		if ( $ns !==null )
+		if ( $ns !== null )
 		{
 			$result = hnpClass::userCanInternal( $user, $ns, '~' , $action );
 			return false;	

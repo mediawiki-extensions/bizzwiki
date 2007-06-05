@@ -10,7 +10,7 @@
 	
 	HISTORY:
 	========
-	1) Added check for 'browse' right on a per namespace basis. 
+	1) Added check for 'browse' right on a per namespace basis. ( patch in 'namespaceSelector' function ) 
 */
 
 /**
