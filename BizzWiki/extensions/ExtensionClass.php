@@ -45,10 +45,12 @@
  * v1.93    Added 'replaceHook' method.
  *          (dependancy on 'replaceHookList')
  *
+ * ------   Moved to BizzWiki
+ *
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
-	'version' => 'v1.93 $Id$',
+	'version' => '$Id$',
 	'author'  => 'Jean-Lou Dupont', 
 	'url'     => 'http://www.bluecortex.com',
 );
