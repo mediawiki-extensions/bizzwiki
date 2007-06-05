@@ -68,6 +68,9 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'userrights',
 										'siteadmin',
 										'import',
+										'deletedhistory',
+										'deleterevision',
+										'block',
 										'bot',             	// TODO
 										'proxyunbannable', 	// TODO
 										'trackback',		// TODO
@@ -77,8 +80,7 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 
 
 $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',
-										'deletedhistory',
-										'deleterevision',
+										
 										'protect',
 										'patrol',
 										'purge',
