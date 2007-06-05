@@ -112,10 +112,6 @@ static $hookList = array(
 'ParserAfterStrip',
 'ParserBeforeTidy',
 'ParserAfterTidy',
-'ParserBeforeStrip',
-'ParserAfterStrip', 
-'ParserBeforeStrip',
-'ParserAfterStrip', 
 'ParserBeforeInternalParse',
 'InternalParseBeforeLinks', 
 'ParserGetVariableValueVarCache',
@@ -262,6 +258,8 @@ static $hookList = array(
 		// v1.5 feature
 		foreach (self::$hookList as $index => $hookName)
 		{
+			$replaceFlag = false;
+			
 			if (!empty($replaceHookList))
 				$replaceFlag = in_array( $hookName, $replaceHookList);
 					
