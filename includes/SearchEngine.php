@@ -7,11 +7,11 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
+	1) 
 	
 	HISTORY:
 	========
-	1) 
+	1) Added namespace level 'search' right.
 */
 /**
  * Contain a class for special pages
@@ -193,9 +193,13 @@ class SearchEngine {
 	 * @access public
 	 */
 	function searchableNamespaces() {
-		global $wgContLang;
+		global $wgContLang, $wgUser;
 		$arr = array();
-		foreach( $wgContLang->getNamespaces() as $ns => $name ) {
+		foreach( $wgContLang->getNamespaces() as $ns => $name ) 
+		{
+			// BizzWiki begin {{
+			if ( !$wgUser->isAllowedActionNamespace( $ns, 'search' ) ) continue;
+			// BizzWiki end }}
 			if( $ns >= NS_MAIN ) {
 				$arr[$ns] = $name;
 			}
