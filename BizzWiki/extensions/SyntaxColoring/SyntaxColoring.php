@@ -58,15 +58,17 @@ class SyntaxColoring extends ExtensionClass
 	{
 		if (!$this->isPHP( $parser )) return true; // continue hook-chain
 		
+		echo 'here ';
+		
 		// if we are dealing with PHP:
-		$text = '<nowiki>'.$text.'</nowiki>';
+		$text = '<pre>'.$text.'</pre>';
 		
 		return true;		
 	}
 	private function isPHP( &$parser )
 	{
 		// is the namespace defined at all??
-		if (!isset(NS_FILESYSTEM)) return false;
+		if (!defined('NS_FILESYSTEM')) return false;
 		
 		// is the current article in the right namespace??
 		$ns = $parser->mTitle->getNamespace();
