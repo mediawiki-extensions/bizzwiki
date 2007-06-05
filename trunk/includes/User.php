@@ -1766,7 +1766,7 @@ class User {
 	{
 		$result = false; // disallowed by default.
 		
-		wfRunHooks('UserIsAllowed', array( &$this, $ns, &$action, &$result ) );
+		wfRunHooks('UserIsAllowed', array( &$this, $ns, null, &$action, &$result ) );
 		return $result;
 	}
 	

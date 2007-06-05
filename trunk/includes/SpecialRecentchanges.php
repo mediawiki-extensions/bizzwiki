@@ -253,6 +253,11 @@ function wfSpecialRecentchanges( $par, $specialPage ) {
 				break;
 			}
 
+			// BizzWiki begin {{
+			$ns = $obj->rc_namespace;
+			if ( !$wgUser->isAllowedActionNamespace($ns, 'browse') ) continue;
+			// BizzWiki end }}
+
 			if ( ! ( $hideminor     && $obj->rc_minor     ) &&
 			     ! ( $hidepatrolled && $obj->rc_patrolled ) ) {
 				$rc = RecentChange::newFromRow( $obj );

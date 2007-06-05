@@ -209,7 +209,7 @@ class hnpClass
 		$cns = $wgTitle->getNamespace();
 		$cti = $wgTitle->mDbkeyform;
 		
-		if ( $cns == NS_SPECIAL )
+		if ( ($cns == NS_SPECIAL) && ($ns === null) )
 		{
 			echo 'hnpClass: action <b>'.$action.'</b> namespace dependant but called from NS_SPECIAL. <br/>';
 			return false;	
@@ -218,7 +218,6 @@ class hnpClass
 		// Finally, the request comes from a valid namespace & with a valid namespace dependant action
 		if ( $ns === null )    $ns = $cns;
 		if ( $titre === null ) $titre = $cti;
-
 
 		$result = hnpClass::userCanInternal( $user, $ns, $titre , $action );
 	
