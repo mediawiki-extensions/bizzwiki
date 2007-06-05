@@ -123,6 +123,8 @@
  *  - added singleton functionality
  */
 
+	// instantiate one
+hnpClass::singleton();
 
 class hnpClass
 {
@@ -175,6 +177,8 @@ class hnpClass
 		// creation/update even without 'read' right?
 		if ( $submit && ($a == 'read') )
 			$a = "SubmitWithoutRead";
+
+		echo " Namespace: $ns  Title=$pt  Action=$a \n <br/>";
 
 		// Normal processing path.
 		$r = hnpClass::userCanInternal( $u, $ns, $pt, $a );
@@ -322,8 +326,6 @@ class hnpClass
 	
 	}
 
-	// instantiate one
-	singleton();
 } # end class definition
 
 ?>

@@ -30,6 +30,9 @@
  *    Create i18n file
  * 
  */
+
+ViewsourceRight::singleton();
+
 class ViewsourceRight extends ExtensionClass
 {
 	const thisName = 'ViewsourceRight';
@@ -133,7 +136,5 @@ class ViewsourceRight extends ExtensionClass
 		}
 
 	}
-
-	singleton();
 } // end class definition.
 ?>

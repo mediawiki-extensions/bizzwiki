@@ -2979,4 +2979,4 @@ class Article {
 
 }
 
-?
+?>

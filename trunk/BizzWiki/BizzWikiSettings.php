@@ -13,7 +13,7 @@ require('extensions/ExtensionClass.php');
 // Parser & Page caching.
 $wgEnableParserCache = true;
 $wgParserCacheType   = CACHE_ANYTHING;
-$wgCachePages        = true;
+#$wgCachePages        = true;
 
 // Disable raw html
 $wgRawHtml = false;
@@ -23,7 +23,7 @@ define('NS_BIZZWIKI',   100);
 define('NS_FILESYSTEM', 102);
 
 // Need to include standard 'Namespace.php'
-require('../includes/Namespace.php');
+require($IP.'/includes/Namespace.php');
 
 // Add the new namespaces to the global variables
 $wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
@@ -72,9 +72,10 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = t
 
 	// Anonymous
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
-$bwAnonymousNamespaces = array( NS_MAIN, NS_MAIN_TALK,
+$bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
 								NS_HELP, NS_HELP_TALK,
+								NS_SPECIAL
 								); 
 
 foreach( $bwAnonymousNamespaces as $index => $bwx )
