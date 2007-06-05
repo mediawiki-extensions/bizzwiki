@@ -118,10 +118,11 @@
  *    "action" field.
  *  - Corrected some corner cases
  * -------------------------------
- * Version 1.3:
- *  - moved to BizzWiki project
+ * Moved to BizzWiki project
+ *  
  *  - added singleton functionality
  *  - added hook support for 'UserIsAllowed'
+ *  - added namespace level action checking.
  *
  */
 
@@ -160,8 +161,17 @@ class hnpClass
 			
 		$this->initGroups();
 	}	
-	function hUserIsAllowed( &$user, &$action, &$result )
+	function hUserIsAllowed( &$user, $ns=null, &$action, &$result )
 	{
+		// are we asked to check for a specific action in a specific namespace??
+		if ( $ns !==null )
+		{
+			$result = hnpClass::userCanInternal( $user, $ns, '~' , $action );
+			return false;	
+		}
+
+		// We are asked to check for a specific action on the current title.
+		
 		global $wgTitle;
 		
 		$this->userCan( $wgTitle, $user, $action, $result );
