@@ -7,11 +7,10 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
 	
 	HISTORY:
 	========
-	1) 
+	1) Added namespace level permission enforcement.
 */
 
 /**
@@ -56,8 +55,13 @@ class MostlinkedPage extends QueryPage {
 	function preprocessResults( &$db, &$res ) {
 		if( $db->numRows( $res ) > 0 ) {
 			$linkBatch = new LinkBatch();
+			
+			global $wgUser; // BizzWiki
 			while( $row = $db->fetchObject( $res ) )
+			{
+				if ( !$wgUser->isAllowedActionNamespace( $row->namespace, 'read' ) ) continue; // BizzWiki
 				$linkBatch->addObj( Title::makeTitleSafe( $row->namespace, $row->title ) );
+			}
 			$db->dataSeek( $res, 0 );
 			$linkBatch->execute();
 		}
