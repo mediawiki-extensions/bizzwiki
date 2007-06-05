@@ -59,11 +59,6 @@ class ViewsourceRight extends ExtensionClass
 	public function setup()
 	{
 		parent::setup();
-		
-		global $wgHooks;
-		$wgHooks['AlternateEdit'][]    = array( &$this, 'hAlternateEditHook' );
-		$wgHooks['SkinTemplateTabs'][] = array( &$this, 'hSkinTemplateTabs' );		
-		
 	}
 	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.

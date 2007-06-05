@@ -109,6 +109,6 @@ $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting
-#require('extensions/SyntaxColoring/SyntaxColoring.php');
+require('extensions/SyntaxColoring/SyntaxColoring.php');
 
 ?>
