@@ -179,6 +179,7 @@ class hnpClass
 	
 	function hUserIsAllowed( &$user, $ns=null, $titre=null, &$action, &$result )
 	{
+		$result = false; // disallow by default.
 		if ($action == '') return true;
 		
 		// Namespace independant right ??

@@ -261,7 +261,8 @@ class OldChangesList extends ChangesList {
 		extract( $rc->mAttribs );
 
 		# Should patrol-related stuff be shown?
-		$unpatrolled = $this->usePatrol() && $rc_patrolled == 0;
+		global $wgUser; // BizzWiki
+		$unpatrolled = $this->usePatrol( $rc_namespace /* BizzWiki */) && $rc_patrolled == 0;
 
 		$this->insertDateHeader($s,$rc_timestamp);
 
