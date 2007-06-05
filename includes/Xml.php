@@ -7,11 +7,10 @@
 
 	TODO:
 	=====
-	1) Namespace level permission enforcement.
 	
 	HISTORY:
 	========
-	1) 
+	1) Added check for 'browse' right on a per namespace basis. 
 */
 
 /**
@@ -92,7 +91,7 @@ class Xml {
 	 * @return String: Html string containing the namespace selector
 	 */
 	public static function namespaceSelector($selected = '', $allnamespaces = null, $includehidden=false) {
-		global $wgContLang;
+		global $wgContLang, $wgUser;
 		if( $selected !== '' ) {
 			if( is_null( $selected ) ) {
 				// No namespace selected; let exact match work without hitting Main
@@ -109,6 +108,10 @@ class Xml {
 		}
 		foreach ($arr as $index => $name) {
 			if ($index < NS_MAIN) continue;
+
+			// BizzWiki begin {{
+			if ( !$wgUser->isAllowedActionNamespace( $index, 'browse' ) ) continue;
+			// BizzWiki end }}
 
 			$name = $index !== 0 ? $name : wfMsg('blanknamespace');
 
