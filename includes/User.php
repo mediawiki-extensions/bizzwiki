@@ -1319,3 +1319,428 @@ class User {
 			$this->invalidateCache();
 		}
 	}
+	/**
+	 * Generate a current or new-future timestamp to be stored in the
+	 * user_touched field when we update things.
+	 */
+	private static function newTouchedTimestamp() {
+		global $wgClockSkewFudge;
+		return wfTimestamp( TS_MW, time() + $wgClockSkewFudge );
+	}
+	
+	/**
+	 * Clear user data from memcached.
+	 * Use after applying fun updates to the database; caller's
+	 * responsibility to update user_touched if appropriate.
+	 *
+	 * Called implicitly from invalidateCache() and saveSettings().
+	 */
+	private function clearSharedCache() {
+		if( $this->mId ) {
+			global $wgMemc;
+			$wgMemc->delete( wfMemcKey( 'user', 'id', $this->mId ) );
+		}
+	}
+
+	/**
+	 * Immediately touch the user data cache for this account.
+	 * Updates user_touched field, and removes account data from memcached
+	 * for reload on the next hit.
+	 */
+	function invalidateCache() {
+		$this->load();
+		if( $this->mId ) {
+			$this->mTouched = self::newTouchedTimestamp();
+			
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'user',
+				array( 'user_touched' => $dbw->timestamp( $this->mTouched ) ),
+				array( 'user_id' => $this->mId ),
+				__METHOD__ );
+			
+			$this->clearSharedCache();
+		}
+	}
+
+	function validateCache( $timestamp ) {
+		$this->load();
+		return ($timestamp >= $this->mTouched);
+	}
+
+	/**
+	 * Encrypt a password.
+	 * It can eventuall salt a password @see User::addSalt()
+	 * @param string $p clear Password.
+	 * @return string Encrypted password.
+	 */
+	function encryptPassword( $p ) {
+		$this->load();
+		return wfEncryptPassword( $this->mId, $p );
+	}
+
+	/**
+	 * Set the password and reset the random token
+	 * Calls through to authentication plugin if necessary;
+	 * will have no effect if the auth plugin refuses to
+	 * pass the change through or if the legal password
+	 * checks fail.
+	 *
+	 * As a special case, setting the password to null
+	 * wipes it, so the account cannot be logged in until
+	 * a new password is set, for instance via e-mail.
+	 *
+	 * @param string $str
+	 * @throws PasswordError on failure
+	 */
+	function setPassword( $str ) {
+		global $wgAuth;
+		
+		if( $str !== null ) {
+			if( !$wgAuth->allowPasswordChange() ) {
+				throw new PasswordError( wfMsg( 'password-change-forbidden' ) );
+			}
+		
+			if( !$this->isValidPassword( $str ) ) {
+				global $wgMinimalPasswordLength;
+				throw new PasswordError( wfMsg( 'passwordtooshort',
+					$wgMinimalPasswordLength ) );
+			}
+		}
+
+		if( !$wgAuth->setPassword( $this, $str ) ) {
+			throw new PasswordError( wfMsg( 'externaldberror' ) );
+		}
+		
+		$this->setInternalPassword( $str );
+
+		return true;
+	}
+
+	/**
+	 * Set the password and reset the random token no matter
+	 * what.
+	 *
+	 * @param string $str
+	 */
+	function setInternalPassword( $str ) {
+		$this->load();
+		$this->setToken();
+		
+		if( $str === null ) {
+			// Save an invalid hash...
+			$this->mPassword = '';
+		} else {
+			$this->mPassword = $this->encryptPassword( $str );
+		}
+		$this->mNewpassword = '';
+		$this->mNewpassTime = null;
+	}
+	/**
+	 * Set the random token (used for persistent authentication)
+	 * Called from loadDefaults() among other places.
+	 * @private
+	 */
+	function setToken( $token = false ) {
+		global $wgSecretKey, $wgProxyKey;
+		$this->load();
+		if ( !$token ) {
+			if ( $wgSecretKey ) {
+				$key = $wgSecretKey;
+			} elseif ( $wgProxyKey ) {
+				$key = $wgProxyKey;
+			} else {
+				$key = microtime();
+			}
+			$this->mToken = md5( $key . mt_rand( 0, 0x7fffffff ) . wfWikiID() . $this->mId );
+		} else {
+			$this->mToken = $token;
+		}
+	}
+
+	function setCookiePassword( $str ) {
+		$this->load();
+		$this->mCookiePassword = md5( $str );
+	}
+
+	/**
+	 * Set the password for a password reminder or new account email
+	 * Sets the user_newpass_time field if $throttle is true
+	 */
+	function setNewpassword( $str, $throttle = true ) {
+		$this->load();
+		$this->mNewpassword = $this->encryptPassword( $str );
+		if ( $throttle ) {
+			$this->mNewpassTime = wfTimestampNow();
+		}
+	}
+
+	/**
+	 * Returns true if a password reminder email has already been sent within
+	 * the last $wgPasswordReminderResendTime hours
+	 */
+	function isPasswordReminderThrottled() {
+		global $wgPasswordReminderResendTime;
+		$this->load();
+		if ( !$this->mNewpassTime || !$wgPasswordReminderResendTime ) {
+			return false;
+		}
+		$expiry = wfTimestamp( TS_UNIX, $this->mNewpassTime ) + $wgPasswordReminderResendTime * 3600;
+		return time() < $expiry;
+	}
+	
+	function getEmail() {
+		$this->load();
+		return $this->mEmail;
+	}
+
+	function getEmailAuthenticationTimestamp() {
+		$this->load();
+		return $this->mEmailAuthenticated;
+	}
+
+	function setEmail( $str ) {
+		$this->load();
+		$this->mEmail = $str;
+	}
+
+	function getRealName() {
+		$this->load();
+		return $this->mRealName;
+	}
+
+	function setRealName( $str ) {
+		$this->load();
+		$this->mRealName = $str;
+	}
+
+	/**
+	 * @param string $oname The option to check
+	 * @param string $defaultOverride A default value returned if the option does not exist
+	 * @return string
+	 */
+	function getOption( $oname, $defaultOverride = '' ) {
+		$this->load();
+
+		if ( is_null( $this->mOptions ) ) {
+			if($defaultOverride != '') {
+				return $defaultOverride;
+			}
+			$this->mOptions = User::getDefaultOptions();
+		}
+
+		if ( array_key_exists( $oname, $this->mOptions ) ) {
+			return trim( $this->mOptions[$oname] );
+		} else {
+			return $defaultOverride;
+		}
+	}
+
+	/**
+	 * Get the user's date preference, including some important migration for 
+	 * old user rows.
+	 */
+	function getDatePreference() {
+		if ( is_null( $this->mDatePreference ) ) {
+			global $wgLang;
+			$value = $this->getOption( 'date' );
+			$map = $wgLang->getDatePreferenceMigrationMap();
+			if ( isset( $map[$value] ) ) {
+				$value = $map[$value];
+			}
+			$this->mDatePreference = $value;
+		}
+		return $this->mDatePreference;
+	}
+
+	/**
+	 * @param string $oname The option to check
+	 * @return bool False if the option is not selected, true if it is
+	 */
+	function getBoolOption( $oname ) {
+		return (bool)$this->getOption( $oname );
+	}
+	
+	/**
+	 * Get an option as an integer value from the source string.
+	 * @param string $oname The option to check
+	 * @param int $default Optional value to return if option is unset/blank.
+	 * @return int
+	 */
+	function getIntOption( $oname, $default=0 ) {
+		$val = $this->getOption( $oname );
+		if( $val == '' ) {
+			$val = $default;
+		}
+		return intval( $val );
+	}
+
+	function setOption( $oname, $val ) {
+		$this->load();
+		if ( is_null( $this->mOptions ) ) {
+			$this->mOptions = User::getDefaultOptions();
+		}
+		if ( $oname == 'skin' ) {
+			# Clear cached skin, so the new one displays immediately in Special:Preferences
+			unset( $this->mSkin );
+		}
+		// Filter out any newlines that may have passed through input validation.
+		// Newlines are used to separate items in the options blob.
+		$val = str_replace( "\r\n", "\n", $val );
+		$val = str_replace( "\r", "\n", $val );
+		$val = str_replace( "\n", " ", $val );
+		$this->mOptions[$oname] = $val;
+	}
+
+	function getRights() {
+		if ( is_null( $this->mRights ) ) {
+			$this->mRights = self::getGroupPermissions( $this->getEffectiveGroups() );
+		}
+		return $this->mRights;
+	}
+
+	/**
+	 * Get the list of explicit group memberships this user has.
+	 * The implicit * and user groups are not included.
+	 * @return array of strings
+	 */
+	function getGroups() {
+		$this->load();
+		return $this->mGroups;
+	}
+
+	/**
+	 * Get the list of implicit group memberships this user has.
+	 * This includes all explicit groups, plus 'user' if logged in
+	 * and '*' for all accounts.
+	 * @param boolean $recache Don't use the cache
+	 * @return array of strings
+	 */
+	function getEffectiveGroups( $recache = false ) {
+		if ( $recache || is_null( $this->mEffectiveGroups ) ) {
+			$this->load();
+			$this->mEffectiveGroups = $this->mGroups;
+			$this->mEffectiveGroups[] = '*';
+			if( $this->mId ) {
+				$this->mEffectiveGroups[] = 'user';
+				
+				global $wgAutoConfirmAge, $wgAutoConfirmCount;
+
+				$accountAge = time() - wfTimestampOrNull( TS_UNIX, $this->mRegistration );
+				if( $accountAge >= $wgAutoConfirmAge && $this->getEditCount() >= $wgAutoConfirmCount ) {
+					$this->mEffectiveGroups[] = 'autoconfirmed';
+				}
+				# Implicit group for users whose email addresses are confirmed
+				global $wgEmailAuthentication;
+				if( self::isValidEmailAddr( $this->mEmail ) ) {
+					if( $wgEmailAuthentication ) {
+						if( $this->mEmailAuthenticated )
+							$this->mEffectiveGroups[] = 'emailconfirmed';
+					} else {
+						$this->mEffectiveGroups[] = 'emailconfirmed';
+					}
+				}
+			}
+		}
+		return $this->mEffectiveGroups;
+	}
+	
+	/* Return the edit count for the user. This is where User::edits should have been */
+	function getEditCount() {
+		if ($this->mId) {
+			if ( !isset( $this->mEditCount ) ) {
+				/* Populate the count, if it has not been populated yet */
+				$this->mEditCount = User::edits($this->mId);
+			} 
+			return $this->mEditCount;
+		} else {
+			/* nil */
+			return null;
+		}
+	}
+	
+	/**
+	 * Add the user to the given group.
+	 * This takes immediate effect.
+	 * @param string $group
+	 */
+	function addGroup( $group ) {
+		$this->load();
+		$dbw = wfGetDB( DB_MASTER );
+		if( $this->getId() ) {
+			$dbw->insert( 'user_groups',
+				array(
+					'ug_user'  => $this->getID(),
+					'ug_group' => $group,
+				),
+				'User::addGroup',
+				array( 'IGNORE' ) );
+		}
+
+		$this->mGroups[] = $group;
+		$this->mRights = User::getGroupPermissions( $this->getEffectiveGroups( true ) );
+
+		$this->invalidateCache();
+	}
+
+	/**
+	 * Remove the user from the given group.
+	 * This takes immediate effect.
+	 * @param string $group
+	 */
+	function removeGroup( $group ) {
+		$this->load();
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->delete( 'user_groups',
+			array(
+				'ug_user'  => $this->getID(),
+				'ug_group' => $group,
+			),
+			'User::removeGroup' );
+
+		$this->mGroups = array_diff( $this->mGroups, array( $group ) );
+		$this->mRights = User::getGroupPermissions( $this->getEffectiveGroups( true ) );
+
+		$this->invalidateCache();
+	}
+
+
+	/**
+	 * A more legible check for non-anonymousness.
+	 * Returns true if the user is not an anonymous visitor.
+	 *
+	 * @return bool
+	 */
+	function isLoggedIn() {
+		return( $this->getID() != 0 );
+	}
+
+	/**
+	 * A more legible check for anonymousness.
+	 * Returns true if the user is an anonymous visitor.
+	 *
+	 * @return bool
+	 */
+	function isAnon() {
+		return !$this->isLoggedIn();
+	}
+
+	/**
+	 * Whether the user is a bot
+	 * @deprecated
+	 */
+	function isBot() {
+		return $this->isAllowed( 'bot' );
+	}
+
+	/**
+	 * Check if user is allowed to access a feature / make an action
+	 * @param string $action Action to be checked
+	 * @return boolean True: action is allowed, False: action should not be allowed
+	 */
+	function isAllowed($action='') {
+		if ( $action === '' )
+			// In the spirit of DWIM
+			return true;
+
+		return in_array( $action, $this->getRights() );
+	}
