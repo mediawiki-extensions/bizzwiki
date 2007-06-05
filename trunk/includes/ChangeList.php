@@ -3,7 +3,7 @@
 	Origin:  MW 1.10
 	-------
 	
-	BizzWiki:  $Id: SpecialLog.php 128 2007-06-05 19:01:51Z jeanlou.dupont $
+	BizzWiki:  $Id$
 	
 	TODO:
 	=====
