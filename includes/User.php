@@ -1152,85 +1152,127 @@ class User {
 		}
 	}
 	/**
-	 * Check if user is blocked
-	 * @return bool True if blocked, false otherwise
+	 * Set the user name. 
+	 *
+	 * This does not reload fields from the database according to the given 
+	 * name. Rather, it is used to create a temporary "nonexistent user" for
+	 * later addition to the database. It can also be used to set the IP 
+	 * address for an anonymous user to something other than the current 
+	 * remote IP.
+	 *
+	 * User::newFromName() has rougly the same function, when the named user
+	 * does not exist.
 	 */
-	function isBlocked( $bFromSlave = true ) { // hacked from false due to horrible probs on site
-		wfDebug( "User::isBlocked: enter\n" );
-		$this->getBlockedStatus( $bFromSlave );
-		return $this->mBlockedby !== 0;
-	}
-
-	/**
-	 * Check if user is blocked from editing a particular article
-	 */
-	function isBlockedFrom( $title, $bFromSlave = false ) {
-		global $wgBlockAllowsUTEdit;
-		wfProfileIn( __METHOD__ );
-		wfDebug( __METHOD__.": enter\n" );
-
-		wfDebug( __METHOD__.": asking isBlocked()\n" );
-		$blocked = $this->isBlocked( $bFromSlave );
-		# If a user's name is suppressed, they cannot make edits anywhere
-		if ( !$this->mHideName && $wgBlockAllowsUTEdit && $title->getText() === $this->getName() &&
-		  $title->getNamespace() == NS_USER_TALK ) {
-			$blocked = false;
-			wfDebug( __METHOD__.": self-talk page, ignoring any blocks\n" );
-		}
-		wfProfileOut( __METHOD__ );
-		return $blocked;
-	}
-
-	/**
-	 * Get name of blocker
-	 * @return string name of blocker
-	 */
-	function blockedBy() {
-		$this->getBlockedStatus();
-		return $this->mBlockedby;
-	}
-
-	/**
-	 * Get blocking reason
-	 * @return string Blocking reason
-	 */
-	function blockedFor() {
-		$this->getBlockedStatus();
-		return $this->mBlockreason;
-	}
-
-	/**
-	 * Get the user ID. Returns 0 if the user is anonymous or nonexistent.
-	 */
-	function getID() { 
+	function setName( $str ) {
 		$this->load();
-		return $this->mId; 
+		$this->mName = $str;
 	}
 
 	/**
-	 * Set the user and reload all fields according to that ID
-	 * @deprecated use User::newFromId()
+	 * Return the title dbkey form of the name, for eg user pages.
+	 * @return string
+	 * @public
 	 */
-	function setID( $v ) {
-		$this->mId = $v;
-		$this->clearInstanceCache( 'id' );
+	function getTitleKey() {
+		return str_replace( ' ', '_', $this->getName() );
 	}
+	function getNewtalk() {
+		$this->load();
 
-	/**
-	 * Get the user name, or the IP for anons
-	 */
-	function getName() {
-		if ( !$this->mDataLoaded && $this->mFrom == 'name' ) {
-			# Special case optimisation
-			return $this->mName;
-		} else {
-			$this->load();
-			if ( $this->mName === false ) {
-				# Clean up IPs
-				$this->mName = IP::sanitizeIP( wfGetIP() );
+		# Load the newtalk status if it is unloaded (mNewtalk=-1)
+		if( $this->mNewtalk === -1 ) {
+			$this->mNewtalk = false; # reset talk page status
+
+			# Check memcached separately for anons, who have no
+			# entire User object stored in there.
+			if( !$this->mId ) {
+				global $wgMemc;
+				$key = wfMemcKey( 'newtalk', 'ip', $this->getName() );
+				$newtalk = $wgMemc->get( $key );
+				if( $newtalk != "" ) {
+					$this->mNewtalk = (bool)$newtalk;
+				} else {
+					$this->mNewtalk = $this->checkNewtalk( 'user_ip', $this->getName() );
+					$wgMemc->set( $key, (int)$this->mNewtalk, time() + 1800 );
+				}
+			} else {
+				$this->mNewtalk = $this->checkNewtalk( 'user_id', $this->mId );
 			}
-			return $this->mName;
 		}
+
+		return (bool)$this->mNewtalk;
+	}
+
+	/**
+	 * Return the talk page(s) this user has new messages on.
+	 */
+	function getNewMessageLinks() {
+		$talks = array();
+		if (!wfRunHooks('UserRetrieveNewTalks', array(&$this, &$talks)))
+			return $talks;
+
+		if (!$this->getNewtalk())
+			return array();
+		$up = $this->getUserPage();
+		$utp = $up->getTalkPage();
+		return array(array("wiki" => wfWikiID(), "link" => $utp->getLocalURL()));
+	}
+
+		
+	/**
+	 * Perform a user_newtalk check on current slaves; if the memcached data
+	 * is funky we don't want newtalk state to get stuck on save, as that's
+	 * damn annoying.
+	 *
+	 * @param string $field
+	 * @param mixed $id
+	 * @return bool
+	 * @private
+	 */
+	function checkNewtalk( $field, $id ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		$ok = $dbr->selectField( 'user_newtalk', $field,
+			array( $field => $id ), __METHOD__ );
+		return $ok !== false;
+	}
+
+	/**
+	 * Add or update the
+	 * @param string $field
+	 * @param mixed $id
+	 * @private
+	 */
+	function updateNewtalk( $field, $id ) {
+		if( $this->checkNewtalk( $field, $id ) ) {
+			wfDebug( __METHOD__." already set ($field, $id), ignoring\n" );
+			return false;
+		}
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->insert( 'user_newtalk',
+			array( $field => $id ),
+			__METHOD__,
+			'IGNORE' );
+		wfDebug( __METHOD__.": set on ($field, $id)\n" );
+		return true;
+	}
+
+	/**
+	 * Clear the new messages flag for the given user
+	 * @param string $field
+	 * @param mixed $id
+	 * @private
+	 */
+	function deleteNewtalk( $field, $id ) {
+		if( !$this->checkNewtalk( $field, $id ) ) {
+			wfDebug( __METHOD__.": already gone ($field, $id), ignoring\n" );
+			return false;
+		}
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->delete( 'user_newtalk',
+			array( $field => $id ),
+			__METHOD__ );
+		wfDebug( __METHOD__.": killed on ($field, $id)\n" );
+		return true;
 	}
 
 	/**
