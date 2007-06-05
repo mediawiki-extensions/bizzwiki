@@ -10,7 +10,8 @@
 	
 	HISTORY:
 	========
-	1) 
+	1) added namespace level 'patrol' right checking.
+	
 */
 
 /**
@@ -214,10 +215,12 @@ class ChangesList {
 	/**
 	 * Check whether to enable recent changes patrol features
 	 * @return bool
+	 *
+	 * BizzWiki changes.
 	 */
-	function usePatrol() {
+	function usePatrol( $ns ) {
 		global $wgUseRCPatrol, $wgUser;
-		return( $wgUseRCPatrol && $wgUser->isAllowed( 'patrol' ) );
+		return( $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $ns, 'patrol' ) );
 	}
 
 	/**
@@ -339,12 +342,16 @@ class EnhancedChangesList extends ChangesList {
 			$this->lastdate = $date;
 		}
 
+		// BizzWiki begin {{
+		$ns = $rc->getTitle()->getNamespace();
+
 		# Should patrol-related stuff be shown?
-		if( $this->usePatrol() ) {
+		if( $this->usePatrol( $ns ) ) {
 		  	$rc->unpatrolled = !$rc_patrolled;
 		} else {
 			$rc->unpatrolled = false;
 		}
+		// BizzWiki end }}
 
 		# Make article link
 		if( $rc_type == RC_MOVE || $rc_type == RC_MOVE_OVER_REDIRECT ) {
