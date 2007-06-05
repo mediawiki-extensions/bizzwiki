@@ -26,7 +26,6 @@
  *
  * HISTORY:
  * ========
- * V1.0
  *
  * TODO
  * ====
@@ -52,7 +51,7 @@ class RawRight extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'    => self::thisName, 
-			'version' => 'v1.0 $LastChangedRevision$',
+			'version' => '$Id$',
 			'author'  => 'Jean-Lou Dupont', 
 			'url'     => 'http://www.bluecortex.com',
 			'description' => "Status: "

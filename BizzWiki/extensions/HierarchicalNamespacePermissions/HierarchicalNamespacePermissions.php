@@ -121,6 +121,8 @@
  * Version 1.3:
  *  - moved to BizzWiki project
  *  - added singleton functionality
+ *  - added hook support for 'UserIsAllowed'
+ *
  */
 
 	// instantiate one
@@ -141,9 +143,9 @@ class hnpClass
 		global $wgExtensionCredits;
 		
 		$wgExtensionCredits['other'][] = array(
-		    'name'    => "HierarchicalNamespacePermissions [http://www.bluecortex.com]",
-			'version' => 'v1.3 $LastChangedRevision$',
-			'author'  => 'Jean-Lou Dupont [http://www.bluecortex.com]' 
+		    'name'    => "HierarchicalNamespacePermissions",
+			'version' => '$Id$',
+			'author'  => 'Jean-Lou Dupont' 
 		);
 			
 	
