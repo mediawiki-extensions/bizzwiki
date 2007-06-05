@@ -65,6 +65,7 @@ unset( $wgGroupPermissions );
 // 3
 $bwNamespaceIndependantRights =  array( 'createaccount',
 										'ipblock-exempt',
+										'hideuser',
 										'userrights',
 										'siteadmin',
 										'import',

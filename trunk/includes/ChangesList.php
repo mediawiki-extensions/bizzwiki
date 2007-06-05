@@ -218,8 +218,9 @@ class ChangesList {
 	 *
 	 * BizzWiki changes.
 	 */
-	function usePatrol( $ns ) {
+	function usePatrol( $ns=null /* added namespace parameter */ ) {
 		global $wgUseRCPatrol, $wgUser;
+		#echo 'usePatrol called with '.$ns.' <br/>';
 		return( $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $ns, 'patrol' ) );
 	}
 
