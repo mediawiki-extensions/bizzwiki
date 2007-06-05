@@ -66,8 +66,9 @@ unset( $wgGroupPermissions );
 $bwAllRights = array (	'createaccount',
 						'read', 'edit', 'minoredit', 'create', 'move', 'delete', 
 						'upload', 'reupload', 'reupload-shared',
-						'raw',
-						'viewsource',
+						'raw',        // BizzWiki specific
+						'viewsource', // BizzWiki specific
+						'browse',     // BizzWiki specific
 					);
 
 // 4
