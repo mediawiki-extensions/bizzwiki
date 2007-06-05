@@ -123,6 +123,7 @@
  *  - added singleton functionality
  *  - added hook support for 'UserIsAllowed'
  *  - added namespace level action checking.
+ *  - TODO add namespace-independant right checking.
  *
  */
 
@@ -131,6 +132,9 @@ hnpClass::singleton();
 
 class hnpClass
 {
+	var $lNsD; // namespace dependant rights list
+	var $lNsI; // namespace independant rights list
+	
 	public static function &singleton() 
 	{
 		static $instance;
@@ -141,6 +145,9 @@ class hnpClass
 
 	function hnpClass()
 	{
+		$this->lNsD = null;
+		$this->lNsI = null;
+		
 		global $wgExtensionCredits;
 		
 		$wgExtensionCredits['other'][] = array(
@@ -160,22 +167,53 @@ class hnpClass
 		}
 			
 		$this->initGroups();
-	}	
-	function hUserIsAllowed( &$user, $ns=null, &$action, &$result )
+	}
+	public function addNamespaceDependantRights( $rights )   { $this->lNsD = array_merge( $rights, $this->lNsD ); }
+	public function addNamespaceIndependantRights( $rights ) { $this->lNsI = array_merge( $rights, $this->lNsI ); }
+	
+	function hUserIsAllowed( &$user, $ns=null, $titre=null, &$action, &$result )
 	{
-		// are we asked to check for a specific action in a specific namespace??
-		if ( $ns !== null )
+		// Namespace independant right ??
+		if ( in_array( $action, $this->lNsI ) )
 		{
-			$result = hnpClass::userCanInternal( $user, $ns, '~' , $action );
+			$result = hnpClass::userCanInternal( $user, '~', '~' , $action );
 			return false;	
 		}
 
-		// We are asked to check for a specific action on the current title.
+		// debugging...
+		if (! in_array( $action, $this->lNsD) )
+		{
+			echo 'hnpClass: action <b>'.$action.'</b> not found in namespace dependant array. <br/>';
+			return false;	
+		}
+
+		// Namespace dependant right:
+		// Two cases:
+		// 1) the request comes from a stock Mediawiki method that does not know about hnpClass
+		//    * request might come from a SpecialPage context.
+		//
+		// 2) the request comes from an hnpClass aware method somewhere.
 		
+		// are we asked to check for a specific action in a specific namespace??
+
 		global $wgTitle;
+		// Does the request come from NS_SPECIAL and namespace dependant??
+		$cns = $wgTitle->getNamespace();
+		$cti = $wgTitle->mDbkeyform;
 		
-		$this->userCan( $wgTitle, $user, $action, $result );
-		
+		if ( $cns == NS_SPECIAL )
+		{
+			echo 'hnpClass: action <b>'.$action.'</b> namespace dependant but called from NS_SPECIAL. <br/>';
+			return false;	
+		}
+
+		// Finally, the request comes from a valid namespace & with a valid namespace dependant action
+		if ( $ns === null )    $ns = $cns;
+		if ( $titre === null ) $titre = $cti;
+
+
+		$result = hnpClass::userCanInternal( $user, $ns, $titre , $action );
+	
 		return false;
 	}
     function userCanStub( &$t, &$u, $a, &$r )

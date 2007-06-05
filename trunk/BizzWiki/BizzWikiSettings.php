@@ -63,13 +63,23 @@ require('extensions/ViewsourceRight/ViewsourceRight.php');
 unset( $wgGroupPermissions );
 
 // 3
-$bwAllRights = array (	'createaccount',
-						'read', 'edit', 'minoredit', 'create', 'move', 'delete', 
-						'upload', 'reupload', 'reupload-shared',
-						'raw',        // BizzWiki specific
-						'viewsource', // BizzWiki specific
-						'browse',     // BizzWiki specific
-					);
+$bwNamespaceIndependantRights =  array( 'createaccount',
+										'readlog',  // BizzWiki specific
+									);
+
+$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',
+
+										'upload', 'reupload', 'reupload-shared', // for now, those rights
+																				// are only relevant to NS_IMAGE
+										'raw',        // BizzWiki specific
+										'viewsource', // BizzWiki specific
+										'browse',     // BizzWiki specific
+										'search',     // BizzWiki specific
+									);
+									
+// Critical permission system initialization
+hnpClass::addNamespaceIndependantRights( $bwNamespaceIndependantRights );
+hnpClass::addNamespaceDependantRights(   $bwNamespaceDependantRights );
 
 // 4
 
@@ -81,6 +91,7 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = t
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
+								NS_CATEGORY, NS_CATEGORY_TALK,
 								NS_HELP, NS_HELP_TALK,
 								NS_SPECIAL
 								); 
@@ -95,8 +106,8 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	// User
 $bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
 							NS_PROJECT, NS_PROJECT_TALK,
-							NS_HELP, NS_HELP_TALK,
 							NS_CATEGORY, NS_CATEGORY_TALK,
+							NS_HELP, NS_HELP_TALK,
 							NS_TEMPLATE, NS_TEMPLATE_TALK,
 							NS_IMAGE, NS_IMAGE_TALK,														
 							);	

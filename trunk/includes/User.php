@@ -1752,7 +1752,7 @@ class User {
 
 		// BizzWiki begin{{
 		$result = null;
-		wfRunHooks('UserIsAllowed', array( &$this, null, &$action, &$result ) );
+		wfRunHooks('UserIsAllowed', array( &$this, null, null, &$action, &$result ) );
 		if ( $result !== null )
 			return $result;
 		// BizzWiki end }}
