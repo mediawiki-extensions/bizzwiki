@@ -64,11 +64,24 @@ unset( $wgGroupPermissions );
 
 // 3
 $bwNamespaceIndependantRights =  array( 'createaccount',
-										'readlog',  // BizzWiki specific
+										'ipblock-exempt',
+										'userrights',
+										'siteadmin',
+										'import',
+										'bot',             	// TODO
+										'proxyunbannable', 	// TODO
+										'trackback',		// TODO
+										'unwatchedpages',	// TODO
+										'readlog',  		// BizzWiki specific
 									);
 
-$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',
 
+$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',
+										'deletedhistory',
+										'deleterevision',
+										'protect',
+										'patrol',
+										'purge',
 										'upload', 'reupload', 'reupload-shared', // for now, those rights
 																				// are only relevant to NS_IMAGE
 										'raw',        // BizzWiki specific
@@ -78,8 +91,8 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 									);
 									
 // Critical permission system initialization
-hnpClass::addNamespaceIndependantRights( $bwNamespaceIndependantRights );
-hnpClass::addNamespaceDependantRights(   $bwNamespaceDependantRights );
+hnpClass::singleton()->addNamespaceIndependantRights( $bwNamespaceIndependantRights );
+hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRights );
 
 // 4
 
