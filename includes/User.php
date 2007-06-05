@@ -507,3 +507,358 @@ class User {
 			($wgContLang->lc( $password ) !== $wgContLang->lc( $this->mName ));
 	}
 
+	/**
+	 * Does the string match roughly an email address ?
+	 *
+	 * There used to be a regular expression here, it got removed because it
+	 * rejected valid addresses. Actually just check if there is '@' somewhere
+	 * in the given address.
+	 *
+	 * @todo Check for RFC 2822 compilance (bug 959)
+	 *
+	 * @param string $addr email address
+	 * @static
+	 * @return bool
+	 */
+	static function isValidEmailAddr ( $addr ) {
+		return ( trim( $addr ) != '' ) &&
+			(false !== strpos( $addr, '@' ) );
+	}
+
+	/**
+	 * Given unvalidated user input, return a canonical username, or false if 
+	 * the username is invalid.
+	 * @param string $name
+	 * @param mixed $validate Type of validation to use:
+	 *                         false        No validation
+	 *                         'valid'      Valid for batch processes
+	 *                         'usable'     Valid for batch processes and login
+	 *                         'creatable'  Valid for batch processes, login and account creation
+	 */
+	static function getCanonicalName( $name, $validate = 'valid' ) {
+		# Force usernames to capital
+		global $wgContLang;
+		$name = $wgContLang->ucfirst( $name );
+
+		# Clean up name according to title rules
+		$t = Title::newFromText( $name );
+		if( is_null( $t ) ) {
+			return false;
+		}
+
+		# Reject various classes of invalid names
+		$name = $t->getText();
+		global $wgAuth;
+		$name = $wgAuth->getCanonicalName( $t->getText() );
+
+		switch ( $validate ) {
+			case false:
+				break;
+			case 'valid':
+				if ( !User::isValidUserName( $name ) ) {
+					$name = false;
+				}
+				break;
+			case 'usable':
+				if ( !User::isUsableName( $name ) ) {
+					$name = false;
+				}
+				break;
+			case 'creatable':
+				if ( !User::isCreatableName( $name ) ) {
+					$name = false;
+				}
+				break;
+			default:
+				throw new MWException( 'Invalid parameter value for $validate in '.__METHOD__ );
+		}
+		return $name;
+	}
+
+	/**
+	 * Count the number of edits of a user
+	 *
+	 * It should not be static and some day should be merged as proper member function / deprecated -- domas
+	 * 
+	 * @param int $uid The user ID to check
+	 * @return int
+	 * @static
+	 */
+	static function edits( $uid ) {
+		wfProfileIn( __METHOD__ );
+		$dbr = wfGetDB( DB_SLAVE );
+		// check if the user_editcount field has been initialized
+		$field = $dbr->selectField(
+			'user', 'user_editcount',
+			array( 'user_id' => $uid ),
+			__METHOD__
+		);
+
+		if( $field === null ) { // it has not been initialized. do so.
+			$dbw = wfGetDb( DB_MASTER );
+			$count = $dbr->selectField(
+				'revision', 'count(*)',
+				array( 'rev_user' => $uid ),
+				__METHOD__
+			);
+			$dbw->update(
+				'user',
+				array( 'user_editcount' => $count ),
+				array( 'user_id' => $uid ),
+				__METHOD__
+			);
+		} else {
+			$count = $field;
+		}
+		wfProfileOut( __METHOD__ );
+		return $count;
+	}
+
+	/**
+	 * Return a random password. Sourced from mt_rand, so it's not particularly secure.
+	 * @todo hash random numbers to improve security, like generateToken()
+	 *
+	 * @return string
+	 * @static
+	 */
+	static function randomPassword() {
+		global $wgMinimalPasswordLength;
+		$pwchars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz';
+		$l = strlen( $pwchars ) - 1;
+
+		$pwlength = max( 7, $wgMinimalPasswordLength );
+		$digit = mt_rand(0, $pwlength - 1);
+		$np = '';
+		for ( $i = 0; $i < $pwlength; $i++ ) {
+			$np .= $i == $digit ? chr( mt_rand(48, 57) ) : $pwchars{ mt_rand(0, $l)};
+		}
+		return $np;
+	}
+
+	/**
+	 * Set cached properties to default. Note: this no longer clears 
+	 * uncached lazy-initialised properties. The constructor does that instead.
+	 *
+	 * @private
+	 */
+	function loadDefaults( $name = false ) {
+		wfProfileIn( __METHOD__ );
+
+		global $wgCookiePrefix;
+
+		$this->mId = 0;
+		$this->mName = $name;
+		$this->mRealName = '';
+		$this->mPassword = $this->mNewpassword = '';
+		$this->mNewpassTime = null;
+		$this->mEmail = '';
+		$this->mOptions = null; # Defer init
+
+		if ( isset( $_COOKIE[$wgCookiePrefix.'LoggedOut'] ) ) {
+			$this->mTouched = wfTimestamp( TS_MW, $_COOKIE[$wgCookiePrefix.'LoggedOut'] );
+		} else {
+			$this->mTouched = '0'; # Allow any pages to be cached
+		}
+
+		$this->setToken(); # Random
+		$this->mEmailAuthenticated = null;
+		$this->mEmailToken = '';
+		$this->mEmailTokenExpires = null;
+		$this->mRegistration = wfTimestamp( TS_MW );
+		$this->mGroups = array();
+
+		wfProfileOut( __METHOD__ );
+	}
+	
+	/**
+	 * Initialise php session
+	 * @deprecated use wfSetupSession()
+	 */
+	function SetupSession() {
+		wfSetupSession();
+	}
+
+	/**
+	 * Load user data from the session or login cookie. If there are no valid
+	 * credentials, initialises the user as an anon.
+	 * @return true if the user is logged in, false otherwise
+	 */
+	private function loadFromSession() {
+		global $wgMemc, $wgCookiePrefix;
+
+		if ( isset( $_SESSION['wsUserID'] ) ) {
+			if ( 0 != $_SESSION['wsUserID'] ) {
+				$sId = $_SESSION['wsUserID'];
+			} else {
+				$this->loadDefaults();
+				return false;
+			}
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}UserID"] ) ) {
+			$sId = intval( $_COOKIE["{$wgCookiePrefix}UserID"] );
+			$_SESSION['wsUserID'] = $sId;
+		} else {
+			$this->loadDefaults();
+			return false;
+		}
+		if ( isset( $_SESSION['wsUserName'] ) ) {
+			$sName = $_SESSION['wsUserName'];
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}UserName"] ) ) {
+			$sName = $_COOKIE["{$wgCookiePrefix}UserName"];
+			$_SESSION['wsUserName'] = $sName;
+		} else {
+			$this->loadDefaults();
+			return false;
+		}
+
+		$passwordCorrect = FALSE;
+		$this->mId = $sId;
+		if ( !$this->loadFromId() ) {
+			# Not a valid ID, loadFromId has switched the object to anon for us
+			return false;
+		}
+		
+		if ( isset( $_SESSION['wsToken'] ) ) {
+			$passwordCorrect = $_SESSION['wsToken'] == $this->mToken;
+			$from = 'session';
+		} else if ( isset( $_COOKIE["{$wgCookiePrefix}Token"] ) ) {
+			$passwordCorrect = $this->mToken == $_COOKIE["{$wgCookiePrefix}Token"];
+			$from = 'cookie';
+		} else {
+			# No session or persistent login cookie
+			$this->loadDefaults();
+			return false;
+		}
+
+		if ( ( $sName == $this->mName ) && $passwordCorrect ) {
+			wfDebug( "Logged in from $from\n" );
+			return true;
+		} else {
+			# Invalid credentials
+			wfDebug( "Can't log in from $from, invalid credentials\n" );
+			$this->loadDefaults();
+			return false;
+		}
+	}
+	
+	/**
+	 * Load user and user_group data from the database
+	 * $this->mId must be set, this is how the user is identified.
+	 * 
+	 * @return true if the user exists, false if the user is anonymous
+	 * @private
+	 */
+	function loadFromDatabase() {
+		# Paranoia
+		$this->mId = intval( $this->mId );
+
+		/** Anonymous user */
+		if( !$this->mId ) {
+			$this->loadDefaults();
+			return false;
+		}
+
+		$dbr = wfGetDB( DB_MASTER );
+		$s = $dbr->selectRow( 'user', '*', array( 'user_id' => $this->mId ), __METHOD__ );
+
+		if ( $s !== false ) {
+			# Initialise user table data
+			$this->mName = $s->user_name;
+			$this->mRealName = $s->user_real_name;
+			$this->mPassword = $s->user_password;
+			$this->mNewpassword = $s->user_newpassword;
+			$this->mNewpassTime = wfTimestampOrNull( TS_MW, $s->user_newpass_time );
+			$this->mEmail = $s->user_email;
+			$this->decodeOptions( $s->user_options );
+			$this->mTouched = wfTimestamp(TS_MW,$s->user_touched);
+			$this->mToken = $s->user_token;
+			$this->mEmailAuthenticated = wfTimestampOrNull( TS_MW, $s->user_email_authenticated );
+			$this->mEmailToken = $s->user_email_token;
+			$this->mEmailTokenExpires = wfTimestampOrNull( TS_MW, $s->user_email_token_expires );
+			$this->mRegistration = wfTimestampOrNull( TS_MW, $s->user_registration );
+			$this->mEditCount = $s->user_editcount; 
+			$this->getEditCount(); // revalidation for nulls
+
+			# Load group data
+			$res = $dbr->select( 'user_groups',
+				array( 'ug_group' ),
+				array( 'ug_user' => $this->mId ),
+				__METHOD__ );
+			$this->mGroups = array();
+			while( $row = $dbr->fetchObject( $res ) ) {
+				$this->mGroups[] = $row->ug_group;
+			}
+			return true;
+		} else {
+			# Invalid user_id
+			$this->mId = 0;
+			$this->loadDefaults();
+			return false;
+		}
+	}
+
+	/**
+	 * Clear various cached data stored in this object. 
+	 * @param string $reloadFrom Reload user and user_groups table data from a 
+	 *   given source. May be "name", "id", "defaults", "session" or false for 
+	 *   no reload.
+	 */
+	function clearInstanceCache( $reloadFrom = false ) {
+		$this->mNewtalk = -1;
+		$this->mDatePreference = null;
+		$this->mBlockedby = -1; # Unset
+		$this->mHash = false;
+		$this->mSkin = null;
+		$this->mRights = null;
+		$this->mEffectiveGroups = null;
+
+		if ( $reloadFrom ) {
+			$this->mDataLoaded = false;
+			$this->mFrom = $reloadFrom;
+		}
+	}
+
+	/**
+	 * Combine the language default options with any site-specific options
+	 * and add the default language variants.
+	 * Not really private cause it's called by Language class
+	 * @return array
+	 * @static
+	 * @private
+	 */
+	static function getDefaultOptions() {
+		global $wgNamespacesToBeSearchedDefault;
+		/**
+		 * Site defaults will override the global/language defaults
+		 */
+		global $wgDefaultUserOptions, $wgContLang;
+		$defOpt = $wgDefaultUserOptions + $wgContLang->getDefaultUserOptionOverrides();
+
+		/**
+		 * default language setting
+		 */
+		$variant = $wgContLang->getPreferredVariant( false );
+		$defOpt['variant'] = $variant;
+		$defOpt['language'] = $variant;
+
+		foreach( $wgNamespacesToBeSearchedDefault as $nsnum => $val ) {
+			$defOpt['searchNs'.$nsnum] = $val;
+		}
+		return $defOpt;
+	}
+
+	/**
+	 * Get a given default option value.
+	 *
+	 * @param string $opt
+	 * @return string
+	 * @static
+	 * @public
+	 */
+	function getDefaultOption( $opt ) {
+		$defOpts = User::getDefaultOptions();
+		if( isset( $defOpts[$opt] ) ) {
+			return $defOpts[$opt];
+		} else {
+			return '';
+		}
+	}
