@@ -129,7 +129,7 @@ class FileManagerClass extends ExtensionClass
 		// exist in the database... let's check the filesystem.
 		$filename = $title->getBaseText();
 		$result   = @fopen( $IP.'/'.$filename,'r' );
-		if ($result !== FALSE) { $fclose($result); $result = TRUE; }
+		if ($result !== FALSE) { fclose($result); $result = TRUE; }
 
 		$id = $result ? 'filemanager-script-exists':'filemanager-script-notexists';
 		$message = wfMsgForContent( $id, $filename );

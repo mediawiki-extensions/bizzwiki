@@ -151,11 +151,21 @@ class hnpClass
 		global $hnpObjDebug;
 		
 		if (!$hnpObjDebug)
+		{
 			$wgHooks['userCan'][] = array( $this, 'userCan' );
+			$wgHooks['UserIsAllowed'][] = array( $this, 'hUserIsAllowed' );
+		}
 			
 		$this->initGroups();
 	}	
-
+	function hUserIsAllowed( &$user, &$action, &$result )
+	{
+		global $wgTitle;
+		
+		$this->userCan( $wgTitle, $user, $action, $result );
+		
+		return false;
+	}
     function userCanStub( &$t, &$u, $a, &$r )
 	{
 		$r = true;
@@ -178,7 +188,7 @@ class hnpClass
 		if ( $submit && ($a == 'read') )
 			$a = "SubmitWithoutRead";
 
-		echo " Namespace: $ns  Title=$pt  Action=$a \n <br/>";
+		#echo " Namespace: $ns  Title=$pt  Action=$a \n <br/>";
 
 		// Normal processing path.
 		$r = hnpClass::userCanInternal( $u, $ns, $pt, $a );

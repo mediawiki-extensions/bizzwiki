@@ -6,6 +6,9 @@
 	
 	BizzWiki:  $Id$
 	
+	HISTORY:
+	========
+	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
 */
 
 /**
@@ -1737,10 +1740,18 @@ class User {
 	 * @param string $action Action to be checked
 	 * @return boolean True: action is allowed, False: action should not be allowed
 	 */
-	function isAllowed($action='') {
+	function isAllowed($action='') 
+	{
 		if ( $action === '' )
 			// In the spirit of DWIM
 			return true;
+
+		// BizzWiki begin{{
+		$result = null;
+		wfRunHooks('UserIsAllowed', array( &$this, &$action, &$result ) );
+		if ( $result !== null )
+			return $result;
+		// BizzWiki end }}
 
 		return in_array( $action, $this->getRights() );
 	}
