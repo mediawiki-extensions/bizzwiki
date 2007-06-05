@@ -61,9 +61,6 @@ class RawRight extends ExtensionClass
 	public function setup()
 	{
 		parent::setup();
-		
-		global $wgHooks;
-		$wgHooks['RawPageViewBeforeOutput'][]    = array( &$this, 'hRawPageViewBeforeOutput' );
 	}
 	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
