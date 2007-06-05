@@ -82,7 +82,7 @@ class FileManagerClass extends ExtensionClass
 		if ($r==1) return true;
 		
 		// we can attempt commit then.
-		$titre = $article->mTitle->getBaseText();
+		$titre = $article->mTitle->getText();
 		$r = file_put_contents( $IP.'/'.$titre, $text );
 		
 		// write a log entry with the action result.
@@ -127,7 +127,7 @@ class FileManagerClass extends ExtensionClass
 		
 		// From this point, we know the article does not
 		// exist in the database... let's check the filesystem.
-		$filename = $title->getBaseText();
+		$filename = $title->getText();
 		$result   = @fopen( $IP.'/'.$filename,'r' );
 		if ($result !== FALSE) { fclose($result); $result = TRUE; }
 
@@ -158,7 +158,7 @@ class FileManagerClass extends ExtensionClass
 		if (! $title->userCan(self::actionCommit) ) return true;		
 
 		global $IP;
-		$filename = $title->getBaseText();
+		$filename = $title->getText();
 		$text = file_get_contents( $IP.'/'.$filename );
 	
 		return true; // be nice.
