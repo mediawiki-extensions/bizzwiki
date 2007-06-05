@@ -89,6 +89,7 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 {	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 }
 
 	// User
@@ -103,6 +104,7 @@ foreach( $bwUserNamespaces as $index => $bwx )
 	{
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 	}
 	
 
