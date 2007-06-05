@@ -8,6 +8,7 @@
 	TODO:
 	=====
 	1) Namespace level permission policing.
+	2) Make sure patch also works for RandomRedirect...
 	
 	HISTORY:
 	========
