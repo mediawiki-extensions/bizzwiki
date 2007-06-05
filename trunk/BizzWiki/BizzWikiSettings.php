@@ -108,4 +108,7 @@ $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 // readfile & commitfile rights
 require('extensions/FileManager/FileManager.php');
 
+// syntax highlighting
+require('extensions/SyntaxColoring/SyntaxColoring.php');
+
 ?>
