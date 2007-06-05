@@ -2302,5 +2302,318 @@ class User {
 		return $val == $sessionToken;
 	}
 
+	/**
+	 * Generate a new e-mail confirmation token and send a confirmation
+	 * mail to the user's given address.
+	 *
+	 * @return mixed True on success, a WikiError object on failure.
+	 */
+	function sendConfirmationMail() {
+		global $wgContLang;
+		$expiration = null; // gets passed-by-ref and defined in next line.
+		$url = $this->confirmationTokenUrl( $expiration );
+		return $this->sendMail( wfMsg( 'confirmemail_subject' ),
+			wfMsg( 'confirmemail_body',
+				wfGetIP(),
+				$this->getName(),
+				$url,
+				$wgContLang->timeanddate( $expiration, false ) ) );
+	}
 
+	/**
+	 * Send an e-mail to this user's account. Does not check for
+	 * confirmed status or validity.
+	 *
+	 * @param string $subject
+	 * @param string $body
+	 * @param strong $from Optional from address; default $wgPasswordSender will be used otherwise.
+	 * @return mixed True on success, a WikiError object on failure.
+	 */
+	function sendMail( $subject, $body, $from = null ) {
+		if( is_null( $from ) ) {
+			global $wgPasswordSender;
+			$from = $wgPasswordSender;
+		}
+
+		require_once( 'UserMailer.php' );
+		$to = new MailAddress( $this );
+		$sender = new MailAddress( $from );
+		$error = userMailer( $to, $sender, $subject, $body );
+
+		if( $error == '' ) {
+			return true;
+		} else {
+			return new WikiError( $error );
+		}
+	}
+
+	/**
+	 * Generate, store, and return a new e-mail confirmation code.
+	 * A hash (unsalted since it's used as a key) is stored.
+	 * @param &$expiration mixed output: accepts the expiration time
+	 * @return string
+	 * @private
+	 */
+	function confirmationToken( &$expiration ) {
+		$now = time();
+		$expires = $now + 7 * 24 * 60 * 60;
+		$expiration = wfTimestamp( TS_MW, $expires );
+
+		$token = $this->generateToken( $this->mId . $this->mEmail . $expires );
+		$hash = md5( $token );
+
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->update( 'user',
+			array( 'user_email_token'         => $hash,
+			       'user_email_token_expires' => $dbw->timestamp( $expires ) ),
+			array( 'user_id'                  => $this->mId ),
+			__METHOD__ );
+
+		return $token;
+	}
+
+	/**
+	 * Generate and store a new e-mail confirmation token, and return
+	 * the URL the user can use to confirm.
+	 * @param &$expiration mixed output: accepts the expiration time
+	 * @return string
+	 * @private
+	 */
+	function confirmationTokenUrl( &$expiration ) {
+		$token = $this->confirmationToken( $expiration );
+		$title = SpecialPage::getTitleFor( 'Confirmemail', $token );
+		return $title->getFullUrl();
+	}
+
+	/**
+	 * Mark the e-mail address confirmed and save.
+	 */
+	function confirmEmail() {
+		$this->load();
+		$this->mEmailAuthenticated = wfTimestampNow();
+		$this->saveSettings();
+		return true;
+	}
+
+	/**
+	 * Is this user allowed to send e-mails within limits of current
+	 * site configuration?
+	 * @return bool
+	 */
+	function canSendEmail() {
+		return $this->isEmailConfirmed();
+	}
+
+	/**
+	 * Is this user allowed to receive e-mails within limits of current
+	 * site configuration?
+	 * @return bool
+	 */
+	function canReceiveEmail() {
+		return $this->canSendEmail() && !$this->getOption( 'disablemail' );
+	}
+
+	/**
+	 * Is this user's e-mail address valid-looking and confirmed within
+	 * limits of the current site configuration?
+	 *
+	 * If $wgEmailAuthentication is on, this may require the user to have
+	 * confirmed their address by returning a code or using a password
+	 * sent to the address from the wiki.
+	 *
+	 * @return bool
+	 */
+	function isEmailConfirmed() {
+		global $wgEmailAuthentication;
+		$this->load();
+		$confirmed = true;
+		if( wfRunHooks( 'EmailConfirmed', array( &$this, &$confirmed ) ) ) {
+			if( $this->isAnon() )
+				return false;
+			if( !self::isValidEmailAddr( $this->mEmail ) )
+				return false;
+			if( $wgEmailAuthentication && !$this->getEmailAuthenticationTimestamp() )
+				return false;
+			return true;
+		} else {
+			return $confirmed;
+		}
+	}
+	
+	/**
+	 * Return true if there is an outstanding request for e-mail confirmation.
+	 * @return bool
+	 */
+	function isEmailConfirmationPending() {
+		global $wgEmailAuthentication;
+		return $wgEmailAuthentication &&
+			!$this->isEmailConfirmed() &&
+			$this->mEmailToken &&
+			$this->mEmailTokenExpires > wfTimestamp();
+	}
+
+	/**
+	 * @param array $groups list of groups
+	 * @return array list of permission key names for given groups combined
+	 * @static
+	 */
+	static function getGroupPermissions( $groups ) {
+		global $wgGroupPermissions;
+		$rights = array();
+		foreach( $groups as $group ) {
+			if( isset( $wgGroupPermissions[$group] ) ) {
+				$rights = array_merge( $rights,
+					array_keys( array_filter( $wgGroupPermissions[$group] ) ) );
+			}
+		}
+		return $rights;
+	}
+
+	/**
+	 * @param string $group key name
+	 * @return string localized descriptive name for group, if provided
+	 * @static
+	 */
+	static function getGroupName( $group ) {
+		MessageCache::loadAllMessages();
+		$key = "group-$group";
+		$name = wfMsg( $key );
+		return $name == '' || wfEmptyMsg( $key, $name )
+			? $group
+			: $name;
+	}
+
+	/**
+	 * @param string $group key name
+	 * @return string localized descriptive name for member of a group, if provided
+	 * @static
+	 */
+	static function getGroupMember( $group ) {
+		MessageCache::loadAllMessages();
+		$key = "group-$group-member";
+		$name = wfMsg( $key );
+		return $name == '' || wfEmptyMsg( $key, $name )
+			? $group
+			: $name;
+	}
+
+	/**
+	 * Return the set of defined explicit groups.
+	 * The *, 'user', 'autoconfirmed' and 'emailconfirmed'
+	 * groups are not included, as they are defined
+	 * automatically, not in the database.
+	 * @return array
+	 * @static
+	 */
+	static function getAllGroups() {
+		global $wgGroupPermissions;
+		return array_diff(
+			array_keys( $wgGroupPermissions ),
+			array( '*', 'user', 'autoconfirmed', 'emailconfirmed' ) );
+	}
+
+	/**
+	 * Get the title of a page describing a particular group
+	 *
+	 * @param $group Name of the group
+	 * @return mixed
+	 */
+	static function getGroupPage( $group ) {
+		MessageCache::loadAllMessages();
+		$page = wfMsgForContent( 'grouppage-' . $group );
+		if( !wfEmptyMsg( 'grouppage-' . $group, $page ) ) {
+			$title = Title::newFromText( $page );
+			if( is_object( $title ) )
+				return $title;
+		}
+		return false;
+	}
+
+	/**
+	 * Create a link to the group in HTML, if available
+	 *
+	 * @param $group Name of the group
+	 * @param $text The text of the link
+	 * @return mixed
+	 */
+	static function makeGroupLinkHTML( $group, $text = '' ) {
+		if( $text == '' ) {
+			$text = self::getGroupName( $group );
+		}
+		$title = self::getGroupPage( $group );
+		if( $title ) {
+			global $wgUser;
+			$sk = $wgUser->getSkin();
+			return $sk->makeLinkObj( $title, htmlspecialchars( $text ) );
+		} else {
+			return $text;
+		}
+	}
+
+	/**
+	 * Create a link to the group in Wikitext, if available
+	 *
+	 * @param $group Name of the group
+	 * @param $text The text of the link (by default, the name of the group)
+	 * @return mixed
+	 */
+	static function makeGroupLinkWiki( $group, $text = '' ) {
+		if( $text == '' ) {
+			$text = self::getGroupName( $group );
+		}
+		$title = self::getGroupPage( $group );
+		if( $title ) {
+			$page = $title->getPrefixedText();
+			return "[[$page|$text]]";
+		} else {
+			return $text;
+		}
+	}
+	
+	/**
+	 * Increment the user's edit-count field.
+	 * Will have no effect for anonymous users.
+	 */
+	function incEditCount() {
+		if( !$this->isAnon() ) {
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'user',
+				array( 'user_editcount=user_editcount+1' ),
+				array( 'user_id' => $this->getId() ),
+				__METHOD__ );
+			
+			// Lazy initialization check...
+			if( $dbw->affectedRows() == 0 ) {
+				// Pull from a slave to be less cruel to servers
+				// Accuracy isn't the point anyway here
+				$dbr = wfGetDB( DB_SLAVE );
+				$count = $dbr->selectField( 'revision',
+					'COUNT(rev_user)',
+					array( 'rev_user' => $this->getId() ),
+					__METHOD__ );
+				
+				// Now here's a goddamn hack...
+				if( $dbr !== $dbw ) {
+					// If we actually have a slave server, the count is
+					// at least one behind because the current transaction
+					// has not been committed and replicated.
+					$count++;
+				} else {
+					// But if DB_SLAVE is selecting the master, then the
+					// count we just read includes the revision that was
+					// just added in the working transaction.
+				}
+				
+				$dbw->update( 'user',
+					array( 'user_editcount' => $count ),
+					array( 'user_id' => $this->getId() ),
+					__METHOD__ );
+			}
+		}
+		// edit count in user cache too
+		$this->invalidateCache();
+	}
+}
+
+?>
 
