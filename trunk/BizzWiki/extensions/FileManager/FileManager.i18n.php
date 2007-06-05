@@ -3,8 +3,7 @@
  * Internationalisation file for FileManager extension.
  *
  * $Id$
- * $LastChangedRevision$
-
+ * 
 */
 
 $wgFileManagerLogMessages = array();
