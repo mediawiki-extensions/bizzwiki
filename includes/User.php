@@ -1744,3 +1744,563 @@ class User {
 
 		return in_array( $action, $this->getRights() );
 	}
+	/**
+	 * Load a skin if it doesn't exist or return it
+	 * @todo FIXME : need to check the old failback system [AV]
+	 */
+	function &getSkin() {
+		global $wgRequest;
+		if ( ! isset( $this->mSkin ) ) {
+			wfProfileIn( __METHOD__ );
+
+			# get the user skin
+			$userSkin = $this->getOption( 'skin' );
+			$userSkin = $wgRequest->getVal('useskin', $userSkin);
+
+			$this->mSkin =& Skin::newFromKey( $userSkin );
+			wfProfileOut( __METHOD__ );
+		}
+		return $this->mSkin;
+	}
+
+	/**#@+
+	 * @param string $title Article title to look at
+	 */
+
+	/**
+	 * Check watched status of an article
+	 * @return bool True if article is watched
+	 */
+	function isWatched( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		return $wl->isWatched();
+	}
+
+	/**
+	 * Watch an article
+	 */
+	function addWatch( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		$wl->addWatch();
+		$this->invalidateCache();
+	}
+
+	/**
+	 * Stop watching an article
+	 */
+	function removeWatch( $title ) {
+		$wl = WatchedItem::fromUserTitle( $this, $title );
+		$wl->removeWatch();
+		$this->invalidateCache();
+	}
+
+	/**
+	 * Clear the user's notification timestamp for the given title.
+	 * If e-notif e-mails are on, they will receive notification mails on
+	 * the next change of the page if it's watched etc.
+	 */
+	function clearNotification( &$title ) {
+		global $wgUser, $wgUseEnotif;
+
+		# Do nothing if the database is locked to writes
+		if( wfReadOnly() ) {
+			return;
+		}
+
+		if ($title->getNamespace() == NS_USER_TALK &&
+			$title->getText() == $this->getName() ) {
+			if (!wfRunHooks('UserClearNewTalkNotification', array(&$this)))
+				return;
+			$this->setNewtalk( false );
+		}
+
+		if( !$wgUseEnotif ) {
+			return;
+		}
+
+		if( $this->isAnon() ) {
+			// Nothing else to do...
+			return;
+		}
+
+		// Only update the timestamp if the page is being watched.
+		// The query to find out if it is watched is cached both in memcached and per-invocation,
+		// and when it does have to be executed, it can be on a slave
+		// If this is the user's newtalk page, we always update the timestamp
+		if ($title->getNamespace() == NS_USER_TALK &&
+			$title->getText() == $wgUser->getName())
+		{
+			$watched = true;
+		} elseif ( $this->getID() == $wgUser->getID() ) {
+			$watched = $title->userIsWatching();
+		} else {
+			$watched = true;
+		}
+
+		// If the page is watched by the user (or may be watched), update the timestamp on any
+		// any matching rows
+		if ( $watched ) {
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'watchlist',
+					array( /* SET */
+						'wl_notificationtimestamp' => NULL
+					), array( /* WHERE */
+						'wl_title' => $title->getDBkey(),
+						'wl_namespace' => $title->getNamespace(),
+						'wl_user' => $this->getID()
+					), 'User::clearLastVisited'
+			);
+		}
+	}
+
+	/**#@-*/
+
+	/**
+	 * Resets all of the given user's page-change notification timestamps.
+	 * If e-notif e-mails are on, they will receive notification mails on
+	 * the next change of any watched page.
+	 *
+	 * @param int $currentUser user ID number
+	 * @public
+	 */
+	function clearAllNotifications( $currentUser ) {
+		global $wgUseEnotif;
+		if ( !$wgUseEnotif ) {
+			$this->setNewtalk( false );
+			return;
+		}
+		if( $currentUser != 0 )  {
+
+			$dbw = wfGetDB( DB_MASTER );
+			$dbw->update( 'watchlist',
+				array( /* SET */
+					'wl_notificationtimestamp' => NULL
+				), array( /* WHERE */
+					'wl_user' => $currentUser
+				), 'UserMailer::clearAll'
+			);
+
+		# 	we also need to clear here the "you have new message" notification for the own user_talk page
+		#	This is cleared one page view later in Article::viewUpdates();
+		}
+	}
+
+	/**
+	 * @private
+	 * @return string Encoding options
+	 */
+	function encodeOptions() {
+		$this->load();
+		if ( is_null( $this->mOptions ) ) {
+			$this->mOptions = User::getDefaultOptions();
+		}
+		$a = array();
+		foreach ( $this->mOptions as $oname => $oval ) {
+			array_push( $a, $oname.'='.$oval );
+		}
+		$s = implode( "\n", $a );
+		return $s;
+	}
+
+	/**
+	 * @private
+	 */
+	function decodeOptions( $str ) {
+		$this->mOptions = array();
+		$a = explode( "\n", $str );
+		foreach ( $a as $s ) {
+			$m = array();
+			if ( preg_match( "/^(.[^=]*)=(.*)$/", $s, $m ) ) {
+				$this->mOptions[$m[1]] = $m[2];
+			}
+		}
+	}
+
+	function setCookies() {
+		global $wgCookieExpiration, $wgCookiePath, $wgCookieDomain, $wgCookieSecure, $wgCookiePrefix;
+		$this->load();
+		if ( 0 == $this->mId ) return;
+		$exp = time() + $wgCookieExpiration;
+
+		$_SESSION['wsUserID'] = $this->mId;
+		setcookie( $wgCookiePrefix.'UserID', $this->mId, $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		$_SESSION['wsUserName'] = $this->getName();
+		setcookie( $wgCookiePrefix.'UserName', $this->getName(), $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		$_SESSION['wsToken'] = $this->mToken;
+		if ( 1 == $this->getOption( 'rememberpassword' ) ) {
+			setcookie( $wgCookiePrefix.'Token', $this->mToken, $exp, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+		} else {
+			setcookie( $wgCookiePrefix.'Token', '', time() - 3600 );
+		}
+	}
+
+	/**
+	 * Logout user
+	 * Clears the cookies and session, resets the instance cache
+	 */
+	function logout() {
+		global $wgCookiePath, $wgCookieDomain, $wgCookieSecure, $wgCookiePrefix;
+		$this->clearInstanceCache( 'defaults' );
+
+		$_SESSION['wsUserID'] = 0;
+
+		setcookie( $wgCookiePrefix.'UserID', '', time() - 3600, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+		setcookie( $wgCookiePrefix.'Token', '', time() - 3600, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+
+		# Remember when user logged out, to prevent seeing cached pages
+		setcookie( $wgCookiePrefix.'LoggedOut', wfTimestampNow(), time() + 86400, $wgCookiePath, $wgCookieDomain, $wgCookieSecure );
+	}
+
+	/**
+	 * Save object settings into database
+	 * @todo Only rarely do all these fields need to be set!
+	 */
+	function saveSettings() {
+		$this->load();
+		if ( wfReadOnly() ) { return; }
+		if ( 0 == $this->mId ) { return; }
+		
+		$this->mTouched = self::newTouchedTimestamp();
+
+		$dbw = wfGetDB( DB_MASTER );
+		$dbw->update( 'user',
+			array( /* SET */
+				'user_name' => $this->mName,
+				'user_password' => $this->mPassword,
+				'user_newpassword' => $this->mNewpassword,
+				'user_newpass_time' => $dbw->timestampOrNull( $this->mNewpassTime ),
+				'user_real_name' => $this->mRealName,
+		 		'user_email' => $this->mEmail,
+		 		'user_email_authenticated' => $dbw->timestampOrNull( $this->mEmailAuthenticated ),
+				'user_options' => $this->encodeOptions(),
+				'user_touched' => $dbw->timestamp($this->mTouched),
+				'user_token' => $this->mToken
+			), array( /* WHERE */
+				'user_id' => $this->mId
+			), __METHOD__
+		);
+		$this->clearSharedCache();
+	}
+
+
+	/**
+	 * Checks if a user with the given name exists, returns the ID
+	 */
+	function idForName() {
+		$s = trim( $this->getName() );
+		if ( 0 == strcmp( '', $s ) ) return 0;
+
+		$dbr = wfGetDB( DB_SLAVE );
+		$id = $dbr->selectField( 'user', 'user_id', array( 'user_name' => $s ), __METHOD__ );
+		if ( $id === false ) {
+			$id = 0;
+		}
+		return $id;
+	}
+
+	/**
+	 * Add a user to the database, return the user object
+	 *
+	 * @param string $name The user's name
+	 * @param array $params Associative array of non-default parameters to save to the database:
+	 *     password             The user's password. Password logins will be disabled if this is omitted.
+	 *     newpassword          A temporary password mailed to the user
+	 *     email                The user's email address
+	 *     email_authenticated  The email authentication timestamp
+	 *     real_name            The user's real name
+	 *     options              An associative array of non-default options
+	 *     token                Random authentication token. Do not set.
+	 *     registration         Registration timestamp. Do not set.
+	 *
+	 * @return User object, or null if the username already exists
+	 */
+	static function createNew( $name, $params = array() ) {
+		$user = new User;
+		$user->load();
+		if ( isset( $params['options'] ) ) {
+			$user->mOptions = $params['options'] + $user->mOptions;
+			unset( $params['options'] );
+		}
+		$dbw = wfGetDB( DB_MASTER );
+		$seqVal = $dbw->nextSequenceValue( 'user_user_id_seq' );
+		$fields = array(
+			'user_id' => $seqVal,
+			'user_name' => $name,
+			'user_password' => $user->mPassword,
+			'user_newpassword' => $user->mNewpassword,
+			'user_newpass_time' => $dbw->timestamp( $user->mNewpassTime ),
+			'user_email' => $user->mEmail,
+			'user_email_authenticated' => $dbw->timestampOrNull( $user->mEmailAuthenticated ),
+			'user_real_name' => $user->mRealName,
+			'user_options' => $user->encodeOptions(),
+			'user_token' => $user->mToken,
+			'user_registration' => $dbw->timestamp( $user->mRegistration ),
+			'user_editcount' => 0,
+		);
+		foreach ( $params as $name => $value ) {
+			$fields["user_$name"] = $value;
+		}
+		$dbw->insert( 'user', $fields, __METHOD__, array( 'IGNORE' ) );
+		if ( $dbw->affectedRows() ) {
+			$newUser = User::newFromId( $dbw->insertId() );
+		} else {
+			$newUser = null;
+		}
+		return $newUser;
+	}
+	
+	/**
+	 * Add an existing user object to the database
+	 */
+	function addToDatabase() {
+		$this->load();
+		$dbw = wfGetDB( DB_MASTER );
+		$seqVal = $dbw->nextSequenceValue( 'user_user_id_seq' );
+		$dbw->insert( 'user',
+			array(
+				'user_id' => $seqVal,
+				'user_name' => $this->mName,
+				'user_password' => $this->mPassword,
+				'user_newpassword' => $this->mNewpassword,
+				'user_newpass_time' => $dbw->timestamp( $this->mNewpassTime ),
+				'user_email' => $this->mEmail,
+				'user_email_authenticated' => $dbw->timestampOrNull( $this->mEmailAuthenticated ),
+				'user_real_name' => $this->mRealName,
+				'user_options' => $this->encodeOptions(),
+				'user_token' => $this->mToken,
+				'user_registration' => $dbw->timestamp( $this->mRegistration ),
+				'user_editcount' => 0,
+			), __METHOD__
+		);
+		$this->mId = $dbw->insertId();
+
+		# Clear instance cache other than user table data, which is already accurate
+		$this->clearInstanceCache();
+	}
+
+	/**
+	 * If the (non-anonymous) user is blocked, this function will block any IP address
+	 * that they successfully log on from.
+	 */
+	function spreadBlock() {
+		wfDebug( __METHOD__."()\n" );
+		$this->load();
+		if ( $this->mId == 0 ) {
+			return;
+		}
+
+		$userblock = Block::newFromDB( '', $this->mId );
+		if ( !$userblock ) {
+			return;
+		}
+
+		$userblock->doAutoblock( wfGetIp() );
+
+	}
+
+	/**
+	 * Generate a string which will be different for any combination of
+	 * user options which would produce different parser output.
+	 * This will be used as part of the hash key for the parser cache,
+	 * so users will the same options can share the same cached data
+	 * safely.
+	 *
+	 * Extensions which require it should install 'PageRenderingHash' hook,
+	 * which will give them a chance to modify this key based on their own
+	 * settings.
+	 *
+	 * @return string
+	 */
+	function getPageRenderingHash() {
+		global $wgContLang, $wgUseDynamicDates, $wgLang;
+		if( $this->mHash ){
+			return $this->mHash;
+		}
+
+		// stubthreshold is only included below for completeness,
+		// it will always be 0 when this function is called by parsercache.
+
+		$confstr =        $this->getOption( 'math' );
+		$confstr .= '!' . $this->getOption( 'stubthreshold' );
+		if ( $wgUseDynamicDates ) {
+			$confstr .= '!' . $this->getDatePreference();
+		}
+		$confstr .= '!' . ($this->getOption( 'numberheadings' ) ? '1' : '');
+		$confstr .= '!' . $wgLang->getCode();
+		$confstr .= '!' . $this->getOption( 'thumbsize' );
+		// add in language specific options, if any
+		$extra = $wgContLang->getExtraHashOptions();
+		$confstr .= $extra;
+
+		// Give a chance for extensions to modify the hash, if they have
+		// extra options or other effects on the parser cache.
+		wfRunHooks( 'PageRenderingHash', array( &$confstr ) );
+
+		$this->mHash = $confstr;
+		return $confstr;
+	}
+
+	function isBlockedFromCreateAccount() {
+		$this->getBlockedStatus();
+		return $this->mBlock && $this->mBlock->mCreateAccount;
+	}
+
+	function isAllowedToCreateAccount() {
+		return $this->isAllowed( 'createaccount' ) && !$this->isBlockedFromCreateAccount();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	function setLoaded( $loaded ) {}
+
+	/**
+	 * Get this user's personal page title.
+	 *
+	 * @return Title
+	 * @public
+	 */
+	function getUserPage() {
+		return Title::makeTitle( NS_USER, $this->getName() );
+	}
+
+	/**
+	 * Get this user's talk page title.
+	 *
+	 * @return Title
+	 * @public
+	 */
+	function getTalkPage() {
+		$title = $this->getUserPage();
+		return $title->getTalkPage();
+	}
+
+	/**
+	 * @static
+	 */
+	function getMaxID() {
+		static $res; // cache
+
+		if ( isset( $res ) )
+			return $res;
+		else {
+			$dbr = wfGetDB( DB_SLAVE );
+			return $res = $dbr->selectField( 'user', 'max(user_id)', false, 'User::getMaxID' );
+		}
+	}
+
+	/**
+	 * Determine whether the user is a newbie. Newbies are either
+	 * anonymous IPs, or the most recently created accounts.
+	 * @return bool True if it is a newbie.
+	 */
+	function isNewbie() {
+		return !$this->isAllowed( 'autoconfirmed' );
+	}
+
+	/**
+	 * Check to see if the given clear-text password is one of the accepted passwords
+	 * @param string $password User password.
+	 * @return bool True if the given password is correct otherwise False.
+	 */
+	function checkPassword( $password ) {
+		global $wgAuth;
+		$this->load();
+
+		// Even though we stop people from creating passwords that
+		// are shorter than this, doesn't mean people wont be able
+		// to. Certain authentication plugins do NOT want to save
+		// domain passwords in a mysql database, so we should
+		// check this (incase $wgAuth->strict() is false).
+		if( !$this->isValidPassword( $password ) ) {
+			return false;
+		}
+
+		if( $wgAuth->authenticate( $this->getName(), $password ) ) {
+			return true;
+		} elseif( $wgAuth->strict() ) {
+			/* Auth plugin doesn't allow local authentication */
+			return false;
+		}
+		$ep = $this->encryptPassword( $password );
+		if ( 0 == strcmp( $ep, $this->mPassword ) ) {
+			return true;
+		} elseif ( function_exists( 'iconv' ) ) {
+			# Some wikis were converted from ISO 8859-1 to UTF-8, the passwords can't be converted
+			# Check for this with iconv
+			$cp1252hash = $this->encryptPassword( iconv( 'UTF-8', 'WINDOWS-1252//TRANSLIT', $password ) );
+			if ( 0 == strcmp( $cp1252hash, $this->mPassword ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if the given clear-text password matches the temporary password
+	 * sent by e-mail for password reset operations.
+	 * @return bool
+	 */
+	function checkTemporaryPassword( $plaintext ) {
+		$hash = $this->encryptPassword( $plaintext );
+		return $hash === $this->mNewpassword;
+	}
+
+	/**
+	 * Initialize (if necessary) and return a session token value
+	 * which can be used in edit forms to show that the user's
+	 * login credentials aren't being hijacked with a foreign form
+	 * submission.
+	 *
+	 * @param mixed $salt - Optional function-specific data for hash.
+	 *                      Use a string or an array of strings.
+	 * @return string
+	 * @public
+	 */
+	function editToken( $salt = '' ) {
+		if( !isset( $_SESSION['wsEditToken'] ) ) {
+			$token = $this->generateToken();
+			$_SESSION['wsEditToken'] = $token;
+		} else {
+			$token = $_SESSION['wsEditToken'];
+		}
+		if( is_array( $salt ) ) {
+			$salt = implode( '|', $salt );
+		}
+		return md5( $token . $salt ) . EDIT_TOKEN_SUFFIX;
+	}
+
+	/**
+	 * Generate a hex-y looking random token for various uses.
+	 * Could be made more cryptographically sure if someone cares.
+	 * @return string
+	 */
+	function generateToken( $salt = '' ) {
+		$token = dechex( mt_rand() ) . dechex( mt_rand() );
+		return md5( $token . $salt );
+	}
+
+	/**
+	 * Check given value against the token value stored in the session.
+	 * A match should confirm that the form was submitted from the
+	 * user's own login session, not a form submission from a third-party
+	 * site.
+	 *
+	 * @param string $val - the input value to compare
+	 * @param string $salt - Optional function-specific data for hash
+	 * @return bool
+	 * @public
+	 */
+	function matchEditToken( $val, $salt = '' ) {
+		global $wgMemc;
+		$sessionToken = $this->editToken( $salt );
+		if ( $val != $sessionToken ) {
+			wfDebug( "User::matchEditToken: broken session data\n" );
+		}
+		return $val == $sessionToken;
+	}
+
+
+
