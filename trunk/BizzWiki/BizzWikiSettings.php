@@ -21,6 +21,7 @@ $wgParserCacheType   = CACHE_ANYTHING;
 #$wgCachePages        = true;
 
 // Disable raw html
+// (There is the extension 'addHtml' to better cover this)
 $wgRawHtml = false;
 
 // define new namespaces constants
@@ -49,7 +50,7 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	Apply new permission management functionality
 	1) Hierarchical Namespace Permissions
 	2) Wipe out the standard Mediawiki permission settings
-	3)  
+	3) All rights
 	4) Provision the new permission settings
 */
 
@@ -75,7 +76,7 @@ $bwAllRights = array (	'createaccount',
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;
 
-	// Anonymous
+	// Anonymous users don't get much...
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
@@ -113,7 +114,7 @@ $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 // readfile & commitfile rights
 require('extensions/FileManager/FileManager.php');
 
-// syntax highlighting
+// syntax highlighting for the NS_FILESYSTEM namespace.
 require('extensions/SyntaxColoring/SyntaxColoring.php');
 
 ?>
