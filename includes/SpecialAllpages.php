@@ -7,6 +7,7 @@
 	
 	TODO:
 	=====
+	1) Add nice message 'forbidden to browse'.
 	
 	HISTORY:
 	========
@@ -44,7 +45,7 @@ function wfSpecialAllpages( $par=NULL, $specialPage ) {
 
 	// BizzWiki begin {{
 	global $wgUser;
-	if ( !$wgUser->isAllowedActionNamespace( $namespace, 'browse' ) ) continue;
+	if ( !$wgUser->isAllowedActionNamespace( $namespace, 'browse' ) ) return; //FIXME
 	// BizzWiki end }}
 
 	if ( isset($par) ) {
