@@ -5,6 +5,11 @@
 	
 	$Id$
 
+	TODO:
+	=====
+	- disable search & proxy caching functionality for 'file system' & BizzWiki namespaces
+	
+
 ****************************************************************************/
 
 // Base class for multiple extensions

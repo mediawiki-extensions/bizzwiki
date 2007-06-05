@@ -36,7 +36,7 @@ class FileManagerClass extends ExtensionClass
 			'version'     => '$Id$',
 			'author'      => 'Jean-Lou Dupont', 
 			'url'         => 'http://www.bluecortex.com',
-			'description' => 'Manages the files in a Mediawiki installation'
+			'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is '
 		);
 	}
 	public function setup() 
@@ -59,7 +59,25 @@ class FileManagerClass extends ExtensionClass
 		global $wgMessageCache, $wgFileManagerLogMessages;
 		foreach( $wgFileManagerLogMessages as $key => $value )
 			$wgMessageCache->addMessages( $wgFileManagerLogMessages[$key], $key );		
-	} 
+	}
+		public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	// setup of this hook occurs in 'ExtensionClass' base class.
+	{
+		global $wgExtensionCredits;
+
+		// first check if the proper rights management class is in place.
+		if (defined('NS_FILESYSTEM'))
+			$hresult = 'defined.';
+		else
+			$hresult = '<b>not defined!</b>';
+
+		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
+			if ($el['name']==self::thisName)
+				$el['description'].=$hresult;
+				
+		return true; // continue hook-chain.
+	}
+
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
 	// This hook is used to capture the source file & save it also in the file system.
 	{

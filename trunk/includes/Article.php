@@ -7,13 +7,13 @@
 
 	TODO:
 	=====
-	1) Page Deletion: change to work on a namespace level
-	
+	1) Page Deletion: change to work on a namespace level: taken care of with
+		the patch to 'User.php'.
 
 
 	History:
 	========
-	- disable save article in parser cache upon article creation/update
+	- disabled save article in parser cache upon article creation/update
 
 */
 
