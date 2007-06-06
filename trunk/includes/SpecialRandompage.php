@@ -7,12 +7,10 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
-	2) Make sure patch also works for RandomRedirect...
 	
 	HISTORY:
 	========
-	1) 
+	1) Namespace level permission policing.
 */
 /**
  * Special page to direct the user to a random page
@@ -103,6 +101,11 @@ class RandomPage {
 
 		$ns = (int) $this->namespace;
 		$redirect = $this->redirect ? 1 : 0;
+
+		// BizzWiki begin {{
+		global $wgUser;
+		if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) return null;
+		// BizzWiki end }}
 
 		$extra = $wgExtraRandompageSQL ? "AND ($wgExtraRandompageSQL)" : "";
 		$sql = "SELECT page_title
