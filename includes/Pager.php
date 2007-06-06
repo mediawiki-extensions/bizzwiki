@@ -233,6 +233,10 @@ abstract class IndexPager implements Pager {
 				$this->mResult->seek( 0 );
 				for ( $i = 0; $i < $numRows; $i++ ) {
 					$row = $this->mResult->fetchObject();
+					// BizzWiki begin {{
+					$ns = $row->page_namespace;
+					if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) continue;
+					// BizzWiki end }}
 					$s .= $this->formatRow( $row );
 				}
 			}
