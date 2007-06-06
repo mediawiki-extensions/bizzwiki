@@ -7,11 +7,10 @@
 	
 	TODO:
 	=====
-	1) patrol ...
 	
 	HISTORY:
 	========
- 
+	1) Added namespace level 'patrol' right management. 
 
 */
 
@@ -125,7 +124,7 @@ class NewPagesPage extends QueryPage {
 	 */
 	function patrollable( $result ) {
 		global $wgUser, $wgUseRCPatrol;
-		return $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $result->page_namespace, 'patrol' ) && !$result->patrolled; // BizzWiki
+		return $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $this->namespace, 'patrol' ) && !$result->patrolled; // BizzWiki
 	}
 
 	function feedItemDesc( $row ) {

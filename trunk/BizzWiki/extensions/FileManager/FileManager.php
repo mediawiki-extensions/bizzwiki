@@ -34,6 +34,8 @@
  * =====
  * - internationalization
  * - add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
+ * - enhance 'logging' through $type etc.
+ *
  */
 
 // Verify if 'ExtensionClass' is present.
