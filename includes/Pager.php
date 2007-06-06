@@ -7,11 +7,11 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
+	1) 
 	
 	HISTORY:
 	========
-	1) 
+	1) Namespace level permission policing ('browse' right)
 */
 /**
  * Basic pager interface.
@@ -213,12 +213,20 @@ abstract class IndexPager implements Pager {
 		# Don't use any extra rows returned by the query
 		$numRows = min( $this->mResult->numRows(), $this->mLimit );
 
+		global $wgUser; // BizzWiki
+
 		$s = $this->getStartBody();
 		if ( $numRows ) {
 			if ( $this->mIsBackwards ) {
 				for ( $i = $numRows - 1; $i >= 0; $i-- ) {
 					$this->mResult->seek( $i );
 					$row = $this->mResult->fetchObject();
+					
+					// BizzWiki begin {{
+					$ns = $row->page_namespace;
+					if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) continue;
+					// BizzWiki end }}
+					
 					$s .= $this->formatRow( $row );
 				}
 			} else {
