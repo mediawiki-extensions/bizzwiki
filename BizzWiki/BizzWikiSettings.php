@@ -133,8 +133,12 @@ foreach( $bwUserNamespaces as $index => $bwx )
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 	}
-	
 
+// For testing QueryPage.php functionality
+// as in 'SpecialPopularpages.php'.
+// DEBUG
+$wgContentNamespaces[] = NS_BIZZWIKI;
+$wgContentNamespaces[] = NS_FILESYSTEM;
 
 // *****************************************************************************************
 

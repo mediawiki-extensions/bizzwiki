@@ -1,4 +1,20 @@
 <?php
+/*
+	Origin:  MW 1.10
+	-------
+	
+	BizzWiki:  $Id$
+	
+	TODO:
+	=====
+	
+	
+	HISTORY:
+	========
+	1) Added namespace level permission enforcement.
+	
+*/
+
 /**
  * Contain a class for special pages
  */
@@ -388,9 +404,14 @@ class QueryPage {
 			if( !$this->listoutput )
 				$html[] = $this->openList( $offset );
 			
+			global $wgUser; // BizzWiki
+			
 			# $res might contain the whole 1,000 rows, so we read up to
 			# $num [should update this to use a Pager]
 			for( $i = 0; $i < $num && $row = $dbr->fetchObject( $res ); $i++ ) {
+				
+				if ( !$wgUser->isAllowedActionNamespace( $row->namespace, 'browse' ) ) continue; // BizzWiki
+				
 				$line = $this->formatResult( $skin, $row );
 				if( $line ) {
 					$attr = ( isset( $row->usepatrol ) && $row->usepatrol && $row->patrolled == 0 )
