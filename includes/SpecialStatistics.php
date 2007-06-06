@@ -7,11 +7,11 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
+ 
 	
 	HISTORY:
 	========
-	1) 
+	1) Namespace level permission policing.
 */
 /**
 *
@@ -80,6 +80,9 @@ function wfSpecialStatistics() {
 				$skin = $wgUser->getSkin();
 				$wgOut->addHtml( '<ol>' );
 				while( $row = $dbr->fetchObject( $res ) ) {
+					// BizzWiki begin {{
+					if ( !$wgUser->isAllowedActionNamespace( $row->page_namespace, 'browse' ) ) continue;
+					// BizzWiki end }}
 					$link = $skin->makeKnownLinkObj( Title::makeTitleSafe( $row->page_namespace, $row->page_title ) );
 					$dirmark = $wgContLang->getDirMark();
 					$wgOut->addHtml( '<li>' . $link . $dirmark . ' [' . $wgLang->formatNum( $row->page_counter ) . ']</li>' );
