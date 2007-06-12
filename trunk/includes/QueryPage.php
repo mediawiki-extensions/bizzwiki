@@ -410,7 +410,7 @@ class QueryPage {
 			# $num [should update this to use a Pager]
 			for( $i = 0; $i < $num && $row = $dbr->fetchObject( $res ); $i++ ) {
 				
-				if ( !$wgUser->isAllowedActionNamespace( $row->namespace, 'browse' ) ) continue; // BizzWiki
+				if ( !$wgUser->isAllowed( 'browse', $row->namespace ) ) continue; // BizzWiki
 				
 				$line = $this->formatResult( $skin, $row );
 				if( $line ) {

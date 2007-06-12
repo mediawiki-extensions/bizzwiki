@@ -104,7 +104,7 @@ class RandomPage {
 
 		// BizzWiki begin {{
 		global $wgUser;
-		if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) return null;
+		if ( !$wgUser->isAllowed( 'browse', $ns ) ) return null;
 		// BizzWiki end }}
 
 		$extra = $wgExtraRandompageSQL ? "AND ($wgExtraRandompageSQL)" : "";

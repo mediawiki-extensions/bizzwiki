@@ -80,10 +80,12 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 									);
 
 
-$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',
+$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',								
+										'nominornewtalk', 
 										
+										"rollback",			// TODO
 										'protect',
-										'patrol',
+										'patrol', "autopatrol",
 										'purge',
 										'upload', 'reupload', 'reupload-shared', // for now, those rights
 																				// are only relevant to NS_IMAGE

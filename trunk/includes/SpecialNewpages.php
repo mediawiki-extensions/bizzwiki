@@ -53,7 +53,7 @@ class NewPagesPage extends QueryPage {
 
 	function getSQL() {
 		global $wgUser, $wgUseRCPatrol;
-		$usepatrol = ( $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $this->namespace, 'patrol' ) ) ? 1 : 0; // BizzWiki
+		$usepatrol = ( $wgUseRCPatrol && $wgUser->isAllowed( 'patrol', $this->namespace ) ) ? 1 : 0; // BizzWiki
 		$dbr = wfGetDB( DB_SLAVE );
 		list( $recentchanges, $page ) = $dbr->tableNamesN( 'recentchanges', 'page' );
 
@@ -124,7 +124,7 @@ class NewPagesPage extends QueryPage {
 	 */
 	function patrollable( $result ) {
 		global $wgUser, $wgUseRCPatrol;
-		return $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $this->namespace, 'patrol' ) && !$result->patrolled; // BizzWiki
+		return $wgUseRCPatrol && $wgUser->isAllowed( 'patrol', $this->namespace ) && !$result->patrolled; // BizzWiki
 	}
 
 	function feedItemDesc( $row ) {
