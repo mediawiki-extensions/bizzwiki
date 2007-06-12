@@ -198,7 +198,7 @@ class SearchEngine {
 		foreach( $wgContLang->getNamespaces() as $ns => $name ) 
 		{
 			// BizzWiki begin {{
-			if ( !$wgUser->isAllowedActionNamespace( $ns, 'search' ) ) continue;
+			if ( !$wgUser->isAllowed( 'search', $ns ) ) continue;
 			// BizzWiki end }}
 			if( $ns >= NS_MAIN ) {
 				$arr[$ns] = $name;

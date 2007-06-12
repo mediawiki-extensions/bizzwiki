@@ -12,7 +12,8 @@
 	HISTORY:
 	========
 	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
-	2) Added function 'isAllowedActionNamespace'
+	2) Modified 'isAllowed' method.
+	
 */
 
 /**
@@ -1744,7 +1745,7 @@ class User {
 	 * @param string $action Action to be checked
 	 * @return boolean True: action is allowed, False: action should not be allowed
 	 */
-	function isAllowed($action='') 
+	function isAllowed($action='', $ns = null /* BizzWiki addition */ ) 
 	{
 		if ( $action === '' )
 			// In the spirit of DWIM
@@ -1752,24 +1753,14 @@ class User {
 
 		// BizzWiki begin{{
 		$result = null;
-		wfRunHooks('UserIsAllowed', array( &$this, null, null, &$action, &$result ) );
+		wfRunHooks('UserIsAllowed', array( &$this, $ns, null, &$action, &$result ) );
 		if ( $result !== null )
 			return $result;
 		// BizzWiki end }}
 
 		return in_array( $action, $this->getRights() );
 	}
-	/***
-	 * BizzWiki isAllowedActionNamespace  
-	***/
-	function isAllowedActionNamespace( $ns, $action )
-	{
-		$result = false; // disallowed by default.
-		
-		wfRunHooks('UserIsAllowed', array( &$this, $ns, null, &$action, &$result ) );
-		return $result;
-	}
-	
+
 	/**
 	 * Load a skin if it doesn't exist or return it
 	 * @todo FIXME : need to check the old failback system [AV]

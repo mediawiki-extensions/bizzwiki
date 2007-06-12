@@ -224,7 +224,7 @@ abstract class IndexPager implements Pager {
 					
 					// BizzWiki begin {{
 					$ns = $row->page_namespace;
-					if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) continue;
+					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					
 					$s .= $this->formatRow( $row );
@@ -235,7 +235,7 @@ abstract class IndexPager implements Pager {
 					$row = $this->mResult->fetchObject();
 					// BizzWiki begin {{
 					$ns = $row->page_namespace;
-					if ( !$wgUser->isAllowedActionNamespace( $ns, 'browse' ) ) continue;
+					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					$s .= $this->formatRow( $row );
 				}

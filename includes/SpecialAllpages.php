@@ -45,7 +45,7 @@ function wfSpecialAllpages( $par=NULL, $specialPage ) {
 
 	// BizzWiki begin {{
 	global $wgUser;
-	if ( !$wgUser->isAllowedActionNamespace( $namespace, 'browse' ) ) return; //FIXME
+	if ( !$wgUser->isAllowed( 'browse', $namespace ) ) return; //FIXME
 	// BizzWiki end }}
 
 	if ( isset($par) ) {

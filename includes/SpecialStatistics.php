@@ -81,7 +81,7 @@ function wfSpecialStatistics() {
 				$wgOut->addHtml( '<ol>' );
 				while( $row = $dbr->fetchObject( $res ) ) {
 					// BizzWiki begin {{
-					if ( !$wgUser->isAllowedActionNamespace( $row->page_namespace, 'browse' ) ) continue;
+					if ( !$wgUser->isAllowed( 'browse', $row->page_namespace ) ) continue;
 					// BizzWiki end }}
 					$link = $skin->makeKnownLinkObj( Title::makeTitleSafe( $row->page_namespace, $row->page_title ) );
 					$dirmark = $wgContLang->getDirMark();

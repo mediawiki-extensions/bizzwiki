@@ -221,7 +221,7 @@ class ChangesList {
 	function usePatrol( $ns=null /* added namespace parameter */ ) {
 		global $wgUseRCPatrol, $wgUser;
 		#echo 'usePatrol called with '.$ns.' <br/>';
-		return( $wgUseRCPatrol && $wgUser->isAllowedActionNamespace( $ns, 'patrol' ) );
+		return( $wgUseRCPatrol && $wgUser->isAllowed( 'patrol', $ns ) );
 	}
 
 	/**

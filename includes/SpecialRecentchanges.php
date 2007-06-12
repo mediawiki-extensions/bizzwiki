@@ -255,7 +255,7 @@ function wfSpecialRecentchanges( $par, $specialPage ) {
 
 			// BizzWiki begin {{
 			$ns = $obj->rc_namespace;
-			if ( !$wgUser->isAllowedActionNamespace($ns, 'browse') ) continue;
+			if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 			// BizzWiki end }}
 
 			if ( ! ( $hideminor     && $obj->rc_minor     ) &&
