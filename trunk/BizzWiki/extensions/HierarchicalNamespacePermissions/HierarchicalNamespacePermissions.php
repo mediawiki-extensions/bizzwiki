@@ -130,7 +130,7 @@
  *  - added hook support for 'UserIsAllowed'
  *  - added namespace level action checking.
  *  - TODO add namespace-independant right checking.
- *
+ *  - added group hierarchy functionality.
  */
 
 	// instantiate one

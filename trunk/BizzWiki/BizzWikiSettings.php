@@ -59,6 +59,11 @@ require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermis
 require('extensions/RawRight/RawRight.php');
 require('extensions/ViewsourceRight/ViewsourceRight.php');
 
+  // define group hierarchy
+  // default is: sysop -> user -> *
+#hnpClass::singleton()->setGroupHierarchy( array('sysop', 'user', '*') ));
+
+
 // 2
 unset( $wgGroupPermissions );
 
@@ -105,9 +110,15 @@ hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRight
 	// Sysop gets all the rights.
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","browse")] = true;
 
 	// Anonymous users don't get much...
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
+
+		// remove access to some log entries.
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","!browse")] = true;
+#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
+
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
 								NS_CATEGORY, NS_CATEGORY_TALK,
@@ -120,9 +131,15 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
+	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;   // debugging	
 }
 
 	// User
+	
+		// Log Entries access
+$wgGroupPermissions['user' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","!browse")] = true;
+
+
 $bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
 							NS_PROJECT, NS_PROJECT_TALK,
 							NS_CATEGORY, NS_CATEGORY_TALK,
@@ -156,5 +173,8 @@ require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
 require('extensions/SyntaxColoring/SyntaxColoring.php');
+
+// New User Logging
+require('extensions/NewUserLog/Newuserlog.php');
 
 ?>

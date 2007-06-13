@@ -7,13 +7,13 @@
 	
 	TODO:
 	=====
-	1) Namespace level permission policing.
-	2) Fix user right checking for the buttons... assume non-namespace level semantic....
-	3) Messages...
+	1) Messages...
 	
 	HISTORY:
 	========
 	1) Added 'readlog' right
+	2) Added namespace:page name level policy enforcement for log entries.
+	
 */
 
 # Copyright (C) 2004 Brion Vibber <brion@pobox.com>
@@ -48,7 +48,7 @@ function wfSpecialLog( $par = '' ) {
 	// BizzWiki begin {{
 	global $wgOut, $wgUser;
 
-	if ( !$wgUser->isAllowed('readlog') )
+	if ( !$wgUser->isAllowed('readlog'))
 	{
 		$skin = $wgUser->getSkin();
 		$wgOut->setPageTitle( wfMsg( 'readlog' ) );
@@ -337,7 +337,17 @@ class LogViewer {
 		// Rewind result pointer and go through it again, making the HTML
 		$html = "\n<ul>\n";
 		$result->seek( 0 );
+		
+		global $wgUser; // BizzWiki
 		while( $s = $result->fetchObject() ) {
+		/*
+			BizzWiki
+			Filter entries on policies:
+			1- Title's namespace:dbkey
+			2- Type of log entry  (TODO)
+		*/
+			if (!$wgUser->isAllowed( 'browse', $s->log_namespace, $s->log_title) ) continue; // 1
+			
 			$html .= $this->logLine( $s );
 		}
 		$html .= "\n</ul>\n";
