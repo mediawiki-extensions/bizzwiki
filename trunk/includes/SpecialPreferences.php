@@ -8,7 +8,12 @@
 	TODO:
 	=====
 	1) Namespace level permission policing.
-	
+hnpClass: action <b>createpage</b> namespace dependant but called from NS_SPECIAL. <br/>
+hnpClass: action <b>createtalk</b> namespace dependant but called from NS_SPECIAL. <br/>
+hnpClass: action <b>edit</b> namespace dependant but called from NS_SPECIAL. <br/>
+hnpClass: action <b>move</b> namespace dependant but called from NS_SPECIAL. <br/>
+hnpClass: action <b>delete</b> namespace dependant but called from NS_SPECIAL. <br/>
+
 	HISTORY:
 	========
 
