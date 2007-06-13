@@ -168,6 +168,13 @@ $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 
 // *****************************************************************************************
 
+/**
+ * Show a bar of language selection links in the user login and user
+ * registration forms; edit the "loginlanguagelinks" message to
+ * customise these
+ */
+$wgLoginLanguageSelector = false;
+
 // readfile & commitfile rights
 require('extensions/FileManager/FileManager.php');
 
