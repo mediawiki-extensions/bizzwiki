@@ -9,6 +9,7 @@
 	=====
 	1) Namespace level permission policing.
 	2) Fix user right checking for the buttons... assume non-namespace level semantic....
+	3) Messages...
 	
 	HISTORY:
 	========
