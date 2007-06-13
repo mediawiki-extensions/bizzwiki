@@ -7,12 +7,12 @@
 	
 	TODO:
 	=====
-	1) Messages...
 	
 	HISTORY:
 	========
 	1) Added 'readlog' right
 	2) Added namespace:page name level policy enforcement for log entries.
+	3) Added messages to /languages/messages
 	
 */
 
