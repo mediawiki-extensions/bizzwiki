@@ -83,6 +83,12 @@
  *   This is especially useful when "editing" pages as MW will mark "rc_bot = true" in 
  *   the "recentchanges" table, thus preventing a standard view on the "Recent Changes"
  *   special page.
+ 
+ 	 - Ability to define a 'group hierarchy'
+	   e.g. sysop -> user -> *
+	   'sysop' rights have precedence over 'user' rights, which in turn
+	   have precedence over '*'
+ 
  *
  * MEDIAWIKI NOTES:
  * ================
@@ -134,6 +140,7 @@ class hnpClass
 {
 	var $lNsD; // namespace dependant rights list
 	var $lNsI; // namespace independant rights list
+	static $groupHierarchy; 
 	
 	public static function &singleton() 
 	{
@@ -167,6 +174,9 @@ class hnpClass
 		}
 			
 		$this->initGroups();
+		
+		// default hierarchy
+		self::$groupHierarchy = array ( 'sysop', 'user', '*' );
 	}
 	public function addNamespaceDependantRights( $rights )   
 	{ 
@@ -176,6 +186,7 @@ class hnpClass
 	{ 
 		$this->lNsI = array_merge( $rights, $this->lNsI ); 
 	}
+	public function setGroupHierarchy( $gh ) { self::$groupHierarchy = $gh; }
 	
 	function hUserIsAllowed( &$user, $ns=null, $titre=null, &$action, &$result )
 	{
@@ -276,27 +287,33 @@ class hnpClass
 		// User can not have access to higher level pages e.g. X\*
 		//
 
+		foreach ( self::$groupHierarchy as $index => $group )
+		{
+			// is the user part of the group?
+			if ( !self::isUserPartOfGroup( $user, $group ) ) continue;
+			
+			$groupa = array( $group );
+			$grights = $user->getGroupPermissions( $groupa ); 
 
-		// FIRST GROUP OF TESTS
-		//   EXCLUDE ACTION tests
-		$rights = hnpClass::prepareRightsTable( $user->getRights(), false );
+			// FIRST GROUP OF TESTS
+			//   EXCLUDE ACTION tests
+			$rights = hnpClass::prepareRightsTable( $grights, false );
+			$eqs = hnpClass::buildPermissionKey( $ns, $pt, "!${a}" );		
+			$r = hnpClass::testRightsWildcard( $eqs, $rights );
+			if ($r) return false;		
+		
+			// SECOND GROUP OF TESTS
+			// ---------------------
+			// Go through all the group membership and
+			// extract the rights looking for the ones
+			// dynamically created (e.g. by this extension i.e. createGroups)
+			// which are compatible with this extension.
+			$rights = hnpClass::prepareRightsTable( $grights );
+			$qs = hnpClass::buildPermissionKey( $ns, $pt, $a );
+			$r = hnpClass::testRightsWildcard( $qs, $rights );
+			if ($r) return true;		
+		}
 
-		$eqs = hnpClass::buildPermissionKey( $ns, $pt, "!${a}" );		
-
-		$r = hnpClass::testRightsWildcard( $eqs, $rights );
-		if ($r) return false;		
-	
-		// SECOND GROUP OF TESTS
-		// ---------------------
-		// Go through all the group membership and
-		// extract the rights looking for the ones
-		// dynamically created (e.g. by this extension i.e. createGroups)
-		// which are compatible with this extension.
-		$rights = hnpClass::prepareRightsTable( $user->getRights() );
-		$qs = hnpClass::buildPermissionKey( $ns, $pt, $a );
-		$r = hnpClass::testRightsWildcard( $qs, $rights );
-		if ($r) return true;		
-	
 		// If all tests fail, then conclude the user does not have the require right.
 		return false;
 	}
@@ -392,6 +409,12 @@ class hnpClass
 	        $wgGroupPermissions[ "Gr|{$num}|NsMng" ][ "ns|{$num}|~|~"     ] = true;
 		}
 	
+	}
+	public static function isUserPartOfGroup( &$user, $group )
+	{
+		if (empty( $group )) return false;
+		
+		return in_array( $group, $user->getEffectiveGroups() );
 	}
 
 } # end class definition
