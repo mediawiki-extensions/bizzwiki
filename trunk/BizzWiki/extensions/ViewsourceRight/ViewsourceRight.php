@@ -26,9 +26,6 @@
  *
  * TODO:
  * =====
- * 1) Internationalization: add messages to message cache
- *    Create i18n file
- *    'viewsourceprohibited' message.
  * 
  */
 
@@ -100,7 +97,7 @@ class ViewsourceRight extends ExtensionClass
 					$skin = $wgUser->getSkin();
 					$wgOut->setPageTitle( wfMsg( 'viewsource' ) );
 					$wgOut->setSubtitle( wfMsg( 'viewsourcefor', $skin->makeKnownLinkObj( $title ) ) );
-					$wgOut->addWikiText( wfMsg( 'viewsourceprohibited' ) );
+					$wgOut->addWikiText( wfMsg( 'badaccess' ) );
 					
 					return false; // stop normal processing flow.
 				}
