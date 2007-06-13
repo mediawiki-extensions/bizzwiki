@@ -1745,7 +1745,7 @@ class User {
 	 * @param string $action Action to be checked
 	 * @return boolean True: action is allowed, False: action should not be allowed
 	 */
-	function isAllowed($action='', $ns = null /* BizzWiki addition */ ) 
+	function isAllowed($action='', $ns = null, $title = null /* BizzWiki addition */ ) 
 	{
 		if ( $action === '' )
 			// In the spirit of DWIM
@@ -1753,7 +1753,7 @@ class User {
 
 		// BizzWiki begin{{
 		$result = null;
-		wfRunHooks('UserIsAllowed', array( &$this, $ns, null, &$action, &$result ) );
+		wfRunHooks('UserIsAllowed', array( &$this, $ns, $title, &$action, &$result ) );
 		if ( $result !== null )
 			return $result;
 		// BizzWiki end }}

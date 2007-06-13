@@ -7,11 +7,11 @@
 	
 	TODO:
 	====
-	1) Namespace permissions enforcement.
 	
 	HISTORY:
 	========
-	1) 
+	1) Namespace:Title level policy enforcement.
+	
 */
 
 /**
@@ -254,8 +254,10 @@ function wfSpecialRecentchanges( $par, $specialPage ) {
 			}
 
 			// BizzWiki begin {{
-			$ns = $obj->rc_namespace;
-			if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
+			$ns    = $obj->rc_namespace;
+			$title = $obj->rc_title;
+			
+			if ( !$wgUser->isAllowed( 'browse', $ns, $title ) ) continue;
 			// BizzWiki end }}
 
 			if ( ! ( $hideminor     && $obj->rc_minor     ) &&
