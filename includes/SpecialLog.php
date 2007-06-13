@@ -51,8 +51,8 @@ function wfSpecialLog( $par = '' ) {
 	if ( !$wgUser->isAllowed('readlog'))
 	{
 		$skin = $wgUser->getSkin();
-		$wgOut->setPageTitle( wfMsg( 'readlog' ) );
-		$wgOut->addWikiText( wfMsg( 'readlogprohibited' ) );
+		$wgOut->setPageTitle( wfMsg( 'log' ) );      // existing message.
+		$wgOut->addWikiText( wfMsg( 'badaccess' ) ); // existing message.
 		return;
 	}
 	// BizzWiki end }}

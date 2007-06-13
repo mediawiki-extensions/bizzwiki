@@ -10,7 +10,7 @@
 	
 	HISTORY:
 	========
-	1) Read Log related messages.
+	no change currently.
 	
 */
 
@@ -2905,8 +2905,6 @@ Please confirm that really want to recreate this page.',
 'livepreview-error'   => "Failed to connect: $1 \"$2\"\nTry normal preview.",
 
 # BizzWiki section
-'readlog'           => 'Read Log',
-'readlogprohibited' => 'Read log action permission error.',
 #'' => '',
 );
 
