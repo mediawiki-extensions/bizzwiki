@@ -82,6 +82,7 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 
 $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',								
 										'nominornewtalk', 
+										"createpage", "createtalk",
 										
 										"rollback",			// TODO
 										'protect',
