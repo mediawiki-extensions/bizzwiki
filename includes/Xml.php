@@ -110,7 +110,7 @@ class Xml {
 			if ($index < NS_MAIN) continue;
 
 			// BizzWiki begin {{
-			if ( !$wgUser->isAllowedActionNamespace( $index, 'browse' ) ) continue;
+			if ( !$wgUser->isAllowed( 'browse', $index ) ) continue;
 			// BizzWiki end }}
 
 			$name = $index !== 0 ? $name : wfMsg('blanknamespace');
