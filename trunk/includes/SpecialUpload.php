@@ -1,4 +1,18 @@
 <?php
+/*
+	Origin:  MW 1.10
+	-------
+	
+	BizzWiki:  $Id$
+	
+	TODO:
+	=====
+ 
+	
+	HISTORY:
+	========
+	1) Namespace level permission policing.
+*/
 /**
  *
  * @addtogroup SpecialPage
@@ -136,7 +150,7 @@ class UploadForm {
 	private function curlCopy( $url, $dest ) {
 		global $wgUser, $wgOut;
 
-		if( !$wgUser->isAllowed( 'upload_by_url' ) ) {
+		if( !$wgUser->isAllowed( 'upload_by_url', NS_IMAGE /* BizzWiki */ ) ) {
 			$wgOut->permissionRequired( 'upload_by_url' );
 			return true;
 		}
@@ -214,7 +228,7 @@ class UploadForm {
 		}
 
 		# Check permissions
-		if( !$wgUser->isAllowed( 'upload' ) ) {
+		if( !$wgUser->isAllowed( 'upload', NS_IMAGE /* BizzWiki */ ) ) {
 			if( !$wgUser->isLoggedIn() ) {
 				$wgOut->showErrorPage( 'uploadnologin', 'uploadnologintext' );
 			} else {
@@ -803,7 +817,7 @@ class UploadForm {
 			: '';
 
 		// Prepare form for upload or upload/copy
-		if( $wgAllowCopyUploads && $wgUser->isAllowed( 'upload_by_url' ) ) {
+		if( $wgAllowCopyUploads && $wgUser->isAllowed( 'upload_by_url', NS_IMAGE /* BizzWiki */ ) ) {
 			$filename_form =
 				"<input type='radio' id='wpSourceTypeFile' name='wpSourceType' value='file' onchange='toggle_element_activation(\"wpUploadFileURL\",\"wpUploadFile\")' checked />" .
 				"<input tabindex='1' type='file' name='wpUploadFile' id='wpUploadFile' onfocus='toggle_element_activation(\"wpUploadFileURL\",\"wpUploadFile\");toggle_element_check(\"wpSourceTypeFile\",\"wpSourceTypeURL\")'" .
@@ -1285,12 +1299,12 @@ class UploadForm {
 		if( $img->exists() ) {
 			global $wgUser, $wgOut;
 			if( $img->isLocal() ) {
-				if( !$wgUser->isAllowed( 'reupload' ) ) {
+				if( !$wgUser->isAllowed( 'reupload', NS_IMAGE /* BizzWiki */ ) ) {
 					$error = 'fileexists-forbidden';
 				}
 			} else {
-				if( !$wgUser->isAllowed( 'reupload' ) ||
-				    !$wgUser->isAllowed( 'reupload-shared' ) ) {
+				if( !$wgUser->isAllowed( 'reupload', NS_IMAGE /* BizzWiki */ ) ||
+				    !$wgUser->isAllowed( 'reupload-shared', NS_IMAGE /* BizzWiki */ ) ) {
 					$error = "fileexists-shared-forbidden";
 				}
 			}
