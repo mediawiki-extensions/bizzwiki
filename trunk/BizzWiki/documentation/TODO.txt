@@ -3,9 +3,6 @@ $Id$
 Permission functionality:
 -------------------------
 
-a1) Raw page viewing:    add 'raw' right
-a2) Source page viewing: add 'viewsource' right
-a3) Namespace level permission (Hierarchical Namespace Permissions extension)
 
 Installation File Management functionality
 ------------------------------------------
