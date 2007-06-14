@@ -188,7 +188,11 @@ static $hookList = array(
 'LangugeGetSpecialPageAliases',
 'MonoBookTemplateToolboxEnd',
 'SkinTemplateSetupPageCss',
-'SkinTemplatePreventOtherActiveTabs'
+'SkinTemplatePreventOtherActiveTabs',
+
+// BizzWiki Additions
+'TitleSecureAndSplitBegin',
+'TitleSecureAndSplitEnd',
 );
 
 	var $className;

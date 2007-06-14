@@ -77,7 +77,31 @@ class FileManagerClass extends ExtensionClass
 				
 		return true; // continue hook-chain.
 	}
+	public function hTitleSecureAndSplitBegin( &$title )
+	// Hooked introduced in patched MW 1.10
+	// This is not essential although it helps dealing
+	// with capitalized links.
+	{
+		$ns = $title->getNamespace();
+		if ( $ns != NS_FILESYSTEM ) return true; // continue hook-chain
 
+		global $wgCapitalLinks;
+		$this->CapitalLinksState = $wgCapitalLinks;
+		$wgCapitalLinks = false;
+		
+		return true;
+	}
+	public function hTitleSecureAndSplitEnd( &$title )
+	// Hooked introduced in patched MW 1.10	
+	{
+		$ns = $title->getNamespace();
+		if ( $ns != NS_FILESYSTEM ) return true; // continue hook-chain
+
+		global $wgCapitalLinks;
+		$wgCapitalLinks = $this->CapitalLinksState;
+	
+		return true;
+	}
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
 	// This hook is used to capture the source file & save it also in the file system.
 	{
@@ -129,9 +153,22 @@ class FileManagerClass extends ExtensionClass
 		$ns = $title->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
 
+		// Adjust for capitalized first title letter.
+		global $wgCapitalLinks;
+		#$state = $wgCapitalLinks;
+		$wgCapitalLinks = false;
+		
+		// get the original title name
+		global $wgRequest, $wgTitle;
+		$titre = $wgRequest->getVal( 'title' );
+		$wgTitle = Title::newFromURL( $titre );
+
+		// restore state.
+		#$wgCapitalLinks = state;
+
 		// If article is present in the database, used it.
 		// Permissions are checked through normal flow.
-		$a = new Article( $title );
+		$a = new Article( $wgTitle );
 		if ( $a->getId() !=0 ) 
 		{
 			$article = $a; // might as well return the object since we already created it!
