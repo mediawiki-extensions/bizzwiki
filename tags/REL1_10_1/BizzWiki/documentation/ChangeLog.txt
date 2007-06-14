@@ -1,0 +1,42 @@
+$Id$
+
+Permission functionality:
+-------------------------
+With the inclusion of 'Hierarchical Namespace Permissions' extensions, all rights (permissions) are
+manageable at the namespace/sub-namespace granularity.
+
+* Added 'browse' right:     manages the user's ability to 'browse' titles in various contexts.
+* Added 'search' right:     manages the user's ability to 'search' for titles/text.
+* Added 'raw' right:        manages the user's ability to retrieve pages in 'raw' format
+* Added 'viewsource' right: manages the user's ability to view the source wikitext of pages
+
+Details:
+--------
+- Integration of 'Hierarchical Namespace Permissions' system
+- Integration of 'File Manager' extension
+- Integration of 'Syntax Coloring' to complement 'File Manager'
+- Integration of 'Raw' right (permission to retrieve a page in 'raw' format)
+- Integration of 'Viewsource' right (permission to view the source wikitext)
+- Integration of 'New User Log' functionality
+
+- Patch to 'ChangesList.php' for namespace level policy enforcement (patrol right)
+- Patch to 'Pager.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'SearchEngine.php' for namespace level policy enforcement (added 'search' right)
+- Patch to 'SpecialAllpages.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'SpecialContributions.php' for handling the 'rollback' right correctly
+- Patch to 'SpecialLog.php': added 'readlog' right, namespace level policy enforcement 
+- Patch to 'SpecialNewpages.php' for handling the 'patrol' right correctly
+- Patch to 'SpecialPreferences.php' for:
+	1) Fixed searchable namespace listing
+	2) Fixed watchlist related toggles
+	3) Fixed searchable namespace preference saving
+- Patch to 'SpecialRandompage.php' for namespace level policy enforcement
+- Patch to 'SpecialRecentchanges.php' for namespace level policy enforcement
+- Patch to 'SpecialRecentchangeslinked.php'  for namespace level policy enforcement
+- Patch to 'SpecialStatistics.php'  for namespace level policy enforcement
+- Patch to 'User.php':
+	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
+	2) Modified 'isAllowed' method.
+- Patch to 'Xml.php'  for namespace level policy enforcement (added 'browse' right)
