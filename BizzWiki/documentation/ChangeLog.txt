@@ -43,3 +43,7 @@ Details:
 ========
 REL1_10_2:
 - Patch to 'Special:Upload.php' to for handling NS_IMAGE namespace rights
+- Added 'Log/upload' permission related settings
+- Patch to 'Article.php' to disable parser caching upon article saving/updating (parser cache gets 
+  updated upon article viewing 'only')
+ - 
