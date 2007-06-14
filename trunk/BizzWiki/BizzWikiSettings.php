@@ -7,7 +7,7 @@
 
 	TODO:
 	=====
-	- disable search & proxy caching functionality for 'file system' & BizzWiki namespaces
+	- disable proxy caching functionality for 'file system' & BizzWiki namespaces
 	
 
 ****************************************************************************/
