@@ -40,3 +40,6 @@ Details:
 	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
 	2) Modified 'isAllowed' method.
 - Patch to 'Xml.php'  for namespace level policy enforcement (added 'browse' right)
+========
+REL1_10_2:
+- Patch to 'Special:Upload.php' to for handling NS_IMAGE namespace rights
