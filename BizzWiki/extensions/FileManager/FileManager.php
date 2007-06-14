@@ -23,18 +23,21 @@
  * USAGE NOTES:
  * ============
  *
- * Tested Compatibility:  MW 1.8.2, 1.10
+ * Tested Compatibility:  MW 1.10
  * =====================
  *
  * History:
  * ========
- * 
+ * - Added additional hooks (SecureAndSplitBegin & SecureAndSplitEnd) 
+ *   (need to patch MW) for handling capitalized links. If these hooks are not applied
+ *   then files with small caps will not be manageable (e.g. includes/Setup.php)
  *
  * TODO:
  * =====
  * - internationalization
  * - add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
  * - enhance 'logging' through $type etc.
+ * - 
  *
  */
 
