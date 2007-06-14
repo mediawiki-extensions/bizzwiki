@@ -15,6 +15,8 @@
  * 1) New right:      'readfile', 'commitfile'
  * 2) Logging
  * 3) New Namespace 'NS_FILESYSTEM'
+ * 4) Support for titles beginning with small caps; need the title to be prefixed with '/'
+ *    e.g. to have access to 'includes/Setup.php' just reference the title 'Filesystem:/includes/Setup.php'
  *
  * DEPENDANCY:  
  * ===========
@@ -28,9 +30,6 @@
  *
  * History:
  * ========
- * - Added additional hooks (SecureAndSplitBegin & SecureAndSplitEnd) 
- *   (need to patch MW) for handling capitalized links. If these hooks are not applied
- *   then files with small caps will not be manageable (e.g. includes/Setup.php)
  *
  * TODO:
  * =====

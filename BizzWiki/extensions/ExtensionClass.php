@@ -191,8 +191,6 @@ static $hookList = array(
 'SkinTemplatePreventOtherActiveTabs',
 
 // BizzWiki Additions
-'TitleSecureAndSplitBegin',
-'TitleSecureAndSplitEnd',
 );
 
 	var $className;

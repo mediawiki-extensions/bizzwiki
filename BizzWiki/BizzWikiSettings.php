@@ -117,6 +117,7 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")]
 
 		// remove access to some log entries.
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","!browse")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil","!browse")] = true; // FileManager extension
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
 
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
