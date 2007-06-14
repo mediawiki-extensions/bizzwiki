@@ -94,7 +94,8 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'patrol', "autopatrol",
 										'purge',
 										'upload', 'reupload', 'reupload-shared', // for now, those rights
-																				// are only relevant to NS_IMAGE
+										'upload_by_url',						// are only relevant to NS_IMAGE
+										
 										'raw',        // BizzWiki specific
 										'viewsource', // BizzWiki specific
 										'browse',     // BizzWiki specific
