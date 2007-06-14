@@ -1,14 +1,13 @@
 $Id$
 
+Replication functionality:
+--------------------------
+
+
 Permission functionality:
 -------------------------
 
 
 Installation File Management functionality
 ------------------------------------------
-Be able to remotely manage the installation files (i.e. all the files of a Mediawiki installation)
-
-b1) Commit a file to the filesystem
-b2) Read a file from the filesystem
-b3) Change a file from the filesystem
 
