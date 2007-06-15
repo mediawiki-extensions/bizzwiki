@@ -1,4 +1,5 @@
 <?php
+
 /***************************************************************************
 	
 	BizzWikiSettings.php
@@ -18,7 +19,7 @@ require('extensions/ExtensionClass.php');
 // Parser & Page caching.
 $wgEnableParserCache = true;
 $wgParserCacheType   = CACHE_ANYTHING;
-#$wgCachePages        = true;
+$wgCachePages        = true;
 
 // Disable raw html
 // (There is the extension 'addHtml' to better cover this)
@@ -40,13 +41,16 @@ $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
 // Subpages
 $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_PROJECT,
+									NS_PROJECT_TALK,
+									NS_CATEGORY,
+									NS_CATEGORY_TALK,
 									NS_BIZZWIKI,
 									NS_FILESYSTEM
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
 	
-/*
+/* *******************************************************
 	Apply new permission management functionality
 	1) Hierarchical Namespace Permissions
 	2) Wipe out the standard Mediawiki permission settings
@@ -111,9 +115,10 @@ hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRight
 	// Sysop gets all the rights.
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;
-$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","browse")] = true;
-$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil","browse")] = true;
-$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload","browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers",	"browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil",	"browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload",		"browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delete",   	"browse")] = true;
 
 	// Anonymous users don't get much...
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
@@ -122,6 +127,7 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")]
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers", "!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil","!browse")] = true; // FileManager extension
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload",   "!browse")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delete",   "!browse")] = true;
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
 
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
