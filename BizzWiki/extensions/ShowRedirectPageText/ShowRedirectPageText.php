@@ -1,11 +1,16 @@
 <?php
 /*
  * ShowRedirectPageText.php
+ *
  * $Id$
  * @author Jean-Lou Dupont
  * 
  * <b>Purpose:</b>  This extension enables the display of the text included
  *                  in a 'redirect' page.
+ *
+ *                  The inclusion of wikitext in a redirect page is helpful
+ *                  in situations, for example, where redirects are used to manage a 
+ *                  'cluster' of Mediawiki serving machines.
  *
  * FEATURES:
  * =========
@@ -21,7 +26,8 @@
  *
  * TODO:
  * =====
- * 
+ * - Clean up the '#redirect' wikitext before displaying
+ *
  */
 
 ShowRedirectPageText::singleton();
@@ -34,7 +40,6 @@ class ShowRedirectPageText extends ExtensionClass
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 
 	var $found;
-	var $text;
 	var $actionState;
 
 	public static function &singleton( )
@@ -57,7 +62,7 @@ class ShowRedirectPageText extends ExtensionClass
 	{
 		parent::setup();
 		
-		$this->found = false;
+		$this->found = null;
 		$this->actionState = self::defaultAction;
 	}
 	public function setActionState( $s ) { $this->actionState = $s ;}
@@ -65,13 +70,18 @@ class ShowRedirectPageText extends ExtensionClass
 	public function hArticleViewHeader( &$article )
 	{
 		// check if we are dealing with a redirect page.
-		$this->found = Title::newFromRedirect( $text )
+		$this->found = Title::newFromRedirect( $article->getContent() );
+		
 		return true;		
 	}
-	public function OutputPageParserOutput( &$op, &$parserOutput )
+	public function hOutputPageParserOutput( &$op, $parserOutput )
 	{
 		// are we dealing with a redirect page?
-		if ( ( !$this->found ) || ( !$this->actionState ) )return true;
+		if ( ( !is_object($this->found) ) || ( !$this->actionState ) )return true;
+	
+		// take care of re-entrancy
+		if ( !is_object($this->found) ) return true;
+		$this->found = null;
 		
 		$op->addParserOutput( $parserOutput );
 		return true;	
