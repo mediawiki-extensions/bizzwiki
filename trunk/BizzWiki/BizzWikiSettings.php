@@ -195,4 +195,6 @@ require('extensions/SyntaxColoring/SyntaxColoring.php');
 // New User Logging
 require('extensions/NewUserLog/Newuserlog.php');
 
+// Show Redirect Page Text extension
+require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
 ?>
