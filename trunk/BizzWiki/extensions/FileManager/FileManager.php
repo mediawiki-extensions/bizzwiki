@@ -5,7 +5,6 @@
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
  * $Id$
- * $LastChangedRevision$
  * 
  * Purpose:   This Mediawiki extension enables a user with the 'commitfile' right
  * ========   to edit files in the Mediawiki installation directory.  

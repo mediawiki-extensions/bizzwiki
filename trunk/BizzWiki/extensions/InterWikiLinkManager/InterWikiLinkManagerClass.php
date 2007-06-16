@@ -1,6 +1,6 @@
 <?php
 /*
- * FileManagerClass.php
+ * InterWikiLinkManagerClass.php
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
@@ -8,25 +8,18 @@
  * 
  */
 
-class FileManagerClass extends ExtensionClass
+class InterWikiLinkManagerClass extends ExtensionClass
 {
 	// constants.
-	const thisName = 'FileManager';
+	const thisName = 'InterWikiLinkManager';
 	const thisType = 'other';
+
+	static $mgwords = array( 'iwl' );
 	  
-	const actionCommit = 'commitfile';
-	const actionRead   = 'readfile';
-
-	const mNoCommit    = '__NOCOMMIT__';
-
-	// error code constants
-	const msg_nons = 1;
-	const msg_folder_not_writable = 2;
-
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function FileManagerClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function InterWikiLinkManagerClass( self::$mgwords, $passingStyle = self::mw_style, $depth = 1 )
 	{
 		parent::__construct( );
 
@@ -76,30 +69,23 @@ class FileManagerClass extends ExtensionClass
 				
 		return true; // continue hook-chain.
 	}
-	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
-	// This hook is used to capture the source file & save it also in the file system.
+	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans )
 	{
-		global $IP;
 		
+	}	
+	
+	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
+	{
 		// check if we are in the right namespace
 		$ns = $article->mTitle->getNamespace();
-		if ($ns != NS_FILESYSTEM) return true;
+		if ($ns != NS_INTERWIKI) return true;
 
 		// does the user have the right to commit scripts?
 		// i.e. commit the changes to the file system.
 		if (! $article->mTitle->userCan(self::actionCommit) ) return true;  
 
-		// we are in the right namespace,
-		// but are we committing to file?
-		if (!$this->docommit) return true;
-		
-		// do we have a 'no commit' command in the text?
-		$r = preg_match('/'.self::mNoCommit.'/si', $text);
-		if ($r==1) return true;
-		
-		// we can attempt commit then.
-		$titre = $article->mTitle->getText();
-		$r = file_put_contents( $IP.'/'.$titre, $text );
+
+
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
@@ -114,31 +100,15 @@ class FileManagerClass extends ExtensionClass
 		return true; // continue hook-chain.
 	}
 	public function hArticleFromTitle( &$title, &$article )
-	// This hook is used to:
-	// - Verify if a file is available in the filesystem
-	// - Verify if a file is available in the database system
 	{
-		global $IP;
-		
 		// Paranoia
 		if (empty($title)) return true; // let somebody else deal with this.
 		
 		// Are we in the right namespace at all??
 		$ns = $title->getNamespace();
-		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
+		if ($ns != NS_INTERWIKI) return true; // continue hook chain.
 
-		// Adjust for capitalized first title letter.
-		global $wgCapitalLinks;
-		#$state = $wgCapitalLinks;
-		$wgCapitalLinks = false;
-		
-		// get the original title name
-		global $wgRequest, $wgTitle;
-		$titre = $wgRequest->getVal( 'title' );
-		$wgTitle = Title::newFromURL( $titre );
 
-		// restore state.
-		#$wgCapitalLinks = state;
 
 		// If article is present in the database, used it.
 		// Permissions are checked through normal flow.
@@ -171,30 +141,25 @@ class FileManagerClass extends ExtensionClass
 	}
 	public function hEditFormPreloadText( &$text, &$title )
 	// This hook is called to preload text upon initial page creation.
-	// If we are in the NS_FILESYSTEM namespace and no article is found ('initial creation')
-	// then let's check if the underlying file exists and preload it.
+	// If we are in the NS_INTERWIKI namespace and no article is found ('initial creation')
+	// then let's get the database entries.
 	//
 	// NOTE that the 'edit' permission is assumed to be checked prior to entering this hook.
 	//
 	{
 		// Are we in the right namespace at all??
 		$ns = $title->getNamespace();
-		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
+		if ($ns != NS_INTERWIKI) return true; // continue hook chain.
 
 		// Paranoia: Is the user allowed committing??
 		// We shouldn't even get here if the 'edit' permission gets
 		// verified adequately.
 		if (! $title->userCan(self::actionCommit) ) return true;		
 
-		global $IP;
-		$filename = $title->getText();
-		$text = file_get_contents( $IP.'/'.$filename );
+
 	
 		return true; // be nice.
 	}
-	// public function hUnknownAction( $action, $article )
-	/*  This hook is used to implement the custom 'action=commitscript'
-	 */
 	
 } // END CLASS DEFINITION
 ?>
