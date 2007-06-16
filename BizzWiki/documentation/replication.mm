@@ -1,7 +1,9 @@
 <map version="0.8.0">
-<!-- $Id$ -->
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
-<node BACKGROUND_COLOR="#ffccff" CREATED="1181674694562" ID="Freemind_Link_1434727005" MODIFIED="1181914696656" TEXT="Replication">
+<node BACKGROUND_COLOR="#ffccff" CREATED="1181674694562" ID="Freemind_Link_1434727005" MODIFIED="1181953995484" TEXT="Replication">
+<hook NAME="accessories/plugins/NodeNote.properties">
+<text>$Id$</text>
+</hook>
 <node CREATED="1181822615515" HGAP="24" ID="_" MODIFIED="1181822667046" POSITION="right" TEXT="Architecture" VSHIFT="-23">
 <node CREATED="1181914068421" ID="Freemind_Link_566990712" MODIFIED="1181914072765" TEXT="Pull" VSHIFT="-13"/>
 <node CREATED="1181919614859" ID="Freemind_Link_898242167" MODIFIED="1181919630687" TEXT="Dual Machines">
@@ -50,7 +52,7 @@
 <node CREATED="1181917128984" ID="Freemind_Link_1264762810" MODIFIED="1181917132875" POSITION="left" TEXT="States">
 <node CREATED="1181917135015" ID="Freemind_Link_1577882259" MODIFIED="1181917263390" TEXT="Primary&#xa;(machine)">
 <node CREATED="1181917170484" ID="Freemind_Link_1361148998" MODIFIED="1181917172250" TEXT="Online">
-<node CREATED="1181917176281" ID="Freemind_Link_1900873208" MODIFIED="1181917177968" TEXT="Master"/>
+<node CREATED="1181917176281" ID="Freemind_Link_1900873208" MODIFIED="1181953961218" TEXT="Master"/>
 <node CREATED="1181917179609" ID="Freemind_Link_1819682870" MODIFIED="1181917198859" TEXT="Slave"/>
 <node CREATED="1181917361656" ID="Freemind_Link_1259354482" MODIFIED="1181917382906" TEXT="Holding for Master role"/>
 <node CREATED="1181917383468" ID="Freemind_Link_1469628651" MODIFIED="1181917387890" TEXT="Holding for Slave role"/>

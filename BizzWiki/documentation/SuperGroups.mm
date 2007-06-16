@@ -1,8 +1,10 @@
 <map version="0.8.0">
-<!-- $Id$ -->
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
-<node BACKGROUND_COLOR="#0033cc" COLOR="#ffffff" CREATED="1181865173781" ID="Freemind_Link_39388484" MODIFIED="1181865879937" TEXT="SuperGroups">
+<node BACKGROUND_COLOR="#0033cc" COLOR="#ffffff" CREATED="1181865173781" ID="Freemind_Link_39388484" MODIFIED="1181954009671" TEXT="SuperGroups">
 <icon BUILTIN="password"/>
+<hook NAME="accessories/plugins/NodeNote.properties">
+<text>$Id$</text>
+</hook>
 <node CREATED="1181865199343" ID="_" MODIFIED="1181865203156" POSITION="right" TEXT="Use Cases">
 <node CREATED="1181865354312" HGAP="42" ID="Freemind_Link_718462489" MODIFIED="1181865374937" TEXT="Create a SGI" VSHIFT="-44">
 <node CREATED="1181865627921" HGAP="32" ID="Freemind_Link_1916255713" MODIFIED="1181865674421" TEXT="Authorization Process"/>
