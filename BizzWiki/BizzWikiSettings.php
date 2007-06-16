@@ -28,6 +28,7 @@ $wgRawHtml = false;
 // define new namespaces constants
 define('NS_BIZZWIKI',   100);
 define('NS_FILESYSTEM', 102);
+define('NS_INTERWIKI',  104);
 
 // Need to include standard 'Namespace.php'
 require($IP.'/includes/Namespace.php');
@@ -35,6 +36,7 @@ require($IP.'/includes/Namespace.php');
 // Add the new namespaces to the global variables
 $wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
 $wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
+$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
 
 $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
 
@@ -45,7 +47,8 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_CATEGORY,
 									NS_CATEGORY_TALK,
 									NS_BIZZWIKI,
-									NS_FILESYSTEM
+									NS_FILESYSTEM,
+									NS_INTERWIKI,
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
@@ -176,6 +179,7 @@ $wgContentNamespaces[] = NS_FILESYSTEM;
 // Protect critical namespaces from Templating level permission bypassing.
 $wgNonincludableNamespaces[] = NS_FILESYSTEM;
 $wgNonincludableNamespaces[] = NS_BIZZWIKI;
+$wgNonincludableNamespaces[] = NS_INTERWIKI;
 
 // *****************************************************************************************
 
@@ -197,4 +201,7 @@ require('extensions/NewUserLog/Newuserlog.php');
 
 // Show Redirect Page Text extension
 require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
+
+// Interwiki table management
+require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 ?>

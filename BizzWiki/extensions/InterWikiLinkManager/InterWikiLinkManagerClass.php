@@ -22,21 +22,16 @@ class InterWikiLinkManagerClass extends ExtensionClass
 
 	// preload wikitext
 	// ================
-	const header = <<<EOT
+	
+	const header = "
 {| border='1'
-! Prefix || URI || Local || Trans
-EOT;
-
-	const footer = <<<EOT
-|}
-EOT;
-	const sRow = <<<EOT
-|-
-EOT;
-
-	const sCol = <<<EOT
-| 
-EOT;
+! Prefix || URI || Local || Trans";
+	const footer = "
+|}";
+	const sRow = "
+|-";
+	const sCol = "
+| ";
 
 	// Link Table	
 	var $iwl;     // the table read from the database
@@ -45,9 +40,9 @@ EOT;
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function InterWikiLinkManagerClass( self::$mgwords, $passingStyle = self::mw_style, $depth = 1 )
+	function InterWikiLinkManagerClass( $mgword = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
-		parent::__construct( );
+		parent::__construct( self::$mgwords );
 
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
@@ -61,8 +56,8 @@ EOT;
 	{ 
 		parent::setup();
 		
-		$this->iwl = array();
-
+		$this->iwl     = array();
+		$this->new_iwl = array();
 		
 		global $wgMessageCache, $wgFileManagerLogMessages;
 		foreach( $wgFileManagerLogMessages as $key => $value )
@@ -85,10 +80,15 @@ EOT;
 				
 		return true; // continue hook-chain.
 	}
+	
 	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans )
+	// magic word handler function
 	{
 		if ( $r = $this->checkElement( $prefix, $uri, $local, $trans, $errCode ) )
-			$this->new_iwl[] = array( $prefix, $uri, $loca, $trans );
+			$this->new_iwl[] = array(	'prefix' => $prefix, 
+										'uri'    => $uri, 
+										'local'  => $local, 
+										'trans'  => $trans 	);
 
 		// was there an error?
 		if ( !$r )
@@ -101,15 +101,14 @@ EOT;
 		$ns = $article->mTitle->getNamespace();
 		if ($ns != NS_INTERWIKI) return true;
 
+		// Paranoia: this should have already been checked.
 		// does the user have the right to edit pages in this namespace?
 		if (! $article->mTitle->userCan(self::rEdit) ) return true;  
 
 		// Are we dealing with the page which contains the links to manage?
-		if ( $title->getText() != self::mPage ) return true;
+		if ( $article->mTitle->getText() != self::mPage ) return true;
 
-
-
-		
+//		$this->updateIWL();
 		
 		return true; // continue hook-chain.
 	}
@@ -136,6 +135,8 @@ EOT;
 		
 		$text .= $this->getHeader();
 		
+#		var_dump( $this->iwl );
+		
 		foreach( $this->iwl as $index => &$el )
 			$text .= $this->formatLine( $el );
 	
@@ -153,7 +154,10 @@ EOT;
 		$result = $db->query("SELECT iw_prefix,iw_url,iw_local,iw_trans FROM  $tbl");
 		
 		while ( $row = mysql_fetch_array($result) ) 
-			$this->iwl[] = array( $row[0], $row[1], $row[2], $row[3] );		
+			$this->iwl[] = array(	'prefix' => $row[0], 
+									'uri'   => $row[1], 
+									'local' => $row[2], 
+									'trans' => $row[3] );		
 	}
 	
 	private function getHeader() { return self::header; }
@@ -173,17 +177,35 @@ EOT;
 	}
 	private function updateIWL()
 	{
+		// The update process is fairly straightforward:
+		// 1) delete all the entries
+		// 2) insert the new list
+	
+			// Part 1
+		$db =& wfGetDB(DB_MASTER);
+		$tbl = $db->tableName('interwiki');	
+
+		$db->query("DELETE * FROM $tbl");
 		
+			// Part 2
+		/*
+		foreach ( $this->new_iwl as $index => &$el )
+			$db->query("INSERT INTO $tbl (iw_prefix,iw_url,iw_local,iw_trans) 
+						VALUES('$el[]','$i[0]',$i[1],$i[2])");		
+		*/
+					
 	}
 	private function checkElement( &$prefix, &$uri, &$local, &$trans, &$errCode )
 	{
+		// no validation implemented at this moment.
 		
 		// everything is OK.
 		return true;		
 	}
 	private function getErrMessage( $errCode )
 	{
-		
+		// not much checking implemented at the moment...
+		return '';	
 	}
 } // END CLASS DEFINITION
 ?>
