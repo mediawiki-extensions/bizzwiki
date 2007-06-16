@@ -10,6 +10,7 @@
  *
  * Features:
  * *********
+ * 0) Can be used independantly of BizzWiki environment
  * 1) all defined groups are supported (standard MW and ones defined in installation)
  * 2) sidebar page name corresponds to 'group' name
  * 3) No patches to standard MW installation for MW version >= 1.10

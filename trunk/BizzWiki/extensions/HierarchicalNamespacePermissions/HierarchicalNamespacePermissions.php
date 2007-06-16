@@ -64,6 +64,7 @@
  *
  * FEATURES:
  * =========
+ * 0) Can be used independantly of BizzWiki environment 
  *  - No new database table required: all "prefixes" are stored
  *    in the existing 'user_groups' table.
  *

@@ -11,6 +11,7 @@
  * 
  * Features:
  * =========
+ * 0) Can be used independantly of BizzWiki environment 
  * 1) A block of 256 namespaces is reserved for each SuperGroup
  *
  * 2) SuperGroup 'id' => namespaces set offset = sg_id * 
