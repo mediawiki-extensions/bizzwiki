@@ -22,7 +22,8 @@
  *
  * USAGE NOTES:
  * ============
- * {{#iwl: prefix | URI | local flag | transclusion flag }}
+ * 1) Use "Interwiki:Main Page" to manage the interwiki links
+ * 2) Use the magic word {{#iwl: prefix | URI | local flag | transclusion flag }}
  *
  * INSTALLATION:
  * =============

@@ -14,7 +14,33 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	const thisName = 'InterWikiLinkManager';
 	const thisType = 'other';
 
+	const rRead    = "read";
+	const rEdit    = "edit";
+	const mPage    = "Main Page";
+
 	static $mgwords = array( 'iwl' );
+
+	// preload wikitext
+	// ================
+	const header = <<<EOT
+{| border='1'
+! Prefix || URI || Local || Trans
+EOT;
+
+	const footer = <<<EOT
+|}
+EOT;
+	const sRow = <<<EOT
+|-
+EOT;
+
+	const sCol = <<<EOT
+| 
+EOT;
+
+	// Link Table	
+	var $iwl;     // the table read from the database
+	var $new_iwl; // the desired table elements
 	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -24,29 +50,19 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		parent::__construct( );
 
 		global $wgExtensionCredits;
-		$wgExtensionCredits['other'][] = array( 
+		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
 			'version'     => '$Id$',
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is '
+			'description' => 'Manages the InterWiki links table. Namespace for extension is '
 		);
 	}
 	public function setup() 
 	{ 
 		parent::setup();
 		
-		// Keep this 'true' until I get around to doing
-		// the 'commit' functionality.
-		$this->docommit = true;
+		$this->iwl = array();
 
-		# Add a new log type
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]                           = 'commitscript';
-		$wgLogNames  ['commitfil']              = 'commitfilelogpage';
-		$wgLogHeaders['commitfil']              = 'commitfilelogpagetext';
-		$wgLogActions['commitfil/commitfil']    = 'commitfilelogentry';
-		$wgLogActions['commitfil/commitok']     = 'commitfilelog-commitok-entry';
-		$wgLogActions['commitfil/commitfail']   = 'commitfilelog-commitfail-entry';
 		
 		global $wgMessageCache, $wgFileManagerLogMessages;
 		foreach( $wgFileManagerLogMessages as $key => $value )
@@ -58,7 +74,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		global $wgExtensionCredits;
 
 		// first check if the proper rights management class is in place.
-		if (defined('NS_FILESYSTEM'))
+		if (defined('NS_INTERWIKI'))
 			$hresult = 'defined.';
 		else
 			$hresult = '<b>not defined!</b>';
@@ -71,7 +87,12 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	}
 	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans )
 	{
-		
+		if ( $r = $this->checkElement( $prefix, $uri, $local, $trans, $errCode ) )
+			$this->new_iwl[] = array( $prefix, $uri, $loca, $trans );
+
+		// was there an error?
+		if ( !$r )
+			return $this->getErrMessage( $errCode );
 	}	
 	
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
@@ -80,65 +101,19 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		$ns = $article->mTitle->getNamespace();
 		if ($ns != NS_INTERWIKI) return true;
 
-		// does the user have the right to commit scripts?
-		// i.e. commit the changes to the file system.
-		if (! $article->mTitle->userCan(self::actionCommit) ) return true;  
+		// does the user have the right to edit pages in this namespace?
+		if (! $article->mTitle->userCan(self::rEdit) ) return true;  
+
+		// Are we dealing with the page which contains the links to manage?
+		if ( $title->getText() != self::mPage ) return true;
 
 
 
 		
-		// write a log entry with the action result.
-		// -----------------------------------------
-		$action  = ($r === FALSE ? 'commitfail':'commitok' );
-		$nsname  = Namespace::getCanonicalName( $ns );	
-		$message = wfMsgForContent( 'commitfilelog-commit-text', $nsname, $titre );
-		
-		// we need to limit the text to 'commitscr' because of the database schema.
-		$log = new LogPage( 'commitfil' );
-		$log->addEntry( $action, $user->getUserPage(), $message );
 		
 		return true; // continue hook-chain.
 	}
-	public function hArticleFromTitle( &$title, &$article )
-	{
-		// Paranoia
-		if (empty($title)) return true; // let somebody else deal with this.
-		
-		// Are we in the right namespace at all??
-		$ns = $title->getNamespace();
-		if ($ns != NS_INTERWIKI) return true; // continue hook chain.
 
-
-
-		// If article is present in the database, used it.
-		// Permissions are checked through normal flow.
-		$a = new Article( $wgTitle );
-		if ( $a->getId() !=0 ) 
-		{
-			$article = $a; // might as well return the object since we already created it!
-			return true;
-		}
-
-		// Can the current user even 'read' the article page at all??
-		// An extension can verify permission against namespace e.g.
-		// 'Hierarchical Namespace Permissions'
-		if (! $title->userCan(self::actionRead) ) return true;		
-		
-		// From this point, we know the article does not
-		// exist in the database... let's check the filesystem.
-		$filename = $title->getText();
-		$result   = @fopen( $IP.'/'.$filename,'r' );
-		if ($result !== FALSE) { fclose($result); $result = TRUE; }
-
-		$id = $result ? 'filemanager-script-exists':'filemanager-script-notexists';
-		$message = wfMsgForContent( $id, $filename );
-
-		// display a nice message to the user about the state of the script in the filesystem.
-		global $wgOut;
-		$wgOut->setSubtitle( $message );
-
-		return true; // continue hook-chain.
-	}
 	public function hEditFormPreloadText( &$text, &$title )
 	// This hook is called to preload text upon initial page creation.
 	// If we are in the NS_INTERWIKI namespace and no article is found ('initial creation')
@@ -154,12 +129,61 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// Paranoia: Is the user allowed committing??
 		// We shouldn't even get here if the 'edit' permission gets
 		// verified adequately.
-		if (! $title->userCan(self::actionCommit) ) return true;		
+		if (! $title->userCan(self::rEdit) ) return true;		
 
-
+		// start by reading the table from the database
+		$this->getIWLtable();
+		
+		$text .= $this->getHeader();
+		
+		foreach( $this->iwl as $index => &$el )
+			$text .= $this->formatLine( $el );
+	
+		$text .= $this->getFooter();
 	
 		return true; // be nice.
 	}
 	
+	private function getIWLtable()
+	// reads the 'interwiki' table into a local variable
+	{
+		$db =& wfGetDB(DB_SLAVE);
+		$tbl = $db->tableName('interwiki');
+
+		$result = $db->query("SELECT iw_prefix,iw_url,iw_local,iw_trans FROM  $tbl");
+		
+		while ( $row = mysql_fetch_array($result) ) 
+			$this->iwl[] = array( $row[0], $row[1], $row[2], $row[3] );		
+	}
+	
+	private function getHeader() { return self::header; }
+	private function getFooter() { return self::footer; }
+	
+	private function formatLine( &$el )
+	{
+		$text = '';
+		$text .= self::sRow;
+		
+		$text .= self::sCol;	$text .= $el['prefix'];
+		$text .= self::sCol;	$text .= $el['uri'];
+		$text .= self::sCol;	$text .= $el['local'];
+		$text .= self::sCol;	$text .= $el['trans'];
+
+		return $text;				
+	}
+	private function updateIWL()
+	{
+		
+	}
+	private function checkElement( &$prefix, &$uri, &$local, &$trans, &$errCode )
+	{
+		
+		// everything is OK.
+		return true;		
+	}
+	private function getErrMessage( $errCode )
+	{
+		
+	}
 } // END CLASS DEFINITION
 ?>
