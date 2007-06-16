@@ -11,6 +11,7 @@
  *
  * FEATURES:
  * =========
+ * 0) Can be used independantly of BizzWiki environment
  * 1) Displays operational information in 'Special:Version' page
  * 2) Integrates with Hierarchical Namespace Permissions extension to provide
  *    'raw' right.

@@ -12,6 +12,7 @@
  *
  * Features:
  * =========
+ * 0) Can be used independantly of BizzWiki environment 
  * 1) New right:      'readfile', 'commitfile'
  * 2) Logging
  * 3) New Namespace 'NS_FILESYSTEM'

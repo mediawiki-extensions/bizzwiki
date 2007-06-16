@@ -10,6 +10,7 @@
  *           extension development.
  *
  * FEATURES:
+ * 0) Can be used independantly of BizzWiki environment 
  * - 'singleton' implementation suited for extensions that require single instance
  * - 'magic word' helper functionality
  * - limited pollution of global namespace

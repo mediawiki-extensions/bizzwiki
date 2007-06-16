@@ -11,6 +11,7 @@
  *
  * FEATURES:
  * =========
+ * 0) Can be used independantly of BizzWiki environment 
  * 1) No mediawiki installation source level changes
  *
  * DEPENDANCIES:
