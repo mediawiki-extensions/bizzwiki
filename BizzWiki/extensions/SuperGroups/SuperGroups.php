@@ -5,7 +5,6 @@
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
  * $Id$
- * $LastChangedRevision: 202 $
  *
  * Purpose:   
  * ========
@@ -56,9 +55,8 @@ else
 	
 $wgExtensionCredits[SuperGroupsClass::thisType][] = array( 
 	'name'        => SuperGroupsClass::thisName,
-	'version'     => 'v1.0 $LastChangedRevision: 202 $',
+	'version'     => 'v1.0 $Id$',
 	'author'      => 'Jean-Lou Dupont', 
-	'url'         => 'http://www.bluecortex.com',
 	'description' => 'Extension status: '
 );
 

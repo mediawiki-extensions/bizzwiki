@@ -5,7 +5,6 @@
  *
  * @author Jean-Lou Dupont
  * $Id$
- * $LastChangedRevision: 202 $
  */
 
 # We're going to have to assume we're running from one of two places

@@ -5,7 +5,6 @@
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
  * $Id$
- * $LastChangedRevision: 202 $
  *
  */
 class SuperGroupsClass extends ExtensionClass
