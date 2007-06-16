@@ -47,6 +47,11 @@
  *
  * ------   Moved to BizzWiki
  *
+ *
+ * TODO
+ * ====
+ * - Remove ExtensionClass hooks when not required.
+ *
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',

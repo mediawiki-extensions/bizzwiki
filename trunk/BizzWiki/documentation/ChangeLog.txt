@@ -47,4 +47,5 @@ REL1_10_2:
 - Patch to 'Article.php' to disable parser caching upon article saving/updating (parser cache gets 
   updated upon article viewing 'only')
  - Added 'Log/delete' permission related settings
+ - Added 'ShowRedirectPageText' extension
  
