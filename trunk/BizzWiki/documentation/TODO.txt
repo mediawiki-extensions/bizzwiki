@@ -13,6 +13,10 @@ Installation File Management functionality
 
 SuperGroups
 -----------
-1) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
+0) Configuration in BizzWikiSettings.php
+1) TODO special page...
+2) Internationalization...
+ 
+3) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
    it comes down to partitioning the filesystem space for this namespace
    
