@@ -1,5 +1,4 @@
 /* $Id$
- * $LastChangedRevision: 202 $
  */
 CREATE TABLE /*$wgDBprefix*/supergroups (
   `sgr_user` int(5) unsigned,

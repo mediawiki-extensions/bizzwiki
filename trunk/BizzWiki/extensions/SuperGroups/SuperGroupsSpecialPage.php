@@ -1,7 +1,6 @@
 <?php
 /*
  * $Id$
- * $LastChangedRevision: 202 $
  */
 # Add messages
 global $wgMessageCache, $wgDesysopMessages;
