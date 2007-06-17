@@ -112,6 +112,13 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// Are we dealing with the page which contains the links to manage?
 		if ( $article->mTitle->getText() != self::mPage ) return true;
 
+		// Invoke the parser in order to retrieve the interwiki link data
+		// composed through the magic word 'iwl'
+		global $wgUser;
+		$parser = new Parser;
+		$popts = new ParserOptions( $wgUser );
+		$parserOutput = $wgParser->parse( $text, $article->mTitle, $popts, true, true, $article->mRevision );
+
 		$this->updateIWL();
 		
 		return true; // continue hook-chain.
