@@ -94,7 +94,6 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// was there an error?
 		if ( !$r )
 			return $this->getErrMessage( $errCode );
-
 		
 		if ( $dotableline )
 			return $this->formatLine( $prefix, $el );
@@ -120,6 +119,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		$popts = new ParserOptions( $wgUser );
 		$parserOutput = $wgParser->parse( $text, $article->mTitle, $popts, true, true, $article->mRevision );
 
+		// Write the counts of deletes, inserts and updates.
 		$summary = $this->updateIWL().$summary;
 		
 		return true; // continue hook-chain.
