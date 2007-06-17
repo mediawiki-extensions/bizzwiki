@@ -81,18 +81,23 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		return true; // continue hook-chain.
 	}
 	
-	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans )
+	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans, $dotableline = true )
 	// magic word handler function
 	{
 		if ( $r = $this->checkElement( $prefix, $uri, $local, $trans, $errCode ) )
-			$this->new_iwl[] = array(	'prefix' => $prefix, 
-										'uri'    => $uri, 
-										'local'  => $local, 
-										'trans'  => $trans 	);
-
+		{
+			$el = $this->new_iwl[] = array(	'prefix' => $prefix, 
+											'uri'    => $uri, 
+											'local'  => $local, 
+											'trans'  => $trans 	);
+		}
 		// was there an error?
 		if ( !$r )
 			return $this->getErrMessage( $errCode );
+
+		
+		if ( $dotableline )
+			return $this->formatLine( $el );
 	}	
 	
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
@@ -138,7 +143,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 #		var_dump( $this->iwl );
 		
 		foreach( $this->iwl as $index => &$el )
-			$text .= $this->formatLine( $el );
+			$text .= $this->formatMagicWordLine( $el );
 	
 		$text .= $this->getFooter();
 	
@@ -162,6 +167,16 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	
 	private function getHeader() { return self::header; }
 	private function getFooter() { return self::footer; }
+	
+	private function formatMagicWordLine( &$el )
+	{
+		return '
+{{#'.self::$mgwords[0].':'.
+	$el['prefix'].'|'.
+	$el['uri']   .'|'.
+	$el['local'] .'|'.
+	$el['trans'] .'}}';
+	}
 	
 	private function formatLine( &$el )
 	{
