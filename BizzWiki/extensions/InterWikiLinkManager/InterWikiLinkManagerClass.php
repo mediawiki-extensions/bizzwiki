@@ -90,6 +90,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 														'local'  => $local, 
 														'trans'  => $trans 	);
 		}
+
 		// was there an error?
 		if ( !$r )
 			return $this->getErrMessage( $errCode );
@@ -97,6 +98,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		
 		if ( $dotableline )
 			return $this->formatLine( $prefix, $el );
+			
 	}	
 	
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
@@ -114,12 +116,11 @@ class InterWikiLinkManagerClass extends ExtensionClass
 
 		// Invoke the parser in order to retrieve the interwiki link data
 		// composed through the magic word 'iwl'
-		global $wgUser;
-		$parser = new Parser;
+		global $wgParser, $wgUser;
 		$popts = new ParserOptions( $wgUser );
 		$parserOutput = $wgParser->parse( $text, $article->mTitle, $popts, true, true, $article->mRevision );
 
-		$this->updateIWL();
+		$summary = $this->updateIWL().$summary;
 		
 		return true; // continue hook-chain.
 	}
@@ -143,7 +144,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 
 		// start by reading the table from the database
 		$this->getIWLtable();
-		
+
 		$text .= $this->getHeader();					// HEADER
 		
 		foreach( $this->iwl as $prefix => &$el )
@@ -167,6 +168,8 @@ class InterWikiLinkManagerClass extends ExtensionClass
 											'local' => $row[2], 
 											'trans' => $row[3] );
 		$db->freeResult( $result );
+		
+		ksort( $this->iwl );
 	}
 	
 	private function getHeader() { return self::header; }
@@ -205,13 +208,13 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	
 		$this->getIWLtable();
 
-		$dlist = $this->computeDeleteList();
-		$ilist = $this->computeInsertList();
-		$ulist = $this->computeUpdateList();
+		$dlist = $this->computeDeleteList();  $dc = count( $dlist );
+		$ilist = $this->computeInsertList();  $ic = count( $ilist );
+		$ulist = $this->computeUpdateList();  $uc = count( $ulist );
 
 		$this->execute( $dlist, $ilist, $ulist );
 
-		return true;			
+		return "(d=$dc,i=$ic,u=$uc)";			
 	}
 
 	private function computeDeleteList()
@@ -219,7 +222,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// if it is in the database but not in the wanted list
 		$dlist = null;
 		foreach ( $this->iwl as $prefix => &$el )
-			if ( ! in_array( $prefix, $this->new_iwl ) )
+			if ( ! in_array( $prefix, array_keys( $this->new_iwl ) ) )
 				$dlist[] = $prefix;
 
 		return $dlist;
@@ -229,7 +232,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// if it is not in the database but in the wanted list
 		$ilist = null;
 		foreach ( $this->new_iwl as $prefix => &$el )
-			if ( ! in_array( $prefix, $this->iwl ) )
+			if ( ! in_array( $prefix, array_keys( $this->iwl ) ) )
 				$ilist[] = $prefix;
 
 		return $ilist;
@@ -239,8 +242,8 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// if it is in the database but updated in the wanted list 
 		$ulist = null;
 		foreach ( $this->new_iwl as $prefix => &$el )
-			if ( in_array( $prefix, $this->iwl ) )
-				if (($el['uri'] != $this->iwl[$prefix]['uri']) || 
+			if ( in_array( $prefix, array_keys( $this->iwl ) ) )
+				if (($el['uri']   != $this->iwl[$prefix]['uri']  ) || 
 					($el['local'] != $this->iwl[$prefix]['local']) ||
 					($el['trans'] != $this->iwl[$prefix]['trans']) )
 						$ulist[] = $prefix;
