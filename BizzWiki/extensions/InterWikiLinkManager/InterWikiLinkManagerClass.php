@@ -86,10 +86,9 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	{
 		if ( $r = $this->checkElement( $prefix, $uri, $local, $trans, $errCode ) )
 		{
-			$el = $this->new_iwl[] = array(	'prefix' => $prefix, 
-											'uri'    => $uri, 
-											'local'  => $local, 
-											'trans'  => $trans 	);
+			$el = $this->new_iwl[ $prefix ] = array(	'uri'    => $uri, 
+														'local'  => $local, 
+														'trans'  => $trans 	);
 		}
 		// was there an error?
 		if ( !$r )
@@ -97,7 +96,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 
 		
 		if ( $dotableline )
-			return $this->formatLine( $el );
+			return $this->formatLine( $prefix, $el );
 	}	
 	
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
@@ -113,7 +112,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// Are we dealing with the page which contains the links to manage?
 		if ( $article->mTitle->getText() != self::mPage ) return true;
 
-//		$this->updateIWL();
+		$this->updateIWL();
 		
 		return true; // continue hook-chain.
 	}
@@ -138,14 +137,12 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// start by reading the table from the database
 		$this->getIWLtable();
 		
-		$text .= $this->getHeader();
+		$text .= $this->getHeader();					// HEADER
 		
-#		var_dump( $this->iwl );
-		
-		foreach( $this->iwl as $index => &$el )
-			$text .= $this->formatMagicWordLine( $el );
+		foreach( $this->iwl as $prefix => &$el )
+			$text .= $this->formatMagicWordLine( $prefix, $el );
 	
-		$text .= $this->getFooter();
+		$text .= $this->getFooter();					// FOOTER
 	
 		return true; // be nice.
 	}
@@ -159,57 +156,120 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		$result = $db->query("SELECT iw_prefix,iw_url,iw_local,iw_trans FROM  $tbl");
 		
 		while ( $row = mysql_fetch_array($result) ) 
-			$this->iwl[] = array(	'prefix' => $row[0], 
-									'uri'   => $row[1], 
-									'local' => $row[2], 
-									'trans' => $row[3] );		
+			$this->iwl[ $row[0] ] = array(	'uri'   => $row[1], 
+											'local' => $row[2], 
+											'trans' => $row[3] );
+		$db->freeResult( $result );
 	}
 	
 	private function getHeader() { return self::header; }
 	private function getFooter() { return self::footer; }
 	
-	private function formatMagicWordLine( &$el )
+	private function formatMagicWordLine( $prefix, &$el )
 	{
 		return '
 {{#'.self::$mgwords[0].':'.
-	$el['prefix'].'|'.
+	$prefix.'|'.
 	$el['uri']   .'|'.
 	$el['local'] .'|'.
 	$el['trans'] .'}}';
 	}
 	
-	private function formatLine( &$el )
+	private function formatLine( $prefix, &$el )
 	{
 		$text = '';
 		$text .= self::sRow;
 		
-		$text .= self::sCol;	$text .= $el['prefix'];
+		$text .= self::sCol;	$text .= $prefix;
 		$text .= self::sCol;	$text .= $el['uri'];
 		$text .= self::sCol;	$text .= $el['local'];
 		$text .= self::sCol;	$text .= $el['trans'];
 
 		return $text;				
 	}
+	
 	private function updateIWL()
 	{
 		// The update process is fairly straightforward:
-		// 1) delete all the entries
-		// 2) insert the new list
+		// 0) Get the current list of entries from the database
+		// 1) Compute the list of entries to delete
+		// 2) Compute the list of entries to insert
+		// 3) Compute the list of entries to update
 	
-			// Part 1
-		$db =& wfGetDB(DB_MASTER);
-		$tbl = $db->tableName('interwiki');	
+		$this->getIWLtable();
 
-		$db->query("DELETE * FROM $tbl");
-		
-			// Part 2
-		/*
-		foreach ( $this->new_iwl as $index => &$el )
-			$db->query("INSERT INTO $tbl (iw_prefix,iw_url,iw_local,iw_trans) 
-						VALUES('$el[]','$i[0]',$i[1],$i[2])");		
-		*/
-					
+		$dlist = $this->computeDeleteList();
+		$ilist = $this->computeInsertList();
+		$ulist = $this->computeUpdateList();
+
+		$this->execute( $dlist, $ilist, $ulist );
+
+		return true;			
 	}
+
+	private function computeDeleteList()
+	{
+		// if it is in the database but not in the wanted list
+		$dlist = null;
+		foreach ( $this->iwl as $prefix => &$el )
+			if ( ! in_array( $prefix, $this->new_iwl ) )
+				$dlist[] = $prefix;
+
+		return $dlist;
+	}
+	private function computeInsertList()
+	{
+		// if it is not in the database but in the wanted list
+		$ilist = null;
+		foreach ( $this->new_iwl as $prefix => &$el )
+			if ( ! in_array( $prefix, $this->iwl ) )
+				$ilist[] = $prefix;
+
+		return $ilist;
+	}
+	private function computeUpdateList()
+	{
+		// if it is in the database but updated in the wanted list 
+		$ulist = null;
+		foreach ( $this->new_iwl as $prefix => &$el )
+			if ( in_array( $prefix, $this->iwl ) )
+				if (($el['uri'] != $this->iwl[$prefix]['uri']) || 
+					($el['local'] != $this->iwl[$prefix]['local']) ||
+					($el['trans'] != $this->iwl[$prefix]['trans']) )
+						$ulist[] = $prefix;
+
+		return $ulist;
+	}
+
+	private function execute( &$dlist, &$ilist, &$ulist )
+	// update the interwiki database table.
+	{
+		$db =& wfGetDB(DB_MASTER);
+		$tbl = $db->tableName('interwiki');
+
+		foreach ( $ilist as $prefix )
+		{
+			$uri   = $this->new_iwl[$prefix]['uri']; 
+			$local = $this->new_iwl[$prefix]['local']; 
+			$trans = $this->new_iwl[$prefix]['trans']; 
+			$db->query("INSERT INTO $tbl (iw_prefix,iw_url,iw_local,iw_trans) VALUES('$prefix','$uri',$local,$trans )");
+		}
+												   
+		foreach ( $ulist as $prefix ) 
+		{
+			$uri   = $this->new_iwl[$prefix]['uri']; 
+			$local = $this->new_iwl[$prefix]['local']; 
+			$trans = $this->new_iwl[$prefix]['trans']; 
+
+			$db->query("UPDATE $tbl SET iw_url='$uri',iw_local=$local,iw_trans=$trans WHERE iw_prefix='$prefix'");
+		}
+		
+		foreach ( $dlist as $prefix )
+			$db->query("DELETE FROM $tbl WHERE iw_prefix = '$prefix'");
+	}
+	
+// TODO =================================================================================
+
 	private function checkElement( &$prefix, &$uri, &$local, &$trans, &$errCode )
 	{
 		// no validation implemented at this moment.
@@ -222,5 +282,6 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		// not much checking implemented at the moment...
 		return '';	
 	}
+
 } // END CLASS DEFINITION
 ?>
