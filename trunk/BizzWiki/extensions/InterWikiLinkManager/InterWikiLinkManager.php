@@ -24,6 +24,7 @@
  * ============
  * 1) Use "Interwiki:Main Page" to manage the interwiki links
  * 2) Use the magic word {{#iwl: prefix | URI | local flag | transclusion flag }}
+ * 3) Appropriate rights management should be in place (e.g. Hierarchical Namespace Permissions extension)
  *
  * INSTALLATION:
  * =============
@@ -46,11 +47,17 @@
 
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: InterWikiLinkManager extension will not work!';	
-else
 {
-	require( 'InterWikiLinkManager.i18n.php' );
+	echo 'ExtensionClass missing: InterWikiLinkManager extension will not work!';	
+}
+elseif (defined('NS_INTERWIKI'))
+{
+	#require( 'InterWikiLinkManager.i18n.php' );
 	require( "InterWikiLinkManagerClass.php" );
 	InterWikiLinkManagerClass::singleton();
+}
+else
+{
+	echo "InterWikiLinkManager: NS_INTERWIKI namespace not defined in LocalSettings.php";
 }
 ?>
