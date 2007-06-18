@@ -2,7 +2,7 @@ $Id$
 
 Replication functionality:
 --------------------------
-
+* Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
 
 Permission functionality:
 -------------------------

@@ -48,4 +48,5 @@ REL1_10_2:
   updated upon article viewing 'only')
  - Added 'Log/delete' permission related settings
  - Added 'ShowRedirectPageText' extension
+ - Added 'InterWikiLinkManager' extension
  
