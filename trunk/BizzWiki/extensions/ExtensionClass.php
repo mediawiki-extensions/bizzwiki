@@ -47,7 +47,8 @@
  *          (dependancy on 'replaceHookList')
  *
  * ------   Moved to BizzWiki
- *
+ *          - Added check to automatic hook handler to make sure
+ *            that hooks are only registered when extended class requires them.
  *
  * TODO
  * ====
@@ -264,6 +265,8 @@ static $hookList = array(
 			$wgHooks['SpecialVersionExtensionTypes'][] = array( &$this, 'hUpdateExtensionCredits' );				
 
 		// v1.5 feature
+		$ml = array_diff( get_class_methods(  'ExtensionClass' ), get_class_methods($this->className) );
+		
 		foreach (self::$hookList as $index => $hookName)
 		{
 			$replaceFlag = false;
@@ -271,7 +274,7 @@ static $hookList = array(
 			if (!empty($replaceHookList))
 				$replaceFlag = in_array( $hookName, $replaceHookList);
 					
-			if ( in_array( 'h'.$hookName, get_class_methods($this->className) ) )
+			if ( in_array( 'h'.$hookName, $ml ) )
 			{
 				if ( $replaceFlag )
 					$wgHooks[$hookName][count($wgHooks[$hookName])-1] = array( &$this, 'h'.$hookName );

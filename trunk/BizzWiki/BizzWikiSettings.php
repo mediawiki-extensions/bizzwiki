@@ -38,6 +38,7 @@ $wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
 $wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
 $wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
 
+// Put all the namespaces in the global variable
 $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
 
 // Subpages
@@ -48,7 +49,7 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_CATEGORY_TALK,
 									NS_BIZZWIKI,
 									NS_FILESYSTEM,
-									NS_INTERWIKI,
+									NS_INTERWIKI,	// not used at the moment.
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
@@ -60,21 +61,16 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	3) All rights
 	4) Provision the new permission settings
 */
-
-// 1
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
 require('extensions/RawRight/RawRight.php');
 require('extensions/ViewsourceRight/ViewsourceRight.php');
 
-  // define group hierarchy
-  // default is: sysop -> user -> *
+// define group hierarchy
+// default is: sysop -> user -> *
 #hnpClass::singleton()->setGroupHierarchy( array('sysop', 'user', '*') ));
 
-
-// 2
 unset( $wgGroupPermissions );
 
-// 3
 $bwNamespaceIndependantRights =  array( 'createaccount',
 										'ipblock-exempt',
 										'hideuser',
@@ -113,11 +109,9 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 hnpClass::singleton()->addNamespaceIndependantRights( $bwNamespaceIndependantRights );
 hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRights );
 
-// 4
-
 	// Sysop gets all the rights.
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
-$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;  // required !!
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers",	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil",	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload",		"browse")] = true;
@@ -142,7 +136,7 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 
 foreach( $bwAnonymousNamespaces as $index => $bwx )
 {	
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")]   = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;   // debugging	
@@ -153,12 +147,8 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 		// Log Entries access
 $wgGroupPermissions['user' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","!browse")] = true;
 
-
-$bwUserNamespaces = array (	NS_MAIN, NS_MAIN_TALK,
-							NS_PROJECT, NS_PROJECT_TALK,
-							NS_CATEGORY, NS_CATEGORY_TALK,
-							NS_HELP, NS_HELP_TALK,
-							NS_TEMPLATE, NS_TEMPLATE_TALK,
+	// User group can access more namespaces
+$bwUserNamespaces = array (	NS_TEMPLATE, NS_TEMPLATE_TALK,
 							NS_IMAGE, NS_IMAGE_TALK,														
 							);	
 foreach( $bwUserNamespaces as $index => $bwx )
