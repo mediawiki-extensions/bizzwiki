@@ -163,6 +163,7 @@ foreach( $bwUserNamespaces as $index => $bwx )
 // DEBUG
 $wgContentNamespaces[] = NS_BIZZWIKI;
 $wgContentNamespaces[] = NS_FILESYSTEM;
+$wgContentNamespaces[] = NS_INTERWIKI;
 
 // *****************************************************************************************
 
