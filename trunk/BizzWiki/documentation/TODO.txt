@@ -3,13 +3,8 @@ $Id$
 Replication functionality:
 --------------------------
 * Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
-
-Permission functionality:
--------------------------
-
-
-Installation File Management functionality
-------------------------------------------
+* MW Special Page for managing the Replicator
+* PHP scripts / Cron Jobs for Replicator
 
 SuperGroups
 -----------
@@ -19,4 +14,6 @@ SuperGroups
  
 3) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
    it comes down to partitioning the filesystem space for this namespace
+   
+4) Delegation functionality: the capability for user X to rights to user Y
    
