@@ -1,9 +1,10 @@
 <?php
 /*
  * SidebarEx.php
+ * $Id$
  * 
  * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
+ * @author: Jean-Lou Dupont 
  *
  * Purpose:  Provides a means of adding page links to the
  * ========  'sidebar' based on group membership.
@@ -14,6 +15,7 @@
  * 1) all defined groups are supported (standard MW and ones defined in installation)
  * 2) sidebar page name corresponds to 'group' name
  * 3) No patches to standard MW installation for MW version >= 1.10
+ * 4) Group name prioritization
  * 
  * DEPENDANCY:  ExtensionClass extension (>v1.5)
  * 
@@ -42,13 +44,19 @@
  * 3) Define the priority list i.e. group membership search order.
  *    $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
  * 
- * 2) Include the required scripts: 
+ *    Corresponding sidebar pages:
+                               MediaWiki:Sidebar/somegroup
+                               MediaWiki:Sidebar/sysop
+                               MediaWiki:Sidebar/user
+							   MediaWiki:Sidebar/*
+ * 
+ * 4) Include the required scripts: 
  *  require("extensions/ExtensionClass.php");
- *  require("extensions/SidebarEx.php");
+ *  require("extensions/SidebarEx/SidebarEx.php");
  *
+ * 5) Apply any page protection deemed necessary
  * 
  * History:
- * - v1.0
  *
  */
 // Verify if 'ExtensionClass' is present.
@@ -62,7 +70,6 @@ class SidebarExClass extends ExtensionClass
 	// constants.
 	const thisName = 'SidebarEx';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const pageName = 'MediaWiki:Sidebar/Sysop';
 
 	// default values
 	static $baseNs   = NS_MEDIAWIKI;  	// default namespace
@@ -72,7 +79,6 @@ class SidebarExClass extends ExtensionClass
 									'*'
 						 		);
 
-	
 	// variables.
 	var $foundPage;
 
@@ -84,12 +90,10 @@ class SidebarExClass extends ExtensionClass
 		parent::__construct(); 			// required by ExtensionClass
 
 		global $wgExtensionCredits;
-		$wgExtensionCredits['other'][] = array( 
+		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
 			'version'     => 'v1.0 $LastChangedRevision$',
 			'author'      => 'Jean-Lou Dupont', 
-			'url'         => 'http://www.bluecortex.com',
-			'description' => 'MediaWiki:Sidebar/Sysop page '
 		);
 
 		$this->foundPage = false;
