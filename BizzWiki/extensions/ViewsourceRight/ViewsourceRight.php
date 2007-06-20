@@ -24,6 +24,8 @@
  *
  * HISTORY:
  * ========
+ * - Corrected missing 'return true' statement in hook.
+ * - Removed 'view source' tab when permission is not granted to user.
  *
  * TODO:
  * =====
@@ -118,7 +120,7 @@ class ViewsourceRight extends ExtensionClass
 		global $action;
 
 		// if the user can 'edit' the title, don't bother with 'viewsource' then.
-		if ($st->mTitle->userCan('edit') ) return;
+		if ($st->mTitle->userCan('edit') ) return true;
 
 		if ($wgUser->isAllowed( 'viewsource') )
 		{
@@ -128,7 +130,9 @@ class ViewsourceRight extends ExtensionClass
 				'href' => $st->mTitle->getLocalUrl( $st->editUrlOptions() )
 			);
 		}
+		else unset( $content_actions['viewsource'] );
 
+		return true;
 	}
 } // end class definition.
 ?>

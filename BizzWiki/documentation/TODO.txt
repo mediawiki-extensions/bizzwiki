@@ -18,5 +18,11 @@ SuperGroups
 4) Delegation functionality: the capability for user X to rights to user Y
 
 5) User space partitioning: keep user groups separated under all circumstances
+6) Table creation: integration with overall installation process
+   Special page for sg table creation??
+
+Page History:
+=============
+- remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
 
    
