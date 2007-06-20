@@ -49,7 +49,8 @@ REL1_10_2:
  - Added 'Log/delete' permission related settings
  - Added 'ShowRedirectPageText' extension
  - Added 'InterWikiLinkManager' extension
- - Correction & enhancement to ExtensionClass
- - Correction & enhancement to ViewsourceRight
- - Integration of 'SidebarEx' 
+ - Corrections & enhancements to 'ExtensionClass'
+ - Corrections & enhancements to 'ViewsourceRight' extension
+ - Added 'SidebarEx' extension
+ 
  
