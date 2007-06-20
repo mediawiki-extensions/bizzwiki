@@ -264,23 +264,25 @@ static $hookList = array(
 		if ( in_array( 'hUpdateExtensionCredits', get_class_methods($this->className) ) )
 			$wgHooks['SpecialVersionExtensionTypes'][] = array( &$this, 'hUpdateExtensionCredits' );				
 
-		// v1.5 feature
-		$ml = array_diff( get_class_methods(  'ExtensionClass' ), get_class_methods($this->className) );
+		foreach( self::$hookList as $index => $hookName )
+			$hl[] = "h".$hookName;
+
+		$l1 = array_diff( get_class_methods( $this->className), get_class_methods("ExtensionClass")  );
+
+		$ml = array_intersect(	$l1 , $hl );
 		
-		foreach (self::$hookList as $index => $hookName)
+		foreach ( self::$hookList as $index => $hookName)
 		{
 			$replaceFlag = false;
 			
 			if (!empty($replaceHookList))
 				$replaceFlag = in_array( $hookName, $replaceHookList);
 					
-			if ( in_array( 'h'.$hookName, $ml ) )
-			{
+			if ( method_exists( $this, 'h'.$hookName ) )					
 				if ( $replaceFlag )
 					$wgHooks[$hookName][count($wgHooks[$hookName])-1] = array( &$this, 'h'.$hookName );
 				else
 					$wgHooks[$hookName][] = array( &$this, 'h'.$hookName );
-			}
 		}
 	}
 	public function getParamPassingStyle() { return $this->passingStyle; }
