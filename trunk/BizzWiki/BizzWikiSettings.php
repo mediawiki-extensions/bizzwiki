@@ -47,6 +47,8 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_PROJECT_TALK,
 									NS_CATEGORY,
 									NS_CATEGORY_TALK,
+									NS_MEDIAWIKI,
+									NS_MEDIAWIKI_TALK,									
 									NS_BIZZWIKI,
 									NS_FILESYSTEM,
 									NS_INTERWIKI,	// not used at the moment.
@@ -195,4 +197,7 @@ require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
 
 // Interwiki table management
 require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
+
+// Sidebar extended
+require('extensions/SidebarEx/SidebarEx.php');
 ?>
