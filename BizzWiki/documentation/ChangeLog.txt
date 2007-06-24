@@ -53,4 +53,6 @@ REL1_10_2:
  - Corrections & enhancements to 'ViewsourceRight' extension
  - Added 'SidebarEx' extension
  
- 
+ REL1_10_3:
+ - Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
+ - 
