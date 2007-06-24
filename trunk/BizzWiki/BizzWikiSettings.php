@@ -97,7 +97,7 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										"rollback",			// TODO
 										'protect',
 										'patrol', "autopatrol",
-										'purge',
+										'purge',			// TODO
 										'upload', 'reupload', 'reupload-shared', // for now, those rights
 										'upload_by_url',						// are only relevant to NS_IMAGE
 										

@@ -5,6 +5,9 @@ Replication functionality:
 * Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
 * MW Special Page for managing the Replicator
 * PHP scripts / Cron Jobs for Replicator
+* Article::doDeleteArticle : RecentChanges table modified...
+* Article::editUpdates : RecentChanges tables modified, 
+  hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
 
 SuperGroups
 -----------
@@ -25,4 +28,7 @@ Page History:
 =============
 - remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
 
-   
+
+Email sent history:
+===================
+* can use hook 'EmailUserComplete' to insert message in RecentChanges / Log
