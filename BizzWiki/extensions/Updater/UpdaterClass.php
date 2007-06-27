@@ -8,21 +8,15 @@
  * 
  */
 
-class UpdaterClass extends SpecialPage
+class Updater extends SpecialPage
 {
+	const thisName = 'Updater';
 	
-	function UpdaterClass( )
+	function Updater( )
 	{
 		SpecialPage::SpecialPage("Updater");
 		self::loadMessages();	
 
-		global $wgExtensionCredits;
-		$wgExtensionCredits['other'][] = array( 
-			'name'        => self::thisName, 
-			'version'     => '$Id$',
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Updates a Mediawiki installation with http accessible files'
-		);
 	}
 
 	function execute( $par ) 

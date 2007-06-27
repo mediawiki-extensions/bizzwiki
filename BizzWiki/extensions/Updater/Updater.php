@@ -16,6 +16,8 @@
  *
  * DEPENDANCY:  
  * ===========
+ * 1) The system command 'wget' must be accessible
+ *
  *
  * USAGE NOTES:
  * ============
@@ -31,8 +33,15 @@
  * - 
  *
  */
+global $wgAutoloadClasses;
+$wgAutoloadClasses['Updater'] = dirname(__FILE__) . "/UpdaterClass.php" ;
+$wgSpecialPages['Updater'] = 'Updater';
 
-$wgAutoloadClasses['Updater'] = dirname(__FILE__) . "UpdaterClass.php" ;
-$wgSpecialPages['Updater'] = 'UpdaterClass';
+$wgExtensionCredits['specialpage'][] = array( 
+	'name'        => 'Updater', 
+	'version'     => '$Id$',
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Updates a Mediawiki installation with http accessible files'
+);
 
 ?>
