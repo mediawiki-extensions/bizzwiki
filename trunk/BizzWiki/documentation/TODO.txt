@@ -29,6 +29,6 @@ Page History:
 - remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
 
 
-Email sent history:
+Email sent history: (TBD)
 ===================
 * can use hook 'EmailUserComplete' to insert message in RecentChanges / Log
