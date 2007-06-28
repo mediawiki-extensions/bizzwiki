@@ -32,3 +32,8 @@ Page History:
 Email sent history: (TBD)
 ===================
 * can use hook 'EmailUserComplete' to insert message in RecentChanges / Log
+
+MISC:
+=====
+- Class stubbing
+-
