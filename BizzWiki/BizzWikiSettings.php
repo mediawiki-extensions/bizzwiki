@@ -200,4 +200,7 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
+
+// Updater extension
+require('extensions/Updater/Updater.php');
 ?>

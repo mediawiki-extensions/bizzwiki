@@ -55,4 +55,5 @@ REL1_10_2:
  
  REL1_10_3:
  - Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
- - 
+ - Added <wikitext> section support in SyntaxColoring extension
+ 
