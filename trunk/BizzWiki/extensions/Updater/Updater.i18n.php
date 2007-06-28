@@ -7,6 +7,7 @@
 */
 
 $wgUpdaterMessages['en'] = array(
+	'updater' => 'Updater',
 	#'' => '',
 );
 ?>

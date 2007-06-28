@@ -20,6 +20,7 @@
  *
  * HISTORY:
  * ========
+ * - Added <wikitext> section support
  *
  * TODO:
  * =====
@@ -32,7 +33,7 @@ class SyntaxColoring extends ExtensionClass
 {
 	const thisName = 'SyntaxColoring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-
+	
 	var $found;
 	var $text;
 
@@ -73,24 +74,29 @@ class SyntaxColoring extends ExtensionClass
 		$this->found = true;
 		$this->text = $text;
 		
-		// don't waste time for nothing.
-		$text = '';
+		// Check for a <wikitext> section
+		$text = $this->getWikitext( $text );
 		
 		return true;		
 	}
 	public function hParserAfterTidy( &$parser, &$text )
 	{
 		// the parser gets called two times in one transaction
-		// when editing/creating an article.
+		// when editing/creating an article and when viewing the resulting page.
 		// Use ParserCacheControl extension or patched Article::editUpdates.
 
 		if (! $this->found ) return true;
 		$this->found = false;
 		
+		$this->removeWikitext();
+		
 		ob_start();
 		highlight_string( $this->text );
-		$text = ob_get_contents();
+		$stext = ob_get_contents();
 		ob_end_clean();
+		
+		// merge with possible <wikitext> section
+		$text .= $stext;
 		
 		return true;	
 	}
@@ -111,6 +117,20 @@ class SyntaxColoring extends ExtensionClass
 		if ( $ext != '.php' ) return false;
 		
 		return true;
+	}
+
+	private function getWikitext( &$text )
+	{
+		$p = "/<wikitext\>(.*)(?:\<.?wikitext)>/siU";
+					
+		$result = preg_match( $p, $text, $m );
+		if ( ($result===FALSE) or ($result===0)) return '';
+
+		return $m[1];
+	}
+	private function removeWikitext()
+	{
+		$this->text = preg_replace( "/\<wikitext(.*)wikitext\>/siU", "wikitext", $this->text);	
 	}
 	
 } // end class definition.
