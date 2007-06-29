@@ -1,14 +1,13 @@
 <?php
-# GeSHiHighlight.php (confirmed working for MediaWiki 1.4 - 1.6.5 and GeSHi-1.0.7.3)
-# Updated: 08 September 2006
-# Updated: 14 February  2007
+# GeSHiHighlight.php
 # 
 # By: Andrew Nicol
 # http://www.nanfo.com
 # Example: http://tivoza.nanfo.com/wiki/index.php/EmuProxyZA_/_emuProxyZA.c
 #
 # Modified by: Jean-Lou Dupont
-# Confirmed working with MediaWiki v1.8.2
+# $Id$
+#
 # New features:
 # 1) Included "$lang-page" tag : enables highlighting the content of a page title.
 #    e.g. <php-page> page title </php-page>
@@ -121,7 +120,7 @@ function wfSyntaxExtension() {
 }
 
 function wfSyntaxCode($lang, $text, $attrib) {
-        $geshi = new GeSHi($text, $lang, "extensions/geshi/geshi"); 
+        $geshi = new GeSHi($text, $lang ); 
         return wfSyntaxDefaults($geshi, $attrib );
 }
 
@@ -142,7 +141,7 @@ function wfSyntaxFile($lang, $file_name, $attrib) {
                 $handle = fopen($file_name, "r");
                 $contents = fread($handle, filesize($file_name));
                 fclose($handle);
-                $geshi = new GeSHi($contents, $lang, "extensions/geshi/geshi");
+                $geshi = new GeSHi($contents, $lang);
                 return wfSyntaxDefaults($geshi, $attrib );
         } else {
                 return "GeSHiHighlight: File not Found! ($file_name)";
@@ -167,7 +166,7 @@ function wfSyntaxUploadFile($lang, $file_name, $attrib) {
                 $handle = fopen($file_name, "r");
                 $contents = fread($handle, filesize($file_name));
                 fclose($handle);
-                $geshi = new GeSHi($contents, $lang, "extensions/geshi/geshi");
+                $geshi = new GeSHi($contents, $lang);
                 return wfSyntaxDefaults($geshi , $attrib );
         } else {
                 return "GeSHiHighlight: File not Found!";
@@ -183,7 +182,7 @@ function wfSyntaxPage($lang, $page_name, $attrib)
     $a=$mediaWiki->articleFromTitle($t);
 	$a->loadContent();
 
-    $geshi = new GeSHi($a->mContent, $lang, "extensions/geshi/geshi");
+    $geshi = new GeSHi($a->mContent, $lang);
 	
     return wfSyntaxDefaults($geshi , $attrib );
 }
