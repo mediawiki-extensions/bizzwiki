@@ -207,4 +207,7 @@ require('extensions/PostProc/PostProc.php');
 
 // Updater extension
 require('extensions/Updater/Updater.php');
+
+// Generic Syntax Highlighter
+require('extensions/GeSHi/GeSHiHighlight.php');
 ?>
