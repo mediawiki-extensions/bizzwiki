@@ -1,7 +1,8 @@
 <?php
 /*
  * RunPHP Class
- * Author: Jean-Lou Dupont - http://www.bluecortex.com
+ * Author: Jean-Lou Dupont
+ * $Id$
  *
  * Purpose:  serves as general purpose PHP code extraction 
  *           based on source code stored in MediaWiki database page.
