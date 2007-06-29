@@ -203,7 +203,7 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 require('extensions/SidebarEx/SidebarEx.php');
 
 // PostProc extension
-require('extensions/PostProc/PostProc.php');
+require('extensions/FormProc/FormProc.php');
 
 // Updater extension
 require('extensions/Updater/Updater.php');
