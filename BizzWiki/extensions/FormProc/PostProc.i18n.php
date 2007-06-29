@@ -1,12 +1,12 @@
 <?php
 /**
- * Internationalisation file for FormProc extension.
+ * Internationalisation file for PostProc extension.
  *
  * $Id$
  * 
 */
 
-$wgFormProcMessages['en'] = array(
+$wgPostProcMessages['en'] = array(
 	#'' => '',
 );
 ?>
