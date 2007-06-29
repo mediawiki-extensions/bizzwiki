@@ -49,6 +49,7 @@
  * ------   Moved to BizzWiki
  *          - Added check to automatic hook handler to make sure
  *            that hooks are only registered when extended class requires them.
+ *			- Added 'SyntaxHighlight' hook.
  *
  * TODO
  * ====
@@ -198,6 +199,7 @@ static $hookList = array(
 'SkinTemplatePreventOtherActiveTabs',
 
 // BizzWiki Additions
+'SyntaxHighlight',  // for geshi extension
 );
 
 	var $className;

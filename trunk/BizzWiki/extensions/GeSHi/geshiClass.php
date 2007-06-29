@@ -100,6 +100,13 @@ class geshiClass extends ExtensionClass
 		return $contents;
 	}
 
+	public function hSyntaxHighlight( &$text, $lang, $lines, &$result )
+	{
+		$result = $this->highlight( $text, $lang, $lines );
+
+		return true; // be nice with other possible extensions.
+	}
+	
 } // END CLASS DEFINITION
 
 ?>

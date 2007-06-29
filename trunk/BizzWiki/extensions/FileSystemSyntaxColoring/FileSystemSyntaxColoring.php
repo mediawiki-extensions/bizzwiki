@@ -21,6 +21,7 @@
  * HISTORY:
  * ========
  * - Added <wikitext> section support
+ * - Added support for hook based syntax highlighting
  *
  * TODO:
  * =====
@@ -91,10 +92,7 @@ class FileSystemSyntaxColoring extends ExtensionClass
 		
 		$this->removeWikitext();
 		
-		ob_start();
-		highlight_string( $this->text );
-		$stext = ob_get_contents();
-		ob_end_clean();
+		$stext = $this->highlight( $this->text );
 		
 		// merge with possible <wikitext> section
 		$text .= $stext;
@@ -132,6 +130,23 @@ class FileSystemSyntaxColoring extends ExtensionClass
 	private function removeWikitext()
 	{
 		$this->text = preg_replace( "/\<wikitext(.*)wikitext\>/siU", "wikitext", $this->text);	
+	}
+	
+	private function highlight( &$text, $lang='php', $lines=0 ) 
+	{
+		if ( wfRunHooks('SyntaxHighlight', array( &$text, $lang, $lines, &$result ) ) )
+			return $result;
+		else
+			return $this->default_highlight( $text );
+	}
+	private function default_highlight( &$text )
+	{
+		ob_start();
+		highlight_string( $this->text );
+		$stext = ob_get_contents();
+		ob_end_clean();
+
+		return $stext;
 	}
 	
 } // end class definition.

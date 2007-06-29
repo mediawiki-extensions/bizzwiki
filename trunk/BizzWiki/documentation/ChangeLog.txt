@@ -56,7 +56,7 @@ REL1_10_2:
  REL1_10_3:
  - Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
  - Changed 'SyntaxColoring' extension name to 'FileSystem Syntax Coloring' (more descriptive)
- - Added <wikitext> section support in FileSystem SyntaxColoring extension (for NS_FILESYSTEM namespace)
+ - Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
  - Integrated 'GeSHi' syntax highlighter extension
  - Added 'PostProc' extension
  - 
