@@ -24,7 +24,8 @@
  *
  * TODO:
  * =====
- * 
+ * - Implement 'hook' to get a proper syntax highlighter in place
+ *   Pass file extension in parameter
  */
 
 SyntaxColoring::singleton();
