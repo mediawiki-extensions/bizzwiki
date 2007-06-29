@@ -12,6 +12,8 @@
 	========
 	1) Added 'readlog' right
 	2) Added namespace:page name level policy enforcement for log entries.
+	3) Fixed 'delete' namespace policy enforcement
+	4) Fixed 'protect' namespace policy enforcement
 	
 */
 
@@ -332,7 +334,7 @@ class LogViewer {
 		}
 	}
 
-	function doShowList( &$out, $result ) {
+	function doShowList( &$out, $result ) { 
 		// Rewind result pointer and go through it again, making the HTML
 		$html = "\n<ul>\n";
 		$result->seek( 0 );
@@ -394,7 +396,7 @@ class LogViewer {
 					'&wpMovetalk=0' ) . ')';
 			}
 		// show undelete link
-		} elseif ( $s->log_action == 'delete' && $wgUser->isAllowed( 'delete' ) ) {
+		} elseif ( $s->log_action == 'delete' && $wgUser->isAllowed( 'delete', $s->log_namespace /* BizzWiki */ ) ) {
 			$revert = '(' . $this->skin->makeKnownLinkObj( SpecialPage::getTitleFor( 'Undelete' ),
 				wfMsg( 'undeletebtn' ) ,
 				'target='. urlencode( $title->getPrefixedDBkey() ) ) . ')';
@@ -405,7 +407,7 @@ class LogViewer {
 				wfMsg( 'unblocklink' ),
 				'action=unblock&ip=' . urlencode( $s->log_title ) ) . ')';
 		// show change protection link
-		} elseif ( $s->log_action == 'protect' && $wgUser->isAllowed( 'protect' ) ) {
+		} elseif ( $s->log_action == 'protect' && $wgUser->isAllowed( 'protect', $s->log_namespace /* BizzWiki */ ) ) {
 			$revert = '(' .  $skin->makeKnownLink( $title->getPrefixedDBkey() ,
 				wfMsg( 'protect_change' ),
 				'action=unprotect' ) . ')';
