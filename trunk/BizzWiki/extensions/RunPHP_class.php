@@ -25,7 +25,8 @@
  *          v1.3  Added security feature: only execute code on 'edit' 
  *                protected page accessible by 'sysop' group members.
  
- ---------------  MOVED to BizzWiki
+ --------------		MOVED to BizzWiki
+				- Added 'initFromContent' method
  
  *
 */
@@ -125,6 +126,16 @@ class runphpClass
 		 
 		$this->content = $article->mContent;
 		$this->raw     = $article->mContent;
+		
+		// Now, let's analyse the page
+		// to determine things like page type.
+		$this->analyse();
+	}
+
+	public function initFromContent( &$content )
+	{
+		$this->content = $content;
+		$this->raw     = $content;
 		
 		// Now, let's analyse the page
 		// to determine things like page type.
