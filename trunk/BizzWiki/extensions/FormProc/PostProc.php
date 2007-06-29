@@ -18,7 +18,7 @@
  *
  * DEPENDANCY:  
  * ===========
- * 
+ * 1) ExtensionClass extension
  *
  *
  * USAGE NOTES:
