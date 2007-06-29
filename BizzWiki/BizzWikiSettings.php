@@ -209,5 +209,5 @@ require('extensions/FormProc/FormProc.php');
 require('extensions/Updater/Updater.php');
 
 // Generic Syntax Highlighter
-require('extensions/GeSHi/GeSHiHighlight.php');
+require('extensions/GeSHi/geshi.php');
 ?>
