@@ -188,7 +188,7 @@ $wgLoginLanguageSelector = false;
 require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
-require('extensions/SyntaxColoring/SyntaxColoring.php');
+require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
 
 // New User Logging
 require('extensions/NewUserLog/Newuserlog.php');
