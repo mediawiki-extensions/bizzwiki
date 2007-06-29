@@ -1,33 +1,40 @@
 <?php
-/*
- * FileSystemSyntaxColoring.php
- *
- * @author Jean-Lou Dupont
- * 
- * <b>Purpose:</b>  This extension 'colors' a page in the NS_FILESYSTEM namespace 
- *                  based on its syntax.
- *                  Currently, only PHP type is supported.
- *
- * FEATURES:
- * =========
- * 0) Can be used independantly of BizzWiki environment 
- * 1) No mediawiki installation source level changes
- *
- * DEPENDANCIES:
- * =============
- * 1) ExtensionClass
- *
- *
- * HISTORY:
- * ========
- * - Added <wikitext> section support
- * - Added support for hook based syntax highlighting
- *
- * TODO:
- * =====
- * - Implement 'hook' to get a proper syntax highlighter in place
- *   Pass file extension in parameter
- */
+/*<wikitext>
+{| border=1
+| <b>File</b> || FileSystemSyntaxColoring.php
+|-
+| <b>Revision</b> || $Id$
+|-
+| <b>Author</b> || Jean-Lou Dupont
+|}<br/><br/>
+ 
+== Purpose==
+This extension 'colors' a page in the NS_FILESYSTEM namespace based on its syntax.
+
+== FEATURES ==
+* Can be used independantly of BizzWiki environment 
+* No mediawiki installation source level changes
+* For parser cache integration outside BizzWiki, use ParserCacheControl extension
+* Uses the hook 'SyntaxHighlighting' or defaults to PHP's highlight
+
+== Dependancy ==
+* ExtensionClass
+
+== Installation ==
+To install independantly from BizzWiki:
+* Download 'ExtensionClass' extension
+* Apply the following changes to 'LocalSettings.php'
+<geshi lang=php>
+require('extensions/ExtensionClass.php');
+require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+</geshi>
+
+== History ==
+* Added 'wiki text' section support
+* Added support for hook based syntax highlighting
+
+== Code ==
+</wikitext>*/
 
 FileSystemSyntaxColoring::singleton();
 
@@ -38,6 +45,17 @@ class FileSystemSyntaxColoring extends ExtensionClass
 	
 	var $found;
 	var $text;
+	var $lang;
+	
+	// add other mappings if required.
+	static $map = array( 
+							'php' => 'php',
+							'js'  => 'javascript',
+							'xml' => 'xml',
+							'css' => 'css',
+							'py'  => 'python',
+							#'' => '',
+						);
 
 	public static function &singleton( )
 	{ return parent::singleton( ); }
@@ -63,15 +81,32 @@ class FileSystemSyntaxColoring extends ExtensionClass
 		$this->found = false;
 	}
 
+	public function hArticleAfterFetchContent( &$article, &$content )
+	{
+		// we are only interested in page views.
+		global $action;
+		if ($action != 'view') return true;
+		
+		// grab the content for later inspection.
+		$this->text = $article->mContent;		
+	}
+
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	// wfRunHooks( 'ParserBeforeStrip', array( &$this, &$text, &$this->mStripState ) );
 	{
 		// first round of checks
-		if (!$this->isPHP( $parser )) return true; // continue hook-chain
+		if (!$this->isFileSystem( $parser )) return true; // continue hook-chain
 		
-		// second round
-		$p= '<?php';
-		if (strncmp($text, $p, strlen( $p ) ) !== 0 ) return true;
+		// since the parser is called multiple times, 
+		// we need to make sure we are dealing the with article per-se
+		if (strcmp( $this->text, $text)!=0 ) return true;
+		
+		// check file extension & map to language
+		$titre = $parser->mTitle->getText();
+		
+		$ext = $this->getExtension( $titre );
+		
+		$this->lang = $this->getLanguage( $ext );
 		
 		$this->found = true;
 		$this->text = $text;
@@ -92,7 +127,7 @@ class FileSystemSyntaxColoring extends ExtensionClass
 		
 		$this->removeWikitext();
 		
-		$stext = $this->highlight( $this->text );
+		$stext = $this->highlight( $this->text, $this->lang );
 		
 		// merge with possible <wikitext> section
 		$text .= $stext;
@@ -100,22 +135,15 @@ class FileSystemSyntaxColoring extends ExtensionClass
 		return true;	
 	}
 	
-	private function isPHP( &$parser )
+	private function isFileSystem( &$parser )
 	{
 		// is the namespace defined at all??
 		if (!defined('NS_FILESYSTEM')) return false;
 		
 		// is the current article in the right namespace??
 		$ns = $parser->mTitle->getNamespace();
-		if ( $ns != NS_FILESYSTEM ) return false;
 		
-		$titre = $parser->mTitle->getText();
-		
-		// does the filename matches a valid PHP file extension??
-		$ext   = strtolower( substr( $titre, -4, 4) );
-		if ( $ext != '.php' ) return false;
-		
-		return true;
+		return ($ns == NS_FILESYSTEM ? true:false );
 	}
 
 	private function getWikitext( &$text )
@@ -148,6 +176,17 @@ class FileSystemSyntaxColoring extends ExtensionClass
 
 		return $stext;
 	}
+	private function getExtension( $titre )
+	{
+		$pos = strrpos($titre,'.');
+		if ( $pos === false ) 
+			$ext = '';	
+		else
+			$ext = substr( $titre, $pos+1 );
+
+		return $ext;		
+	}
+	private function getLanguage( $ext ) { return self::$map[ $ext ]; }
 	
 } // end class definition.
 ?>
