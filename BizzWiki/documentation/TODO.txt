@@ -37,3 +37,12 @@ MISC:
 =====
 - Class stubbing
 -
+
+NS_FILESYSTEM NAMESPACE syntax coloring:
+=======================================
+- Use hook function to properly handle syntax coloring
+
+SYNTAX HIGHLIGHTING: (GeSHi)
+====================
+- Implement hook handler
+-
