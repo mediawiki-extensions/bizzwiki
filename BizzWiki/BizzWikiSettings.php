@@ -15,6 +15,7 @@
 
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
+require('extensions/RunPHP_class.php');
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
@@ -200,6 +201,9 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
+
+// PostProc extension
+require('extensions/PostProc/PostProc.php');
 
 // Updater extension
 require('extensions/Updater/Updater.php');
