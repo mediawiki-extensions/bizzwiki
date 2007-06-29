@@ -1,6 +1,6 @@
 <?php
 /*
- * SyntaxColoring.php
+ * FileSystemSyntaxColoring.php
  *
  * @author Jean-Lou Dupont
  * 
@@ -28,11 +28,11 @@
  *   Pass file extension in parameter
  */
 
-SyntaxColoring::singleton();
+FileSystemSyntaxColoring::singleton();
 
-class SyntaxColoring extends ExtensionClass
+class FileSystemSyntaxColoring extends ExtensionClass
 {
-	const thisName = 'SyntaxColoring';
+	const thisName = 'FileSystem Syntax Coloring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 	
 	var $found;
@@ -42,7 +42,7 @@ class SyntaxColoring extends ExtensionClass
 	{ return parent::singleton( ); }
 	
 	// Our class defines magic words: tell it to our helper class.
-	public function SyntaxColoring() 
+	public function FileSystemSyntaxColoring() 
 	{ 
 		parent::__construct( ); 
 	
