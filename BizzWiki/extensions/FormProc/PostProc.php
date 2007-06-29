@@ -6,7 +6,7 @@
  * @author: Jean-Lou Dupont
  * $Id$
  * 
- * Purpose:   Handles 'action=submit' posts to a Mediawiki page. The underlying page
+ * Purpose:   Handles 'action=formsubmit' posts to a Mediawiki page. The underlying page
  * ========   must contain 'php' code. The extension follows 'redirect' page to fetch
  *            the required code.
  *    
@@ -38,9 +38,10 @@
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
 	echo 'ExtensionClass missing: PostProc extension will not work!';	
+elseif (!class_exists('runphpClass') )
+	echo 'RunPHP Class missing: PostProc extension will not work!';
 else
 {
-	require( 'PostProc.i18n.php' );
 	require( "PostProcClass.php" );
 	PostProcClass::singleton();
 }

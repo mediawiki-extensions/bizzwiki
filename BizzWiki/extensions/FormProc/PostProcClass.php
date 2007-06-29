@@ -34,11 +34,33 @@ class PostProcClass extends ExtensionClass
 		parent::setup();
 	}
 
-	public function hArticleFromTitle( &$title, &$article )
+	public function hUnknownAction( $action, &$article )
 	{
-		// check if request 'action=submit'
-		
+		// check if request 'action=formsubmit'
+		if ($action != 'formsubmit')
+			return false;
+
+		$article->loadContent();
+
 		// follow redirects
+		if ( $article->mIsRedirect == true )
+		{
+			$title = Title::newFromRedirect( $article->getContent() );
+			$article = new Article( $title );
+			$article->loadContent();
+		}
+		// Extract the code
+		// Use our runphpClass helper
+		$runphp = new runphpClass;
+		$runphp->initFromContent( $article->getContent() );	
+
+		// Execute Code
+		$code = $runphp->getCode( true ); 
+
+		if (!empty($code))
+			eval( $code );
+
+		return false;
 	}
 
 } // END CLASS DEFINITION
