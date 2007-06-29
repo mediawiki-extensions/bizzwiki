@@ -4,35 +4,33 @@
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont
- * $Id$
+ * $Id: PostProcClass.php 216 2007-06-29 02:50:40Z jeanlou.dupont $
  * 
  */
 
-class PostProcClass extends ExtensionClass
+class FormProcClass extends ExtensionClass
 {
 	// constants.
-	const thisName = 'PostProc';
+	const thisName = 'FormProcClass';
 	const thisType = 'other';
 	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function PostProcClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function FormProcClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
 		parent::__construct( );
 
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => '$Id: PostProcClass.php 216 2007-06-29 02:50:40Z jeanlou.dupont $',
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Handles "action=submit" post requests through page based PHP code'
+			'description' => 'Handles "action=formsubmit" post requests through page based PHP code'
 		);
 	}
 	public function setup() 
-	{ 
-		parent::setup();
-	}
+	{ parent::setup();	}
 
 	public function hUnknownAction( $action, &$article )
 	{
