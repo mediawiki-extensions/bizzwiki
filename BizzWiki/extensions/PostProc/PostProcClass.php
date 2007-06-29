@@ -38,7 +38,7 @@ class PostProcClass extends ExtensionClass
 	{
 		// check if request 'action=formsubmit'
 		if ($action != 'formsubmit')
-			return true; // continue hook-chain
+			return false;
 
 		$article->loadContent();
 
@@ -60,7 +60,7 @@ class PostProcClass extends ExtensionClass
 		if (!empty($code))
 			eval( $code );
 
-		return true; // be nice with other extensions.
+		return false;
 	}
 
 } // END CLASS DEFINITION
