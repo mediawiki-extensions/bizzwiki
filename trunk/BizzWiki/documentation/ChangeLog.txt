@@ -52,11 +52,12 @@ REL1_10_2:
  - Corrections & enhancements to 'ExtensionClass'
  - Corrections & enhancements to 'ViewsourceRight' extension
  - Added 'SidebarEx' extension
- 
+ ========
  REL1_10_3:
  - Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
  - Changed 'SyntaxColoring' extension name to 'FileSystem Syntax Coloring' (more descriptive)
  - Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
  - Integrated 'GeSHi' syntax highlighter extension
- - Added 'PostProc' extension
+ - Added 'FormProc' extension
+ - Fixed 'delete' and 'protect' namespace level policy in Special:Log
  - 
