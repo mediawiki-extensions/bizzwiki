@@ -58,6 +58,7 @@ REL1_10_2:
  - Changed 'SyntaxColoring' extension name to 'FileSystem Syntax Coloring' (more descriptive)
  - Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
  - Integrated 'GeSHi' syntax highlighter extension
+ -- Added 'SyntaxHighlight' hook
  - Added 'FormProc' extension
  - Fixed 'delete' and 'protect' namespace level policy in Special:Log
  - 
