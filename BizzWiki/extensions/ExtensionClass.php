@@ -152,7 +152,6 @@ static $hookList = array(
 'EmailUser', 
 'EmailUserComplete',
 'SpecialMovepageAfterMove',
-'SpecialMovepageAfterMove',
 'SpecialPage_initList',
 'SpecialPageExecuteBeforeHeader',
 'SpecialPageExecuteBeforePage',
