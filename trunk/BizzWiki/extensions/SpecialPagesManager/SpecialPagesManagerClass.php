@@ -81,7 +81,7 @@ class SpecialPagesManagerClass extends ExtensionClass
 		
 		// Is the enhanced special page protected?
 		// We don't want just anybody editing this page.
-		if ( $title->isProtected('edit') ) return true;
+		if ( !$title->isProtected('edit') ) return true;
 		
 		// get the article content
 		$article = new Article( $title );
