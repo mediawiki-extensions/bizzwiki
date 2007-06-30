@@ -9,13 +9,18 @@
 |}<br/><br/>
  
 == Purpose==
-
+Gives the ability to a sysop to enhance a Mediawiki installation with custom 'special pages'
+managed directly from the database (instead of PHP files).
 
 == Features ==
-
+* Default to 'Bizzwiki:Special Pages' page
+* Can be changed through using
+<geshi lang=php>
+SpecialPagesManager->singleton()->setSpecialPage('page name');
+</geshi>
 
 == Dependancy ==
-
+* ExtensionClass extension
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -23,7 +28,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <geshi lang=php>
 require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 </geshi>
 
 == History ==

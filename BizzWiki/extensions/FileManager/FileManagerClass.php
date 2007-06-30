@@ -127,11 +127,6 @@ class FileManagerClass extends ExtensionClass
 		$ns = $title->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
 
-		// Adjust for capitalized first title letter.
-		global $wgCapitalLinks;
-		#$state = $wgCapitalLinks;
-		$wgCapitalLinks = false;
-		
 		// get the original title name
 		global $wgRequest, $wgTitle;
 		$titre = $wgRequest->getVal( 'title' );

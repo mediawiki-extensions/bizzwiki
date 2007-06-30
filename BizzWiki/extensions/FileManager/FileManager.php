@@ -30,6 +30,7 @@
  *
  * History:
  * ========
+ * - fixed for 'wgCapitalLinks' 
  *
  * TODO:
  * =====

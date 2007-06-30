@@ -36,3 +36,12 @@ Email sent history: (TBD)
 MISC:
 =====
 - Class stubbing
+
+FileManager:
+============
+- Reload from filesystem functionality
+  (instead of deleting & reloading)
+
+SpecialPagesManager:
+====================
+- Customized layout functionality
