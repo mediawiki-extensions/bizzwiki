@@ -11,7 +11,7 @@
 == Purpose==
 This extension 'colors' a page in the NS_FILESYSTEM namespace based on its syntax.
 
-== FEATURES ==
+== Features ==
 * Can be used independantly of BizzWiki environment 
 * No mediawiki installation source level changes
 * For parser cache integration outside BizzWiki, use ParserCacheControl extension
