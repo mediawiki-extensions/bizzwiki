@@ -7,27 +7,6 @@
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
- 
-== Purpose==
-
-
-== Features ==
-
-
-== Dependancy ==
-
-
-== Installation ==
-To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
-* Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
-</geshi>
-
-== History ==
-
 == Code ==
 </wikitext>*/
 
@@ -60,6 +39,9 @@ class SpecialPagesManagerClass extends ExtensionClass
 		$this->spPage = Namespace::getCanonicalName(NS_BIZZWIKI).':Special Pages';
 	}
 	
+	// Use this method to change the enhanced special page's title.
+	public function setSpecialPage( $sp ) { $this->spPage = $sp; }
+	
 	public function hSpecialPageExecuteAfterPage( &$sp, &$par, &$func )
 	// handlers executed after special page's 'execute' method is executed.
 	{
@@ -72,7 +54,6 @@ class SpecialPagesManagerClass extends ExtensionClass
 		// Verify if the NS_BIZZWIKI namespace is defined
 		if ( !defined('NS_BIZZWIKI') ) return true; // nothing more todo 
 													// if we are not in the BizzWiki environment
-		
 		// Get the page.
 		$title   = Title::newFromText( $this->spPage );
 		
@@ -96,7 +77,7 @@ class SpecialPagesManagerClass extends ExtensionClass
 		
 	private function layoutPages()
 	{
-		
+		# TODO	
 	}		
 		
 } // end class declaration
