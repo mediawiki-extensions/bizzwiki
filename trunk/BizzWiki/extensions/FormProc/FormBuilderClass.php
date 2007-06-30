@@ -1,6 +1,6 @@
 <?php
 /*
- * FormProcClass.php
+ * FormBuilderClass.php
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont
@@ -8,7 +8,7 @@
  * 
  */
 
-class FormProcClass extends ExtensionClass
+class FormBuilderClass extends ExtensionClass
 {
 	// constants.
 	const thisName = 'FormProcClass';
@@ -17,7 +17,7 @@ class FormProcClass extends ExtensionClass
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function FormProcClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function FormBuilderClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
 		parent::__construct( );
 
