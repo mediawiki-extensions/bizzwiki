@@ -28,15 +28,26 @@ class geshiClass extends ExtensionClass
 			
 		global $wgParser;
 		$wgParser->setHook( 'geshi', array( $this, 'execute' ) );
+		$wgParser->setHook( 'php', array( $this, 'executePHP' ) );
 	}
-
+	public function executePHP( &$text, &$argv, &$parser )
+	{
+		$this->extractArgs( &$argv, &$lang, &$lines, &$source );
+		return $this->executeMain( $text, 'php', $lines, $source );	
+	}
 	public function execute( &$text, &$argv, &$parser )
+	{
+		$this->extractArgs( &$argv, &$lang, &$lines, &$source );
+		return $this->executeMain( $text, $lang, $lines, $source );	
+	}
+	public function extractArgs( &$argv, &$lang, &$lines, &$source )
 	{
 		if (isset( $argv['lang'] ))  $lang = $argv['lang'];
 		if (isset( $argv['lines']) ) $lines = $argv['lines'];
-
 		if (isset( $argv['source'])) $source = $argv['source']; 
-		
+	}
+	public function executeMain( &$text, $lang, $lines, $source )
+	{
 		switch( $source )
 		{
 			case 'page':
