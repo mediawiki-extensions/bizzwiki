@@ -45,3 +45,8 @@ FileManager:
 SpecialPagesManager:
 ====================
 - Customized layout functionality
+
+Geshi:
+======
+- Better documentation
+
