@@ -215,5 +215,7 @@ require('extensions/GeSHi/geshi.php');
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 
 // Form Builder tools
-require('extensions/FormBuilder/FormBuilder.php');
+# require('extensions/FormBuilder/FormBuilder.php');
+
+require('extensions/addHTML/addHTML.php');
 ?>
