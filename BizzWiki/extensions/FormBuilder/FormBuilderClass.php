@@ -29,7 +29,7 @@ class FormBuilderClass extends ExtensionClass
 								'html_button',
 							);
 	*/
-	static $mgwords = array( 'raw' );
+	static $mgwords = array( 'rawhtml' );
 	
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -49,7 +49,7 @@ class FormBuilderClass extends ExtensionClass
 		);
 	}
 
-	public function mg_raw ( &$parser, $text )
+	public function mg_rawhtml ( &$parser, $text )
 	{
 		return $text;
 	}
