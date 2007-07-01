@@ -211,5 +211,9 @@ require('extensions/Updater/Updater.php');
 // Generic Syntax Highlighter
 require('extensions/GeSHi/geshi.php');
 
+// Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
+
+// Form Builder tools
+require('extensions/FormBuilder/FormBuilder.php');
 ?>
