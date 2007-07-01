@@ -1,5 +1,4 @@
 <?php
-<?php
 /*<wikitext>
 {| border=1
 | <b>File</b> || FormProc.php
