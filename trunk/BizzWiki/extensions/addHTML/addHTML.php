@@ -40,87 +40,16 @@
  * - v1.2  : fixed hook chain in 'ParserAfterTidy'
  * - v1.21 : - added check for 'ExtensionClass' availability.
  *           - minor edits, no functional level changes.
+ =========== Moved to BizzWiki SVN
+ 
  */
 
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
 	echo 'ExtensionClass missing: AddHtml extension will not work!';	
 else
-	addHTMLclass::singleton();
-
-class addHTMLclass extends ExtensionClass
 {
-	const tag = 'addhtml';
-	
-	var $hlist;
-	var $hookInPlace;
-
-	public static function &singleton( ) // required by ExtensionClass
-	{ return parent::singleton( ); }
-	
-	function addHTMLclass()
-	{
-		parent::__construct(); // required by ExtensionClass
-		$this->hookInPlace = false;
-	}
-	public function setup()
-	{
-		parent::setup();
-		
-		global $wgExtensionCredits;
-		
-		$wgExtensionCredits['other'][] = array( 
-			'name'    => 'addHTML Extension', 
-			'version' => 'v1.21 $LastChangedRevision: 206 $',
-			'author'  => 'Jean-Lou Dupont', 
-			'url'     => 'http://www.bluecortex.com',
-		);
-		
-		global $wgParser;
-		$wgParser->setHook( self::tag, array( $this, 'hAddHtmlTag' ) );
-	}
-	public function hAddHtmlTag( $input, $argv, &$parser )
-	{
-		// check page protection status
-		if (!$this->checkPageEditRestriction( $parser->mTitle ))
-			return "unauthorized usage of <b>addHtml</b> extension.";
-		
-		$id = 0;
-		if ( isset($argv['id']) )		
-			$id = $argv['id'];
-		
-		// just place the hook when we really need it.		
-		if (!$this->hookInPlace)
-		{
-			global $wgHooks;	
-			$wgHooks['ParserAfterTidy'][]= array($this, 'feedHtml');
-			$this->hookInPlace = true;
-		}			
-
-		$input = trim( $input );
-		if ( !empty( $input ) )
-			$this->hlist[ $id ] = $input; 
-		
-		// let's put an easy marker that we can 'safely' find once we need to render the HTML
-		$marker = "<".self::tag." id={$id} />";
-		return $marker;
-	}
-	public function feedHtml( $parser, &$text )
-	{
-		// Some substitution to do?
-		if (empty($this->hlist)) return true;
-
-		foreach($this->hlist as $index => $html)
-		{
-			$marker = "<".self::tag." id={$index} />";
-			$text = str_ireplace($marker, $html, $text);
-		}
-		return true; // continue hook chain.
-	}
-/* -----------------------------------------------------------------------
-    PUBLIC INTERFACE FOR OTHER EXTENSIONS WISHING TO ADD ARBITRARY HTML
-   ----------------------------------------------------------------------- */
-	public function addHtml( $id, $html ) {	$this->hlist[ $id ] = $html; }
-	
-} // END CLASS DEFINITION
+	require('addHTMLclass.php');
+	addHTMLclass::singleton();
+}
 ?>
