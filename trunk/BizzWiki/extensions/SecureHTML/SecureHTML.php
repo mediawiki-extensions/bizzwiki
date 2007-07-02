@@ -9,13 +9,11 @@
 |}<br/><br/>
  
 == Purpose==
-
-
-== Features ==
-
+This extension enables the usage of 'html' tags (functionality which is controlled through the
+'$wgRawHtml' global variable) within protected pages.
 
 == Dependancy ==
-
+* ExtensionClass extension
 
 == Installation ==
 To install independantly from BizzWiki:
