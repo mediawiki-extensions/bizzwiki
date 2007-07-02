@@ -217,8 +217,8 @@ require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 // Form Builder tools
 # require('extensions/FormBuilder/FormBuilder.php');
 
-require('extensions/addHTML/addHTML.php');
 require('extensions/addScriptCss/AddScriptCss.php');
 
 require('extensions/SecureHTML/SecureHTML.php');
+require('extensions/SecureProperties/SecureProperties.php');
 ?>
