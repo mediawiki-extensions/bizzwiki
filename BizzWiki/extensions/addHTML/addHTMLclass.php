@@ -35,17 +35,16 @@ class addHTMLclass extends ExtensionClass
 {
 	const tag = 'addhtml';
 	
+	static $mgwords = array ( 'addhtml' );
+	
 	var $hlist;
-	var $hookInPlace;
 
 	public static function &singleton( ) // required by ExtensionClass
 	{ return parent::singleton( ); }
 	
 	function addHTMLclass()
-	{
-		parent::__construct(); // required by ExtensionClass
-		$this->hookInPlace = false;
-	}
+	{ parent::__construct( self::$mgwords ); } // required by ExtensionClass
+	
 	public function setup()
 	{
 		parent::setup();
@@ -61,19 +60,32 @@ class addHTMLclass extends ExtensionClass
 		global $wgParser;
 		$wgParser->setHook( self::tag, array( $this, 'hAddHtmlTag' ) );
 	}
+	public function mg_addhtml( &$parser, &$text )
+	{
+		return $this->process( $text, null /* TODO ? */ );
+	}
 	public function hAddHtmlTag( $input, $argv, &$parser )
 	{
 		// check page protection status
 		if (!$this->checkPageEditRestriction( $parser->mTitle ))
-			return "<b>addHtml</b> extension: ".wfMsg('badaccess');
+			return "<b>addHtml</b>: ".wfMsg('badaccess');
 		
-		$id = 0;
-		if ( isset($argv['id']) )		
+		if ( isset($argv['id']) ) 
 			$id = $argv['id'];
+		else $id = null;
 		
+		return $this->process( $input, $id );
+	}
+	private function process( &$input, $id )
+	{
 		$input = trim( $input );
 		if ( !empty( $input ) )
-			$this->hlist[ $id ] = $input; 
+			if ( $id !== null )
+				$this->hlist[ $id ] = $input; 
+			else
+				$this->hlist[] = $input; 
+		
+		$id = count( $this->hlist )-1;
 		
 		// let's put an easy marker that we can 'safely' find once we need to render the HTML
 		$marker = "<".self::tag." id={$id} />";
