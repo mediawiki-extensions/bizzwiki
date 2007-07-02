@@ -57,7 +57,6 @@
  * =====
  * - adjust for 'autoloading'
  * - internationalize
- * FIXME better handling of directory path...
  *
  */
 
@@ -79,7 +78,7 @@ class AddScriptCssClass extends ExtensionClass
 	const error_bad_type = 2;
 	const error_bad_pos  = 3;
 		
-	static $base = 'scripts/';
+	static $base = 'BizzWiki/scripts/';
 
 	static $mgwords = array( 'addscript' ); // {{#addscript: ...}}
 
@@ -194,16 +193,9 @@ class AddScriptCssClass extends ExtensionClass
 		// uri must resolved to a local file in the $base directory.
 		$spath = self::$base.$uri.'.'.$type;
 		
-		// we need the full path on windows system...
-		$cpath = dirname(__FILE__);
-		
-		// assume the script path is two levels up (to fit with BizzWiki environment)
-		// i.e. this file should be in '/extensions' but the js script
-		// directory should be in the base.
-		$bpath = dirname( $cpath );
-		$dpath = dirname( $bpath );
-		
-		return file_exists( $dpath."/{$spath}" );
+		global $IP;
+	
+		return file_exists( $IP."/{$spath}" );
 	} 
 	private function errMessage( $errCode )  // FIXME
 	{
