@@ -93,7 +93,7 @@ class addHTMLclass extends ExtensionClass
 	}
 	public function hParserAfterTidy( &$parser, &$text )
 	{
-		parent::hParserAfterTidy( $parser, $text );
+		parent::hookParserAfterTidy( $parser, $text );
 		
 		// Some substitution to do?
 		if (empty($this->hlist)) return true;
