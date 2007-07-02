@@ -63,3 +63,5 @@ REL1_10_2:
  - Fixed 'delete' and 'protect' namespace level policy in Special:Log
  - Added 'SpecialPagesManager' extension
  - Added 'SecureHTML' extension
+ - Added 'AddScriptCss' extension
+ 
