@@ -57,6 +57,8 @@
  * =====
  * - adjust for 'autoloading'
  * - internationalize
+ * FIXME better handling of directory path...
+ *
  */
 
 // Verify if 'ExtensionClass' is present.
@@ -194,12 +196,14 @@ class AddScriptCssClass extends ExtensionClass
 		
 		// we need the full path on windows system...
 		$cpath = dirname(__FILE__);
-		// assume the script path is one level up
+		
+		// assume the script path is two levels up (to fit with BizzWiki environment)
 		// i.e. this file should be in '/extensions' but the js script
 		// directory should be in the base.
 		$bpath = dirname( $cpath );
+		$dpath = dirname( $bpath );
 		
-		return file_exists( $bpath."/{$spath}" );
+		return file_exists( $dpath."/{$spath}" );
 	} 
 	private function errMessage( $errCode )  // FIXME
 	{
@@ -221,10 +225,10 @@ class AddScriptCssClass extends ExtensionClass
 		global $wgHooks;
 		$wgHooks['OutputPageBeforeHTML'][] = array( &$this, 'feedHeadScripts' );	
 	}
-	public function feedHeadScripts()
+	public function feedHeadScripts( &$op, &$text )
 	// ExtensionClass provides all the required functionality here.
 	{
-		return parent::hookOutputPageBeforeHTML( func_get_args() );
+		return parent::hookOutputPageBeforeHTML( &$op, &$text );
 	}
 /****************************************************************************
   Support for scripts in the document 'body'
