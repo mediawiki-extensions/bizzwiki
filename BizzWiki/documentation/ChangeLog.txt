@@ -62,4 +62,4 @@ REL1_10_2:
  - Added 'FormProc' extension
  - Fixed 'delete' and 'protect' namespace level policy in Special:Log
  - Added 'SpecialPagesManager' extension
- 
+ - Added 'SecureHTML' extension

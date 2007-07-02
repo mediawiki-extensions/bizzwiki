@@ -50,17 +50,17 @@
  *          - Added check to automatic hook handler to make sure
  *            that hooks are only registered when extended class requires them.
  *			- Added 'SyntaxHighlight' hook.
+ *          - Changed hooks 'ParserAfterTidy' and 'OutputPageBeforeHtml'
  *
  * TODO
  * ====
- * - Remove ExtensionClass hooks when not required.
+ * 
  *
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
 	'version' => '$Id$',
 	'author'  => 'Jean-Lou Dupont', 
-	'url'     => 'http://www.bluecortex.com',
 );
 
 class ExtensionClass
@@ -265,13 +265,6 @@ static $hookList = array(
 		if ( in_array( 'hUpdateExtensionCredits', get_class_methods($this->className) ) )
 			$wgHooks['SpecialVersionExtensionTypes'][] = array( &$this, 'hUpdateExtensionCredits' );				
 
-		foreach( self::$hookList as $index => $hookName )
-			$hl[] = "h".$hookName;
-
-		$l1 = array_diff( get_class_methods( $this->className), get_class_methods("ExtensionClass")  );
-
-		$ml = array_intersect(	$l1 , $hl );
-		
 		foreach ( self::$hookList as $index => $hookName)
 		{
 			$replaceFlag = false;
@@ -466,7 +459,7 @@ phase 2- when the page is rendered, extract the meta information
 		self::$scriptsListed = false;
 	}
 	
-	function hParserAfterTidy( &$parser, &$text )
+	function hookParserAfterTidy( &$parser, &$text )
 	// set the meta information in the parsed 'wikitext'.
 	{
 		if (self::$scriptsListed) return true;
@@ -478,7 +471,7 @@ phase 2- when the page is rendered, extract the meta information
 
 		return true;
 	}	
-	function hOutputPageBeforeHTML( &$op, &$text )
+	function hookOutputPageBeforeHTML( &$op, &$text )
 	// This function sifts through 'meta tags' embedded in html comments
 	// and picks out scripts & stylesheet references that need to be put
 	// in the page's HEAD.
