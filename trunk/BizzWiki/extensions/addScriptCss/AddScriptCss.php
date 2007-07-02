@@ -50,7 +50,9 @@
  *
  * History:
  * - v1.0  Builds on existing 'AddScript' extension
- *
+ =========== Moved to BizzWiki
+   - Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
+   
  * TODO:
  * =====
  * - adjust for 'autoloading'
@@ -172,7 +174,7 @@ class AddScriptCssClass extends ExtensionClass
 		// Where does the user want the script?
 		switch( $pos )
 		{
-			case 'head': $this->addHeadScript( $t ); break;			
+			case 'head': $this->setupHeadHook(); $this->addHeadScript( $t ); break;			
 			default:
 			case 'body': self::$slist[] = $t; $this->setupBodyHook(); break;	
 		}
@@ -208,6 +210,21 @@ class AddScriptCssClass extends ExtensionClass
 			self::error_bad_pos  => 'invalid POS parameter',
 		);
 		return 'AddScriptCss: '.$m[ $errCode ];
+	}
+	private function setupHeadHook()
+	{
+		// only setup hook once.
+		static $installed = false;
+		if  ($installed) return;
+		else $installed = true;
+
+		global $wgHooks;
+		$wgHooks['OutputPageBeforeHTML'][] = array( &$this, 'feedHeadScripts' );	
+	}
+	public function feedHeadScripts()
+	// ExtensionClass provides all the required functionality here.
+	{
+		return parent::hookOutputPageBeforeHTML( func_get_args() );
 	}
 /****************************************************************************
   Support for scripts in the document 'body'
