@@ -203,7 +203,7 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 require('extensions/SidebarEx/SidebarEx.php');
 
 // Updater extension
-require('extensions/Updater/Updater.php');
+#require('extensions/Updater/Updater.php');
 
 // Generic Syntax Highlighter
 require('extensions/GeSHi/geshi.php');
