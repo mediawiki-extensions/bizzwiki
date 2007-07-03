@@ -12,7 +12,14 @@
 This extension provides viewing pages in the language specified by the user's preferences automatically.
 
 == Features ==
+* Based language is assumed to be 'en'
+* Base 'page' (i.e. no /$lang sub-page) is assumed to be in 'en' language
 
+== Usage ==
+* Visit 'page' and redirection to 'page/$lang' will be effected IF $lang != 'en'
+* 'page/en' can be visited as per normal
+* Visit 'page/' to show 'page' without any redirection based on this extension
+  (i.e. same as visiting 'page' )
 
 == Dependancy ==
 * ExtensionClass extension
@@ -25,6 +32,9 @@ To install independantly from BizzWiki:
 require('extensions/ExtensionClass.php');
 require('extensions/AutoLanguage/AutoLanguage.php');
 </geshi>
+
+== Notes ==
+This extension is heavily based on the 'Polyglot' extension found on Mediawiki.org.
 
 == History ==
 

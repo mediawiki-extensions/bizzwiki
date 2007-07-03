@@ -18,9 +18,9 @@ require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
 
 // Parser & Page caching.
-$wgEnableParserCache = true;
-$wgParserCacheType   = CACHE_ANYTHING;
-$wgCachePages        = true;
+#$wgEnableParserCache = true;
+#$wgParserCacheType   = CACHE_ANYTHING;
+#$wgCachePages        = true;
 
 // Disable raw html
 // (There is the extension 'addHtml' to better cover this)
@@ -219,5 +219,10 @@ require('extensions/ParserTools/ParserTools.php');
 require('extensions/FormProc/FormProc.php');
 
 #require('extensions/PageTools/PageTools.php'); 
+
+require('extensions/AutoLanguage/AutoLanguage.php');
+AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
+AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
+AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 ?>
