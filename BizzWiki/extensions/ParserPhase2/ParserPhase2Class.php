@@ -55,6 +55,9 @@ class ParserPhase2Class extends ExtensionClass
 					$value = $this->getValue( $params[1] );
 					$rl[$index] = $value;
 					break;
+					
+					// only variables accessible through the parser
+					// are supported at this point.
 				default:
 					break;	
 			}
@@ -62,7 +65,7 @@ class ParserPhase2Class extends ExtensionClass
 
 		$this->replaceList( $text, $m, $rl );
 
-		return true;
+		return true; // be nice with other extensions.
 	}
 
 	private function getList ( &$text )
@@ -73,10 +76,7 @@ class ParserPhase2Class extends ExtensionClass
 	}
 	private function getValue( $varid )
 	{
-		static $vars;
-		if (!$vars)
-			$vars = MagicWord::getVariableIDs();
-
+		// ask our friendly MW parser for its help.
 		global $wgParser;
 		$value = $wgParser->getVariableValue( $varid );
 		
