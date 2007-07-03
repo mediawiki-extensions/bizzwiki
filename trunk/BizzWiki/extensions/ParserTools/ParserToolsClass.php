@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || XYZ.php
+| <b>File</b> || ParserToolsClass.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -27,13 +27,19 @@ class ParserToolsClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => '$Id$',
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Parser cache enabling/disabling'
+			'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag'
 		);
 	}
 	public function setup() 
-	{ parent::setup();	}
+	{ 
+		parent::setup();	
 
-
+		// <noparsercaching/>
+		global $wgParser;
+		$wgParser->setHook( 'noparsercaching', array( &$this, 'noParserCaching' ) );
+	}
+	public function noParserCaching( &$text, &$params, &$parser )
+	{ $parser->disableCache(); }
 
 } // end class
 ?>

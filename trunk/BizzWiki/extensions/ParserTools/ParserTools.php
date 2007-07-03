@@ -9,13 +9,11 @@
 |}<br/><br/>
  
 == Purpose==
-
-
-== Features ==
-
+This extension allows for disabling 'parser caching' on a per-page basis through the
+tag <nowiki><noparsercaching/></nowiki>.
 
 == Dependancy ==
-
+* ExtensionClass extension
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -23,7 +21,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <geshi lang=php>
 require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+require('extensions/ParserTools/ParserTools.php');
 </geshi>
 
 == History ==
