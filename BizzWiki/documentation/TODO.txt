@@ -53,4 +53,5 @@ Geshi:
 PageTools:
 ==========
 - Adjust so that 'ArticleClassEx' is not required anymore
+- Adjust to include Parser Caching integration i.e. parser phase 2
 

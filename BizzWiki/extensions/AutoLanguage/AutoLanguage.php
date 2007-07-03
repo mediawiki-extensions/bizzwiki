@@ -31,6 +31,12 @@ To install independantly from BizzWiki:
 <geshi lang=php>
 require('extensions/ExtensionClass.php');
 require('extensions/AutoLanguage/AutoLanguage.php');
+// optional parameters
+AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;   // excluded namespace
+AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;  // excluded namespace
+AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM; // excluded namespace
+
+AutoLanguageClass::$exemptTalkPages = true;
 </geshi>
 
 == Notes ==
