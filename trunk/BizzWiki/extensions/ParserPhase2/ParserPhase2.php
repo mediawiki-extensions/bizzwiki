@@ -15,7 +15,12 @@ all templates & variables in a 'parser cached' page. This extension enables subs
 variables upon page view whilst still preserving the valuable job performed by the parser/parser cache.
 
 == Features ==
+* Integrates with the standard Mediawiki Parser Cache
+* Provides a simple 'magic word' based interface to standard Mediawiki variables
 
+== Usage ==
+(($var|variable$))
+:Where 'variable' is a standard Mediawiki magic word e.g. CURRENTTIME, REVISIONID etc.
 
 == Dependancy ==
 * ExtensionClass extension
