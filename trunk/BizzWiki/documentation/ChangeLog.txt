@@ -68,4 +68,5 @@ REL1_10_2:
  - Added 'ParserTools' extension
 ==========
 REL1_10_4:
+- Added 'AutoLanguage' extension
 
