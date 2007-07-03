@@ -50,3 +50,7 @@ Geshi:
 ======
 - Better documentation
 
+PageTools:
+==========
+- Adjust so that 'ArticleClassEx' is not required anymore
+

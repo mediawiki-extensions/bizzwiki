@@ -202,9 +202,6 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
 
-// PostProc extension
-require('extensions/FormProc/FormProc.php');
-
 // Updater extension
 require('extensions/Updater/Updater.php');
 
@@ -214,11 +211,13 @@ require('extensions/GeSHi/geshi.php');
 // Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 
-// Form Builder tools
-# require('extensions/FormBuilder/FormBuilder.php');
-
+// Form/Page related tools
 require('extensions/addScriptCss/AddScriptCss.php');
-
 require('extensions/SecureHTML/SecureHTML.php');
 require('extensions/SecureProperties/SecureProperties.php');
+require('extensions/ParserTools/ParserTools.php');
+require('extensions/FormProc/FormProc.php');
+
+#require('extensions/PageTools/PageTools.php'); 
+
 ?>

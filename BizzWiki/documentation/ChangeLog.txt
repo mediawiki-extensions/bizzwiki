@@ -59,8 +59,8 @@ REL1_10_2:
  - Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
  - Integrated 'GeSHi' syntax highlighter extension
  -- Added 'SyntaxHighlight' hook
- - Added 'FormProc' extension
  - Fixed 'delete' and 'protect' namespace level policy in Special:Log
+ - Added 'FormProc' extension
  - Added 'SpecialPagesManager' extension
  - Added 'SecureHTML' extension
  - Added 'SecureProperties' extension
