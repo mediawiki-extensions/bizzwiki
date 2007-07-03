@@ -66,4 +66,6 @@ REL1_10_2:
  - Added 'SecureProperties' extension
  - Added 'AddScriptCss' extension
  - Added 'ParserTools' extension
- 
+==========
+REL1_10_4:
+
