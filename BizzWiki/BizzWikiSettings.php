@@ -18,8 +18,8 @@ require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
 
 // Parser & Page caching.
-#$wgEnableParserCache = true;
-#$wgParserCacheType   = CACHE_ANYTHING;
+$wgEnableParserCache = true;
+$wgParserCacheType   = CACHE_ANYTHING;
 #$wgCachePages        = true;
 
 // Disable raw html
@@ -225,4 +225,5 @@ AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
+require('extensions/ParserPhase2/ParserPhase2.php');
 ?>
