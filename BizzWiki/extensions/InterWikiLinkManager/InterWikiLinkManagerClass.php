@@ -58,10 +58,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		
 		$this->iwl     = array();
 		$this->new_iwl = array();
-		
-		global $wgMessageCache, $wgFileManagerLogMessages;
-		foreach( $wgFileManagerLogMessages as $key => $value )
-			$wgMessageCache->addMessages( $wgFileManagerLogMessages[$key], $key );		
+	
 	}
 		public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
