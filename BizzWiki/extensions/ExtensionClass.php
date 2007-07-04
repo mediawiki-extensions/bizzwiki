@@ -51,6 +51,7 @@
  *            that hooks are only registered when extended class requires them.
  *			- Added 'SyntaxHighlight' hook.
  *          - Changed hooks 'ParserAfterTidy' and 'OutputPageBeforeHtml'
+ *          - Added 'getRevisionData'
  *
  * TODO
  * ====
@@ -59,7 +60,7 @@
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
-	'version' => '$Id$',
+	'version' => ExtensionClass::getRevisionData('$Id$'),
 	'author'  => 'Jean-Lou Dupont', 
 );
 
@@ -432,6 +433,18 @@ static $hookList = array(
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
 			if ($el['name']==self::thisName)
 				$el['description'].=$text;	
+	}
+
+	static function getRevisionData( &$id, &$date, $d = null )
+	{
+		// e.g. $Id$
+		if ($d===null)
+			$data = explode( ' ', self::id );
+		else
+			$data = explode( ' ', $d );
+		$id   = $data[2];
+		$date = $data[3];
+		return $id;
 	}
 
 /*  Add scripts & stylesheets functionality.
