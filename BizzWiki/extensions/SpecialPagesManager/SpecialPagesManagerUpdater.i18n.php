@@ -12,7 +12,7 @@ $wgSpecialPagesManagerUpdaterMessages['en'] = array(
 	'specialpagesmanagerupdater_button'  => 'Confirm Update',
 	'specialpagesmanagerupdater_success' => 'The operation was successful',
 	'specialpagesmanagerupdater_failure' => 'The operation was a failure',
-	'specialpagesmanagerupdater_looklog' => 'Look at [[Special:Log]] for additional details',	
+	'specialpagesmanagerupdater_looklog' => 'Look at [[Special:Recentchanges]] for additional details',	
 	'specialpagesmanagerupdater_source'  => 'The files from the directory <b>$1</b> will be used.',
 	#'specialpagesmanagerupdater' => '',
 );

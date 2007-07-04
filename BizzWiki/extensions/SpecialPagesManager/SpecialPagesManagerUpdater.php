@@ -140,12 +140,36 @@ END
 		// is derived from 'SpecialPagesManagerClass::$spPage'
 		$fl = $this->getFileList();
 		
-		var_dump( $fl );
-		
-		#foreach( $fl as $index => $fn )
-		
+		$result = true; // assume best case.
+		foreach( $fl as $index => $fn )
+		{
+			$this->getFileData( $fn, $data );
+			$title = $this->buildTitle( $fn );
+			$r = $this->doUpdatePage( $title, $data );
+			if ( $r == false)
+				$result = false;
+			#$log[] = array( $fn => $r ); // TODO
+		}
 
 		return $result;	
+	}
+	private function doUpdatePage( &$title, &$data )
+	{
+		// does the page even exist?
+		if ( $title->getArticleID() == 0 )
+			return $this->createPage( $title, $data );
+		else
+			return $this->updatePage( $title, $data );
+	}
+	private function createPage( &$title, &$data )
+	{
+		$article = new Article( $title );
+		return $article->insertNewArticle( $data , '', false, false, false, false);		
+	}
+	private function updatePage( &$title, &$data )
+	{
+		$article = new Article( $title );
+		return $article->updateArticle( $data, '', false, false, '', null );
 	}
 	function buildTitle( &$name )
 	{
@@ -154,32 +178,30 @@ END
 		// build a page title in the form of
 		// $base/$name
 		if ($base === null)
-			$base = SpecialPagesManagerClass::singleton()->$spPage;
-	
+			$base = SpecialPagesManagerClass::singleton()->spPage;
+
 		return Title::newFromText( $base.'/'.$name );
 	}
+	private function getFileData( &$fn, &$data )
+	{ $data = @file_get_contents( self::getPath().'/'.$fn ); }
+	
 	private function getFileList()
 	{
 		// scan through the directory and fetch all filenames
 		$d = @dir( self::getPath() );
 		while (false !== ($entry = $d->read() ) )
 		{
-			if ($entry=='.' || $entry='..')
+			if (($entry=='.') || ($entry=='..'))
 				continue;
-			
+
 			// eliminate directories
-			if (is_dir( self::getPath().$entry)) continue;
-			
+			if (is_dir( self::getPath().'/'.$entry)) continue;
+
 			$fl[] = $entry;
 		}
 		$d->close();
 		
 		return $fl;
 	}
-	private function updateLog()
-	{
-		
-	}
-
 } // end class declaration
 ?>
