@@ -153,7 +153,7 @@ class hnpClass
 	}
 	static function getRevisionId()
 	{
-		$data = explode( self::id );
+		$data = explode( ' ', self::id );
 		return $data[2];
 	}
 	function hnpClass()
