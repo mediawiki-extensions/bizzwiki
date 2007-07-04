@@ -76,3 +76,6 @@ REL1_10_4:
 - Added 'undelete' as namespace independant right for addressing 'Special:Undelete' use-cases
 - Fixed 'Pager.php' to support 'page_namespace' related queries as well as 'user' table related ones
 -- Addresses 'Special:Listusers' special page issue
+- Enhanced 'SpecialPagesManager' extension with a standard MW special for updating the
+  BizzWiki special pages by reading the filesystem '/SpecialPages' directory.
+  
