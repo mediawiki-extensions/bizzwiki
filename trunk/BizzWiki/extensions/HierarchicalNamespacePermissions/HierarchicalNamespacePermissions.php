@@ -151,7 +151,11 @@ class hnpClass
 			$instance = new hnpClass( );
 		return $instance;
 	}
-
+	static function getRevisionId()
+	{
+		$data = explode( self::id );
+		return $data[2];
+	}
 	function hnpClass()
 	{
 		$this->lNsD = array();
@@ -161,7 +165,7 @@ class hnpClass
 		
 		$wgExtensionCredits['other'][] = array(
 		    'name'    => "HierarchicalNamespacePermissions",
-			'version' => '$Id$',
+			'version' => self::getRevisionId(),
 			'author'  => 'Jean-Lou Dupont' 
 		);
 			
