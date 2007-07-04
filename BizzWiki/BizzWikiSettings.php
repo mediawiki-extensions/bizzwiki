@@ -20,7 +20,7 @@ require('extensions/RunPHP_class.php');
 // Parser & Page caching.
 $wgEnableParserCache = true;
 $wgParserCacheType   = CACHE_ANYTHING;
-#$wgCachePages        = true;
+$wgCachePages        = true;
 
 // Disable raw html
 // (There is the extension 'addHtml' to better cover this)
