@@ -56,8 +56,9 @@
  *
  * 5) Apply any page protection deemed necessary
  * 
- * History:
- *
+== History ==
+* Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
+
  */
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
@@ -126,7 +127,7 @@ class SidebarExClass extends ExtensionClass
 			if (in_array( $group, $gr )) { $page = $group; break; }
 			 
 		// did we find satisfaction?
-		if (!isset( $page )) return true;
+		if (empty( $page )) return true;
 		
 		// form the path to the article:
 		// Namespace:base page/group name
@@ -134,7 +135,7 @@ class SidebarExClass extends ExtensionClass
 		$a = $this->getArticle( $ns.':'.$this->Page.'/'.$page );
 
 		// is the corresponding page found?
-		if (empty($a))
+		if (($a==null) || ($a->getID()==0))
 		{
 			$this->foundPage = false;
 			return true;
