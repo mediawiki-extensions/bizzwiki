@@ -53,7 +53,6 @@ class ViewsourceRight extends ExtensionClass
 			'name'    => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
-			'url'     => 'http://www.bluecortex.com',
 			'description' => "Status: "
 		);
 	}

@@ -230,6 +230,7 @@ class hnpClass
 		if ( ($cns == NS_SPECIAL) && ($ns === null) )
 		{
 			echo 'hnpClass: action <b>'.$action.'</b> namespace dependant but called from NS_SPECIAL. <br/>';
+#			var_dump( debug_backtrace() );
 			return false;	
 		}
 

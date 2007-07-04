@@ -12,6 +12,9 @@
 	HISTORY:
 	========
 	1) Namespace level permission policing ('browse' right)
+	2) Adjusted for queries where 'page_namespace' is not included. 
+	   Now support queries in the 'user' table.
+	
 */
 /**
  * Basic pager interface.
@@ -223,7 +226,11 @@ abstract class IndexPager implements Pager {
 					$row = $this->mResult->fetchObject();
 					
 					// BizzWiki begin {{
-					$ns = $row->page_namespace;
+					if (isset( $row->page_namespace))
+						$ns = $row->page_namespace;
+					elseif (isset( $row->user_name))
+						$ns = NS_USER;
+					else echo 'Pager::getBody : no recognized namespace ';						
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					
@@ -234,7 +241,11 @@ abstract class IndexPager implements Pager {
 				for ( $i = 0; $i < $numRows; $i++ ) {
 					$row = $this->mResult->fetchObject();
 					// BizzWiki begin {{
-					$ns = $row->page_namespace;
+					if (isset( $row->page_namespace))
+						$ns = $row->page_namespace;
+					elseif (isset( $row->user_name))
+						$ns = NS_USER;
+					else echo 'Pager::getBody : no recognized namespace ';
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					$s .= $this->formatRow( $row );
