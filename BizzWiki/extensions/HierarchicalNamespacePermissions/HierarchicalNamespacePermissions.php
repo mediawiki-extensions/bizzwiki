@@ -142,6 +142,7 @@ class hnpClass
 	var $lNsD; // namespace dependant rights list
 	var $lNsI; // namespace independant rights list
 	static $groupHierarchy; 
+	const id       = '$Id$';	
 	
 	public static function &singleton() 
 	{

@@ -13,6 +13,7 @@ class FileManagerClass extends ExtensionClass
 	// constants.
 	const thisName = 'FileManager';
 	const thisType = 'other';
+	const id       = '$Id$';	
 	  
 	const actionCommit = 'commitfile';
 	const actionRead   = 'readfile';
@@ -33,7 +34,7 @@ class FileManagerClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is '
 		);

@@ -14,6 +14,7 @@ class ParserToolsClass extends ExtensionClass
 	// constants.
 	const thisName = 'ParserToolsClass';
 	const thisType = 'other';
+	const id       = '$Id$';		
 	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -25,7 +26,7 @@ class ParserToolsClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag'
 		);

@@ -42,7 +42,8 @@ class FileSystemSyntaxColoring extends ExtensionClass
 {
 	const thisName = 'FileSystem Syntax Coloring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	
+	const id       = '$Id$';	
+		
 	var $found;
 	var $text;
 	var $lang;
@@ -68,8 +69,9 @@ class FileSystemSyntaxColoring extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'    => self::thisName, 
-			'version' => '$Id$',
+			'version' => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
+			'description' =>  'Syntax highlights filesystem related pages',
 		);
 	}
 	

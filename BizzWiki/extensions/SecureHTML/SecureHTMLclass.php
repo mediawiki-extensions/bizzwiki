@@ -13,6 +13,7 @@ class SecureHTMLclass extends ExtensionClass
 	// constants.
 	const thisName = 'SecureHTMLclass';
 	const thisType = 'other';
+	const id       = '$Id$';		
 	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -24,7 +25,7 @@ class SecureHTMLclass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Enables secure HTML code on protected pages'
 		);

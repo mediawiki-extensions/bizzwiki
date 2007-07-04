@@ -16,6 +16,7 @@ class ParserPhase2Class extends ExtensionClass
 	// constants.
 	const thisName = 'ParserPhase2Class';
 	const thisType = 'other';
+	const id       = '$Id$';		
 	
 	const pattern = '/\(\(\$(.*)\$\)\)/siU';
 	
@@ -29,7 +30,7 @@ class ParserPhase2Class extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables'
 		);
