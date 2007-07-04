@@ -38,6 +38,11 @@ class SpecialPagesManagerClass extends ExtensionClass
 		
 		// Base page for the enhanced Special Pages
 		$this->spPage = Namespace::getCanonicalName(NS_BIZZWIKI).':Special Pages';
+		
+		// Create the special page (the standard MW style one)
+		global $wgSpecialPages, $wgAutoloadClasses;
+		$wgSpecialPages['SpecialPagesManagerUpdater'] = 'SpecialPagesManagerUpdater';
+		$wgAutoloadClasses['SpecialPagesManagerUpdater'] = dirname(__FILE__) . "/SpecialPagesManagerUpdater.php" ;		
 	}
 	
 	// Use this method to change the enhanced special page's title.
@@ -82,4 +87,5 @@ class SpecialPagesManagerClass extends ExtensionClass
 	}		
 		
 } // end class declaration
+
 ?>

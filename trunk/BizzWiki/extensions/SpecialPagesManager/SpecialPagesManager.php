@@ -15,9 +15,9 @@ managed directly from the database (instead of PHP files).
 == Features ==
 * Default to 'Bizzwiki:Special Pages' page
 * Can be changed through using
-<geshi lang=php>
+<source lang=php>
 SpecialPagesManager->singleton()->setSpecialPage('page name');
-</geshi>
+</source>
 
 == Dependancy ==
 * ExtensionClass extension
@@ -26,10 +26,13 @@ SpecialPagesManager->singleton()->setSpecialPage('page name');
 To install independantly from BizzWiki:
 * Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
+<source lang=php>
 require('extensions/ExtensionClass.php');
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
-</geshi>
+</source>
+
+== Rights ==
+The extension defines a new right 'siteupdate' required to access the update functionality.
 
 == History ==
 
