@@ -28,7 +28,9 @@ class geshiClass extends ExtensionClass
 		parent::setup();
 			
 		global $wgParser;
-		$wgParser->setHook( 'geshi', array( $this, 'execute' ) );
+		$wgParser->setHook( 'geshi',  array( $this, 'execute' ) );
+		$wgParser->setHook( 'source', array( $this, 'execute' ) );  // align with some other extensions
+																	// providing the ~same functionality
 		$wgParser->setHook( 'php', array( $this, 'executePHP' ) );
 	}
 	public function executePHP( &$text, &$argv, &$parser )

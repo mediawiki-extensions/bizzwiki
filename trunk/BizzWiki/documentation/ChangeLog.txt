@@ -70,3 +70,5 @@ REL1_10_2:
 REL1_10_4:
 - Added 'AutoLanguage' extension
 - Added 'ParserPhase2' extension
+- Added 'source' tag to geshi extension
+- Adjusted 'revision id' information provided through extension credits on most extensions
