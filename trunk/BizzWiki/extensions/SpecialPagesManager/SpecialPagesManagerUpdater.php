@@ -10,12 +10,32 @@
 == Code ==
 </wikitext>*/
 
+function wfSpecialSpecialPagesManagerUpdater( $par ) 
+{
+	$o = SpecialPagesManagerUpdater::singleton();
+	$o->execute( $par );
+}
+
 class SpecialPagesManagerUpdater extends SpecialPage
 {
+	static $instance = null;
+	
 	function SpecialPagesManagerUpdater( )
 	{
 		SpecialPage::SpecialPage("SpecialPagesManagerUpdater", 'siteupdate' );
 		self::loadMessages();
+		
+		if (self::$instance === null)
+			self::$instance = $this;
+			
+		return self::$instance;
+	}
+	static function singleton() 
+	{ 
+		if (self::$instance === null)
+			self::$instance = new SpecialPagesManagerUpdater();
+			
+		return self::$instance;
 	}
 	function loadMessages()
 	{
@@ -30,6 +50,11 @@ class SpecialPagesManagerUpdater extends SpecialPage
 		foreach ( $wgSpecialPagesManagerUpdaterMessages as $lang => $langMessages ) 
 		        $wgMessageCache->addMessages( $langMessages, $lang );	
 	}
-}
 
+	public function execute( $par )
+	{
+		global $wgRequest;
+	}
+
+} // end class declaration
 ?>

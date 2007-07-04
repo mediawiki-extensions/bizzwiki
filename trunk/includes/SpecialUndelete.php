@@ -11,6 +11,8 @@
 	HISTORY:
 	========
 	1) Added namespace level rights management
+	2) Added namespace independant 'undelete' right
+	
 */
 
 /**
@@ -497,10 +499,16 @@ class UndeleteForm {
 		}
 		
 		// BizzWiki
+		/*
 		$title = Title::newFromText( $par );
-		$ns = $title->getNamespace();
-						
-		if ( $wgUser->isAllowed( 'delete', $ns ) && !$wgUser->isBlocked() ) {
+		if ( is_object($title) )
+			$ns = $title->getNamespace();
+		else
+		{
+			## FIXME
+		}
+		*/			
+		if ( $wgUser->isAllowed( 'undelete' /*BizzWiki*/ ) && !$wgUser->isBlocked() ) {
 			$this->mAllowed = true;
 		} else {
 			$this->mAllowed = false;
