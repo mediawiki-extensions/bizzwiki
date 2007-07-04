@@ -60,7 +60,7 @@
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
-	'version' => ExtensionClass::getRevisionData('$Id$'),
+	'version' => ExtensionClass::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont', 
 );
 
@@ -445,6 +445,10 @@ static $hookList = array(
 		$id   = $data[2];
 		$date = $data[3];
 		return $id;
+	}
+	static function getRevisionId( $data=null )
+	{
+		return self::getRevisionData( $id, $date, $data );
 	}
 
 /*  Add scripts & stylesheets functionality.
