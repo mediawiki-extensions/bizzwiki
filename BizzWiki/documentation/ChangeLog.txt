@@ -71,4 +71,6 @@ REL1_10_4:
 - Added 'AutoLanguage' extension
 - Added 'ParserPhase2' extension
 - Added 'source' tag to geshi extension
-- Adjusted 'revision id' information provided through extension credits on most extensions
+- Adjusted 'revision id' information provided through extension credits (Special:Version) on most extensions
+- Fixed 'SidebarEx' extension for 'garbage' appearing when 'Sidebar/$group' page does not exist
+- Added 'undelete' as namespace independant right for addressing 'Special:Undelete' use-cases

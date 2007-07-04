@@ -88,6 +88,8 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'trackback',		// TODO
 										'unwatchedpages',	// TODO
 										'readlog',  		// BizzWiki specific
+										'siteupdate',		// BizzWiki specific
+										'undelete',			// BizzWiki specific
 									);
 
 
@@ -106,6 +108,7 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'viewsource', // BizzWiki specific
 										'browse',     // BizzWiki specific
 										'search',     // BizzWiki specific
+
 									);
 									
 // Critical permission system initialization
@@ -202,9 +205,6 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
 
-// Updater extension
-require('extensions/Updater/Updater.php');
-
 // Generic Syntax Highlighter
 require('extensions/GeSHi/geshi.php');
 
@@ -226,4 +226,15 @@ AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 require('extensions/ParserPhase2/ParserPhase2.php');
+
+## To enable image uploads, make sure the 'images' directory
+## is writable, then set this to true:
+$wgEnableUploads     = true;
+
+## This must be set if the 'Updater' extension is to be functional
+$wgFileExtensions[]  = "zip";
+
+// Updater extension
+#require('extensions/Updater/Updater.php');
+
 ?>
