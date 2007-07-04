@@ -70,7 +70,8 @@ class AddScriptCssClass extends ExtensionClass
 {
 	// constants.
 	const thisName = 'AddScriptCss';
-	const thisType = 'other';  
+	const thisType = 'other'; 
+	const id       = '$Id$';
 
 	// error codes.
 	const error_none     = 0;
@@ -94,7 +95,7 @@ class AddScriptCssClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections'
 		);
