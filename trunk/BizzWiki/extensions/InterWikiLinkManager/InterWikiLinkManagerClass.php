@@ -13,6 +13,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 	// constants.
 	const thisName = 'InterWikiLinkManager';
 	const thisType = 'other';
+	const id       = '$Id$';		
 
 	const rRead    = "read";
 	const rEdit    = "edit";
@@ -47,7 +48,7 @@ class InterWikiLinkManagerClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Manages the InterWiki links table. Namespace for extension is '
 		);

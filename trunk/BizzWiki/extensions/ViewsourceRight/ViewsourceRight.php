@@ -38,7 +38,8 @@ class ViewsourceRight extends ExtensionClass
 {
 	const thisName = 'ViewsourceRight';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-
+	const id       = '$Id$';	
+	
 	public static function &singleton( )
 	{ return parent::singleton( ); }
 	
@@ -50,7 +51,7 @@ class ViewsourceRight extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'    => self::thisName, 
-			'version' => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
 			'url'     => 'http://www.bluecortex.com',
 			'description' => "Status: "

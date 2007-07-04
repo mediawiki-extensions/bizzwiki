@@ -70,7 +70,8 @@ class SidebarExClass extends ExtensionClass
 	// constants.
 	const thisName = 'SidebarEx';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-
+	const id       = '$Id$';	
+	
 	// default values
 	static $baseNs   = NS_MEDIAWIKI;  	// default namespace
 	static $basePage = 'Sidebar';     	// default base page
@@ -92,7 +93,7 @@ class SidebarExClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 		);
 

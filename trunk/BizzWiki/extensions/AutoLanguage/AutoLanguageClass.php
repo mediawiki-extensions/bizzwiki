@@ -15,7 +15,7 @@ class AutoLanguageClass extends ExtensionClass
 	// constants.
 	const thisName = 'AutoLanguageClass';
 	const thisType = 'other';
-	
+	const id       = '$Id$';	
 	//
 	static $exemptNamespaces = array( 	NS_CATEGORY,  // special treatement in 'Wiki.php'
 										NS_TEMPLATE,  // !
@@ -36,7 +36,7 @@ class AutoLanguageClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Automatic page language switching based on user preference'
 		);

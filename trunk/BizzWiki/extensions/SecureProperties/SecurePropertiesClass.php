@@ -16,7 +16,8 @@ class SecurePropertiesClass extends ExtensionClass
 	// constants.
 	const thisName = 'SecurePropertiesClass';
 	const thisType = 'other';
-	
+	const id       = '$Id$';	
+		
 	//
 	static $mgwords = array( 'pg', 'ps' );
 	const actionGet = 0;
@@ -32,7 +33,7 @@ class SecurePropertiesClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Enables global object property get/set on protected pages'
 		);

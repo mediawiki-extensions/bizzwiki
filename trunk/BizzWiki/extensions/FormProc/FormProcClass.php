@@ -13,7 +13,8 @@ class FormProcClass extends ExtensionClass
 	// constants.
 	const thisName = 'FormProcClass';
 	const thisType = 'other';
-	  
+	const id       = '$Id$';	
+		  
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -24,7 +25,7 @@ class FormProcClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Handles "action=formsubmit" post requests through page based PHP code'
 		);

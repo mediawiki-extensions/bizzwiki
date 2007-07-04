@@ -6,7 +6,8 @@ class geshiClass extends ExtensionClass
 	// constants.
 	const thisName = 'geshiClass';
 	const thisType = 'other';
-	  
+	const id       = '$Id$';	
+		  
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -17,7 +18,7 @@ class geshiClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Handles generic syntax highlighting'
 		);

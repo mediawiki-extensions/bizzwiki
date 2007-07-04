@@ -11,7 +11,8 @@ class SuperGroupsClass extends ExtensionClass
 {
 	const thisName = 'SuperGroups';
 	const thisType = 'other';  
-
+	const id       = '$Id$';	
+	
 	const nssSize  = 256;  // namespace set size
 	const nssOffset= 100;  // offset as additional precaution
 	                       // against collision with standard MW namespaces.

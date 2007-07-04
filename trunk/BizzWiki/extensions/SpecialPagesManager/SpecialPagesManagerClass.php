@@ -15,7 +15,8 @@ class SpecialPagesManagerClass extends ExtensionClass
 	// constants.
 	const thisName = 'SpecialPagesManagerClass';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-
+	const id       = '$Id$';	
+	
 	// defines.
 	var $spPage;
 
@@ -31,7 +32,7 @@ class SpecialPagesManagerClass extends ExtensionClass
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'        => self::thisName, 
-			'version'     => '$Id$',
+			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 		);
 		
