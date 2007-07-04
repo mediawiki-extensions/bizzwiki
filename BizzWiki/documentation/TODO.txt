@@ -36,6 +36,7 @@ Email sent history: (TBD)
 MISC:
 =====
 - Class stubbing
+- Internationalise!
 
 FileManager:
 ============

@@ -13,6 +13,10 @@
 
 ****************************************************************************/
 
+// Define the base of BizzWiki
+define('BIZZWIKI', true);
+$bwPath = $IP.'/BizzWiki';
+
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
@@ -155,7 +159,8 @@ $wgGroupPermissions['user' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newuse
 
 	// User group can access more namespaces
 $bwUserNamespaces = array (	NS_TEMPLATE, NS_TEMPLATE_TALK,
-							NS_IMAGE, NS_IMAGE_TALK,														
+							NS_IMAGE, NS_IMAGE_TALK,
+							NS_USER, NS_USER_TALK														
 							);	
 foreach( $bwUserNamespaces as $index => $bwx )
 	{
@@ -210,6 +215,8 @@ require('extensions/GeSHi/geshi.php');
 
 // Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
+ // Use the following to customize the source path of the files.
+#SpecialPagesManagerClass::singleton()->setPagesPath('page title');
 
 // Form/Page related tools
 require('extensions/addScriptCss/AddScriptCss.php');
