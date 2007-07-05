@@ -96,6 +96,7 @@ class SidebarExClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
+			'description' => 'Provides sidebar customization on a per-group basis',
 		);
 
 		$this->foundPage = false;

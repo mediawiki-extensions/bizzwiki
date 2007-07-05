@@ -53,9 +53,10 @@ class ShowRedirectPageText extends ExtensionClass
 	
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
+			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
+			'author'      => 'Jean-Lou Dupont', 
+			'description' => 'Provides viewing a wikitext included in a redirect page',
 		);
 	}
 	
