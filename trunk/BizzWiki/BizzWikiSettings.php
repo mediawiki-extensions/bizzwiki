@@ -243,6 +243,9 @@ require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 // Form/Page related tools
 require('extensions/addScriptCss/AddScriptCss.php');
 require('extensions/SecureHTML/SecureHTML.php');
+	# SecureHTMLclass::enableExemptNamespaces = false; # turn off
+	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
+
 require('extensions/SecureProperties/SecureProperties.php');
 require('extensions/ParserTools/ParserTools.php');
 require('extensions/FormProc/FormProc.php');
