@@ -12,6 +12,11 @@
 This extension enables the usage of 'html' tags (functionality which is controlled through the
 '$wgRawHtml' global variable) within protected pages.
 
+== Features ==
+* Cascading: if the base page is allowed to use 'html' tags, then all included pages will be processed
+as if they could.
+* Namespace exemption: configured namespaces are exempted from 'protection' requirement
+
 == Dependancy ==
 * ExtensionClass extension
 
@@ -25,6 +30,10 @@ require('extensions/SecureHTML/SecureHTML.php');
 </geshi>
 
 == History ==
+* added namespace exemption functionality i.e. namespaces where article do not need to be
+protected in order to use 'html' tags
+** use <code>SecureHTMLclass::enableExemptNamespaces = false; </code> to turn off
+** use <code>SecureHTMLclass::exemptNamespaces[] = NS_XYZ; </code> to add namespaces
 
 == Code ==
 </wikitext>*/

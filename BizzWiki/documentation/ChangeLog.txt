@@ -83,4 +83,5 @@ REL1_10_4:
  - FileManager: Added PHP error suppression for file_get_contents
  - FormProc: added functionality enabling defining a class for form processing
  - Added BizzWiki release identifier in global define 'BIZZWIKI'
- - 
+ - SecureHTML: added namespace exemption list functionality
+ 

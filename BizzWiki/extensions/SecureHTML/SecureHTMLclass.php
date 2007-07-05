@@ -15,6 +15,9 @@ class SecureHTMLclass extends ExtensionClass
 	const thisType = 'other';
 	const id       = '$Id$';		
 	  
+	static $enableExemptNamespaces = true;
+	static $exemptNamespaces;
+	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -29,6 +32,11 @@ class SecureHTMLclass extends ExtensionClass
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Enables secure HTML code on protected pages'
 		);
+	
+		// default exempt namespaces from the BizzWiki platform.
+		// won't affect installs of the extension outside the BizzWiki platform.
+		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
+		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
 	}
 	public function setup() 
 	{ parent::setup();	}
@@ -44,9 +52,8 @@ class SecureHTMLclass extends ExtensionClass
 	
 	private function process( &$article )
 	{
-		// if article is not protected, then bail out.
-		if ( !$article->mTitle->isProtected( 'edit' ) ) return true;
-		
+		if (!$this->canProcess( $article ) ) return true;
+				
 		// Now that we know we are on a protected page,
 		// enable raw html for the benefit of the 'parser cache' saving process
 		global $wgRawHtml;
@@ -54,6 +61,20 @@ class SecureHTMLclass extends ExtensionClass
 		
 		return true; // continue hook-chain.
 	}
-
+	private function canProcess( &$article )
+	{
+		if (self::$enableExemptNamespaces)
+		{
+			$ns = $article->mTitle->getNamespace();
+			if ( !empty(self::$exemptNamespaces) )
+				if ( in_array( $ns, self::$exemptNamespaces) )
+					return true;	
+		}
+		
+		// check protection status
+		if ( $article->mTitle->isProtected( 'edit' ) ) return true;
+		
+		return false;
+	}
 } // END CLASS DEFINITION
 ?>
