@@ -19,7 +19,7 @@ Provides a useful base class for form processing classes.
 == Code ==
 </wikitext>*/
 
-class FormProcBaseClass extends ExtensionClass
+class FormProcBaseClass
 {
 	
 }

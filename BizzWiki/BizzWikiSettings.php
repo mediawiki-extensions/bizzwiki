@@ -28,20 +28,26 @@ $wgCachePages        = true;
 
 // Disable raw html
 // (There is the extension 'addHtml' to better cover this)
-$wgRawHtml = false;
-
-// define new namespaces constants
-define('NS_BIZZWIKI',   100);
-define('NS_FILESYSTEM', 102);
-define('NS_INTERWIKI',  104);
+$wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension 
+					// to achieve the same goal
 
 // Need to include standard 'Namespace.php'
 require($IP.'/includes/Namespace.php');
 
-// Add the new namespaces to the global variables
-$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
-$wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
-$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
+## DEFINE NEW NAMESPACES HERE 
+## {{
+
+	// define new namespaces constants
+	define('NS_BIZZWIKI',   100);
+	define('NS_FILESYSTEM', 102);
+	define('NS_INTERWIKI',  104);
+	
+	// Add the new namespaces to the global variables
+	$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
+	$wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
+	$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
+
+## }}
 
 // Put all the namespaces in the global variable
 $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
@@ -115,11 +121,14 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 
 									);
 									
-// Critical permission system initialization
+// Critical permission system initialization -- DO NOT TOUCH
+## {{
 hnpClass::singleton()->addNamespaceIndependantRights( $bwNamespaceIndependantRights );
 hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRights );
+## }}
 
 	// Sysop gets all the rights.
+	// ##########################
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","~")]     = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey("~","~","!bot")]  = true;  // required !!
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers",	"browse")] = true;
@@ -127,16 +136,19 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commi
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload",		"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delete",   	"browse")] = true;
 
-	// Anonymous users don't get much...
+	// Anonymous
+	// #########
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
 
-		// remove access to some log entries.
+	// remove access to some log entries.
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers", "!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil","!browse")] = true; // FileManager extension
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/upload",   "!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delete",   "!browse")] = true;
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
 
+	// Namespace accessible by 'Anonynous'
+	// ###################################
 $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
 								NS_CATEGORY, NS_CATEGORY_TALK,
@@ -144,6 +156,8 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_SPECIAL
 								); 
 
+	// Rights available to 'Anonymous'
+	// ###############################
 foreach( $bwAnonymousNamespaces as $index => $bwx )
 {	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")]   = true;
@@ -152,16 +166,21 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;   // debugging	
 }
 
-	// User
+	// 'Users' inherit all rights from '*' (anonymous)
+	// ############################################### 
 	
 		// Log Entries access
 $wgGroupPermissions['user' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers","!browse")] = true;
 
-	// User group can access more namespaces
+	// Namespace accessible by 'User'
+	// ##############################
 $bwUserNamespaces = array (	NS_TEMPLATE, NS_TEMPLATE_TALK,
 							NS_IMAGE, NS_IMAGE_TALK,
 							NS_USER, NS_USER_TALK														
 							);	
+
+	// Additional rights available to 'User'
+	// #####################################
 foreach( $bwUserNamespaces as $index => $bwx )
 	{
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
@@ -172,13 +191,16 @@ foreach( $bwUserNamespaces as $index => $bwx )
 // For testing QueryPage.php functionality
 // as in 'SpecialPopularpages.php'.
 // DEBUG
+## {{
 $wgContentNamespaces[] = NS_BIZZWIKI;
 $wgContentNamespaces[] = NS_FILESYSTEM;
 $wgContentNamespaces[] = NS_INTERWIKI;
+## }}
 
 // *****************************************************************************************
 
 // Protect critical namespaces from Templating level permission bypassing.
+// It is strongly suggested not to mess with this.
 $wgNonincludableNamespaces[] = NS_FILESYSTEM;
 $wgNonincludableNamespaces[] = NS_BIZZWIKI;
 $wgNonincludableNamespaces[] = NS_INTERWIKI;
