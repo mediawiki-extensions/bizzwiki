@@ -28,9 +28,11 @@
  * Tested Compatibility:  MW 1.10
  * =====================
  *
- * History:
- * ========
- * - fixed for 'wgCapitalLinks' 
+
+== History ==
+* fixed for 'wgCapitalLinks' 
+* fixed for suppressing PHP error messages on file_get_contents
+ 
  *
  * TODO:
  * =====

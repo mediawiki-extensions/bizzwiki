@@ -184,7 +184,7 @@ class FileManagerClass extends ExtensionClass
 
 		global $IP;
 		$filename = $title->getText();
-		$text = file_get_contents( $IP.'/'.$filename );
+		$text = @file_get_contents( $IP.'/'.$filename );
 	
 		return true; // be nice.
 	}
