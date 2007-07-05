@@ -80,7 +80,7 @@ REL1_10_4:
   BizzWiki special pages by reading the filesystem '/SpecialPages' directory.
 =========
 REL1_10_5:
-- FileManager: Added PHP error suppression for file_get_contents
+- FileManager: Added PHP error suppression for file_get_contents upon initial page creation
 - FormProc: added functionality enabling defining a class for form processing
 - Added BizzWiki release identifier in global define 'BIZZWIKI'
 - SecureHTML: added namespace exemption list functionality

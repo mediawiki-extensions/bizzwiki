@@ -35,12 +35,12 @@ class geshiClass extends ExtensionClass
 	}
 	public function executePHP( &$text, &$argv, &$parser )
 	{
-		$this->extractArgs( &$argv, &$lang, &$lines, &$source );
+		$this->extractArgs( $argv, $lang, $lines, $source );
 		return $this->executeMain( $text, 'php', $lines, $source );	
 	}
 	public function execute( &$text, &$argv, &$parser )
 	{
-		$this->extractArgs( &$argv, &$lang, &$lines, &$source );
+		$this->extractArgs( $argv, $lang, $lines, $source );
 		return $this->executeMain( $text, $lang, $lines, $source );	
 	}
 	public function extractArgs( &$argv, &$lang, &$lines, &$source )
