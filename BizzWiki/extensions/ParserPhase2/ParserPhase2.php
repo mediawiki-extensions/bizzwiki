@@ -17,10 +17,16 @@ variables upon page view whilst still preserving the valuable job performed by t
 == Features ==
 * Integrates with the standard Mediawiki Parser Cache
 * Provides a simple 'magic word' based interface to standard Mediawiki variables
+* Provides a simple 'magic word' based interface to global objects->methods
 
 == Usage ==
 (($var|variable$))
 :Where 'variable' is a standard Mediawiki magic word e.g. CURRENTTIME, REVISIONID etc.
+
+(($obj|object|method|param 1...$))
+:Where 'object' is a global object
+:Where 'method' is a publically available method of the above mentionned object
+:Where 'param X' is a list of parameters
 
 == Dependancy ==
 * ExtensionClass extension
@@ -29,12 +35,13 @@ variables upon page view whilst still preserving the valuable job performed by t
 To install independantly from BizzWiki:
 * Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
+<source lang=php>
 require('extensions/ExtensionClass.php');
 require('extensions/ParserPhase2/ParserPhase2.php');
-</geshi>
+</source>
 
 == History ==
+* added 'obj' capability
 
 == Code ==
 </wikitext>*/

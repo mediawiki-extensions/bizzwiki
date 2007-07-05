@@ -60,7 +60,17 @@ class FormProcClass extends ExtensionClass
 			$callback = eval( $code );  // we might implement functionality around a callback method in the future
 
 		// Was there an expected class defined?
-		$name = $article->mTitle->getDBkey().'Class';
+		$name = $article->mTitle->getDBkey();
+
+		// the page name might actually be a sub-page; extract the basename without the full path.
+		$pn   = explode( '/', $name );
+		if ( !empty( $pn ))
+		{
+			$rn = array_reverse( $pn );
+			$name = $rn[0];
+		}
+		$name .= 'Class';
+
 		if ( class_exists( $name ))
 		{
 			$class = new $name();
