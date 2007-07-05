@@ -22,6 +22,7 @@ Current user id: {{#pg:wgUser|mId}}
 
 == Features ==
 * Security: the 'magic words' of the extension can only be used on protected pages
+* Namespace exemption: configured namespaces are exempted from the 'protection' requirement
 
 == Dependancy ==
 * ExtensionClass extension
@@ -30,10 +31,10 @@ Current user id: {{#pg:wgUser|mId}}
 To install independantly from BizzWiki:
 * Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
+<source lang=php>
 require('extensions/ExtensionClass.php');
 require('extensions/SecureProperties/SecureProperties.php');
-</geshi>
+</source>
 
 == History ==
 
