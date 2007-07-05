@@ -32,7 +32,8 @@ class ParserPhase2Class extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables'
+			'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

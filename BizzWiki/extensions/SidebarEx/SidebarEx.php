@@ -97,6 +97,7 @@ class SidebarExClass extends ExtensionClass
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Provides sidebar customization on a per-group basis',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 
 		$this->foundPage = false;

@@ -28,7 +28,8 @@ class ParserToolsClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag'
+			'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

@@ -72,6 +72,7 @@ class FileSystemSyntaxColoring extends ExtensionClass
 			'version' => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
 			'description' =>  'Syntax highlights filesystem related pages',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	

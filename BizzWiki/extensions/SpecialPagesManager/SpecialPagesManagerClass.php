@@ -35,6 +35,7 @@ class SpecialPagesManagerClass extends ExtensionClass
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Provides management functions for BizzWiki Special Pages',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 		
 		// Base page for the enhanced Special Pages

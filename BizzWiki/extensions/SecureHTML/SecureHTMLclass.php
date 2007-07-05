@@ -30,7 +30,8 @@ class SecureHTMLclass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Enables secure HTML code on protected pages'
+			'description' => 'Enables secure HTML code on protected pages',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	
 		// default exempt namespaces from the BizzWiki platform.

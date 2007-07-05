@@ -36,7 +36,8 @@ class FileManagerClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is '
+			'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is ',
+			'url' => self::getFullUrl(__FILE__),
 		);
 	}
 	public function setup() 

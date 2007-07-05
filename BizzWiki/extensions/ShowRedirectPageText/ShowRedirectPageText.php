@@ -57,6 +57,7 @@ class ShowRedirectPageText extends ExtensionClass
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Provides viewing a wikitext included in a redirect page',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	

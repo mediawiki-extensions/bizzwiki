@@ -85,4 +85,5 @@ REL1_10_5:
 - Added BizzWiki release identifier in global define 'BIZZWIKI'
 - SecureHTML: added namespace exemption list functionality
 - SecureProperties: added namespace exemption list functionality
- 
+- Corrected geshi, extensionclass, addscriptcss for PHP warnings (usage of deprecated PHP features)
+- Adjusted 'url' field in extensions' credits
