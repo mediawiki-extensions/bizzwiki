@@ -3,7 +3,7 @@
  * AddScriptCss.php
  * 
  * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
+ * @author: Jean-Lou Dupont
  * 
  * Purpose:  Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head
  * ========  or within the page's body.

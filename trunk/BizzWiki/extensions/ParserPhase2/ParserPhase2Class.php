@@ -49,17 +49,22 @@ class ParserPhase2Class extends ExtensionClass
 
 		foreach( $m[1] as $index => $str)
 		{
-			// (($var|variable name}}
+			// (($var|variable name$))
+			// (($obj|global object name|method name$))
 			$params = explode('|', $str);
-			switch ($params[0])
+			$action = array_shift( $params );
+			switch ($action)
 			{
 				case 'var':
-					$value = $this->getValue( $params[1] );
+					$value = $this->getValue( $params[0] );
 					$rl[$index] = $value;
 					break;
-					
 					// only variables accessible through the parser
 					// are supported at this point.
+				case 'obj':
+					$obj = array_shift( $params );
+					$fnc = array_shift( $params );
+					$rl[$index] = $this->callObjMethod( $GLOBALS[$obj], $fnc, $params );
 				default:
 					break;	
 			}
@@ -89,5 +94,31 @@ class ParserPhase2Class extends ExtensionClass
 		foreach( $source[0] as $index => $marker )
 			$text = str_replace( $marker, $target[$index], $text );	
 	}
+
+	function callObjMethod( &$obj, &$method, &$p )
+	{
+		$p = array_values( $p );
+		switch ( count( $p ) ) {
+			case 0:
+				return $obj->$method();
+			case 1:
+				return $obj->$method( $p[0] );
+			case 2:
+				return $obj->$method( $p[0], $p[1] );
+			case 3:
+				return $obj->$method( $p[0], $p[1], $p[2] );
+			case 4:
+				return $obj->$method( $p[0], $p[1], $p[2], $p[3] );
+			case 5:
+				return $obj->$method( $p[0], $p[1], $p[2], $p[3], $p[4] );
+			case 6:
+				return $obj->$method( $p[0], $p[1], $p[2], $p[3], $p[4], $p[5] );
+			default:
+				throw new MWException( "Too many arguments to ParserPhase2::callObjMethod" );
+	}
+}
+
+
+
 } // end class
 ?>

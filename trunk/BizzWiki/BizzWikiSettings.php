@@ -269,4 +269,24 @@ $wgFileExtensions[]  = "zip";
 // Updater extension
 #require('extensions/Updater/Updater.php');
 
+
+
+
+
+  // for web site demo only.
+  // %%%%%%%%%%%%%%%%%%%%%%%
+if (defined('BIZZWIKIDEMO'))
+{
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"AdminSettings.php","!read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","read")]   = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","browse")] = true; 
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","viewsource")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","raw")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,"~","read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~","read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,"~","browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~","browse")] = true;  
+}
+
 ?>

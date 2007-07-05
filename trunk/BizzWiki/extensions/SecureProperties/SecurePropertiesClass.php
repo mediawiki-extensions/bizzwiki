@@ -19,9 +19,10 @@ class SecurePropertiesClass extends ExtensionClass
 	const id       = '$Id$';	
 		
 	//
-	static $mgwords = array( 'pg', 'ps' );
+	static $mgwords = array( 'pg', 'ps','pf' );
 	const actionGet = 0;
 	const actionSet = 1;
+	const actionFnc = 2;	
 	
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
@@ -59,10 +60,16 @@ class SecurePropertiesClass extends ExtensionClass
 	}
 
 	public function mg_ps( )
-	// {{#pg:object|property|value}}
+	// {{#pg:object|property name|value}}
 	{
 		$args = func_get_args();
 		return $this->process( $args, self::actionSet );
+	}
+	public function mg_pf( )
+	// {{#pg:object|function name}}
+	{
+		$args = func_get_args();
+		return $this->process( $args, self::actionFnc );
 	}
 
 	private function process( &$args, $action = self::actionGet )
@@ -72,10 +79,12 @@ class SecurePropertiesClass extends ExtensionClass
 		if ( !$this->isAllowed( $parser->mTitle ) ) 
 			return "<b>SecureProperties:</b> ".wfMsg('badaccess');
 
-		$object   = $args[1];
-		$property = $args[2];
-		$value    = $args[3];
-
+		$object   =             $args[1];
+		$property = $fnc      = $args[2];
+		$value    = $param1   = $args[3];
+		$param2               = $args[4];
+		$param3               = $args[5];
+				
 		if ( !is_object( $obj = $GLOBALS[$object] ) ) 
 			return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
 
@@ -86,6 +95,8 @@ class SecurePropertiesClass extends ExtensionClass
 			case self::actionSet:
 				$obj->$property = $value;					
 				return null;
+			case self::actionFnc:
+				return $obj->$fnc();					
 		}
 	}
 
