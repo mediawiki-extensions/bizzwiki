@@ -39,7 +39,8 @@ class SecurePropertiesClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Enables global object property get/set on protected pages'
+			'description' => 'Enables global object property get/set on protected pages',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 
 		// default exempt namespaces from the BizzWiki platform.

@@ -38,7 +38,8 @@ class AutoLanguageClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Automatic page language switching based on user preference'
+			'description' => 'Automatic page language switching based on user preference',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

@@ -55,7 +55,8 @@ class RawRight extends ExtensionClass
 			'name'    => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Status: "
+			'description' => "Status: ",
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	

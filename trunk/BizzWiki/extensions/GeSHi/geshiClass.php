@@ -20,7 +20,8 @@ class geshiClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Handles generic syntax highlighting'
+			'description' => 'Handles generic syntax highlighting',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

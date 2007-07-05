@@ -166,7 +166,9 @@ class hnpClass
 		$wgExtensionCredits['other'][] = array(
 		    'name'    => "HierarchicalNamespacePermissions",
 			'version' => self::getRevisionId(),
-			'author'  => 'Jean-Lou Dupont' 
+			'author'  => 'Jean-Lou Dupont',
+			'description' => 'Hierarchical permissions management system',
+			'url' => 'http://www.bizzwiki.org',
 		);
 			
 	

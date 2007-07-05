@@ -53,6 +53,7 @@
 * Changed hooks 'ParserAfterTidy' and 'OutputPageBeforeHtml'
 * Added 'getRevisionData'
 * Added BIZZWIKI release number in credits
+* Added 'getRelativePath' function 
 
  */
 $wgExtensionCredits['other'][] = array( 
@@ -447,6 +448,16 @@ static $hookList = array(
 	static function getRevisionId( $data=null )
 	{
 		return self::getRevisionData( $id, $date, $data );
+	}
+
+	static function getFullUrl( $filename )
+	{ return 'http://www.bizzwiki.org/index.php?title=Filesystem:'.self::getRelativePath( $filename );	}
+
+	static function getRelativePath( $filename )
+	{
+		global $IP;
+		$relPath = str_replace( $IP, '', $filename ); 
+		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
 	}
 
 /*  Add scripts & stylesheets functionality.

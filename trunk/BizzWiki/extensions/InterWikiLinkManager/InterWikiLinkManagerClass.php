@@ -50,7 +50,8 @@ class InterWikiLinkManagerClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Manages the InterWiki links table. Namespace for extension is '
+			'description' => 'Manages the InterWiki links table. Namespace for extension is ',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

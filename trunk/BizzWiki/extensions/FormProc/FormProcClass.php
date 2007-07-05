@@ -27,7 +27,8 @@ class FormProcClass extends ExtensionClass
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Handles "action=formsubmit" post requests through page based PHP code'
+			'description' => 'Handles "action=formsubmit" post requests through page based PHP code',
+			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	public function setup() 

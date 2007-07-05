@@ -92,12 +92,14 @@ class AddScriptCssClass extends ExtensionClass
 	{
 		parent::__construct( self::$mgwords, $passingStyle, $depth );
 
+		global $wgScriptPath;
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections'
+			'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
+			'url' => self::getFullUrl(__FILE__),
 		);
 
 		self::$slist = array();
