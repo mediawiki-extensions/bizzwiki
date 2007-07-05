@@ -221,7 +221,7 @@ class AddScriptCssClass extends ExtensionClass
 	public function feedHeadScripts( &$op, &$text )
 	// ExtensionClass provides all the required functionality here.
 	{
-		return parent::hookOutputPageBeforeHTML( &$op, &$text );
+		return parent::hookOutputPageBeforeHTML( $op, $text );
 	}
 /****************************************************************************
   Support for scripts in the document 'body'
