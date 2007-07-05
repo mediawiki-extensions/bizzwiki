@@ -60,6 +60,11 @@ class CacheToolsClass extends ExtensionClass
 		if ( in_array( $varid, self::$mwlid) )
 			$this->$varid( $parser, $varCache, $ret );	
 
+		if ( in_array( $varid, self::$mwl) )
+		{
+			$fnc = "MWORD_$varid";
+			$this->$fnc( $parser, $varCache, $ret );	
+		}
 		return true;
 	}
 
@@ -75,7 +80,6 @@ class CacheToolsClass extends ExtensionClass
 
 	public function MWORD_NOCLIENTCACHING( &$parser, &$varcache, &$ret )
 	{
-		echo 'HERE !!!!!!!!!!!!!';
 		global $wgOut;
 		$wgOut->enableClientCache(false);
 	}
