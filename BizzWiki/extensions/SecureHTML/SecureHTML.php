@@ -24,10 +24,10 @@ as if they could.
 To install independantly from BizzWiki:
 * Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
+<source lang=php>
 require('extensions/ExtensionClass.php');
 require('extensions/SecureHTML/SecureHTML.php');
-</geshi>
+</source>
 
 == History ==
 * added namespace exemption functionality i.e. namespaces where article do not need to be

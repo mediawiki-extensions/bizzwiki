@@ -23,6 +23,10 @@ class SecurePropertiesClass extends ExtensionClass
 	const actionGet = 0;
 	const actionSet = 1;
 	
+	// Namespace exemption functionality
+	static $enableExemptNamespaces = true;
+	static $exemptNamespaces;
+	
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -37,6 +41,11 @@ class SecurePropertiesClass extends ExtensionClass
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Enables global object property get/set on protected pages'
 		);
+
+		// default exempt namespaces from the BizzWiki platform.
+		// won't affect installs of the extension outside the BizzWiki platform.
+		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
+		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
 	}
 	public function setup() 
 	{ parent::setup();	}
@@ -80,7 +89,20 @@ class SecurePropertiesClass extends ExtensionClass
 	}
 
 	private function isAllowed( &$title )
-	{ return $title->isProtected( 'edit' );	 }
+	{ 
+		if (self::$enableExemptNamespaces)
+		{
+			$ns = $title->getNamespace();
+			if ( !empty(self::$exemptNamespaces) )
+				if ( in_array( $ns, self::$exemptNamespaces) )
+					return true;	
+		}
+		
+		// check protection status
+		if ( $title->isProtected( 'edit' ) ) return true;
+		
+		return false;
+	}
 
 } // end class
 ?>
