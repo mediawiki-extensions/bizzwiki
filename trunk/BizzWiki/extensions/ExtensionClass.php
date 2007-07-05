@@ -47,16 +47,13 @@
  *          (dependancy on 'replaceHookList')
  *
  * ------   Moved to BizzWiki
- *          - Added check to automatic hook handler to make sure
- *            that hooks are only registered when extended class requires them.
- *			- Added 'SyntaxHighlight' hook.
- *          - Changed hooks 'ParserAfterTidy' and 'OutputPageBeforeHtml'
- *          - Added 'getRevisionData'
- *
- * TODO
- * ====
- * 
- *
+== History ==
+* Added check to automatic hook handler to make sure that hooks are only registered when extended class requires them.
+* Added 'SyntaxHighlight' hook.
+* Changed hooks 'ParserAfterTidy' and 'OutputPageBeforeHtml'
+* Added 'getRevisionData'
+* Added BIZZWIKI release number in credits
+
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
