@@ -191,7 +191,7 @@ static $hookList = array(
 'ArticleFromTitle',
 'CustomEditor',
 'UnknownAction',
-/*'LanguageGetMagic', */ // reserved a special treatment in this class 
+'LanguageGetMagic',  // reserved a special treatment in this class 
 'LangugeGetSpecialPageAliases',
 'MonoBookTemplateToolboxEnd',
 'SkinTemplateSetupPageCss',

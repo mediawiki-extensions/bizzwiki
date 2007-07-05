@@ -44,9 +44,8 @@ class ParserPhase2Class extends ExtensionClass
 		$m = $this->getList( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
-		// we found some dynamic variables, disable client side caching.
-		$op->enableClientCache( false );
-
+		$found = false; // PHP sometimes messes up in preg_match_all
+		
 		foreach( $m[1] as $index => $str)
 		{
 			// (($var|variable name$))
@@ -58,6 +57,7 @@ class ParserPhase2Class extends ExtensionClass
 				case 'var':
 					$value = $this->getValue( $params[0] );
 					$rl[$index] = $value;
+					$found = true;
 					break;
 					// only variables accessible through the parser
 					// are supported at this point.
@@ -65,10 +65,16 @@ class ParserPhase2Class extends ExtensionClass
 					$obj = array_shift( $params );
 					$fnc = array_shift( $params );
 					$rl[$index] = $this->callObjMethod( $GLOBALS[$obj], $fnc, $params );
+					$found = true;
+					break;					
 				default:
 					break;	
 			}
 		}
+
+		// we found some dynamic variables, disable client side caching.
+		if ( $found )
+			$op->enableClientCache( false );
 
 		$this->replaceList( $text, $m, $rl );
 
@@ -79,6 +85,7 @@ class ParserPhase2Class extends ExtensionClass
 	{
 		// find the (($...$)) matches
 		$r = preg_match_all(self::pattern, $text, $m );	
+		
 		return $m;
 	}
 	private function getValue( $varid )

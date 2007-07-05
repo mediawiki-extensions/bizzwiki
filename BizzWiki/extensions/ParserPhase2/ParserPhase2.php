@@ -42,6 +42,7 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 
 == History ==
 * added 'obj' capability
+* fixed client side caching logic due to a bug in PHP's preg_match_all function
 
 == Code ==
 </wikitext>*/

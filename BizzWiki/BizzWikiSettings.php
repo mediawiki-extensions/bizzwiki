@@ -259,6 +259,8 @@ AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 require('extensions/ParserPhase2/ParserPhase2.php');
 
+require('extensions/CacheTools/CacheTools.php');
+
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
 $wgEnableUploads     = true;
