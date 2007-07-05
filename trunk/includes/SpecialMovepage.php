@@ -10,6 +10,7 @@
 	
 	HISTORY:
 	========
+	- Added namespace level rights management
 	
 */
 /**

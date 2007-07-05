@@ -36,8 +36,7 @@ class FormProcClass extends ExtensionClass
 	public function hUnknownAction( $action, &$article )
 	{
 		// check if request 'action=formsubmit'
-		if ($action != 'formsubmit')
-			return false;
+		if ($action != 'formsubmit') return false;
 
 		$article->loadContent();
 
@@ -57,8 +56,20 @@ class FormProcClass extends ExtensionClass
 		$code = $runphp->getCode( true ); 
 
 		if (!empty($code))
-			eval( $code );
+			$callback = eval( $code );  // we might implement functionality around a callback method in the future
 
+		// Was there an expected class defined?
+		$name = $article->mTitle->getDBkey().'Class';
+		if ( class_exists( $name ))
+		{
+			$class = new $name();
+			if ( is_object( $class))
+				if (method_exists( $class, 'submit' ))
+					$class->submit();
+		}	
+
+		// ... then it was a page built from ground up; nothing more to do here.
+				
 		return false;
 	}
 

@@ -61,7 +61,8 @@
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
 	'version' => ExtensionClass::getRevisionId('$Id$'),
-	'author'  => 'Jean-Lou Dupont', 
+	'author'  => 'Jean-Lou Dupont',
+	'description' => 'Part of BizzWiki release '.BIZZWIKI, 
 );
 
 class ExtensionClass
