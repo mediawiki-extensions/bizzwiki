@@ -87,3 +87,4 @@ REL1_10_5:
 - SecureProperties: added namespace exemption list functionality
 - Corrected geshi, extensionclass, addscriptcss for PHP warnings (usage of deprecated PHP features)
 - Adjusted 'url' field in extensions' credits
+- ParserPhase2: Fixed client side caching logic due to a bug in PHP's preg_match_all function
