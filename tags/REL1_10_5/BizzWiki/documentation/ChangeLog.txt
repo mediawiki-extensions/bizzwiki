@@ -1,0 +1,96 @@
+$Id$
+
+Permission functionality:
+-------------------------
+With the inclusion of 'Hierarchical Namespace Permissions' extensions, all rights (permissions) are
+manageable at the namespace/sub-namespace granularity.
+
+* Added 'browse' right:     manages the user's ability to 'browse' titles in various contexts.
+* Added 'search' right:     manages the user's ability to 'search' for titles/text.
+* Added 'raw' right:        manages the user's ability to retrieve pages in 'raw' format
+* Added 'viewsource' right: manages the user's ability to view the source wikitext of pages
+
+Details:
+--------
+- Integration of 'Hierarchical Namespace Permissions' system
+- Integration of 'File Manager' extension
+- Integration of 'Syntax Coloring' to complement 'File Manager'
+- Integration of 'Raw' right (permission to retrieve a page in 'raw' format)
+- Integration of 'Viewsource' right (permission to view the source wikitext)
+- Integration of 'New User Log' functionality
+
+- Patch to 'ChangesList.php' for namespace level policy enforcement (patrol right)
+- Patch to 'Pager.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'SearchEngine.php' for namespace level policy enforcement (added 'search' right)
+- Patch to 'SpecialAllpages.php' for namespace level policy enforcement (added 'browse' right)
+- Patch to 'SpecialContributions.php' for handling the 'rollback' right correctly
+- Patch to 'SpecialLog.php': added 'readlog' right, namespace level policy enforcement 
+- Patch to 'SpecialNewpages.php' for handling the 'patrol' right correctly
+- Patch to 'SpecialPreferences.php' for:
+	1) Fixed searchable namespace listing
+	2) Fixed watchlist related toggles
+	3) Fixed searchable namespace preference saving
+- Patch to 'SpecialRandompage.php' for namespace level policy enforcement
+- Patch to 'SpecialRecentchanges.php' for namespace level policy enforcement
+- Patch to 'SpecialRecentchangeslinked.php'  for namespace level policy enforcement
+- Patch to 'SpecialStatistics.php'  for namespace level policy enforcement
+- Patch to 'User.php':
+	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
+	2) Modified 'isAllowed' method.
+- Patch to 'Xml.php'  for namespace level policy enforcement (added 'browse' right)
+========
+REL1_10_2:
+- Patch to 'Special:Upload.php' to for handling NS_IMAGE namespace rights
+- Added 'Log/upload' permission related settings
+- Patch to 'Article.php' to disable parser caching upon article saving/updating (parser cache gets 
+  updated upon article viewing 'only')
+ - Added 'Log/delete' permission related settings
+ - Added 'ShowRedirectPageText' extension
+ - Added 'InterWikiLinkManager' extension
+ - Corrections & enhancements to 'ExtensionClass'
+ - Corrections & enhancements to 'ViewsourceRight' extension
+ - Added 'SidebarEx' extension
+ ========
+ REL1_10_3:
+ - Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
+ - Changed 'SyntaxColoring' extension name to 'FileSystem Syntax Coloring' (more descriptive)
+ - Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
+ - Integrated 'GeSHi' syntax highlighter extension
+ -- Added 'SyntaxHighlight' hook
+ - Fixed 'delete' and 'protect' namespace level policy in Special:Log
+ - Added 'FormProc' extension
+ - Added 'SpecialPagesManager' extension
+ - Added 'SecureHTML' extension
+ - Added 'SecureProperties' extension
+ - Added 'AddScriptCss' extension
+ - Added 'ParserTools' extension
+==========
+REL1_10_4:
+- Added 'AutoLanguage' extension
+- Added 'ParserPhase2' extension
+- Added 'source' tag to geshi extension
+- Adjusted 'revision id' information provided through extension credits (Special:Version) on most extensions
+- Fixed 'SidebarEx' extension for 'garbage' appearing when 'Sidebar/$group' page does not exist
+- Added 'undelete' as namespace independant right for addressing 'Special:Undelete' use-cases
+- Fixed 'Pager.php' to support 'page_namespace' related queries as well as 'user' table related ones
+-- Addresses 'Special:Listusers' special page issue
+- Enhanced 'SpecialPagesManager' extension with a standard MW special for updating the
+  BizzWiki special pages by reading the filesystem '/SpecialPages' directory.
+=========
+REL1_10_5:
+- FileManager: Added PHP error suppression for file_get_contents upon initial page creation
+- FormProc: added functionality enabling defining a class for form processing
+- Added BizzWiki release identifier in global define 'BIZZWIKI'
+- SecureHTML: added namespace exemption list functionality
+- SecureProperties: added namespace exemption list functionality
+- Corrected geshi, extensionclass, addscriptcss for PHP warnings (usage of deprecated PHP features)
+- Adjusted 'url' field in extensions' credits
+- ParserPhase2: Fixed client side caching logic due to a bug in PHP's preg_match_all function
+- ExtensionClass: added 'AutoMethods' for initializing a derived class's hooks, parser functions & magic words automatically
+- ExtensionClass: added support for adding 'head' and 'body' scripts links whilst preserving parser caching coherency.
+- Added 'CacheTools' extension
+- Added more documentation in BizzWikiSettings.php
+- Added BizzWiki logo design files
+
