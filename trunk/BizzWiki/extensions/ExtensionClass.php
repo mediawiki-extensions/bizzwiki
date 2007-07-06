@@ -209,6 +209,9 @@ static $hookList = array(
 'SyntaxHighlight',  // for geshi extension
 );
 
+	// filled by subclipse.
+	const id = '$Id$';
+	
 	var $className;
 	
 	var $paramPassingStyle;
@@ -220,12 +223,27 @@ static $hookList = array(
 	
 	// Magic Word related {{
 	static $mw_prefix = 'MW_';
+	static $mg_prefix = 'mg_';
+	
 	const mw_only_parser_functions = 0;
 	const mw_mixed = 1;
 	
 	const mw_parser_function = 0;
 	const mw_parser_variable = 1;
 	// }}
+	
+	// Tag related
+	static $tag_prefix = 'tag_';
+	
+	// Hook related
+	static $hook_prefix = 'h';
+
+	// Auto method functionality related
+	var $tagList;
+	var $varList;
+	var $fncList;
+	var $hokList;
+	
 	
 	public static function &singleton( $mwlist=null ,$globalObjName=null, 
 										$passingStyle = self::mw_style, $depth = 1,
@@ -274,7 +292,18 @@ static $hookList = array(
 			 array_unshift(	$wgExtensionFunctions, $initFnc );
 		else $wgExtensionFunctions[] = $initFnc;
 		
-		$this->ext_mgwords = $this->normalizeMagicWordsList( $mgwords );		
+		// %%%%%%%%%%%%%%%%%%%%%%%%%%
+		#echo 'setup: '.$this->className.'<br/>';
+		$this->setupAutoMethods();
+		#var_dump( $this->tagList );
+		#var_dump( $this->varList );
+		#var_dump( $this->fncList );
+		#var_dump( $this->hokList );
+		
+		$this->initMagicWordsList();
+		// %%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+		// $this->ext_mgwords = $this->normalizeMagicWordsList( $mgwords );		
 		if (is_array($this->ext_mgwords) )
 			$wgHooks['LanguageGetMagic'][] = array($this, 'getMagic');
 
@@ -302,25 +331,8 @@ static $hookList = array(
 	{
 		if (is_array($this->ext_mgwords))
 			$this->setupMagicMixed();
-	}
-	// ================== MAGIC WORD HELPER FUNCTIONS ===========================
-	public function getMagic( &$magicwords, $langCode )
-	{
-		foreach($this->ext_mgwords as $key => $style )
-		{
-			switch( $style )
-			{
-				case self::mw_parser_function:
-					$magicwords [$key] = array( 0, $key );
-					break;
-				case self::mw_parser_variable:
-					$mw = self::$mw_prefix.$key;
-					$magicwords [ defined($mw) ? constant($mw):$mw ] = array( 0, $key );
-					break;					
-			}
-		}
-
-		return true;
+		if (is_array( $this->tagList))
+			$this->setupTags( $this->tagList );
 	}
 	public function setupMagicMixed()
 	{
@@ -348,6 +360,72 @@ static $hookList = array(
 			$wgHooks['MagicWordwgVariableIDs'][]       = array( $this, 'hookMagicWordwgVariableIDs' );
 			$wgHooks['ParserGetVariableValueSwitch'][] = array( $this, 'hookParserGetVariableValueSwitch' );			
 		}
+	}
+	private function setupAutoMethods()
+	{
+		$m = get_class_methods( $this->className );
+	
+		foreach ( $m as $method )
+		{
+			// get methods pertaining to 'parser tag' functionality
+			// i.e. ones starting with 'tag_'
+			$isTag = strncasecmp( $method, self::$tag_prefix, strlen(self::$tag_prefix) )== 0;
+			$tag = substr( $method, strlen(self::$tag_prefix) );
+			
+			// get methods pertaining to 'parser variable' functionality
+			// i.e. ones starting with 'MW_'
+			$isVar = strncasecmp( $method, self::$mw_prefix, strlen(self::$mw_prefix) )== 0;
+			$var = substr( $method, strlen(self::$mw_prefix) );
+						
+			// get methods pertaining to 'parser function' functionality
+			// i.e. ones starting with 'mg_'
+			$isFnc = strncasecmp( $method, self::$mg_prefix, strlen(self::$mg_prefix) )== 0;
+			$fnc = substr( $method, strlen(self::$mg_prefix) );
+						
+			// get methods pertaining to 'hook' functionality
+			// i.e. ones listed in $hookList starting with 'h'
+			$isHookTest1 = strncasecmp( $method, self::$hook_prefix, strlen(self::$hook_prefix) )== 0;
+			$isHookTest2 = in_array( $hok, self::$hookList );
+			
+			$isHook = ($isHookTest1==true) && ($isHookTest2==true);
+			$hok = substr( $method, strlen( self::$hook_prefix ) );
+			
+			if ( $isTag )	$this->tagList[] = $tag;
+			if ( $isVar )	$this->varList[] = $var;			
+			if ( $isFnc )	$this->fncList[] = $fnc;			
+			if ( $isHook )	$this->hokList[] = $hok;
+			
+			#echo 'method: '.$method.' isTag: '.$isTag.' isVar: '.$isVar.' isFnc: '.$isFnc.' isHook: '.$isHook.' test 1:'.$isHookTest1.' test 2:'.$isHookTest2.' <br/>';
+		}
+	}
+	private function initMagicWordsList()
+	{
+		if (!empty( $this->varList ))
+			foreach( $this->varList as $var )
+				$this->ext_mgwords[$var] = self::mw_parser_variable;
+
+		if (!empty( $this->fncList ))
+			foreach( $this->fncList as $fnc )
+				$this->ext_mgwords[$fnc] = self::mw_parser_function;
+	}
+	// ================== MAGIC WORD HELPER FUNCTIONS ===========================
+	public function getMagic( &$magicwords, $langCode )
+	{
+		foreach($this->ext_mgwords as $key => $style )
+		{
+			switch( $style )
+			{
+				case self::mw_parser_function:
+					$magicwords [$key] = array( 0, $key );
+					break;
+				case self::mw_parser_variable:
+					$mw = self::$mw_prefix.$key;
+					$magicwords [ defined($mw) ? constant($mw):$mw ] = array( 0, $key );
+					break;					
+			}
+		}
+
+		return true;
 	}
 	public function hookMagicWordMagicWords( &$mw )
 	{
@@ -410,8 +488,9 @@ static $hookList = array(
 	public function setupTags( $tagList )
 	{
 		global $wgParser;
-		foreach($tagList as $index => $key)
-			$wgParser->setHook( "$key", array( $this, "tag_$key" ) );
+		if (!empty( $tagList ))
+			foreach($tagList as $index => $key)
+				$wgParser->setHook( "$key", array( $this, self::$tag_prefix.$key ) );
 	}
 	// ================== GENERAL PURPOSE HELPER FUNCTIONS ===========================
 	public function processArgList( $list, $getridoffirstparam=false )
@@ -577,50 +656,53 @@ phase 1- encode information related to the required
 phase 2- when the page is rendered, extract the meta information
          and include the information appropriately in the 'head' of the page.		  
 ************************************************************************************/
-	static $scriptList;
-	static $scriptsAdded;
-	static $scriptsListed;
+	static $scriptsHeadList = array();
+	static $scriptsBodyList = array();
 
-	function addHeadScript( $st )
+	function addHeadScript( &$st )
 	{
-		if ( !isset($st) ) return;
+		if ( empty($st) ) return;
 		
-		if ( !isset(self::$scriptList) )
-			self::$scriptList[] = $st;
-		elseif	(!in_array($st, self::$scriptList)) 
-			self::$scriptList[] = $st;
-			 
-		self::$scriptsAdded = false;
-		self::$scriptsListed = false;
+		// try to add scripts only once!
+		if	(!in_array($st, self::$scriptsHeadList)) 
+		{
+			self::$scriptsHeadList[] = $st;						
+			$this->setuScriptsInjectionFeeder();					
+		}
+	}
+	private static function encodeHeadScriptTag( &$st )
+	{
+		return '<!-- META_SCRIPTS '.base64_encode($st).' -->';	
 	}
 	
-	function hookParserAfterTidy( &$parser, &$text )
-	// set the meta information in the parsed 'wikitext'.
+	// This hook should *ALWAYS* be initialized if we are to have any chance
+	// of catching the 'head' scripts we need to add !! 
+	public function initHeadScriptsHook()
 	{
-		if (self::$scriptsListed) return true;
-		self::$scriptsListed = true;
-
-		if (!empty(self::$scriptList))
-			foreach(self::$scriptList as $sc)
-				$text .= '<!-- META_KEYWORDS '.base64_encode($sc).' -->'; 
-
-		return true;
-	}	
+		static $installed = false;
+		if ( $installed ) return;
+		$installed = true;
+		
+		global $wgHooks;
+		$wgHooks['OutputPageBeforeHTML'][] = array( $this, 'hookOutputPageBeforeHTML' );		
+	}
 	function hookOutputPageBeforeHTML( &$op, &$text )
 	// This function sifts through 'meta tags' embedded in html comments
 	// and picks out scripts & stylesheet references that need to be put
 	// in the page's HEAD.
 	{
+		static $scriptsAdded = false;
+		
 		// some hooks get called more than once...
 		// In this case, since ExtensionClass provides a 
 		// base class for numerous extensions, then it is very
 		// likely this method will be called more than once;
 		// so, we want to make sure we include the head scripts just once.
-		if (self::$scriptsAdded) return true;
-		self::$scriptsAdded = true;
+		if ($scriptsAdded) return true;
+		$scriptsAdded = true;
 		
 		if (preg_match_all(
-        	'/<!-- META_KEYWORDS ([0-9a-zA-Z\\+\\/]+=*) -->/m', 
+        	'/<!-- META_SCRIPTS ([0-9a-zA-Z\\+\\/]+=*) -->/m', 
         	$text, 
         	$matches)===false) return true;
 			
@@ -632,6 +714,48 @@ phase 2- when the page is rendered, extract the meta information
 	        if ($content) $op->addScript( $content );
 	    }
 	    return true;
+	}
+	
+	
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	public function addBodyScript( &$st )
+	{
+		if ( empty($st) ) return;
+		
+		// try to add scripts only once!
+		if	(!in_array($st, self::$scriptsBodyList)) 
+		{
+			self::$scriptsBodyList[] = $st;
+			$this->setuScriptsInjectionFeeder();
+		}
+	}
+	private function setuScriptsInjectionFeeder()
+	{
+		static $installed = false;
+		if ( $installed ) return;
+		$installed = true;
+		
+		global $wgHooks;
+		$wgHooks['ParserAfterTidy'][] = array( $this, 'hookParserAfterTidy' );
+	}
+
+	function hookParserAfterTidy( &$parser, &$text )
+	// set the meta information in the parsed 'wikitext'.
+	{
+		static $scriptsListed = false;
+		if ($scriptsListed) return true;
+		$scriptsListed = true;
+
+		if (!empty(self::$scriptsBodyList))
+			foreach(self::$scriptsBodyList as $sc)
+				$text .= $sc; 
+
+		if (!empty(self::$scriptsHeadList))
+			foreach(self::$scriptsHeadList as $sc)
+				$text .= $this->encodeHeadScriptTag( $sc ); 
+	
+		return true;
 	}
 
 } // end class definition.
