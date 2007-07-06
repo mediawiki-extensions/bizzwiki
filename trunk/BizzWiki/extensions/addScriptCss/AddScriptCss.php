@@ -38,7 +38,7 @@
  *
  * If no 'pos' field is present, then the extension assumes 'body'
  *
- * DEPENDANCY:  ExtensionClass (>=v1.92)
+ * DEPENDANCY:  ExtensionClass ( v>=306 )  
  * 
  * USAGE NOTES:
  * ============
