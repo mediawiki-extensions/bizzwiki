@@ -1,52 +1,53 @@
 <?php
 /*
- * ExtensionClass.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- * $Id$
- *
- * Purpose:  Provides a toolkit for easier Mediawiki
- *           extension development.
- *
- * FEATURES:
- * 0) Can be used independantly of BizzWiki environment 
- * - 'singleton' implementation suited for extensions that require single instance
- * - 'magic word' helper functionality
- * - limited pollution of global namespace
- * - Automatic registration of hooks
- *
- * Tested Compatibility: MW 1.8.2 (PHP5), 1.9.3, 1.10
- *
- * History:
- * v1.0		Initial availability
- * v1.01    Small enhancement in processArgList
- * v1.02    Corrected minor bug
- * v1.1     Added function 'checkPageEditRestriction'
- * v1.2     Added 'getArticle' function
- * ----     Moved to SVN management
- * v1.3     Added wgExtensionCredits updating upon Special:Version viewing
- * v1.4     Fixed broken singleton functionality
- * v1.5		Added automatic registration of hook functions based
- *          on the definition of an handler in the derived class
- *          (e.g. if handler 'hArticleSave' exists, then the appropriate
- *           'ArticleSave' hook is registered)
- * v1.51    Fixed '$passingStyle' bug (thanks to Joshua C. Lerner)
- * v1.6     Added 'updateCreditsDescription' helper method.
- * v1.7		Added 'depth' parameter support: more than 1 class depth can be created.
- *          Added 'setupTags' method (support for parser tags)
- *          Enhancement to 'getParam' method
- *          Added 'formatParams' method
- * v1.8     Added 'initFirst' parameter
- * v1.9     Added support for including 'head' scripts and stylesheeets
- *          in a manner compatible with parser caching functionality.
- *          (Original idea from [user:Jimbojw]
- * v1.91    Added check for screening script duplicates in 'addHeadScript'
- * v1.92    Added optional removal of parameters not listed in template.
- * v1.93    Added 'replaceHook' method.
- *          (dependancy on 'replaceHookList')
- *
- * ------   Moved to BizzWiki
+* ExtensionClass.php
+* 
+* MediaWiki extension
+* @author: Jean-Lou Dupont (http://www.bluecortex.com)
+* $Id$
+*
+* Purpose:  Provides a toolkit for easier Mediawiki
+*           extension development.
+*
+* FEATURES:
+* 0) Can be used independantly of BizzWiki environment 
+* - 'singleton' implementation suited for extensions that require single instance
+* - 'magic word' helper functionality
+* - limited pollution of global namespace
+* - Automatic registration of hooks
+*
+* Tested Compatibility: MW 1.8.2 (PHP5), 1.9.3, 1.10
+*
+* History:
+* v1.0		Initial availability
+* v1.01    Small enhancement in processArgList
+* v1.02    Corrected minor bug
+* v1.1     Added function 'checkPageEditRestriction'
+* v1.2     Added 'getArticle' function
+* ----     Moved to SVN management
+* v1.3     Added wgExtensionCredits updating upon Special:Version viewing
+* v1.4     Fixed broken singleton functionality
+* v1.5		Added automatic registration of hook functions based
+*          on the definition of an handler in the derived class
+*          (e.g. if handler 'hArticleSave' exists, then the appropriate
+*           'ArticleSave' hook is registered)
+* v1.51    Fixed '$passingStyle' bug (thanks to Joshua C. Lerner)
+* v1.6     Added 'updateCreditsDescription' helper method.
+* v1.7		Added 'depth' parameter support: more than 1 class depth can be created.
+*          Added 'setupTags' method (support for parser tags)
+*          Enhancement to 'getParam' method
+*          Added 'formatParams' method
+* v1.8     Added 'initFirst' parameter
+* v1.9     Added support for including 'head' scripts and stylesheeets
+*          in a manner compatible with parser caching functionality.
+*          (Original idea from [user:Jimbojw]
+* v1.91    Added check for screening script duplicates in 'addHeadScript'
+* v1.92    Added optional removal of parameters not listed in template.
+* v1.93    Added 'replaceHook' method.
+*          (dependancy on 'replaceHookList')
+*
+* ------   Moved to BizzWiki
+<wikitext>
 == History ==
 * Added check to automatic hook handler to make sure that hooks are only registered when extended class requires them.
 * Added 'SyntaxHighlight' hook.
@@ -55,7 +56,14 @@
 * Added BIZZWIKI release number in credits
 * Added 'getRelativePath' function 
 
- */
+== Usage Notes ==
+=== Magic Words ===
+* Array structure for 'only parser functions' passing style
+** array ( 'mw1', 'mw2' ... )
+* Array structure for 'mixed' passing style
+** array ( 'mw1' => self::mw_parser_function, 'mw2' => mw_parser_variable ... )
+
+</wikitext>*/
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'ExtensionClass',
 	'version' => ExtensionClass::getRevisionId('$Id$'),
@@ -210,6 +218,15 @@ static $hookList = array(
 	const mw_style = 1;
 	const tk_style = 2;
 	
+	// Magic Word related {{
+	static $mw_prefix = 'MW_';
+	const mw_only_parser_functions = 0;
+	const mw_mixed = 1;
+	
+	const mw_parser_function = 0;
+	const mw_parser_variable = 1;
+	// }}
+	
 	public static function &singleton( $mwlist=null ,$globalObjName=null, 
 										$passingStyle = self::mw_style, $depth = 1,
 										$initFirst = false )
@@ -257,7 +274,7 @@ static $hookList = array(
 			 array_unshift(	$wgExtensionFunctions, $initFnc );
 		else $wgExtensionFunctions[] = $initFnc;
 		
-		$this->ext_mgwords = $mgwords;		
+		$this->ext_mgwords = $this->normalizeMagicWordsList( $mgwords );		
 		if (is_array($this->ext_mgwords) )
 			$wgHooks['LanguageGetMagic'][] = array($this, 'getMagic');
 
@@ -280,24 +297,116 @@ static $hookList = array(
 		}
 	}
 	public function getParamPassingStyle() { return $this->passingStyle; }
-	public function setup()
+	
+	public function setup( )
 	{
 		if (is_array($this->ext_mgwords))
-			$this->setupMagic();
+			$this->setupMagicMixed();
 	}
 	// ================== MAGIC WORD HELPER FUNCTIONS ===========================
 	public function getMagic( &$magicwords, $langCode )
 	{
-		foreach($this->ext_mgwords as $index => $key)
-			$magicwords [$key] = array( 0, $key );
+		foreach($this->ext_mgwords as $key => $style )
+		{
+			switch( $style )
+			{
+				case self::mw_parser_function:
+					$magicwords [$key] = array( 0, $key );
+					break;
+				case self::mw_parser_variable:
+					$mw = self::$mw_prefix.$key;
+					$magicwords [ defined($mw) ? constant($mw):$mw ] = array( 0, $key );
+					break;					
+			}
+		}
+
 		return true;
 	}
-	public function setupMagic( )
+	public function setupMagicMixed()
 	{
 		global $wgParser;
-		foreach($this->ext_mgwords as $index => $key)
-			$wgParser->setFunctionHook( "$key", array( $this, "mg_$key" ) );
+		static $hooked = false;
+		
+		foreach($this->ext_mgwords as $key => $type)
+		{
+			switch ( $type )
+			{
+				case self::mw_parser_function:
+					$wgParser->setFunctionHook( "$key", array( $this, 'mg_'.$key ) );
+					break;
+				case self::mw_parser_variable:
+					$vars[] = $key;
+					break;
+			}
+		}
+		// only setup when necessary.
+		if (!empty( $vars ) && !$hooked)
+		{
+			$hooked = true;
+			global $wgHooks;
+			$wgHooks['MagicWordMagicWords'][]          = array( $this, 'hookMagicWordMagicWords' );
+			$wgHooks['MagicWordwgVariableIDs'][]       = array( $this, 'hookMagicWordwgVariableIDs' );
+			$wgHooks['ParserGetVariableValueSwitch'][] = array( $this, 'hookParserGetVariableValueSwitch' );			
+		}
 	}
+	public function hookMagicWordMagicWords( &$mw )
+	{
+		$l = $this->getMagicWordsVariables();
+		
+		foreach ( $l as $index => $key )
+			$mw[] = self::$mw_prefix.$key;
+
+		return true;
+	} 
+	public function hookMagicWordwgVariableIDs( &$mw )
+	{
+		$l = $this->getMagicWordsVariables();
+		foreach ( $l as $index => $key )
+			$mw[] = constant( self::$mw_prefix.$key  );
+
+		return true;
+	} 
+	public function hookParserGetVariableValueSwitch( &$parser, &$varCache, &$varid, &$ret )
+	{
+		$l = $this->getMagicWordsVariables();
+		
+		// when called through {{magic word here}}
+		// will call the method "MW_magic_word"
+		$id = substr($varid,strlen(self::$mw_prefix));
+#		echo __METHOD__.'= '.$id.'<br/>';
+		if ( in_array( $id, $l ) )
+			$this->$varid( $parser, $varCache, $ret );	
+
+		// when called through (($magic word here$))
+		if ( in_array( $varid, $l ) )
+		{
+			$fnc = self::$mw_prefix.$varid;
+			$this->$fnc( $parser, $varCache, $ret );	
+		}
+		return true;
+	}
+	public function normalizeMagicWordsList( &$l )
+	{
+		if (empty($l)) return null;
+		
+		foreach( $l as $p1 => $p2 )
+		{
+			if ( is_numeric($p1) )
+				// legacy
+				$newStyleList[ $p2 ] = self::mw_parser_function;
+			else
+				$newStyleList[ $p1 ] = $p2;
+		}
+		return $newStyleList;		
+	}
+	public function getMagicWordsVariables()
+	{
+		foreach ( $this->ext_mgwords as $key => $style )
+			if ($style==self::mw_parser_variable)
+				$l[] = $key;
+		return $l;		
+	}
+	// TAG RELATED
 	public function setupTags( $tagList )
 	{
 		global $wgParser;

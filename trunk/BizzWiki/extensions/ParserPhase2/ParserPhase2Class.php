@@ -44,7 +44,9 @@ class ParserPhase2Class extends ExtensionClass
 		$m = $this->getList( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
-		$found = false; // PHP sometimes messes up in preg_match_all
+		// PHP sometimes messes up in preg_match_all returning an empty array
+		// we need to guard against this or else client side caching always get thrashed!
+		$found = false; 
 		
 		foreach( $m[1] as $index => $str)
 		{
