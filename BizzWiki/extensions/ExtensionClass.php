@@ -380,11 +380,11 @@ static $hookList = array(
 						
 			// get methods pertaining to 'hook' functionality
 			// i.e. ones listed in $hookList starting with 'h'
+			$hok = substr( $method, strlen( self::$hook_prefix ) );
 			$isHookTest1 = strncasecmp( $method, self::$hook_prefix, strlen(self::$hook_prefix) )== 0;
 			$isHookTest2 = in_array( $hok, self::$hookList );
 			
 			$isHook = ($isHookTest1==true) && ($isHookTest2==true);
-			$hok = substr( $method, strlen( self::$hook_prefix ) );
 			
 			if ( $isTag )	$this->tagList[] = $tag;
 			if ( $isVar )	$this->varList[] = $var;			
