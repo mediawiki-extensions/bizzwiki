@@ -81,16 +81,12 @@ class AddScriptCssClass extends ExtensionClass
 		
 	static $base = 'BizzWiki/scripts/';
 
-	static $mgwords = array( 'addscript' ); // {{#addscript: ...}}
-
-	static $slist;
-
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
 	function AddScriptCssClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
-		parent::__construct( self::$mgwords, $passingStyle, $depth );
+		parent::__construct( );
 
 		global $wgScriptPath;
 		global $wgExtensionCredits;
@@ -102,18 +98,21 @@ class AddScriptCssClass extends ExtensionClass
 			'url' => self::getFullUrl(__FILE__),
 		);
 
-		self::$slist = array();
+		// always initialise or else no 'head' scripts will be processed!!
+		$this->initHeadScriptsHook();
 	}
 	public function setup() 
 	{ 
 		parent::setup();
-
+		
 		// <addscript... />
-		global $wgParser;
-		$wgParser->setHook( 'addscript', array( &$this, 'pSet' ) );
+		
+		// not required with latest ExtensionClass extension; done automatically.
+		// global $wgParser;
+		// $wgParser->setHook( 'addscript', array( &$this, 'tag_addscript' ) );
 	} 
 
-	public function pSet( &$text, &$params, &$parser)
+	public function tag_addscript( &$text, &$params, &$parser)
 	{ return $this->process( $params );	}
 	
 	public function mg_addscript( &$parser )
@@ -178,9 +177,19 @@ class AddScriptCssClass extends ExtensionClass
 		// Where does the user want the script?
 		switch( $pos )
 		{
-			case 'head': $this->setupHeadHook(); $this->addHeadScript( $t ); break;			
+			case 'head':
+				// For 'head' scripts, we need to embed a 'meta tag' in the text
+				// This 'meta tag' will be saved in the parser cache waiting to be
+				// look at by the hook 'OutputPageBeforeHTML'.
+				$this->addHeadScript( $t );
+				break;
 			default:
-			case 'body': self::$slist[] = $t; $this->setupBodyHook(); break;	
+			case 'body': 
+				// For 'body' scripts, we need to intercept the processing flow
+				// after the 'tidy' process in the parser and feed script tags there.
+				// No need to encode them, they should be safe from the parser/parser cache.
+				$this->addBodyScript( $t );
+				break;	
 		}
 		// everything OK
 		return null;
@@ -210,46 +219,6 @@ class AddScriptCssClass extends ExtensionClass
 		);
 		return 'AddScriptCss: '.$m[ $errCode ];
 	}
-	private function setupHeadHook()
-	{
-		// only setup hook once.
-		static $installed = false;
-		if  ($installed) return;
-		else $installed = true;
 
-		global $wgHooks;
-		$wgHooks['OutputPageBeforeHTML'][] = array( &$this, 'feedHeadScripts' );	
-	}
-	public function feedHeadScripts( &$op, &$text )
-	// ExtensionClass provides all the required functionality here.
-	{
-		return parent::hookOutputPageBeforeHTML( $op, $text );
-	}
-/****************************************************************************
-  Support for scripts in the document 'body'
-****************************************************************************/	
-	private function setupBodyHook()
-	{
-		// only setup hook once.
-		static $installed = false;
-		if  ($installed) return;
-		else $installed = true;
-		
-		global $wgHooks;
-		$wgHooks['ParserAfterTidy'][] = array( &$this, 'feedScripts' );	
-	}
-	public function feedScripts( &$parser, &$text )
-	/*  The scripts we include in the document 'body' are subjected
-	    to parser caching.
-	*/
-	{
-		global $wgScriptPath;
-		
-		if (!empty(self::$slist))
-			foreach(self::$slist as $sc)
-				$text .= $sc;
-				
-		return true; // continue hook chain.
-	}
 } // END CLASS DEFINITION
 ?>
