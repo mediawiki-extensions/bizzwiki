@@ -16,15 +16,12 @@ class CacheToolsClass extends ExtensionClass
 	const thisType = 'other';
 	const id       = '$Id$';		
 	 
-	// magic words defined here
-	static $mwl   = array( 'NOCLIENTCACHING' => self::mw_parser_variable );
-	  
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
 	function CacheToolsClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
-		parent::__construct( self::$mwl );
+		parent::__construct( );
 
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
