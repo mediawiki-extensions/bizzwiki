@@ -55,13 +55,9 @@
 * Added 'getRevisionData'
 * Added BIZZWIKI release number in credits
 * Added 'getRelativePath' function 
-
-== Usage Notes ==
-=== Magic Words ===
-* Array structure for 'only parser functions' passing style
-** array ( 'mw1', 'mw2' ... )
-* Array structure for 'mixed' passing style
-** array ( 'mw1' => self::mw_parser_function, 'mw2' => mw_parser_variable ... )
+* Added 'AutoMethods' functionality: ExtensionClass just looks up the method list of the derived class
+  and looks for the $prefix matching methods to initialize hooks, parser functions and magic words.
+* Added better support for adding 'head' and 'body' scripts whilst preserving parser caching coherency.
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -730,6 +726,10 @@ phase 2- when the page is rendered, extract the meta information
 			$this->setuScriptsInjectionFeeder();
 		}
 	}
+	
+	// Scripts Feeding Logic
+	// Required for both 'head' & 'body' injected scripts.
+	
 	private function setuScriptsInjectionFeeder()
 	{
 		static $installed = false;
