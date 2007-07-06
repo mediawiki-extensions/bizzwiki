@@ -28,6 +28,10 @@ variables upon page view whilst still preserving the valuable job performed by t
 :Where 'method' is a publically available method of the above mentionned object
 :Where 'param X' is a list of parameters
 
+(($gset|global variable name|value$))
+
+(($gget|global variable name$))
+
 == Dependancy ==
 * ExtensionClass extension
 
@@ -43,6 +47,7 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 == History ==
 * added 'obj' capability
 * fixed client side caching logic due to a bug in PHP's preg_match_all function
+* added 'gset' and 'gget' functions
 
 == Code ==
 </wikitext>*/

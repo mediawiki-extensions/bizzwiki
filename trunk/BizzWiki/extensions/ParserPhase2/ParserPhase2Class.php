@@ -56,19 +56,47 @@ class ParserPhase2Class extends ExtensionClass
 			$action = array_shift( $params );
 			switch ($action)
 			{
+				// only variables accessible through the parser
+				// are supported at this point.
 				case 'var':
 					$value = $this->getValue( $params[0] );
 					$rl[$index] = $value;
 					$found = true;
 					break;
-					// only variables accessible through the parser
-					// are supported at this point.
+
+				// globally accessible objects
 				case 'obj':
 					$obj = array_shift( $params );
 					$fnc = array_shift( $params );
 					$rl[$index] = $this->callObjMethod( $GLOBALS[$obj], $fnc, $params );
 					$found = true;
-					break;					
+					break;
+				// globally accessible variable set
+				case 'gset':
+					$gvar  = array_shift( $params );
+					$value = array_shift( $params );
+				
+					if (isset( $GLOBALS[$gvar] ))
+						$GLOBALS[$gvar] = $value;
+					$rl[$index] = ''; // nothing to return.
+					$found = true;						
+					break;
+				// globally accessible variable set					
+				case 'gget':
+					$gvar  = array_shift( $params );
+				
+					if (isset( $GLOBALS[$gvar] ))
+						$rl[$index] = $GLOBALS[$gvar];
+					$found = true;						
+					break;
+				case 'foreach':
+					$obj = array_shift( $params );
+					$pro = array_shift( $params );  // array property
+					$pat = array_shift( $params );  // pattern
+					$rl[$index] = $this->doForeach( $obj, $pro, $pat );
+					$found = true;						
+					break;
+					
 				default:
 					break;	
 			}
@@ -82,7 +110,39 @@ class ParserPhase2Class extends ExtensionClass
 
 		return true; // be nice with other extensions.
 	}
+	private function doForeach( &$object, &$property, &$pattern )
+	{
+		if (!isset( $GLOBALS[$object] )) return;
+		$o = $GLOBALS[$object];
 
+		// array = object->property
+		if (is_array( $o->$property )) 
+			$a = $o->$property;
+
+		// array = object->property()
+		if (is_callable( array($o, $property) ))
+			$a = $o->$property();
+
+		if (empty( $a )) return;
+		
+		$result = '';
+		$index = 0;
+		foreach( $a as $key => $value )
+		{
+			$result .= $this->replaceVars( $pattern,  $key, $value, $index );
+			$index++;
+		}
+		return $result;
+	}
+	private function replaceVars( &$pattern, &$key, &$value, &$index )
+	{
+		// find $key$ , $value$, $index$ variables in the pattern
+		$r  = str_replace( '$key$',   $key, $pattern );			
+		$r2 = str_replace( '$value$', $value, $r );
+		$r3 = str_replace( '$index$', $index, $r2 );		
+		
+		return $r3;
+	}
 	private function getList ( &$text )
 	{
 		// find the (($...$)) matches
@@ -107,7 +167,8 @@ class ParserPhase2Class extends ExtensionClass
 	function callObjMethod( &$obj, &$method, &$p )
 	{
 		$p = array_values( $p );
-		switch ( count( $p ) ) {
+		switch ( count( $p ) ) 
+		{
 			case 0:
 				return $obj->$method();
 			case 1:
@@ -123,11 +184,9 @@ class ParserPhase2Class extends ExtensionClass
 			case 6:
 				return $obj->$method( $p[0], $p[1], $p[2], $p[3], $p[4], $p[5] );
 			default:
-				throw new MWException( "Too many arguments to ParserPhase2::callObjMethod" );
+				throw new MWException( "Too many arguments to ".__METHOD__ );
+		}
 	}
-}
-
-
 
 } // end class
 ?>
