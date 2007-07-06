@@ -10,10 +10,11 @@
  
 == Purpose==
 This extension allows for disabling 'client side caching' on a per-page basis through the
-magic word <nowiki>{{NOCLIENTCACHING}}</nowiki>.
+magic word <nowiki>{{NOCLIENTCACHING}}</nowiki>. The 'dynamic' version of this magic word can be accessed through 
+(($var|NOCLIENTCACHING$)) when the extension 'ParserPhase2' is installed.
 
 == Dependancy ==
-* ExtensionClass extension
+* ExtensionClass extension (v>=306)
 
 == Installation ==
 To install independantly from BizzWiki:
