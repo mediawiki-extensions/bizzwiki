@@ -335,6 +335,8 @@ static $hookList = array(
 		global $wgParser;
 		static $hooked = false;
 		
+		if ( empty($this->ext_mgwords) ) return;
+		
 		foreach($this->ext_mgwords as $key => $type)
 		{
 			switch ( $type )
@@ -347,8 +349,7 @@ static $hookList = array(
 					break;
 			}
 		}
-		// only setup when necessary.
-		if (!empty( $vars ) && !$hooked)
+		if (!$hooked) // paranoia
 		{
 			$hooked = true;
 			global $wgHooks;
@@ -426,17 +427,18 @@ static $hookList = array(
 	public function hookMagicWordMagicWords( &$mw )
 	{
 		$l = $this->getMagicWordsVariables();
-		
-		foreach ( $l as $index => $key )
-			$mw[] = self::$mw_prefix.$key;
+		if (!empty( $l ))		
+			foreach ( $l as $index => $key )
+				$mw[] = self::$mw_prefix.$key;
 
 		return true;
 	} 
 	public function hookMagicWordwgVariableIDs( &$mw )
 	{
 		$l = $this->getMagicWordsVariables();
-		foreach ( $l as $index => $key )
-			$mw[] = constant( self::$mw_prefix.$key  );
+		if (!empty( $l ))
+			foreach ( $l as $index => $key )
+				$mw[] = constant( self::$mw_prefix.$key  );
 
 		return true;
 	} 
@@ -444,19 +446,35 @@ static $hookList = array(
 	{
 		$l = $this->getMagicWordsVariables();
 		
+		if (empty( $l )) return true;
+
 		// when called through {{magic word here}}
 		// will call the method "MW_magic_word"
 		$id = substr($varid,strlen(self::$mw_prefix));
-#		echo __METHOD__.'= '.$id.'<br/>';
 		if ( in_array( $id, $l ) )
+		{
+			#echo __METHOD__.$varid.'0! <br/>';			
 			$this->$varid( $parser, $varCache, $ret );	
-
+		}
 		// when called through (($magic word here$))
 		if ( in_array( $varid, $l ) )
 		{
+			#echo __METHOD__.$varid.'1! <br/>';
 			$fnc = self::$mw_prefix.$varid;
 			$this->$fnc( $parser, $varCache, $ret );	
 		}
+/*
+		$l2 = $this->getMagicWordsFunctions();		
+		if (empty( $l2 )) return true;
+
+		// when called through (($magic word here$))
+		if ( in_array( $varid, $l2 ) )
+		{
+			echo __METHOD__.$varid.'2! <br/>';
+			$fnc = self::$mw_prefix.$varid;
+			$this->$fnc( $parser, $varCache, $ret );	
+		}
+*/	
 		return true;
 	}
 	public function normalizeMagicWordsList( &$l )
@@ -475,11 +493,21 @@ static $hookList = array(
 	}
 	public function getMagicWordsVariables()
 	{
-		foreach ( $this->ext_mgwords as $key => $style )
-			if ($style==self::mw_parser_variable)
-				$l[] = $key;
+		if (!empty($this->ext_mgwords))
+			foreach ( $this->ext_mgwords as $key => $style )
+				if ($style==self::mw_parser_variable)
+					$l[] = $key;
 		return $l;		
 	}
+	public function getMagicWordsFunctions()
+	{
+		if (!empty($this->ext_mgwords))
+			foreach ( $this->ext_mgwords as $key => $style )
+				if ($style==self::mw_parser_function)
+					$l[] = $key;
+		return $l;		
+	}
+
 	// TAG RELATED
 	public function setupTags( $tagList )
 	{

@@ -93,4 +93,10 @@ REL1_10_5:
 - Added 'CacheTools' extension
 - Added more documentation in BizzWikiSettings.php
 - Added BizzWiki logo design files
-
+==========
+REL1_10_6:
+- Integrated 'ParserFunctions'
+- Integrated 'StringFunctions'
+- ParserPhase2: added 'foreachx','forx' ,'gset' and 'gget' functions
+- Added 'ForeachFunctions' extension
+-
