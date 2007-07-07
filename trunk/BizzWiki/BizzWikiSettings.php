@@ -20,6 +20,7 @@ $bwPath = $IP.'/BizzWiki';
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
+require('extensions/ParserPhase2/ParserPhase2.php');
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
@@ -263,14 +264,10 @@ require('extensions/SecureProperties/SecureProperties.php');
 require('extensions/ParserTools/ParserTools.php');
 require('extensions/FormProc/FormProc.php');
 
-#require('extensions/PageTools/PageTools.php'); 
-
 require('extensions/AutoLanguage/AutoLanguage.php');
 AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
-
-require('extensions/ParserPhase2/ParserPhase2.php');
 
 require('extensions/CacheTools/CacheTools.php');
 
@@ -281,6 +278,9 @@ require( 'extensions/ParserFunctions/ParserFunctions.php' );
 require( 'extensions/StringFunctions/StringFunctions.php' );
 
 require( 'extensions/ForeachFunction/ForeachFunction.php' );
+
+require('extensions/PageTools/PageTools.php'); 
+
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

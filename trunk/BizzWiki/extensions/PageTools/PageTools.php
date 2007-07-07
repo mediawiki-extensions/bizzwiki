@@ -51,7 +51,7 @@
  * -- Version 1.4:  Added 'pagepath': returns the global variable '$wgArticlePath'
  * -- Version 1.5:  Added 'pageext': returns the 'extension' of the title page. 
  =================  Moved to BizzWiki
- *
+
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'PageTools Extension', 
@@ -75,51 +75,16 @@ class PageTools extends ExtensionClass
 	
 	// Our class defines magic words: tell it to our helper class.
 	public function PageTools()
-	{	return parent::__construct( self::$mgwords );	}
+	{	return parent::__construct( );	}
 
 	// ===============================================================
 
-	public function mg_pageincategory( &$parser )
+	public function pp2_pagetitle( &$title )
 	{
-		if (!$this->checkArticleExClass() )	return;
-		$params = $this->processArgList( func_get_args(), true );
-
-		if (empty($params[0])) return;
-		
-		// format as Mediawiki wants it ('DBkey' form)
-		$cat = str_replace( ' ', '_', $params[0] );
-			
-		global $wgArticle;
-		if (empty($wgArticle->categories)) return;
-			
-		return in_array($cat, $wgArticle->categories );
+		global $wgOut;
+		$wgOut->setPageTitle( $title );
 	}
-	public function mg_pagenumcategories( &$parser )
-	{
-		if (!$this->checkArticleExClass() ) return;
-		$params = $this->processArgList( func_get_args(), true );
 
-		global $wgArticle;
-		return (count($wgArticle->categories));
-	}
-	public function mg_pagecategory( &$parser )
-	{
-		if (!$this->checkArticleExClass() )	return;
-
-		$params = $this->processArgList( func_get_args(), true );
-		$index = $params[0];
-		
-		if (empty($index)) $index = 0 ; // v1.2 correction.
-		
-		global $wgArticle;
-		$compte = count($wgArticle->categories);
-		if ($index>=$compte) return;
-
-		$cat = $wgArticle->categories[$index];
-		// reformat to 'text' form (from 'DBkey' form).		
-		return str_replace('_', ' ', $cat);
-	}
-	
 	public function mg_pagetitle( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
@@ -128,21 +93,6 @@ class PageTools extends ExtensionClass
 		$wgOut->setPageTitle( $params[0] );
 	}
 	
-	var $titleAddition = null;
-	var $hookInPlace = false;
-	public function mg_pagetitleadd( &$parser )
-	{
-		$params = $this->processArgList( func_get_args(), true );
-		$this->titleAddition = $params[0];
-
-		// only hook when we really need it.
-		if (!$this->hookInPlace)
-		{
-			global $wgHooks;	
-			$wgHooks['BeforePageDisplay'][]= array($this, 'hBeforePageDisplay');
-			$this->hookInPlace = true;
-		}			
-	}
 	public function mg_pagesubtitle( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
@@ -159,39 +109,6 @@ class PageTools extends ExtensionClass
 		else $id = 0;
 		
 		return ($id == 0 ? false:true);		
-	}
-	public function mg_pagepath( &$parser )
-	{
-		global $wgArticlePath;
-		return $wgArticlePath;	
-	}
-	public function mg_pageext( &$parser, $titre )
-	{
-		global $wgArticle;
-		
-		if (empty( $titre ))
-			$titre = $wgArticle->mTitle->getBaseText();
-		
-		// extension starts with the ending '.'
-		$pos   = strrpos( $titre, '.' );
-		if ($pos === false) return null;   // didn't find any '.'
-		
-		// ok we found a '.', extract what's after it.
-		return substr( $titre, $pos+1 );
-	}
-
-	// =========================================================================	
-	public function hBeforePageDisplay( $op )
-	{
-		if (!empty($this->titleAddition))
-			$op->setPageTitle( $op->getPageTitle()." ".$this->titleAddition );
-		
-		return true; // continue chain.	
-	}
-	private function checkArticleExClass( )
-	{
-		global $wgArticle;
-		return ( get_class($wgArticle) == 'ArticleExClass' );	
 	}
 
 } // end class	
