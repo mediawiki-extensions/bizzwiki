@@ -80,19 +80,19 @@ class PageTools extends ExtensionClass
 	// ===============================================================
 
 	public function pp2_pagetitle( &$title )
+	{ return $this->setTitle( $title ); }
+
+	public function mg_pagetitle( &$parser )
+	{
+		$params = $this->processArgList( func_get_args(), true );
+		return $this->setTitle( $params[0] );
+	}
+	private function setTitle( &$title )
 	{
 		global $wgOut;
 		$wgOut->setPageTitle( $title );
 	}
 
-	public function mg_pagetitle( &$parser )
-	{
-		$params = $this->processArgList( func_get_args(), true );
-
-		global $wgOut;
-		$wgOut->setPageTitle( $params[0] );
-	}
-	
 	public function mg_pagesubtitle( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
