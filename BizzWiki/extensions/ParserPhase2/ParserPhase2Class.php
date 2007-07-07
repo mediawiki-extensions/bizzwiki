@@ -20,6 +20,9 @@ class ParserPhase2Class extends ExtensionClass
 	
 	const pattern = '/\(\(\$(.*)\$\)\)/siU';
 	
+	// Extensibility
+	static $keywords;
+	
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -38,6 +41,16 @@ class ParserPhase2Class extends ExtensionClass
 	}
 	public function setup() 
 	{ parent::setup();	}
+
+	// Extensibility feature
+	// Ability to add 'keywords' processing functions.
+	public static function addKeyword( $keyword, $callback )
+	{
+		if ( is_array( $callback) )
+			self::$keywords[ $keyword ] = $callback;
+		if ( is_callable( $callback ) )
+			self::$keywords[ $keyword ] = array( 0, $callback );		
+	}
 
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
@@ -104,11 +117,34 @@ class ParserPhase2Class extends ExtensionClass
 					$start=array_shift( $params );  // start i.e. i=$start$
 					$stop =array_shift( $params );  // stop i.e. i<$stop$
 					$rl[$index] = self::doForx( $obj, $pro, $pat, $start, $stop );
+					$found = true;											
 					break;
 				default:
 					break;	
 			}
 		}
+
+		// if we haven't found, try the extensions
+		if (!$found && !empty(self::$keywords) )
+			if (array_key_exists( $action, self::$keywords ) )
+			{
+				$callback = self::$keywords[ $action ];
+				
+				$obj    = $callback[0];
+				$method = $callback[1];
+				
+				if (!is_array( $params ))	$params = array( $params );  // paranoia
+				if (empty( $params ))		$params = null;
+					
+				$found = true;
+				
+				if (is_object( $obj ))
+					$rl[$index] = $this->callObjMethod( $obj, $method, $params );
+				elseif (is_callable( $method ) )
+					$rl[$index] = call_user_func_array( $method, $params );				
+				else
+					$found = false;
+			}
 
 		// we found some dynamic variables, disable client side caching.
 		if ( $found )
@@ -197,6 +233,8 @@ class ParserPhase2Class extends ExtensionClass
 
 	function callObjMethod( &$obj, &$method, &$p )
 	{
+		#echo __METHOD__.' count= '.count($p).'<br/>';
+		
 		$p = array_values( $p );
 		switch ( count( $p ) ) 
 		{

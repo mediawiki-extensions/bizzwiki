@@ -58,6 +58,7 @@
 * Added 'AutoMethods' functionality: ExtensionClass just looks up the method list of the derived class
   and looks for the $prefix matching methods to initialize hooks, parser functions and magic words.
 * Added better support for adding 'head' and 'body' scripts whilst preserving parser caching coherency.
+* Added support for 'ParserPhase2' keyword based extensions.
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -234,12 +235,14 @@ static $hookList = array(
 	// Hook related
 	static $hook_prefix = 'h';
 
+	static $pp2_prefix = 'pp2_';  // parser phase 2 extension related
+
 	// Auto method functionality related
 	var $tagList;
 	var $varList;
 	var $fncList;
 	var $hokList;
-	
+	var $pp2List;	
 	
 	public static function &singleton( $mwlist=null ,$globalObjName=null, 
 										$passingStyle = self::mw_style, $depth = 1,
@@ -329,6 +332,21 @@ static $hookList = array(
 			$this->setupMagicMixed();
 		if (is_array( $this->tagList))
 			$this->setupTags( $this->tagList );
+		if (is_array( $this->pp2List))
+			$this->setupPP2( $this->pp2List );
+	}
+	public function setupPP2( &$l )
+	{
+		if (!class_exists('ParserPhase2Class')) 
+		{
+			echo __METHOD__.': missing ParserPhase2Class <br/>';
+			return;
+		}
+		
+		if ( empty($l) ) return;
+		
+		foreach( $l as $keyword )
+			ParserPhase2Class::addKeyword( $keyword, array( &$this, self::$pp2_prefix.$keyword ) );
 	}
 	public function setupMagicMixed()
 	{
@@ -386,11 +404,17 @@ static $hookList = array(
 			$isHookTest2 = in_array( $hok, self::$hookList );
 			
 			$isHook = ($isHookTest1==true) && ($isHookTest2==true);
+
+			// get methods pertaining to 'parser phase 2 function' functionality
+			// i.e. ones starting with 'pp2_'
+			$isPP2  = strncasecmp( $method, self::$pp2_prefix, strlen(self::$pp2_prefix) )== 0;
+			$fncPP2 = substr( $method, strlen(self::$pp2_prefix) );
 			
 			if ( $isTag )	$this->tagList[] = $tag;
 			if ( $isVar )	$this->varList[] = $var;			
 			if ( $isFnc )	$this->fncList[] = $fnc;			
 			if ( $isHook )	$this->hokList[] = $hok;
+			if ( $isPP2 )	$this->pp2List[] = $fncPP2;
 			
 			#echo 'method: '.$method.' isTag: '.$isTag.' isVar: '.$isVar.' isFnc: '.$isFnc.' isHook: '.$isHook.' test 1:'.$isHookTest1.' test 2:'.$isHookTest2.' <br/>';
 		}
