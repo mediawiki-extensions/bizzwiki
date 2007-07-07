@@ -89,14 +89,22 @@ class ParserPhase2Class extends ExtensionClass
 						$rl[$index] = $GLOBALS[$gvar];
 					$found = true;						
 					break;
-				case 'foreach':
+				case 'foreachx':  // just to align the name with 'ForeachFunctions' extension
 					$obj = array_shift( $params );
 					$pro = array_shift( $params );  // array property
 					$pat = array_shift( $params );  // pattern
-					$rl[$index] = $this->doForeach( $obj, $pro, $pat );
+					$rl[$index] = self::doForeachx( $obj, $pro, $pat );
 					$found = true;						
 					break;
-					
+					// for (i=$start$;i<$stop$;i++)
+				case 'forx':
+					$obj = array_shift( $params );
+					$pro = array_shift( $params );  // array property
+					$pat = array_shift( $params );  // pattern
+					$start=array_shift( $params );  // start i.e. i=$start$
+					$stop =array_shift( $params );  // stop i.e. i<$stop$
+					$rl[$index] = self::doForx( $obj, $pro, $pat, $start, $stop );
+					break;
 				default:
 					break;	
 			}
@@ -110,31 +118,54 @@ class ParserPhase2Class extends ExtensionClass
 
 		return true; // be nice with other extensions.
 	}
-	private function doForeach( &$object, &$property, &$pattern )
+	public static function doForeachx( &$object, &$property, &$pattern )
 	{
-		if (!isset( $GLOBALS[$object] )) return;
-		$o = $GLOBALS[$object];
-
-		// array = object->property
-		if (is_array( $o->$property )) 
-			$a = $o->$property;
-
-		// array = object->property()
-		if (is_callable( array($o, $property) ))
-			$a = $o->$property();
-
+		$a = self::getArray( $object, $property );
+		
 		if (empty( $a )) return;
 		
 		$result = '';
 		$index = 0;
 		foreach( $a as $key => $value )
 		{
-			$result .= $this->replaceVars( $pattern,  $key, $value, $index );
+			$result .= self::replaceVars( $pattern,  $key, $value, $index );
 			$index++;
 		}
 		return $result;
 	}
-	private function replaceVars( &$pattern, &$key, &$value, &$index )
+	public static function doForx( &$obj, &$pro, &$pat, &$start, &$stop )
+	{
+#		echo __METHOD__.' start= '.$start.' stop= '.$stop.'<br/>';
+		$a = self::getArray( $obj, $pro );
+		
+		if (empty( $a )) return;
+		
+		$result = '';
+		for ( $index= $start; $index < $stop; $index++ )
+		{
+			$key = $index;
+			$value = $a[ $key ];
+			$result .= self::replaceVars( $pat,  $key, $value, $index );
+		}
+			
+		return $result;
+	}
+	private static function getArray( &$object, &$property )
+	{
+		if (!isset( $GLOBALS[$object] )) return null;
+		$o = $GLOBALS[$object];
+
+		// array = object->property
+		if (is_array( $o->$property )) 
+			$a = &$o->$property;
+
+		// array = object->property()
+		if (is_callable( array($o, $property) ))
+			$a = &$o->$property();
+
+		return $a;		
+	}
+	public static function replaceVars( &$pattern, &$key, &$value, &$index )
 	{
 		// find $key$ , $value$, $index$ variables in the pattern
 		$r  = str_replace( '$key$',   $key, $pattern );			

@@ -32,6 +32,12 @@ variables upon page view whilst still preserving the valuable job performed by t
 
 (($gget|global variable name$))
 
+(($foreachx|global object name|property or method name|pattern$))
+:Where 'pattern' can be used with the variables $key$, $value$, $index$
+
+(($forx|global object name|property or method name|pattern|start index|stop index$))
+:Array is referenced like this: $value = $array[ $index ]
+
 == Dependancy ==
 * ExtensionClass extension
 

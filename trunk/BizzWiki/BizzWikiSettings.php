@@ -188,6 +188,19 @@ foreach( $bwUserNamespaces as $index => $bwx )
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 	}
 
+	// Equivalent functionality to 'KeepYourHandsToYourself' extension
+	// ###############################################################
+$wgExtensionFunctions[] = 'bwKeepYourHandsToYourself';
+
+function bwKeepYourHandsToYourself()
+{
+	global $wgUser, $wgGroupPermissions;
+	$userName = $wgUser->getName();
+	$wgGroupPermissions['user'][hnpClass::buildPermissionKey(NS_USER,$userName,"edit")]   = true;
+	$wgGroupPermissions['user'][hnpClass::buildPermissionKey(NS_USER,$userName,"create")] = true;	
+	$wgGroupPermissions['user'][hnpClass::buildPermissionKey(NS_USER,$userName,"delete")] = true;	
+}
+
 // For testing QueryPage.php functionality
 // as in 'SpecialPopularpages.php'.
 // DEBUG
@@ -260,6 +273,14 @@ AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 require('extensions/ParserPhase2/ParserPhase2.php');
 
 require('extensions/CacheTools/CacheTools.php');
+
+// http://meta.wikimedia.org/wiki/ParserFunctions
+require( 'extensions/ParserFunctions/ParserFunctions.php' );
+
+// http://www.mediawiki.org/wiki/Extension:StringFunctions
+require( 'extensions/StringFunctions/StringFunctions.php' );
+
+require( 'extensions/ForeachFunction/ForeachFunction.php' );
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
