@@ -1,9 +1,9 @@
 <?php
 /*
- * PageTools.php
+ * PageFunctions.php
  * 
  * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
+ * @author: Jean-Lou Dupont
  *
  * Purpose:  Provides a 'magic word' interface to retrieve
  *           useful page level information.           
@@ -25,21 +25,21 @@
 
  */
 $wgExtensionCredits['other'][] = array( 
-	'name'    => 'PageTools Extension', 
+	'name'    => 'PageFunctions Extension', 
 	'version' => '$Id$',
 	'author'  => 'Jean-Lou Dupont', 
 );
 
 // Let's create a single instance of this class
-PageTools::singleton();
+PageFunctions::singleton();
 
-class PageTools extends ExtensionClass
+class PageFunctions extends ExtensionClass
 {
 	public static function &singleton( )
 	{ return parent::singleton(); }
 	
 	// Our class defines magic words: tell it to our helper class.
-	public function PageTools()
+	public function PageFunctions()
 	{	return parent::__construct( );	}
 
 	// ===============================================================
