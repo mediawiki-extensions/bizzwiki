@@ -10,47 +10,18 @@
  *
  * Features:
  * *********
- *
- * {{#pageincategory: 'category' }} 
- *    returns 'true' if the current page is categorised with 'category'
- *
- * {{#pagenumcategories:}}
- *    returns the number of categories found for the current page.
- *
- * {{#pagecategory: 'index' }}
- *    returns the category title indexed with 'index'
- *
- * {{#pagetitle: new title name}}
- *
- * {{#pagetitleadd: text to be added to the title name}} 
- *
- * {{#pagesubtitle: text to be added to the page's subtitle }}
- *
- * {{#pageexists: 'article title' }}
- *
- * {{#pagepath:}}
- *
- * {{#pageext:}}                    current article
- * {{#pageext: 'article title' }}   specified article
- *
- * DEPENDANCIES:
- * 1) 'ArticleEx' extension (from v1.6)
- * 2) 'ExtensionClass' extension (from v1.2)
- *
- * Tested Compatibility:  MW 1.8.2, 1.9.3
- *
- * HISTORY:
- * -- Version 1.0:	initial availability
- * -- Version 1.1:  Added 'pagetitle': to modify the page's title. 
- *                  Added 'pagetitleadd': to add to the current page title.
- *                  Added 'pagesubtitle': to modify the page's subtitle     
- * -- Version 1.2:  Corrected $index bug in 'pagecategory' function
- *                  This correction is due to the change in ExtensionClass behavior.
- *
- * -- Version 1.3:  Added 'pageexists': does the article title exists?
- * -- Version 1.4:  Added 'pagepath': returns the global variable '$wgArticlePath'
- * -- Version 1.5:  Added 'pageext': returns the 'extension' of the title page. 
- =================  Moved to BizzWiki
+
+== Usage ==
+
+* {{#pagetitle: new title name}}
+* {{#pagesubtitle: text to be added to the page's subtitle }}
+* {{#pageexists: 'article title' }}
+
+== DEPENDANCIES ==
+* ExtensionClass extension
+* ParserPhase2 extension
+
+== HISTORY ==
 
  */
 $wgExtensionCredits['other'][] = array( 
@@ -64,12 +35,6 @@ PageTools::singleton();
 
 class PageTools extends ExtensionClass
 {
-	static $mgwords = array('pageincategory', 'pagenumcategories' , 'pagecategory', 
-							'pagetitle','pagetitleadd',
-							'pagesubtitle',
-							'pageexists', 'pagepath',
-							'pageext' );
-	
 	public static function &singleton( )
 	{ return parent::singleton(); }
 	
@@ -79,7 +44,7 @@ class PageTools extends ExtensionClass
 
 	// ===============================================================
 
-	public function pp2_pagetitle( &$title )
+	public function pp2_pagetitle( &$wgtitle, &$title )
 	{ return $this->setTitle( $title ); }
 
 	public function mg_pagetitle( &$parser )
@@ -93,17 +58,36 @@ class PageTools extends ExtensionClass
 		$wgOut->setPageTitle( $title );
 	}
 
+	// ===============================================================
+
+	public function pp2_pagesubtitle( &$wgtitle, &$title )
+	{ return $this->setSubTitle( $title ); }
+
 	public function mg_pagesubtitle( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
-		global $wgOut;
-		$wgOut->setSubtitle( $params[0] );
+		$this->setSubTitle( $params[0] );
 	}
+	private function setSubTitle( &$title )
+	{
+		global $wgOut;
+		$wgOut->setSubtitle( $title );
+	} 
+
+	// ===============================================================
+
+	public function pp2_pageexists( &$wgtitle, &$title )
+	{ return $this->doesPageExists( $title ); }
+	
 	public function mg_pageexists( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
-		
-		$a = $this->getArticle( $params[0] );
+		return $this->doesPageExists( $params[0] );
+	}
+
+	private function doesPageExists( &$title ) 
+	{
+		$a = $this->getArticle( $title );
 		if (is_object($a)) 
 			$id=$a->getID();
 		else $id = 0;

@@ -46,10 +46,8 @@ class ParserPhase2Class extends ExtensionClass
 	// Ability to add 'keywords' processing functions.
 	public static function addKeyword( $keyword, $callback )
 	{
-		if ( is_array( $callback) )
-			self::$keywords[ $keyword ] = $callback;
 		if ( is_callable( $callback ) )
-			self::$keywords[ $keyword ] = array( 0, $callback );		
+			self::$keywords[ $keyword ] = $callback;		
 	}
 
 	function hOutputPageBeforeHTML( &$op, &$text )
@@ -63,6 +61,8 @@ class ParserPhase2Class extends ExtensionClass
 		
 		foreach( $m[1] as $index => $str)
 		{
+			$checkExt = false;
+			
 			// (($var|variable name$))
 			// (($obj|global object name|method name$))
 			$params = explode('|', $str);
@@ -94,7 +94,7 @@ class ParserPhase2Class extends ExtensionClass
 					$rl[$index] = ''; // nothing to return.
 					$found = true;						
 					break;
-				// globally accessible variable set					
+				// globally accessible variable get					
 				case 'gget':
 					$gvar  = array_shift( $params );
 				
@@ -119,34 +119,42 @@ class ParserPhase2Class extends ExtensionClass
 					$rl[$index] = self::doForx( $obj, $pro, $pat, $start, $stop );
 					$found = true;											
 					break;
+				case 'set':
+					break;				
+				case 'get':
+					break;
 				default:
+					$checkExt = true;
 					break;	
 			}
-		}
 
-		// if we haven't found, try the extensions
-		if (!$found && !empty(self::$keywords) )
+		// if we haven't found in the 'core keywords', try the extensions based keywords.
+		if ($checkExt && !empty(self::$keywords) )
 			if (array_key_exists( $action, self::$keywords ) )
 			{
 				$callback = self::$keywords[ $action ];
-				
-				$obj    = $callback[0];
-				$method = $callback[1];
+				$object = $callback[0];
+				$method = $callback[1];				
+
+				$func = get_class( $object ) . '::' . $method;
+				$callback = array( $object, $method );
 				
 				if (!is_array( $params ))	$params = array( $params );  // paranoia
 				if (empty( $params ))		$params = null;
 					
 				$found = true;
 				
-				if (is_object( $obj ))
-					$rl[$index] = $this->callObjMethod( $obj, $method, $params );
-				elseif (is_callable( $method ) )
-					$rl[$index] = call_user_func_array( $method, $params );				
-				else
-					$found = false;
+				// give some context to the extension (i.e. title object)
+				global $wgTitle;
+				$params = array_merge( array( &$wgTitle ), $params );
+				
+				$rl[$index] = call_user_func_array( $callback, $params );
 			}
 
+		}
+		
 		// we found some dynamic variables, disable client side caching.
+		// parser caching is not affected.
 		if ( $found )
 			$op->enableClientCache( false );
 
@@ -171,7 +179,6 @@ class ParserPhase2Class extends ExtensionClass
 	}
 	public static function doForx( &$obj, &$pro, &$pat, &$start, &$stop )
 	{
-#		echo __METHOD__.' start= '.$start.' stop= '.$stop.'<br/>';
 		$a = self::getArray( $obj, $pro );
 		
 		if (empty( $a )) return;
@@ -233,13 +240,13 @@ class ParserPhase2Class extends ExtensionClass
 
 	function callObjMethod( &$obj, &$method, &$p )
 	{
-		#echo __METHOD__.' count= '.count($p).'<br/>';
+		echo __METHOD__.' count= '.count($p).'<br/>';
 		
 		$p = array_values( $p );
 		switch ( count( $p ) ) 
 		{
 			case 0:
-				return $obj->$method();
+				return $obj->$method( );
 			case 1:
 				return $obj->$method( $p[0] );
 			case 2:
