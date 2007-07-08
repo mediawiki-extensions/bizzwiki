@@ -240,8 +240,6 @@ class ParserPhase2Class extends ExtensionClass
 
 	function callObjMethod( &$obj, &$method, &$p )
 	{
-		echo __METHOD__.' count= '.count($p).'<br/>';
-		
 		$p = array_values( $p );
 		switch ( count( $p ) ) 
 		{
