@@ -1,5 +1,14 @@
 $Id$
 
+User Rights
+===========
+* User rights log policing  (entries appear in 'recentchanges'
+* Import log log entry policing
+
+%%%%%%%%%%%%
+* Captcha !!
+
+
 Replication functionality:
 --------------------------
 * Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
@@ -63,3 +72,7 @@ Special:Undelete
 SpecialPagesManager
 ===================
 * Logging functionality?
+
+RecentChanges
+=============
+* Enable enhanced view with Javascript by default

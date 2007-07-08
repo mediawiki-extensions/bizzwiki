@@ -338,10 +338,7 @@ static $hookList = array(
 	public function setupPP2( &$l )
 	{
 		if (!class_exists('ParserPhase2Class')) 
-		{
-			echo __METHOD__.': missing ParserPhase2Class <br/>';
 			return;
-		}
 		
 		if ( empty($l) ) return;
 		
