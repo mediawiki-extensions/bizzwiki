@@ -189,6 +189,18 @@ class FileManagerClass extends ExtensionClass
 	
 		return true; // be nice.
 	}
+
+	function hOutputPageBeforeHTML( &$op, &$text )
+	// make sure we disable client side caching for NS_FILESYSTEM namespace.
+	{
+		global $wgTitle;
+		
+		// Are we in the right namespace at all??
+		$ns = $wgTitle->getNamespace();
+		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
+
+		$op->enableClientCache(false);
+	}	
 	// public function hUnknownAction( $action, $article )
 	/*  This hook is used to implement the custom 'action=commitscript'
 	 */
