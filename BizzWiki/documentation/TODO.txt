@@ -4,6 +4,8 @@ User Rights
 ===========
 * User rights log policing  (entries appear in 'recentchanges'
 * Import log log entry policing
+* Special:Import --> broken --> fix!!
+** hnpClass: action <b>importupload</b> not found in namespace dependant array.
 
 %%%%%%%%%%%%
 * Captcha !!

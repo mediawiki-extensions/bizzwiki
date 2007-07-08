@@ -102,3 +102,5 @@ REL1_10_6:
 - Added 'ForeachFunctions' extension
 - Adjusted 'Log/rights' browse right for '*' group
 - Adjusted 'Log/move' browse right for '*' group
+- FileManager: disable client side caching upon accessing NS_FILESYSTEM
+- 
