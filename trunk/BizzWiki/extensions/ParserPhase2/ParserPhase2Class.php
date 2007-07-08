@@ -1,5 +1,4 @@
 <?php
-
 /*<wikitext>
 {| border=1
 | <b>File</b> || ParserPhase2Class.php
