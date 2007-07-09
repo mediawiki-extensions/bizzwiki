@@ -2,10 +2,7 @@ $Id$
 
 User Rights
 ===========
-* User rights log policing  (entries appear in 'recentchanges'
-* Import log log entry policing
-* Special:Import --> broken --> fix!!
-** hnpClass: action <b>importupload</b> not found in namespace dependant array.
+* Special:Import --> more granular right i.e. namespace level ??
 
 %%%%%%%%%%%%
 * Captcha !!
@@ -61,11 +58,6 @@ SpecialPagesManager:
 Geshi:
 ======
 - Better documentation
-
-PageTools:
-==========
-- Adjust so that 'ArticleClassEx' is not required anymore
-- Adjust to include Parser Caching integration i.e. parser phase 2
 
 Special:Undelete
 ================

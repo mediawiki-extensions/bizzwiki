@@ -103,4 +103,6 @@ REL1_10_6:
 - Adjusted 'Log/rights' browse right for '*' group
 - Adjusted 'Log/move' browse right for '*' group
 - FileManager: disable client side caching upon accessing NS_FILESYSTEM
+- Added 'importupload' to managed rights
+- Added 'block' to managed log entry policed
 - 
