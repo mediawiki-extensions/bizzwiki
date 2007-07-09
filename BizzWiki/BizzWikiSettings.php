@@ -14,7 +14,7 @@
 ****************************************************************************/
 
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_5');
+define('BIZZWIKI', '1_10_6');
 $bwPath = $IP.'/BizzWiki';
 
 // Base class for multiple extensions
