@@ -1,0 +1,28 @@
+$Id$
+
+Installation procedure:
+-----------------------
+
+1) Setup Mediawiki as per usual process
+2) Copy the 'BizzWiki' package in the root directory of the Mediawiki installation
+   by uncompressing the BizzWiki archive
+3) Add 'require('BizzWiki/BizzWikiSettings.php');' at the end of the Mediawiki 'LocalSettings.php' file
+   e.g.
+
+		# When you make changes to this configuration file, this will make
+		# sure that cached pages are cleared.
+		$configdate = gmdate( 'YmdHis', @filemtime( __FILE__ ) );
+		$wgCacheEpoch = max( $wgCacheEpoch, $configdate );
+		
+		require('BizzWiki/BizzWikiSettings.php');
+		?>   
+		
+4) Customize the file 'BizzWikiSettings.php'
+
+IMPORTANT NOTES
+===============
+1) Make sure that the root/includes directory is 'writable' as BizzWiki 
+   needs to update some default Mediawiki files located in this directory
+2) Make sure that the permissions for each file in the BizzWiki package
+   are the same as for the installed Mediawiki package
+   (This is especially important on Linux/Unix platforms)
