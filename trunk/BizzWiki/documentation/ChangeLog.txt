@@ -95,14 +95,14 @@ REL1_10_5:
 - Added BizzWiki logo design files
 ==========
 REL1_10_6:
-- Integrated 'ParserFunctions'
-- Integrated 'StringFunctions'
-- ParserPhase2: added 'foreachx','forx' ,'gset' and 'gget' functions
-- ParserPhase2: added 'hook' function for adding 'keywords' based functions (similar to 'parser functions')
+- Integrated 'ParserFunctions' extension
+- Integrated 'StringFunctions' extension
+- Added 'PageFunctions' extension
+- ParserPhase2: can now call any standard 'parser' functions & variables (i.e. through magic words)
 - Added 'ForeachFunctions' extension
 - Adjusted 'Log/rights' browse right for '*' group
 - Adjusted 'Log/move' browse right for '*' group
-- FileManager: disable client side caching upon accessing NS_FILESYSTEM
+- Adjusted 'Log/block' browse right for '*' group
+- FileManager: disabled client side caching upon accessing NS_FILESYSTEM
 - Added 'importupload' to managed rights
-- Added 'block' to managed log entry policed
-- 
+

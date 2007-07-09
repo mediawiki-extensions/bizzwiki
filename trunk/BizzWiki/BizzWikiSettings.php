@@ -287,9 +287,6 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
 require( 'extensions/ForeachFunction/ForeachFunction.php' );
-
-	// ParserPhase2 Extensions
-	// %%%%%%%%%%%%%%%%%%%%%%%
 require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
 
 
