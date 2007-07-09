@@ -119,6 +119,8 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'viewsource', // BizzWiki specific
 										'browse',     // BizzWiki specific
 										'search',     // BizzWiki specific
+										
+										'importupload',  // TODO
 
 									);
 									
@@ -275,15 +277,19 @@ AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 require('extensions/CacheTools/CacheTools.php');
 
+	// Parser Extensions
+	// %%%%%%%%%%%%%%%%%
 // http://meta.wikimedia.org/wiki/ParserFunctions
-require( 'extensions/ParserFunctions/ParserFunctions.php' );
+require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
-require( 'extensions/StringFunctions/StringFunctions.php' );
+require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
 require( 'extensions/ForeachFunction/ForeachFunction.php' );
 
-require('extensions/PageTools/PageTools.php'); 
+	// ParserPhase2 Extensions
+	// %%%%%%%%%%%%%%%%%%%%%%%
+require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
 
 
 ## To enable image uploads, make sure the 'images' directory

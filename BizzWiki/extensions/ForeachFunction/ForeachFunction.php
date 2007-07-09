@@ -40,8 +40,6 @@ require('extensions/ForeachFunction/ForeachFunction.php');
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
 	echo 'ExtensionClass missing: ForeachFunction extension will not work!';	
-elseif ( !class_exists('ParserPhase2Class') )
-	echo 'ParserPhase2 extension missing: ForeachFunction extension will not work!';	
 else
 {
 	require( "ForeachFunctionClass.php" );

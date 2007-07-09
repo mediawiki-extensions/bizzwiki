@@ -19,12 +19,6 @@ class ParserPhase2Class extends ExtensionClass
 	
 	const pattern = '/\(\(\$(.*)\$\)\)/siU';
 	
-	//
-	var $pageVars;
-	
-	// Extensibility
-	static $keywords;
-	
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
@@ -40,19 +34,9 @@ class ParserPhase2Class extends ExtensionClass
 			'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables',
 			'url' => self::getFullUrl(__FILE__),			
 		);
-		
-		$this->pageVars = array();
 	}
 	public function setup() 
 	{ parent::setup();	}
-
-	// Extensibility feature
-	// Ability to add 'keywords' processing functions.
-	public static function addKeyword( $keyword, $callback )
-	{
-		if ( is_callable( $callback ) )
-			self::$keywords[ $keyword ] = $callback;		
-	}
 
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
@@ -70,11 +54,15 @@ class ParserPhase2Class extends ExtensionClass
 			$action = array_shift( $params );
 
 			global $wgParser;
-			
+			global $wgContLang;
+
+			$varname = $wgContLang->lc($action);
+			$idl = MagicWord::getVariableIDs();
+							
 			// First, look for $action in 'parser variables'
-			if (in_array( $action, $wgParser->mVariables))
+			if (in_array( $varname, $idl ))
 			{
-				$rl[$index] = $this->getValue( $action );
+				$rl[$index] = $this->getValue( $varname );
 				$found = true;
 				continue;
 			}
@@ -146,63 +134,5 @@ class ParserPhase2Class extends ExtensionClass
 	}
 
 } // end class
-
-
-/*
-			switch ($action)
-			{
-				// only variables accessible through the parser
-				// are supported at this point.
-				case 'var':
-					$value = $this->getValue( $params[0] );
-					$rl[$index] = $value;
-					$found = true;
-					break;
-
-				// globally accessible objects
-				case 'obj':
-					$obj = array_shift( $params );
-					$fnc = array_shift( $params );
-					$rl[$index] = $this->callObjMethod( $GLOBALS[$obj], $fnc, $params );
-					$found = true;
-					break;
-				// globally accessible variable set
-				case 'gset':
-					$gvar  = array_shift( $params );
-					$value = array_shift( $params );
-				
-					if (isset( $GLOBALS[$gvar] ))
-						$GLOBALS[$gvar] = $value;
-					$rl[$index] = ''; // nothing to return.
-					$found = true;						
-					break;
-				// globally accessible variable get					
-				case 'gget':
-					$gvar  = array_shift( $params );
-				
-					if (isset( $GLOBALS[$gvar] ))
-						$rl[$index] = $GLOBALS[$gvar];
-					$found = true;						
-					break;
-					// page scope variable set
-				case 'set':
-					$var   = array_shift( $params );
-					$value = array_shift( $params );  
-					$this->pageVars[ $var ] = $value;
-					break;				
-					// page scope variable get					
-				case 'get':
-					$var   = array_shift( $params );
-					if (isset( $this->pageVars[$var] ) )
-						$value = $this->pageVars[$var];
-					else $value = null;
-					$rl[$index] = $value;
-					break;
-				default:
-					$checkExt = true;
-					break;	
-			}
-*/
-
 
 ?>

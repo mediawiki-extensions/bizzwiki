@@ -17,35 +17,50 @@
 * {{#pagesubtitle: text to be added to the page's subtitle }}
 * {{#pageexists: 'article title' }}
 
+Of course, the same magic words can be used in the context of 'ParserCache2' i.e.
+* (($#pagetitle: new title name$))
+* (($#pagesubtitle: text to be added to the page's subtitle $))
+* (($#pageexists: 'article title' $))
+
+
 == DEPENDANCIES ==
 * ExtensionClass extension
-* ParserPhase2 extension
+* ParserPhase2 extension (optional)
 
 == HISTORY ==
 
  */
-$wgExtensionCredits['other'][] = array( 
-	'name'    => 'PageFunctions Extension', 
-	'version' => '$Id$',
-	'author'  => 'Jean-Lou Dupont', 
-);
 
 // Let's create a single instance of this class
-PageFunctions::singleton();
+PageFunctionsClass::singleton();
 
-class PageFunctions extends ExtensionClass
+class PageFunctionsClass extends ExtensionClass
 {
+	const thisName = 'PageFunctions';
+	const thisType = 'other';
+	const id       = '$Id$';	
+
 	public static function &singleton( )
 	{ return parent::singleton(); }
 	
 	// Our class defines magic words: tell it to our helper class.
-	public function PageFunctions()
-	{	return parent::__construct( );	}
+	public function PageFunctionsClass()
+	{	
+		global $wgExtensionCredits;
+		$wgExtensionCredits[self::thisType][] = array( 
+			'name'        => self::thisName, 
+			'version'     => self::getRevisionId( self::id ),
+			'author'      => 'Jean-Lou Dupont', 
+			'description' => 'Provides page scope functions',
+			'url' => self::getFullUrl(__FILE__),						
+		);
+	
+		return parent::__construct( );	
+	}
 
 	// ===============================================================
 	public function mg_pagetitle( &$parser )
 	{
-
 		$params = $this->processArgList( func_get_args(), true );
 		return $this->setTitle( $params[0] );
 	}

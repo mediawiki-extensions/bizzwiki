@@ -34,9 +34,13 @@ class CacheToolsClass extends ExtensionClass
 			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
-	public function MW_NOCLIENTCACHING( &$parser, &$varcache, &$ret )
+	public function MW_noclientcaching( &$parser, &$varcache, &$ret )
 	{
-		echo __METHOD__;
+		// The actual action of disabling the client caching process is already performed through
+		// 'ParserCache2' extension when processing 'magic words' such as this one (($noclientcaching$)).
+		// If on the contrary this function is called through the usual {{noclientcaching}} statement, then
+		// 1) If 'parser caching' is used, this statement will have limited effect
+		// 2) If 'parser caching' is not used, then this statement will have an effect everytime the page is visited.
 		global $wgOut;
 		$wgOut->enableClientCache(false);
 	}
