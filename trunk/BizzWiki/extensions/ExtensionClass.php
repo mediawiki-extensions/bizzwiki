@@ -58,6 +58,7 @@
 * Added 'AutoMethods' functionality: ExtensionClass just looks up the method list of the derived class
   and looks for the $prefix matching methods to initialize hooks, parser functions and magic words.
 * Added better support for adding 'head' and 'body' scripts whilst preserving parser caching coherency.
+* Added initialization code for '$l' variable -> stops PHP from issuing warnings
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -468,6 +469,7 @@ static $hookList = array(
 	}
 	public function getMagicWordsVariables()
 	{
+		$l = null; // stop PHP from complaining
 		if (!empty($this->ext_mgwords))
 			foreach ( $this->ext_mgwords as $key => $style )
 				if ($style==self::mw_parser_variable)
@@ -476,6 +478,7 @@ static $hookList = array(
 	}
 	public function getMagicWordsFunctions()
 	{
+		$l = null; // stop PHP from complaining
 		if (!empty($this->ext_mgwords))
 			foreach ( $this->ext_mgwords as $key => $style )
 				if ($style==self::mw_parser_function)
