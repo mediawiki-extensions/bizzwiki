@@ -268,7 +268,7 @@ require('extensions/SecureHTML/SecureHTML.php');
 	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
 require('extensions/SecureProperties/SecureProperties.php');
-require('extensions/ParserTools/ParserTools.php');
+require('extensions/ParserExt/ParserTools/ParserTools.php');
 require('extensions/FormProc/FormProc.php');
 
 require('extensions/AutoLanguage/AutoLanguage.php');
