@@ -26,3 +26,6 @@ IMPORTANT NOTES
 2) Make sure that the permissions for each file in the BizzWiki package
    are the same as for the installed Mediawiki package
    (This is especially important on Linux/Unix platforms)
+   e.g.
+   chown -R apache BizzWiki
+   chgrp -R apache BizzWiki

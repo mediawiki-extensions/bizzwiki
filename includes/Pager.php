@@ -226,11 +226,15 @@ abstract class IndexPager implements Pager {
 					$row = $this->mResult->fetchObject();
 					
 					// BizzWiki begin {{
+#						var_dump( $this );
 					if (isset( $row->page_namespace))
 						$ns = $row->page_namespace;
 					elseif (isset( $row->user_name))
 						$ns = NS_USER;
-					else echo 'Pager::getBody : no recognized namespace ';						
+					elseif ( is_object( $this->mPageHistory->mTitle ) )
+						$ns = $this->mPageHistory->mTitle->getNamespace(); 
+					else
+						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					
@@ -241,11 +245,15 @@ abstract class IndexPager implements Pager {
 				for ( $i = 0; $i < $numRows; $i++ ) {
 					$row = $this->mResult->fetchObject();
 					// BizzWiki begin {{
+#						var_dump( $this );
 					if (isset( $row->page_namespace))
 						$ns = $row->page_namespace;
 					elseif (isset( $row->user_name))
 						$ns = NS_USER;
-					else echo 'Pager::getBody : no recognized namespace ';
+					elseif ( is_object( $this->mPageHistory->mTitle ) )
+						$ns = $this->mPageHistory->mTitle->getNamespace(); 
+					else
+						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					$s .= $this->formatRow( $row );

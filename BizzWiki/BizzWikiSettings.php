@@ -14,7 +14,7 @@
 ****************************************************************************/
 
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_5');
+define('BIZZWIKI', '1_10_7');
 $bwPath = $IP.'/BizzWiki';
 
 // Base class for multiple extensions
@@ -28,7 +28,7 @@ $wgParserCacheType   = CACHE_ANYTHING;
 $wgCachePages        = true;
 
 // Disable raw html
-// (There is the extension 'addHtml' to better cover this)
+// (There is the extension 'SecureHTML' to better cover this)
 $wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension 
 					// to achieve the same goal
 
@@ -50,11 +50,14 @@ require($IP.'/includes/Namespace.php');
 
 ## }}
 
+$wgCanonicalNamespaceNames[NS_MAIN] = 'Main';
+
 // Put all the namespaces in the global variable
 $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
 
 // Subpages
 $bwNamespacesWithSubpages = array ( NS_MAIN,
+									NS_TALK,
 									NS_PROJECT,
 									NS_PROJECT_TALK,
 									NS_CATEGORY,
@@ -93,7 +96,8 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'import',
 										'importupload',										
 										'deletedhistory',
-										'deleterevision',
+										'deleterevision',	// TODO
+										'hiderevision',		// TODO
 										'block',
 										'bot',             	// TODO
 										'proxyunbannable', 	// TODO
@@ -161,7 +165,8 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
 								NS_CATEGORY, NS_CATEGORY_TALK,
 								NS_HELP, NS_HELP_TALK,
-								NS_SPECIAL
+								NS_SPECIAL,
+								NS_INTERWIKI // BizzWiki specific
 								); 
 
 	// Rights available to 'Anonymous'
@@ -286,9 +291,9 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
-require( 'extensions/ForeachFunction/ForeachFunction.php' );
+require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
 require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
-
+require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
