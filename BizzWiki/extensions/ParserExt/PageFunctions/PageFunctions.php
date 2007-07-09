@@ -13,15 +13,18 @@
 
 == Usage ==
 
-* {{#pagetitle: new title name}}
-* {{#pagesubtitle: text to be added to the page's subtitle }}
-* {{#pageexists: 'article title' }}
+* <nowiki>{{#pagetitle: new title name}}</nowiki>
+* <nowiki>{{#pagesubtitle: text to be added to the page's subtitle }}</nowiki>
+* <nowiki>{{#pageexists: 'article title' }}</nowiki>
+* <nowiki>{{#varset:variable name|value }}</nowiki>
+* <nowiki>{{#varget:variable name}}</nowiki>
 
 Of course, the same magic words can be used in the context of 'ParserCache2' i.e.
-* (($#pagetitle: new title name$))
-* (($#pagesubtitle: text to be added to the page's subtitle $))
-* (($#pageexists: 'article title' $))
-
+* <nowiki>(($#pagetitle: new title name$))</nowiki>
+* <nowiki>(($#pagesubtitle: text to be added to the page's subtitle $))</nowiki>
+* <nowiki>(($#pageexists: 'article title' $))</nowiki>
+* <nowiki>(($#varset:variable name|value $))</nowiki>
+* <nowiki>(($#varget:variable name $))</nowiki>
 
 == DEPENDANCIES ==
 * ExtensionClass extension
@@ -40,6 +43,8 @@ class PageFunctionsClass extends ExtensionClass
 	const thisType = 'other';
 	const id       = '$Id$';	
 
+	var $pageVars;
+
 	public static function &singleton( )
 	{ return parent::singleton(); }
 	
@@ -55,6 +60,7 @@ class PageFunctionsClass extends ExtensionClass
 			'url' => self::getFullUrl(__FILE__),						
 		);
 	
+		$this->pageVars = array();
 		return parent::__construct( );	
 	}
 
@@ -97,6 +103,18 @@ class PageFunctionsClass extends ExtensionClass
 		else $id = 0;
 		
 		return ($id == 0 ? false:true);		
+	}
+
+	// ===============================================================
+	public function mg_varset( &$parser ) 
+	{
+		$params = $this->processArgList( func_get_args(), true );
+		$this->pageVars[ $params[0] ] = $params[1];		
+	}
+	public function mg_varget( &$parser ) 
+	{
+		$params = $this->processArgList( func_get_args(), true );
+		return $this->pageVars[ $params[0] ];		
 	}
 
 } // end class	
