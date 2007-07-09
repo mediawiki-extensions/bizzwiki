@@ -8,8 +8,14 @@
  * Purpose:  Provides a 'magic word' interface to retrieve
  *           useful page level information.           
  *
- * Features:
- * *********
+
+== Features ==
+* Page Title change '#pagetitle'
+* Page Sub-title change '#pagesubtitle'
+* Page existence check '#pageexists'
+* Page scope variable set '#varset'
+* Page scope variable get '#varget'
+* Wikitext conditional 'show'
 
 == Usage ==
 
@@ -18,6 +24,8 @@
 * <nowiki>{{#pageexists: 'article title' }}</nowiki>
 * <nowiki>{{#varset:variable name|value }}</nowiki>
 * <nowiki>{{#varget:variable name}}</nowiki>
+* <nowiki>{{#cshow:group|text}}</nowiki>
+** Where 'group' is the user's group membership check to perform
 
 Of course, the same magic words can be used in the context of 'ParserCache2' i.e.
 * <nowiki>(($#pagetitle: new title name$))</nowiki>
@@ -25,6 +33,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * <nowiki>(($#pageexists: 'article title' $))</nowiki>
 * <nowiki>(($#varset:variable name|value $))</nowiki>
 * <nowiki>(($#varget:variable name $))</nowiki>
+* <nowiki>(($#cshow:group|text$))</nowiki>
 
 == DEPENDANCIES ==
 * ExtensionClass extension
@@ -117,5 +126,15 @@ class PageFunctionsClass extends ExtensionClass
 		return $this->pageVars[ $params[0] ];		
 	}
 
+	// ===============================================================
+	public function mg_cshow( &$parser, &$group, &$text )
+	// Conditional Show: if user is part of $group, then allow for '$text'
+	// Parser Cache friendly of 'ConditionalShowSection' extension.
+	{
+		global $wgUser;
+		$g = $wgUser->getEffectiveGroups();
+		if (in_array( $group, $g ))
+			return $text;
+	}
 } // end class	
 ?>
