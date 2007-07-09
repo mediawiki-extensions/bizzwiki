@@ -34,13 +34,12 @@ class ForeachFunctionClass extends ExtensionClass
 			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
-
-	public function mg_foreachx( &$parser, &$object, &$property, &$pattern )
+	public function mg_foreachx( &$parser, &$object, &$property, &$pattern, &$param1 = null, &$param2 = null )
 	// {{#foreachx:global object name|property name|pattern}}
 	// {{#foreachx:global object name|method name  |pattern}}	
 	// Works on 'array' exclusively.
 	{
-		$a = self::getArray( $object, $property );
+		$a = self::getArray( $object, $property, $param1, $param2 );
 		
 		if (empty( $a )) return;
 		
@@ -53,6 +52,7 @@ class ForeachFunctionClass extends ExtensionClass
 		}
 		return $result;
 	}
+
 
 	public function mg_forx( &$parser, &$object, &$prop, &$pattern, &$start, &$stop )
 	// {{#forx:global object name|property name|pattern|start index|stop index}}
@@ -74,10 +74,13 @@ class ForeachFunctionClass extends ExtensionClass
 		return $result;
 	}
 
-	private static function getArray( &$object, &$property )
+	private static function getArray( &$object, &$property, &$param1 = null, &$param2 = null )
 	{
 		if (!isset( $GLOBALS[$object] )) return null;
 		$o = $GLOBALS[$object];
+
+		if (is_array( $o ))
+			return $o;
 
 		// array = object->property
 		if (is_array( $o->$property )) 
@@ -85,7 +88,7 @@ class ForeachFunctionClass extends ExtensionClass
 
 		// array = object->property()
 		if (is_callable( array($o, $property) ))
-			$a = &$o->$property();
+			$a = &$o->$property( $param1, $param2);
 
 		return $a;		
 	}

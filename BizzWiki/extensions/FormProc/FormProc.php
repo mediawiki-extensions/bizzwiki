@@ -53,7 +53,12 @@ if ( !class_exists('ExtensionClass') )
 	echo 'ExtensionClass missing: FormProc extension will not work!';	
 else
 {
-	$wgAutoloadClasses['FormProcBaseClass'] = dirname(__FILE__) . "/FormProcBaseClass.php" ;
+
+	// create stub object.
+	require( $IP.'/includes/StubObject.php');
+	$wgAutoloadClasses['FormHelper'] = dirname(__FILE__) . "/FormHelper.php" ;
+	$bwFormHelper = new StubObject( 'bwFormHelper', 'FormHelper' );
+
 	require( "FormProcClass.php" );
 	FormProcClass::singleton();
 }
