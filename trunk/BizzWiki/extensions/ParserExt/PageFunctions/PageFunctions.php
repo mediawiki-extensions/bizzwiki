@@ -43,12 +43,9 @@ class PageFunctions extends ExtensionClass
 	{	return parent::__construct( );	}
 
 	// ===============================================================
-
-	public function pp2_pagetitle( &$wgtitle, &$title )
-	{ return $this->setTitle( $title ); }
-
 	public function mg_pagetitle( &$parser )
 	{
+
 		$params = $this->processArgList( func_get_args(), true );
 		return $this->setTitle( $params[0] );
 	}
@@ -59,10 +56,6 @@ class PageFunctions extends ExtensionClass
 	}
 
 	// ===============================================================
-
-	public function pp2_pagesubtitle( &$wgtitle, &$title )
-	{ return $this->setSubTitle( $title ); }
-
 	public function mg_pagesubtitle( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
@@ -75,10 +68,6 @@ class PageFunctions extends ExtensionClass
 	} 
 
 	// ===============================================================
-
-	public function pp2_pageexists( &$wgtitle, &$title )
-	{ return $this->doesPageExists( $title ); }
-	
 	public function mg_pageexists( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );

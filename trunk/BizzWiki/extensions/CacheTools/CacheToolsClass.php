@@ -18,6 +18,8 @@ class CacheToolsClass extends ExtensionClass
 	 
 	public static function &singleton()
 	{ return parent::singleton( );	}
+	public function setup() 
+	{ parent::setup( );	}
 	
 	function CacheToolsClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
@@ -32,12 +34,9 @@ class CacheToolsClass extends ExtensionClass
 			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
-	public function setup() 
-	{ 
-		parent::setup( );	
-	}
 	public function MW_NOCLIENTCACHING( &$parser, &$varcache, &$ret )
 	{
+		echo __METHOD__;
 		global $wgOut;
 		$wgOut->enableClientCache(false);
 	}

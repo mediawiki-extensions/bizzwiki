@@ -19,6 +19,9 @@ class ParserPhase2Class extends ExtensionClass
 	
 	const pattern = '/\(\(\$(.*)\$\)\)/siU';
 	
+	//
+	var $pageVars;
+	
 	// Extensibility
 	static $keywords;
 	
@@ -37,6 +40,8 @@ class ParserPhase2Class extends ExtensionClass
 			'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables',
 			'url' => self::getFullUrl(__FILE__),			
 		);
+		
+		$this->pageVars = array();
 	}
 	public function setup() 
 	{ parent::setup();	}
@@ -60,12 +65,90 @@ class ParserPhase2Class extends ExtensionClass
 		
 		foreach( $m[1] as $index => $str)
 		{
-			$checkExt = false;
-			
-			// (($var|variable name$))
-			// (($obj|global object name|method name$))
+			// (($magic word|... parameters...$))
 			$params = explode('|', $str);
 			$action = array_shift( $params );
+
+			global $wgParser;
+			
+			// First, look for $action in 'parser variables'
+			if (in_array( $action, $wgParser->mVariables))
+			{
+				$rl[$index] = $this->getValue( $action );
+				$found = true;
+				continue;
+			}
+
+			// If not found, check for $action in 'parser functions.
+			$function = null;
+	
+			if ( isset( $wgParser->mFunctionSynonyms[1][$action] ) ) 
+				$function = $wgParser->mFunctionSynonyms[1][$action];
+			else 
+			{
+				# Case insensitive functions
+				$function = strtolower( $action );
+				if ( isset( $wgParser->mFunctionSynonyms[0][$action] ) ) 
+					$function = $wgParser->mFunctionSynonyms[0][$action];
+				else
+					$function = false;
+			}
+		
+			if ( $function ) 
+			{
+				$found = true;
+				
+				$funcArgs = array_map( 'trim', $params );
+				$funcArgs = array_merge( array( &$wgParser) , $funcArgs );
+				$result = call_user_func_array( $wgParser->mFunctionHooks[$function], $funcArgs );
+	
+				if ( is_array( $result ) ) 
+				{
+					if ( isset( $result[0] ) ) 
+						$rl[$index] = $result[0];
+					// Extract flags into the local scope
+					// This allows callers to set flags such as nowiki, noparse, found, etc.
+					// extract( $result );
+				} else 
+					$rl[ $index ] = $result;
+			}
+
+		} // end foreach
+
+		// we found some dynamic variables, disable client side caching.
+		// parser caching is not affected.
+		if ( $found )
+			$op->enableClientCache( false );
+
+		$this->replaceList( $text, $m, $rl );
+
+		return true; // be nice with other extensions.
+	}
+	private function getList ( &$text )
+	{
+		// find the (($...$)) matches
+		$r = preg_match_all(self::pattern, $text, $m );	
+		
+		return $m;
+	}
+	private function getValue( $varid )
+	{
+		// ask our friendly MW parser for its help.
+		global $wgParser;
+		$value = $wgParser->getVariableValue( $varid );
+		
+		return $value;
+	}
+	private function replaceList( &$text, &$source, &$target )
+	{
+		foreach( $source[0] as $index => $marker )
+			$text = str_replace( $marker, $target[$index], $text );	
+	}
+
+} // end class
+
+
+/*
 			switch ($action)
 			{
 				// only variables accessible through the parser
@@ -101,165 +184,25 @@ class ParserPhase2Class extends ExtensionClass
 						$rl[$index] = $GLOBALS[$gvar];
 					$found = true;						
 					break;
-				case 'foreachx':  // just to align the name with 'ForeachFunctions' extension
-					$obj = array_shift( $params );
-					$pro = array_shift( $params );  // array property
-					$pat = array_shift( $params );  // pattern
-					$rl[$index] = self::doForeachx( $obj, $pro, $pat );
-					$found = true;						
-					break;
-					// for (i=$start$;i<$stop$;i++)
-				case 'forx':
-					$obj = array_shift( $params );
-					$pro = array_shift( $params );  // array property
-					$pat = array_shift( $params );  // pattern
-					$start=array_shift( $params );  // start i.e. i=$start$
-					$stop =array_shift( $params );  // stop i.e. i<$stop$
-					$rl[$index] = self::doForx( $obj, $pro, $pat, $start, $stop );
-					$found = true;											
-					break;
+					// page scope variable set
 				case 'set':
+					$var   = array_shift( $params );
+					$value = array_shift( $params );  
+					$this->pageVars[ $var ] = $value;
 					break;				
+					// page scope variable get					
 				case 'get':
+					$var   = array_shift( $params );
+					if (isset( $this->pageVars[$var] ) )
+						$value = $this->pageVars[$var];
+					else $value = null;
+					$rl[$index] = $value;
 					break;
 				default:
 					$checkExt = true;
 					break;	
 			}
+*/
 
-		// if we haven't found in the 'core keywords', try the extensions based keywords.
-		if ($checkExt && !empty(self::$keywords) )
-			if (array_key_exists( $action, self::$keywords ) )
-			{
-				$callback = self::$keywords[ $action ];
-				$object = $callback[0];
-				$method = $callback[1];				
 
-				$func = get_class( $object ) . '::' . $method;
-				$callback = array( $object, $method );
-				
-				if (!is_array( $params ))	$params = array( $params );  // paranoia
-				if (empty( $params ))		$params = null;
-					
-				$found = true;
-				
-				// give some context to the extension (i.e. title object)
-				global $wgTitle;
-				$params = array_merge( array( &$wgTitle ), $params );
-				
-				$rl[$index] = call_user_func_array( $callback, $params );
-			}
-
-		}
-		
-		// we found some dynamic variables, disable client side caching.
-		// parser caching is not affected.
-		if ( $found )
-			$op->enableClientCache( false );
-
-		$this->replaceList( $text, $m, $rl );
-
-		return true; // be nice with other extensions.
-	}
-	public static function doForeachx( &$object, &$property, &$pattern )
-	{
-		$a = self::getArray( $object, $property );
-		
-		if (empty( $a )) return;
-		
-		$result = '';
-		$index = 0;
-		foreach( $a as $key => $value )
-		{
-			$result .= self::replaceVars( $pattern,  $key, $value, $index );
-			$index++;
-		}
-		return $result;
-	}
-	public static function doForx( &$obj, &$pro, &$pat, &$start, &$stop )
-	{
-		$a = self::getArray( $obj, $pro );
-		
-		if (empty( $a )) return;
-		
-		$result = '';
-		for ( $index= $start; $index < $stop; $index++ )
-		{
-			$key = $index;
-			$value = $a[ $key ];
-			$result .= self::replaceVars( $pat,  $key, $value, $index );
-		}
-			
-		return $result;
-	}
-	private static function getArray( &$object, &$property )
-	{
-		if (!isset( $GLOBALS[$object] )) return null;
-		$o = $GLOBALS[$object];
-
-		// array = object->property
-		if (is_array( $o->$property )) 
-			$a = &$o->$property;
-
-		// array = object->property()
-		if (is_callable( array($o, $property) ))
-			$a = &$o->$property();
-
-		return $a;		
-	}
-	public static function replaceVars( &$pattern, &$key, &$value, &$index )
-	{
-		// find $key$ , $value$, $index$ variables in the pattern
-		$r  = str_replace( '$key$',   $key, $pattern );			
-		$r2 = str_replace( '$value$', $value, $r );
-		$r3 = str_replace( '$index$', $index, $r2 );		
-		
-		return $r3;
-	}
-	private function getList ( &$text )
-	{
-		// find the (($...$)) matches
-		$r = preg_match_all(self::pattern, $text, $m );	
-		
-		return $m;
-	}
-	private function getValue( $varid )
-	{
-		// ask our friendly MW parser for its help.
-		global $wgParser;
-		$value = $wgParser->getVariableValue( $varid );
-		
-		return $value;
-	}
-	private function replaceList( &$text, &$source, &$target )
-	{
-		foreach( $source[0] as $index => $marker )
-			$text = str_replace( $marker, $target[$index], $text );	
-	}
-
-	function callObjMethod( &$obj, &$method, &$p )
-	{
-		$p = array_values( $p );
-		switch ( count( $p ) ) 
-		{
-			case 0:
-				return $obj->$method( );
-			case 1:
-				return $obj->$method( $p[0] );
-			case 2:
-				return $obj->$method( $p[0], $p[1] );
-			case 3:
-				return $obj->$method( $p[0], $p[1], $p[2] );
-			case 4:
-				return $obj->$method( $p[0], $p[1], $p[2], $p[3] );
-			case 5:
-				return $obj->$method( $p[0], $p[1], $p[2], $p[3], $p[4] );
-			case 6:
-				return $obj->$method( $p[0], $p[1], $p[2], $p[3], $p[4], $p[5] );
-			default:
-				throw new MWException( "Too many arguments to ".__METHOD__ );
-		}
-	}
-
-} // end class
 ?>
