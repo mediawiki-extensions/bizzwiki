@@ -20,7 +20,12 @@ class SecurePropertiesClass extends ExtensionClass
 		
 	const actionGet = 0;
 	const actionSet = 1;
-	const actionFnc = 2;	
+	const actionGGet = 2;
+	const actionGSet = 3;
+	const actionFnc = 4;	
+	
+	const gobject   = 0;
+	const gvariable = 1;
 	
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
@@ -72,10 +77,24 @@ class SecurePropertiesClass extends ExtensionClass
 		$args = func_get_args();
 		return $this->process( $args, self::actionFnc );
 	}
+	public function mg_gg( )
+	// {{#gg:global variable}}
+	// (($#gg|global variable$))
+	{
+		$args = func_get_args();
+		return $this->process( $args, self::actionGGet, self::gvariable );
+	}
+	public function mg_gs( )
+	// {{#gs:global variable}}
+	// (($#gs|global variable|value$))
+	{
+		$args = func_get_args();
+		return $this->process( $args, self::actionGSet, self::gvariable  );
+	}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-	private function process( &$args, $action = self::actionGet )
+	private function process( &$args, $action = self::actionGet, $type = self::gobject )
 	{
 		$parser = $args[0];
 		
@@ -88,8 +107,13 @@ class SecurePropertiesClass extends ExtensionClass
 		$param2               = $args[4];
 		$param3               = $args[5];
 				
-		if ( !is_object( $obj = $GLOBALS[$object] ) ) 
-			return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
+		if ($type == self::gobject)
+			if ( !is_object( $obj = $GLOBALS[$object] ) ) 
+				return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
+
+		if ($type == self::gvariable)
+			if ( !isset( $GLOBALS[$object] ) ) 
+				return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
 
 		switch( $action )
 		{
@@ -99,7 +123,12 @@ class SecurePropertiesClass extends ExtensionClass
 				$obj->$property = $value;					
 				return null;
 			case self::actionFnc:
-				return $obj->$fnc();					
+				return $obj->$fnc();
+			case self::actionGGet:
+				return $GLOBALS[ $object ];
+			case self::actionGSet:
+				$GLOBALS[ $object ] = $property;
+				return null;					
 		}
 	}
 

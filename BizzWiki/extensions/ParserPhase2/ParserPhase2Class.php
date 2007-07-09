@@ -53,8 +53,11 @@ class ParserPhase2Class extends ExtensionClass
 			$params = explode('|', $str);
 			$action = array_shift( $params );
 
-			global $wgParser;
-			global $wgContLang;
+			global $wgParser, $wgTitle, $wgContLang;
+
+			// check if the 'mTitle' property is set
+			if (!is_object($wgParser->mTitle))
+				$wgParser->mTitle = $wgTitle;
 
 			$varname = $wgContLang->lc($action);
 			$idl = MagicWord::getVariableIDs();
