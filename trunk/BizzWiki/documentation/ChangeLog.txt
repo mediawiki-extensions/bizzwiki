@@ -105,4 +105,10 @@ REL1_10_6:
 - Adjusted 'Log/block' browse right for '*' group
 - FileManager: disabled client side caching upon accessing NS_FILESYSTEM
 - Added 'importupload' to managed rights
+==========
+REL1_10_7:
+- SecureProperties: added global variable 'get' and 'set' operations
+- ParserPhase2: fixed an issue with $wgParser not setting mTitle property when needed
+- Added 'NS_INTERWIKI' accessible to '*'
+- Fixed page history for revision level policing
 

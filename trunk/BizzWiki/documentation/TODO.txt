@@ -70,3 +70,15 @@ SpecialPagesManager
 RecentChanges
 =============
 * Enable enhanced view with Javascript by default
+
+Template Links updating:
+========================
+* It would seem that 'parser cached' entries are not kept up-to-date when when templates are updated
+** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
+
+PageHistory:
+============
+* Verify Rights Management...  breaks Pager.php
+** Pager.php  is passed 'revision' table rows --> no namespace available to work with easily !  (FIXED)
+
+
