@@ -390,8 +390,6 @@ static $hookList = array(
 			if ( $isVar )	$this->varList[] = $var;			
 			if ( $isFnc )	$this->fncList[] = $fnc;			
 			if ( $isHook )	$this->hokList[] = $hok;
-			
-			#echo 'method: '.$method.' isTag: '.$isTag.' isVar: '.$isVar.' isFnc: '.$isFnc.' isHook: '.$isHook.' test 1:'.$isHookTest1.' test 2:'.$isHookTest2.' <br/>';
 		}
 	}
 	private function initMagicWordsList()
@@ -415,8 +413,7 @@ static $hookList = array(
 					$magicwords [$key] = array( 0, $key );
 					break;
 				case self::mw_parser_variable:
-					$mw = self::$mw_prefix.$key;
-					$magicwords [ defined($mw) ? constant($mw):$mw ] = array( 0, $key );
+					$magicwords [ defined($key) ? constant($key):$key ] = array( 0, $key );
 					break;					
 			}
 		}
@@ -427,7 +424,7 @@ static $hookList = array(
 		$l = $this->getMagicWordsVariables();
 		if (!empty( $l ))		
 			foreach ( $l as $index => $key )
-				$mw[] = self::$mw_prefix.$key;
+				$mw[] = $key;
 
 		return true;
 	} 
@@ -436,11 +433,11 @@ static $hookList = array(
 		$l = $this->getMagicWordsVariables();
 		if (!empty( $l ))
 			foreach ( $l as $index => $key )
-				$mw[] = constant( self::$mw_prefix.$key  );
+				$mw[] = constant( $key  );
 
 		return true;
 	} 
-	public function hookParserGetVariableValueSwitch( &$parser, &$varCache, &$varid, &$ret )
+	public function hookParserGetVariableValueSwitch( &$parser, &$varCache, &$id, &$ret )
 	{
 		$l = $this->getMagicWordsVariables();
 		
@@ -448,18 +445,10 @@ static $hookList = array(
 
 		// when called through {{magic word here}}
 		// will call the method "MW_magic_word"
-		$id = substr($varid,strlen(self::$mw_prefix));
 		if ( in_array( $id, $l ) )
 		{
-			#echo __METHOD__.$varid.'0! <br/>';			
-			$this->$varid( $parser, $varCache, $ret );	
-		}
-		// when called through (($magic word here$))
-		if ( in_array( $varid, $l ) )
-		{
-			#echo __METHOD__.$varid.'1! <br/>';
-			$fnc = self::$mw_prefix.$varid;
-			$this->$fnc( $parser, $varCache, $ret );	
+			$method= self::$mw_prefix.$id;	
+			$this->$method( $parser, $varCache, $ret );	
 		}
 		return true;
 	}

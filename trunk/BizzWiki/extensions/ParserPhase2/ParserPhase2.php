@@ -17,26 +17,11 @@ variables upon page view whilst still preserving the valuable job performed by t
 == Features ==
 * Integrates with the standard Mediawiki Parser Cache
 * Provides a simple 'magic word' based interface to standard Mediawiki variables
-* Provides a simple 'magic word' based interface to global objects->methods
+* Does not handle 'nested' magic words e.g. (($ magic word1 | (($magic word 2$)) $))
 
 == Usage ==
-(($var|variable$))
+(($magic word$))
 :Where 'variable' is a standard Mediawiki magic word e.g. CURRENTTIME, REVISIONID etc.
-
-(($obj|object|method|param 1...$))
-:Where 'object' is a global object
-:Where 'method' is a publically available method of the above mentionned object
-:Where 'param X' is a list of parameters
-
-(($gset|global variable name|value$))
-
-(($gget|global variable name$))
-
-(($foreachx|global object name|property or method name|pattern$))
-:Where 'pattern' can be used with the variables $key$, $value$, $index$
-
-(($forx|global object name|property or method name|pattern|start index|stop index$))
-:Array is referenced like this: $value = $array[ $index ]
 
 == Dependancy ==
 * ExtensionClass extension
@@ -51,9 +36,7 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 </source>
 
 == History ==
-* added 'obj' capability
 * fixed client side caching logic due to a bug in PHP's preg_match_all function
-* added 'gset' and 'gget' functions
 
 == Code ==
 </wikitext>*/
