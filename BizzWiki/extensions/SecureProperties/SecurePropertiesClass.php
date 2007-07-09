@@ -18,8 +18,6 @@ class SecurePropertiesClass extends ExtensionClass
 	const thisType = 'other';
 	const id       = '$Id$';	
 		
-	//
-	static $mgwords = array( 'pg', 'ps','pf' );
 	const actionGet = 0;
 	const actionSet = 1;
 	const actionFnc = 2;	
@@ -33,7 +31,7 @@ class SecurePropertiesClass extends ExtensionClass
 	
 	function SecurePropertiesClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
 	{
-		parent::__construct( self::$mgwords );
+		parent::__construct( );
 
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
@@ -54,23 +52,28 @@ class SecurePropertiesClass extends ExtensionClass
 
 	public function mg_pg( )
 	// {{#pg:object|property}}
+	// (($#pg|object|property$))
 	{
 		$args = func_get_args();
 		return $this->process( $args, self::actionGet );
 	}
 
 	public function mg_ps( )
-	// {{#pg:object|property name|value}}
+	// {{#ps:object|property name|value}}
+	// (($#ps|object|property|value$))	
 	{
 		$args = func_get_args();
 		return $this->process( $args, self::actionSet );
 	}
 	public function mg_pf( )
-	// {{#pg:object|function name}}
+	// {{#pf:object|function name}}
+	// (($#pf|object|function name$))	
 	{
 		$args = func_get_args();
 		return $this->process( $args, self::actionFnc );
 	}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	private function process( &$args, $action = self::actionGet )
 	{

@@ -14,6 +14,13 @@ Enables getting/setting global object properties securily (operations are only a
 == Usage ==
 * Property 'get': <nowiki>{{#pg:global object name|property}}</nowiki>
 * Property 'set': <nowiki>{{#ps:global object name|property|value}}</nowiki>
+* Method call: <nowiki>{{#pf:global object name|method name}}</nowiki>
+
+== Notes ==
+Of course, those functions can be called in the context of 'ParserPhase2':
+* Property 'get': <nowiki>(($#pg|global object name|property$))</nowiki>
+* Property 'set': <nowiki>(($#ps|global object name|property|value$))</nowiki>
+* Method call: <nowiki>(($#pf|global object name|method name$))</nowiki>
 
 == Examples ==
 Current user name: {{#pg:wgUser|mName}}
