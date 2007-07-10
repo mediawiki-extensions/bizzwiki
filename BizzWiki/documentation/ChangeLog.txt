@@ -112,6 +112,6 @@ REL1_10_7:
 - Added 'NS_INTERWIKI' accessible to '*'
 - Fixed page history for revision level policing
 - ForeachFunction: added security through only allowing 'protected' pages
+- ForeachFunction: added 'array of arrays' iteration capability
 - Added 'PermissionFunctions' extension
--
-
+- 

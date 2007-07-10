@@ -39,7 +39,7 @@ class PermissionFunctionsClass extends ExtensionClass
 // Functions which are meant to be accessed through 'ParserPhase2' functionality
 
 
-	public function mg_checkPermission( &$parser, $requiredRight = 'read' )
+	public function mg_checkpermission( &$parser, $requiredRight = 'read' )
 	// redirects to the standard 'Permission Error' page if the user lacks the $requiredRight
 	{
 		global $wgUser;
@@ -55,10 +55,23 @@ class PermissionFunctionsClass extends ExtensionClass
 	public static function getpermissionline( $group, $namespace )
 	// This function is meant to be used in conjuction with 'Hierarchical Namespace Permission' extension.
 	{
-		if (!class_exists('hnpClass')) return;
+		if (!class_exists('hnpClass'))
+			return "<b>PermissionFunctions:</b> ".wfMsg('error')." <i>Hierarchical Namespace Permission Extension</i>";		
 		return hnpClass::getPermissionGroupNamespace( $group, $namespace );
 	}
 
+	public static function usercan( &$user, &$ns, &$pt, &$action )
+	{
+		if (!class_exists('hnpClass')) 
+			return "<b>PermissionFunctions:</b> ".wfMsg('error')." <i>Hierarchical Namespace Permission Extension</i>";
+		
+		if ( !is_object( $user ) )
+		{
+			global $wgUser;
+			$user = &$wgUser;
+		}
+		return hnpClass::userCanInternal( $user, $ns, $pt, $action );
+	}
 } // end class.
 
 ?>
