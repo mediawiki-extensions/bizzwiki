@@ -452,7 +452,7 @@ class hnpClass
 		// Check if we have a '~' for the namespace part
 		foreach ( $r as $index => $entry )
 			if ( ( $entry[1] == '~' ) || ($entry[1] == $namespace) )
-				$result[ $entry[2] ] = $entry[3];
+				$result[] = array( $entry[2] => $entry[3] );
 
 		return $result;
 	}
