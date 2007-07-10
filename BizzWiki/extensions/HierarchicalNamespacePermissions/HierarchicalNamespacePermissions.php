@@ -125,14 +125,16 @@
  *    "action" field.
  *  - Corrected some corner cases
  * -------------------------------
- * Moved to BizzWiki project
- *  
- *  - added singleton functionality
- *  - added hook support for 'UserIsAllowed'
- *  - added namespace level action checking.
- *  - TODO add namespace-independant right checking.
- *  - added group hierarchy functionality.
- */
+== History ==
+* Moved to BizzWiki project
+* added singleton functionality
+* added hook support for 'UserIsAllowed'
+* added namespace level action checking.
+* TODO add namespace-independant right checking.
+* added group hierarchy functionality.
+* Added 'getPermissionGroupNamespace' (does not affect core functionality)
+
+*/
 
 	// instantiate one
 hnpClass::singleton();
@@ -424,6 +426,35 @@ class hnpClass
 		if (empty( $group )) return false;
 		
 		return in_array( $group, $user->getEffectiveGroups() );
+	}
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// Query Helper functions
+// These functions do not change the base functionality of the extension
+// but rather served to query the extension for information.
+	
+	public static function getPermissionGroupNamespace( &$group, &$namespace )
+	// This function returns an array of all the rights for $group on $namespace
+	{
+		$result = null;
+		
+		global $wgGroupPermissions;
+		
+		// first, get group rights
+		$a = $wgGroupPermissions[ $group ];
+
+		// Explode the array for it to be more manageable
+		// ns|10|~|read value=1 
+		// 0   1 2  3
+		foreach ( $a as $key => $value )
+			$r[] = explode( '|', $key );
+
+		// Check if we have a '~' for the namespace part
+		foreach ( $r as $index => $entry )
+			if ( ( $entry[1] == '~' ) || ($entry[1] == $namespace) )
+				$result[ $entry[2] ] = $entry[3];
+
+		return $result;
 	}
 
 } # end class definition

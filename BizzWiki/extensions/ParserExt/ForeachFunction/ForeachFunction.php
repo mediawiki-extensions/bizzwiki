@@ -18,6 +18,10 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 ** The global object's property will be retrieved; the property should be an 'array'
 * <code>{{#foreachx:global object name|method|pattern}}</code>
 ** The global object's method will be called: an array is expected as return value
+* <code>{{#foreachx:global array variable|key|pattern}}</code>
+** The global array variable will be referenced using 'key' as key
+* <code>{{#foreachx:global array variable||pattern}}</code>
+** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
 * ExtensionClass extension (v>=306)

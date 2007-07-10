@@ -15,6 +15,10 @@ class ForeachFunctionClass extends ExtensionClass
 	const thisName = 'ForeachFunctionClass';
 	const thisType = 'other';
 	const id       = '$Id$';	
+
+	// Namespace exemption functionality
+	static $enableExemptNamespaces = true;
+	static $exemptNamespaces;
 		
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -33,12 +37,20 @@ class ForeachFunctionClass extends ExtensionClass
 			'description' => 'Looping functions for global objects using parser functions',
 			'url' => self::getFullUrl(__FILE__),			
 		);
+
+		// default exempt namespaces from the BizzWiki platform.
+		// won't affect installs of the extension outside the BizzWiki platform.
+		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
+		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
 	}
 	public function mg_foreachx( &$parser, &$object, &$property, &$pattern, &$param1 = null, &$param2 = null )
 	// {{#foreachx:global object name|property name|pattern}}
 	// {{#foreachx:global object name|method name  |pattern}}	
 	// Works on 'array' exclusively.
 	{
+		if ( !$this->isAllowed( $parser->mTitle ) ) 
+			return "<b>ForeachFunctions:</b> ".wfMsg('badaccess');
+		
 		$a = self::getArray( $object, $property, $param1, $param2 );
 		
 		if (empty( $a )) return;
@@ -59,6 +71,9 @@ class ForeachFunctionClass extends ExtensionClass
 	// {{#forx:global object name|method name  |pattern|start index|stop index}}	
 	// Works on 'array' exclusively.
 	{
+		if ( !$this->isAllowed( $parser->mTitle ) ) 
+			return "<b>ForeachFunctions:</b> ".wfMsg('badaccess');
+		
 		$a = self::getArray( $object, $prop );
 		
 		if (empty( $a )) return;
@@ -74,23 +89,29 @@ class ForeachFunctionClass extends ExtensionClass
 		return $result;
 	}
 
-	private static function getArray( &$object, &$property, &$param1 = null, &$param2 = null )
+	private static function getArray( &$p1, &$p2, &$param1 = null, &$param2 = null )
 	{
-		if (!isset( $GLOBALS[$object] )) return null;
-		$o = $GLOBALS[$object];
+		$o = null;
+		if (isset( $GLOBALS[$p1] ))
+			$o = $GLOBALS[$p1];
 
 		if (is_array( $o ))
-			return $o;
+			if (!empty( $p2 ))
+				return $o[$p2];
+			else
+				return $o;
 
 		// array = object->property
-		if (is_array( $o->$property )) 
-			$a = &$o->$property;
+		if (is_object( $o))
+			if (is_array( $o->$p2 )) 
+				return $o->$p2;
 
 		// array = object->property()
-		if (is_callable( array($o, $property) ))
-			$a = &$o->$property( $param1, $param2);
+		if (is_object($o))
+			if (is_callable( array($o, $p2) ))
+				return $o->$p2( $param1, $param2 );
 
-		return $a;		
+		return null;		
 	}
 	public static function replaceVars( &$pattern, &$key, &$value, &$index )
 	{
@@ -101,6 +122,23 @@ class ForeachFunctionClass extends ExtensionClass
 		
 		return $r3;
 	}
+
+	private function isAllowed( &$title )
+	{ 
+		if (self::$enableExemptNamespaces)
+		{
+			$ns = $title->getNamespace();
+			if ( !empty(self::$exemptNamespaces) )
+				if ( in_array( $ns, self::$exemptNamespaces) )
+					return true;	
+		}
+		
+		// check protection status
+		if ( $title->isProtected( 'edit' ) ) return true;
+		
+		return false;
+	}
+
 } // end class.
 
 ?>
