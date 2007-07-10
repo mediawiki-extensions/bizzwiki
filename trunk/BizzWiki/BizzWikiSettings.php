@@ -294,6 +294,7 @@ require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
 require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
 require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
+require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

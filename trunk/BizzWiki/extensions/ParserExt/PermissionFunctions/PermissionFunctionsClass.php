@@ -40,6 +40,7 @@ class PermissionFunctionsClass extends ExtensionClass
 
 
 	public function mg_checkpermission( &$parser, $requiredRight = 'read' )
+	// (($ #checkpermission|required right $))
 	// redirects to the standard 'Permission Error' page if the user lacks the $requiredRight
 	{
 		global $wgUser;
@@ -54,6 +55,7 @@ class PermissionFunctionsClass extends ExtensionClass
 
 	public static function getpermissionline( $group, $namespace )
 	// This function is meant to be used in conjuction with 'Hierarchical Namespace Permission' extension.
+	// E.g. (($#foreachx|bwPermissionFunctions|getpermissionline| ... $))
 	{
 		if (!class_exists('hnpClass'))
 			return "<b>PermissionFunctions:</b> ".wfMsg('error')." <i>Hierarchical Namespace Permission Extension</i>";		
