@@ -15,6 +15,8 @@ Collection of permission management functionality.
 * Magic Word 'checkPermission' : verifies if 'user' is allowed 'right' and if *not* then the page 'Permission Error' is served.
 ** This function is rather useful for building 'forms'
 ** Rather only helpful when used in a 'ParserPhase2' context (e.g. (($#checkpermission|edit$))  )
+* Static function 'getpermissionline'
+** Meant to be itereated with using 'ForeachFunction' magic words
 
 == Usage ==
 
@@ -41,6 +43,6 @@ if ( !class_exists('ExtensionClass') )
 else
 {
 	require( "PermissionFunctionsClass.php" );
-	PermissionFunctionsClass::singleton();
+	$bwPermissionFunctions = PermissionFunctionsClass::singleton();
 }
 ?>
