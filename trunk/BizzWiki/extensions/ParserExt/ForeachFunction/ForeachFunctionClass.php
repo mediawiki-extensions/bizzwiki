@@ -44,6 +44,7 @@ class ForeachFunctionClass extends ExtensionClass
 		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
 	}
 	public function mg_foreachx( &$parser, &$object, &$property, &$pattern, &$param1 = null, &$param2 = null )
+	// {{#foreachx:global variable name||pattern}}	
 	// {{#foreachx:global object name|property name|pattern}}
 	// {{#foreachx:global object name|method name  |pattern}}	
 	// Works on 'array' exclusively.
@@ -62,6 +63,27 @@ class ForeachFunctionClass extends ExtensionClass
 			$result .= self::replaceVars( $pattern,  $key, $value, $index );
 			$index++;
 		}
+		return $result;
+	}
+	public function mg_foreachy( &$parser, &$object, &$property, &$pattern, &$param1 = null, &$param2 = null )
+	// {{#foreachy:global variable name||pattern}}	
+	// {{#foreachy:global object name|property name|pattern}}
+	// {{#foreachy:global object name|method name  |pattern}}	
+	// Works on 'array' exclusively.
+	{
+		if ( !$this->isAllowed( $parser->mTitle ) ) 
+			return "<b>ForeachFunctions:</b> ".wfMsg('badaccess');
+		
+		$a = self::getArray( $object, $property, $param1, $param2 );
+		
+		if (empty( $a )) return;
+		
+		$result = '';
+		foreach( $a as $index => $b )
+			if (!empty( $b ))
+				foreach( $b as $key => $value )
+					$result .= self::replaceVars( $pattern,  $key, $value, $index );
+
 		return $result;
 	}
 

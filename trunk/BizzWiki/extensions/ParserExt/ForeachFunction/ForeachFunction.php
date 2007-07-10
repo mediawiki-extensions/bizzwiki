@@ -14,6 +14,7 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 == Features ==
 
 == Usage ==
+=== Simple Array ===
 * <code>{{#foreachx:global object name|property|pattern}}</code>
 ** The global object's property will be retrieved; the property should be an 'array'
 * <code>{{#foreachx:global object name|method|pattern}}</code>
@@ -21,6 +22,15 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 * <code>{{#foreachx:global array variable|key|pattern}}</code>
 ** The global array variable will be referenced using 'key' as key
 * <code>{{#foreachx:global array variable||pattern}}</code>
+** The global array variable will be referenced (as a whole)
+=== Array of Arrays ===
+* <code>{{#foreachy:global object name|property|pattern}}</code>
+** The global object's property will be retrieved; the property should be an 'array'
+* <code>{{#foreachy:global object name|method|pattern}}</code>
+** The global object's method will be called: an array is expected as return value
+* <code>{{#foreachy:global array variable|key|pattern}}</code>
+** The global array variable will be referenced using 'key' as key
+* <code>{{#foreachy:global array variable||pattern}}</code>
 ** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
