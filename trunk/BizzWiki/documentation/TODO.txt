@@ -83,3 +83,7 @@ PageHistory:
 ** Pager.php  is passed 'revision' table rows --> no namespace available to work with easily !  (FIXED)
 
 
+Stub Candidates:
+================
+* RawRight -> YES
+* ViewSource Right -> NO

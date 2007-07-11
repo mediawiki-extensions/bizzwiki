@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || XYZ.php
+| <b>File</b> || EmailLog.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -15,31 +15,34 @@
 
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
+* StubManager Extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
+* Download this extension and place it in the extension directory under 'EmailLog' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+require('extensions/StubManager.php');
+StubManager::createStub( 'EmailLog', $IP.'/extensions/EmailLog/EmailLog.php', array( 'EmailUserComplete' ) );
 </source>
 
 == History ==
 
 == Code ==
 </wikitext>*/
+$wgExtensionCredits['other'][] = array( 
+	'name'    => 'EmailLog',
+	'version' => StubManager::getRevisionId('$Id$'),
+	'author'  => 'Jean-Lou Dupont',
+	'description' => 'Provides logging of user-to-user emailing activities', 
+);
 
 class EmailLog
 {
-	public function __construct()
-	{
-	}
 	
 	public function hEmailUserComplete( $to, $from, $subject, $text )
 	{
-#		echo __METHOD__.' text: '.$text.'<br/>';
 		
 		return true;
 	}	
