@@ -13,23 +13,25 @@
 
 == Features ==
 
+== Theory of Operation ==
+
+=== Job getPartnerRC ==
+
+=== Job getPartnerPage ===
+
+=== Job getPartnerRevision ===
+
+=== Job getPartnerUser ===
+
+
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
 
 == Installation ==
-To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
-* Apply the following changes to 'LocalSettings.php'
-<source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/SimpleReplicator/SimpleReplicator.php');
-</source>
 
 == History ==
 
 == Code ==
 </wikitext>*/
-
-
+require('SimpleReplicatorClass.php');
 ?>

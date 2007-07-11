@@ -37,7 +37,7 @@ class FormProcClass extends ExtensionClass
 	public function hUnknownAction( $action, &$article )
 	{
 		// check if request 'action=formsubmit'
-		if ($action != 'formsubmit') return false;
+		if ($action != 'formsubmit') return true; // continue hook-chain.
 
 		$article->loadContent();
 
@@ -80,7 +80,6 @@ class FormProcClass extends ExtensionClass
 		}	
 
 		// ... then it was a page built from ground up; nothing more to do here.
-				
 		return false;
 	}
 
