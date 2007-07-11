@@ -117,4 +117,4 @@ REL1_10_7:
 - Added 'NamespaceFunctions' extension
 - Added 'StubManager' extension
 - Fixed small bug (non core, just when Special:Version is viewed in a particular case) in RawRight
-- 
+- Added 'EmailLog' extension
