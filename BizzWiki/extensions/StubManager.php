@@ -47,20 +47,83 @@ class StubManager
 	static $stubList;
 	const thisType = 'other';
 	const thisName = 'StubManager';
+	static $logTable;
 	
-	public static function createStub( $class, $filename, $hooks )
+	public static function createStub( $class, $filename, $i18nfilename = null, $hooks, $logging = false )
 	{
 		static $updateCreditsHooked = false;
+		static $initHooked = false;
+		
 		if (!$updateCreditsHooked)
 		{
 			$updateCreditsHooked = true;
 			self::setupCreditsHook();	
 		}
 		
+		if (!$initHooked)
+		{
+			$initHooked = true;
+			self::setupInit();
+		}
+		
 		global $wgAutoloadClasses;
 		$wgAutoloadClasses[$class] = $filename;
 		
-		self::$stubList[ $class ] = new Stub( $class, $hooks );
+		self::$stubList[] = array(	'class'			=> $class, 
+									'object' 		=> new Stub( $class, $hooks ),
+									'classfilename' => $filename,
+									'i18nfilename'	=> $i18nfilename,
+									'hooks'			=> $hooks,
+									'logging'		=> $logging
+									);
+	}
+	private static function setupInit()
+	{
+		global $wgExtensionFunctions;
+		$wgExtensionFunctions[] = __CLASS__.'::setup';
+	}
+	public static static function setup()
+	{
+		self::setupMessages();
+		self::setupLogging();
+	}
+	private static function setupLogging( )
+	{
+		global $wgLogTypes, $wgLogNames, $wgLogHeaders;
+
+		foreach( self::$stubList as $index => $e )
+		{
+			if ( !$e['logging'] )
+				continue;
+				
+			$class = $e['class'];
+			$log = $GLOBALS[ 'log'.$class ];
+			
+			$wgLogTypes[]       = $log;
+			$wgLogNames  [$log] = $log.'logpage';
+			$wgLogHeaders[$log] = $log.'logpagetext';
+
+		}		
+	}
+	private static function setupMessages( )
+	{
+		global $wgMessageCache;
+		
+		foreach( self::$stubList as $index => $e )
+		{
+			$i18nfilename = $e['i18nfilename'];
+			if (!empty($i18nfilename))		
+				require_once( $i18nfilename );
+			else
+				continue;
+			
+			$msg = $GLOBALS[ 'msg'.$e['class'] ];
+	
+			if (!empty( $msg ))
+				foreach( $msg as $key => $value )
+					$wgMessageCache->addMessages( $msg[$key], $key );		
+
+		}
 	}
 	private static function setupCreditsHook()
 	{
@@ -72,8 +135,8 @@ class StubManager
 		global $wgExtensionCredits;
 		
 		if (!empty( self::$stubList ))
-			foreach( self::$stubList as $classe => $obj )
-				$result .= $classe.' ';
+			foreach( self::$stubList as $index => $obj )
+				$result .= $obj['class'].' ';
 				
 		$result=trim($result);
 		

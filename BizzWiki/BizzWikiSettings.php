@@ -299,7 +299,12 @@ require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 	// Stubs
 	//  Used for rare events handling.
 require('extensions/StubManager.php');
-StubManager::createStub( 'EmailLog', $bwExtPath.'/EmailLog/EmailLog.php', array('EmailUserComplete') );
+StubManager::createStub(	'EmailLog', 
+							$bwExtPath.'/EmailLog/EmailLog.php',
+							$bwExtPath.'/EmailLog/EmailLog.i18n.php',							
+							array('EmailUserComplete'),
+							true
+						 );
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 require('extensions/SimpleReplicator/SimpleReplicator.php');
