@@ -1,5 +1,9 @@
 $Id$
 
+Job Queue
+=========
+* Show Job Queue special page
+
 User:
 ===========
 * Special:Import --> more granular right i.e. namespace level ??
@@ -27,7 +31,7 @@ SuperGroups
 3) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
    it comes down to partitioning the filesystem space for this namespace
    
-4) Delegation functionality: the capability for user X to rights to user Y
+4) Delegation functionality: the capability for user X to delegate rights to user Y
 
 5) User space partitioning: keep user groups separated under all circumstances
 6) Table creation: integration with overall installation process
@@ -77,13 +81,7 @@ Template Links updating:
 * It would seem that 'parser cached' entries are not kept up-to-date when when templates are updated
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
-PageHistory:
-============
-* Verify Rights Management...  breaks Pager.php
-** Pager.php  is passed 'revision' table rows --> no namespace available to work with easily !  (FIXED)
-
-
 Stub Candidates:
 ================
-* RawRight -> YES
+* RawRight         -> YES
 * ViewSource Right -> NO
