@@ -74,7 +74,7 @@ class RawRight extends ExtensionClass
 			$hresult = '<b>Hierarchical Namespace Permissions extension <i>not</i> operational</b>';
 
 		// check directly in the source if the hook is present 
-		$rawpage = @file_get_contents($IP.'/includes/RawPage.php');
+		$rawpage = @file_get_contents('includes/RawPage.php');
 		
 		if (!empty($rawpage))
 			$r = preg_match('/RawPageViewBeforeOutput/si',$rawpage);
