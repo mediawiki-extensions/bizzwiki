@@ -49,23 +49,19 @@ class StubManager
 	const thisName = 'StubManager';
 	static $logTable;
 	
+	/*
+		$class: 		class of object to create when 'destubbing'
+		$filename:		filename where class definition resides
+		$i18nfilename:	filename where internationalisation messages reside
+		$hooks:			array of hooks
+		$logging:		if logging support is required
+	*/
 	public static function createStub( $class, $filename, $i18nfilename = null, $hooks, $logging = false )
 	{
-		static $updateCreditsHooked = false;
-		static $initHooked = false;
-		
-		if (!$updateCreditsHooked)
-		{
-			$updateCreditsHooked = true;
-			self::setupCreditsHook();	
-		}
-		
-		if (!$initHooked)
-		{
-			$initHooked = true;
-			self::setupInit();
-		}
-		
+		// need to wait for the proper timing
+		// to initialize things around.
+		self::setupInit();
+
 		global $wgAutoloadClasses;
 		$wgAutoloadClasses[$class] = $filename;
 		
@@ -79,6 +75,11 @@ class StubManager
 	}
 	private static function setupInit()
 	{
+		static $initHooked = false;
+		if ($initHooked)
+			return;
+		$initHooked = true;
+		
 		global $wgExtensionFunctions;
 		$wgExtensionFunctions[] = __CLASS__.'::setup';
 	}
@@ -86,6 +87,7 @@ class StubManager
 	{
 		self::setupMessages();
 		self::setupLogging();
+		self::setupCreditsHook();			
 	}
 	private static function setupLogging( )
 	{
@@ -122,11 +124,15 @@ class StubManager
 			if (!empty( $msg ))
 				foreach( $msg as $key => $value )
 					$wgMessageCache->addMessages( $msg[$key], $key );		
-
 		}
 	}
 	private static function setupCreditsHook()
 	{
+		static $updateCreditsHooked = false;
+		if ($updateCreditsHooked)
+			return;
+		$updateCreditsHooked = true;
+		
 		global $wgHooks;
 		$wgHooks['SpecialVersionExtensionTypes'][] = 'StubManager::hUpdateExtensionCredits';
 	}
