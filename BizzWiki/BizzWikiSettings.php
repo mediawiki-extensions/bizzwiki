@@ -12,10 +12,10 @@
 	
 
 ****************************************************************************/
-
 // Define the base of BizzWiki
 define('BIZZWIKI', '1_10_7');
-$bwPath = $IP.'/BizzWiki';
+$bwPath    = $IP.'/BizzWiki';
+$bwExtPath = $IP.'/BizzWiki/extensions';
 
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
@@ -295,6 +295,14 @@ require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
 require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
 require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
 require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
+
+	// Stubs
+	//  Used for rare events handling.
+require('extensions/StubManager.php');
+StubManager::createStub( 'EmailLog', $bwExtPath.'/EmailLog/EmailLog.php', array('EmailUserComplete') );
+
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+require('extensions/SimpleReplicator/SimpleReplicator.php');
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

@@ -1,8 +1,9 @@
 $Id$
 
-User Rights
+User:
 ===========
 * Special:Import --> more granular right i.e. namespace level ??
+* User Preferences change: add LOG entry 
 
 %%%%%%%%%%%%
 * Captcha !!
@@ -15,7 +16,7 @@ Replication functionality:
 * PHP scripts / Cron Jobs for Replicator
 * Article::doDeleteArticle : RecentChanges table modified...
 * Article::editUpdates : RecentChanges tables modified, 
-  hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
+** Hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
 
 SuperGroups
 -----------

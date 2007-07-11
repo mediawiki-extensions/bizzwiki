@@ -291,10 +291,6 @@ static $hookList = array(
 		// %%%%%%%%%%%%%%%%%%%%%%%%%%
 		#echo 'setup: '.$this->className.'<br/>';
 		$this->setupAutoMethods();
-		#var_dump( $this->tagList );
-		#var_dump( $this->varList );
-		#var_dump( $this->fncList );
-		#var_dump( $this->hokList );
 		
 		$this->initMagicWordsList();
 		// %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -540,7 +536,6 @@ static $hookList = array(
 	}
 	public function initParams( &$alist, &$templateElements, $removeNotInTemplate = true )
 	{
-			#var_dump( $alist );
 		// v1.92 feature.
 		if ($removeNotInTemplate)
 			foreach( $templateElements as $index => &$el )
