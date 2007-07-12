@@ -329,7 +329,7 @@ StubManager::createStub(	'UserSettingsChangedLog',
 StubManager::createStub(	'WatchLog', 
 							$bwExtPath.'/WatchLog/WatchLog.php',
 							$bwExtPath.'/WatchLog/WatchLog.i18n.php',							
-							array('WatchArticleComplete', 'UnwatchArticleComplete','WatchArticle' ),
+							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
 							true
 						 );
 

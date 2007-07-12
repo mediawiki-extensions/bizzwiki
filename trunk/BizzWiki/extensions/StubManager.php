@@ -15,7 +15,7 @@ This extension is meant to address 'rare events' handling through class object '
 == Features ==
 
 == Usage ==
-To create a stub, use:
+To create a stub, use: 
 <code>StubManager::createStub( 'class name', 'full path filename', array of hooks );</code>
 in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code>
 

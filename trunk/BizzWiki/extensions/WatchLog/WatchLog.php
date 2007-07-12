@@ -9,7 +9,7 @@
 |}<br/><br/>
  
 == Purpose==
-Provides logging of user-to-user emailing activities.
+Provides logging of users' page watch/unwatch activities.
 
 == Dependancy ==
 * StubManager Extension
@@ -22,9 +22,9 @@ To install independantly from BizzWiki:
 <source lang=php>
 require('extensions/StubManager.php');
 StubManager::createStub(	'EmailLog', 
-							$IP.'/extensions/EmailLog/EmailLog.php',
-							$IP.'/extensions/EmailLog/EmailLog.i18n.php',							
-							array('EmailUserComplete'),
+							$IP.'/extensions/WatchLog/WatchLog.php',
+							$IP.'/extensions/WatchLog/WatchLog.i18n.php',							
+							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
 							true
 						 );
 </source>
@@ -61,18 +61,9 @@ class WatchLog
 		
 		foreach( $msg as $key => $value )
 			$wgMessageCache->addMessages( $msg[$key], $key );
-			
-		$this->skip = false;
-	}
-	public function hWatchArticle( &$user, &$article )
-	{
-		return true;
 	}
 	public function hWatchArticleComplete( &$user, &$article )
 	{
-		if ($this->skip) return true;
-		$this->skip = true;
-		
 		$message = wfMsgForContent( 'watchlog-watch-text', $article->mTitle->getPrefixedText() );
 		
 		$log = new LogPage( 'watchlog' );
@@ -84,8 +75,8 @@ class WatchLog
 	{
 		$message = wfMsgForContent( 'watchlog-unwatch-text', $article->mTitle->getPrefixedText() );
 		
-		#$log = new LogPage( 'watchlog' );
-		#$log->addEntry( 'unwatchok', $user->getUserPage(), $message );
+		$log = new LogPage( 'watchlog' );
+		$log->addEntry( 'unwatchok', $user->getUserPage(), $message );
 		
 		return true;
 	}
