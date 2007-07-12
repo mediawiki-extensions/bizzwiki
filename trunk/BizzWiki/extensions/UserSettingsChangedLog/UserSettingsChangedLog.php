@@ -13,7 +13,7 @@ Provides logging of user settings changes.
 
 == Dependancy ==
 * StubManager Extension
-* Patched '/includes/User.php' file
+* Patched '/includes/User.php' file (get from BizzWiki SVN)
 
 == Installation ==
 To install independantly from BizzWiki:

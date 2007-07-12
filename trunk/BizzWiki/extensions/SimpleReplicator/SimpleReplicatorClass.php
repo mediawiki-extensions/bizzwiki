@@ -10,8 +10,6 @@
 == Code ==
 </wikitext>*/
 
-new SimpleReplicator;
-
 class SimpleReplicator
 {
 	const actionPing = 'ping';
@@ -78,4 +76,5 @@ class SimpleReplicator
 	}
 
 } // end class
+new SimpleReplicator;
 ?>
