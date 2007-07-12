@@ -184,9 +184,8 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")]   = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
-	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;   // debugging	
-	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","raw")] = true;   // debugging		
-	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","viewsource")] = true;   // debugging			
+	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","raw")] = true;   
+	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","viewsource")] = true;
 }
 
 	// 'Users' inherit all rights from '*' (anonymous)
@@ -313,6 +312,7 @@ require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 	// Stubs
 	//  Used for rare events handling.
 require('extensions/StubManager.php');
+
 StubManager::createStub(	'EmailLog', 
 							$bwExtPath.'/EmailLog/EmailLog.php',
 							$bwExtPath.'/EmailLog/EmailLog.i18n.php',							
@@ -326,6 +326,13 @@ StubManager::createStub(	'UserSettingsChangedLog',
 							true
 						 );
 
+StubManager::createStub(	'WatchLog', 
+							$bwExtPath.'/WatchLog/WatchLog.php',
+							$bwExtPath.'/WatchLog/WatchLog.i18n.php',							
+							array('WatchArticleComplete', 'UnwatchArticleComplete','WatchArticle' ),
+							true
+						 );
+
 // ReCaptcha plug-in
 //  Some customization required below.
 //  Depending on your setup, it might be more appropriate to set these keys
@@ -335,7 +342,7 @@ StubManager::createStub(	'UserSettingsChangedLog',
 #$recaptcha_private_key = '';
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-require('extensions/SimpleReplicator/SimpleReplicator.php');
+#require('extensions/SimpleReplicator/SimpleReplicator.php');
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
@@ -362,21 +369,21 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!viewsource")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"AdminSettings.php","!viewsource")] = true;  
 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","read")]   = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","browse")] = true; 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","viewsource")] = true; 	
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","raw")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"read")]   = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"browse")] = true; 
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"viewsource")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"raw")] = true; 	
 
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"read")]   = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"browse")] = true; 
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"viewsource")] = true; 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"raw")] = true; 	
 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",		"read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",		"read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",		"browse")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",		"browse")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/*",	"browse")] = true;
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",	"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",	"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",	"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",	"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/*","browse")] = true;
 }
 
 ?>

@@ -105,7 +105,6 @@ class StubManager
 			$wgLogTypes[]       = $log;
 			$wgLogNames  [$log] = $log.'logpage';
 			$wgLogHeaders[$log] = $log.'logpagetext';
-
 		}		
 	}
 	private static function setupMessages( )
@@ -174,6 +173,8 @@ class StubManager
 
 class Stub
 {
+	static $done = false;
+	
 	var $classe;
 	var $obj;
 	
@@ -193,7 +194,7 @@ class Stub
 	function __call( $method, $args )
 	{
 		if ( $this->obj === null )
-			$obj = $this->obj = new $this->classe;
+			$obj = $this->obj = new $this->classe;  // un-stub
 		else
 			$obj = $this->obj;
 		
