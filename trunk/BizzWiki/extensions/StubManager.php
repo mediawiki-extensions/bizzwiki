@@ -81,9 +81,10 @@ class StubManager
 		$initHooked = true;
 		
 		global $wgExtensionFunctions;
-		$wgExtensionFunctions[] = __CLASS__.'::setup';
+#		$wgExtensionFunctions[] = __CLASS__.'::setup'; // PHP <v5.2.2 issues a warning on this one.
+		$wgExtensionFunctions[] = create_function( '', 'return '.__CLASS__.'::setup();' );
 	}
-	public static static function setup()
+	public static function setup()
 	{
 		self::setupMessages();
 		self::setupLogging();
@@ -140,6 +141,8 @@ class StubManager
 	{
 		global $wgExtensionCredits;
 		
+		$result = null;
+		
 		if (!empty( self::$stubList ))
 			foreach( self::$stubList as $index => $obj )
 				$result .= $obj['class'].' ';
@@ -153,6 +156,8 @@ class StubManager
 	}
 	static function getRevisionData( &$id, &$date, $d = null )
 	{
+		$date = null;
+		
 		// e.g. $Id$
 		if ($d===null)
 			$data = explode( ' ', self::id );
