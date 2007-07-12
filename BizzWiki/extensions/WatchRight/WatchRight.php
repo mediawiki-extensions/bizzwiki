@@ -50,31 +50,13 @@ class WatchRight extends ExtensionClass
 			'name'    => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Provides watch/unwatch rights. Status: ",
+			'description' => "Enforces 'watch/unwatch' rights",
 			'url' => self::getFullUrl(__FILE__),			
 		);
 	}
 	
 	public function setup()
-	{
-		parent::setup();
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
-	// setup of this hook occurs in 'ExtensionClass' base class.
-	{
-		global $wgExtensionCredits;
-
-		if (class_exists('hnpClass'))
-			$result = '<b>operational</b>';
-		else
-			$result = '<b>not operational: missing Hierarchical Namespace Permissions extension </b>';
-		
-		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'].=$result;
-				
-		return true; // continue hook-chain.
-	}
+	{	parent::setup(); }
 
 	public function hWatchArticle( &$user, &$article )
 	{
