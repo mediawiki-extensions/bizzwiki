@@ -13,15 +13,17 @@ Provides logging of user settings changes.
 
 == Dependancy ==
 * StubManager Extension
+* Patched '/includes/User.php' file
 
 == Installation ==
 To install independantly from BizzWiki:
 * Download 'StubManager' extension
 * Download this extension's file(s) and place them in the extension's directory
+* Download patched '/includes/User.php' file from BizzWiki distribution and put in '$IP./includes' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-StubManager::createStub(	'EmailLog', 
+StubManager::createStub(	'UserSettingsChangedLog', 
 							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.php',
 							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
 							array('UserSettingsChanged'),

@@ -9,10 +9,6 @@ User:
 * Special:Import --> more granular right i.e. namespace level ??
 * User Preferences change: add LOG entry 
 
-%%%%%%%%%%%%
-* Captcha !!
-
-
 Replication functionality:
 --------------------------
 * Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
@@ -42,13 +38,8 @@ Page History:
 - remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
 
 
-Email sent history: (TBD)
-===================
-* can use hook 'EmailUserComplete' to insert message in RecentChanges / Log
-
 MISC:
 =====
-- Class stubbing
 - Internationalise!
 
 FileManager:
