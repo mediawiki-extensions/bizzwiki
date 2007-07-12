@@ -1,0 +1,78 @@
+$Id$
+
+Job Queue
+=========
+* Show Job Queue special page
+
+User:
+===========
+* Special:Import --> more granular right i.e. namespace level ??
+* User Preferences change: add LOG entry 
+
+Replication functionality:
+--------------------------
+* Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
+* MW Special Page for managing the Replicator
+* PHP scripts / Cron Jobs for Replicator
+* Article::doDeleteArticle : RecentChanges table modified...
+* Article::editUpdates : RecentChanges tables modified, 
+** Hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
+
+SuperGroups
+-----------
+0) Configuration in BizzWikiSettings.php
+1) TODO special page...
+2) Internationalization...
+ 
+3) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
+   it comes down to partitioning the filesystem space for this namespace
+   
+4) Delegation functionality: the capability for user X to delegate rights to user Y
+
+5) User space partitioning: keep user groups separated under all circumstances
+6) Table creation: integration with overall installation process
+   Special page for sg table creation??
+
+Page History:
+=============
+- remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
+
+
+MISC:
+=====
+- Internationalise!
+
+FileManager:
+============
+- Reload from filesystem functionality
+  (instead of deleting & reloading)
+
+SpecialPagesManager:
+====================
+- Customized layout functionality
+
+Geshi:
+======
+- Better documentation
+
+Special:Undelete
+================
+* Fixme
+
+SpecialPagesManager
+===================
+* Logging functionality?
+
+RecentChanges
+=============
+* Enable enhanced view with Javascript by default
+
+Template Links updating:
+========================
+* It would seem that 'parser cached' entries are not kept up-to-date when when templates are updated
+** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
+
+Stub Candidates:
+================
+* RawRight         -> YES
+* ViewSource Right -> NO
