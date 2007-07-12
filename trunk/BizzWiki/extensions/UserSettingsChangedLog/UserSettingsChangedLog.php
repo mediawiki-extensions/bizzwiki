@@ -9,7 +9,7 @@
 |}<br/><br/>
  
 == Purpose==
-Provides logging of user-to-user emailing activities.
+Provides logging of user settings changes.
 
 == Dependancy ==
 * StubManager Extension
@@ -22,9 +22,9 @@ To install independantly from BizzWiki:
 <source lang=php>
 require('extensions/StubManager.php');
 StubManager::createStub(	'EmailLog', 
-							$IP.'/extensions/EmailLog/EmailLog.php',
-							$IP.'/extensions/EmailLog/EmailLog.i18n.php',							
-							array('EmailUserComplete'),
+							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.php',
+							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
+							array('UserSettingsChanged'),
 							true
 						 );
 </source>
@@ -33,8 +33,8 @@ StubManager::createStub(	'EmailLog',
 
 == Code ==
 </wikitext>*/
-$wgExtensionCredits['other'][] = array( 
-	'name'    => 'UserSettingsChangedLog',
+$wgExtensionCredits[UserSettingsChangedLog::thisType][] = array( 
+	'name'    => UserSettingsChangedLog::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => 'Provides logging of user settings changed', 
@@ -43,6 +43,9 @@ require_once('UserSettingsChangedLog.i18n.php');
 
 class UserSettingsChangedLog
 {
+	const thisType = 'other';
+	const thisName = 'UserSettingsChangedLog';
+	
 	public function __construct()
 	{
 		# Add a new log type
@@ -51,7 +54,7 @@ class UserSettingsChangedLog
 		$wgLogNames  ['usetchglog']				= 'usetchglog'.'logpage';
 		$wgLogHeaders['usetchglog']				= 'usetchglog'.'logpagetext';
 		$wgLogActions['usetchglog/usetchglog']  = 'usetchglog'.'logentry';
-		$wgLogActions['usetchglog/save']     	= 'usetchglog'.'-saveok-entry';
+		$wgLogActions['usetchglog/saveok']     	= 'usetchglog'.'-saveok-entry';
 		
 		global $wgMessageCache;
 
@@ -62,6 +65,13 @@ class UserSettingsChangedLog
 	}
 	public function hUserSettingsChanged( &$user )
 	{
+		// we need some protection against multiple saves per transaction.
+		// SpecialPreferences.php does multiple saves regularly...
+		static $logDone = false;
+		if ($logDone)
+			return true;
+		$logDone = true;
+		
 		$message = wfMsgForContent( 'usetchglog'.'-save-text', $user->mRealName );
 		
 		$log = new LogPage( 'usetchglog' );

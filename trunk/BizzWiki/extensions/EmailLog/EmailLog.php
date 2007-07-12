@@ -33,8 +33,8 @@ StubManager::createStub(	'EmailLog',
 
 == Code ==
 </wikitext>*/
-$wgExtensionCredits['other'][] = array( 
-	'name'    => 'EmailLog',
+$wgExtensionCredits[EmailLog::thisType][] = array( 
+	'name'    => EmailLog::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => 'Provides logging of user-to-user emailing activities', 
@@ -43,6 +43,9 @@ require_once('EmailLog.i18n.php');
 
 class EmailLog
 {
+	const thisType = 'other';
+	const thisName = 'EmailLog';
+	
 	public function __construct()
 	{
 		# Add a new log type
@@ -50,7 +53,6 @@ class EmailLog
 		$wgLogTypes[]                        = 'emaillog';
 		$wgLogNames  ['emaillog']            = 'emailloglogpage';
 		$wgLogHeaders['emaillog']            = 'emailloglogpagetext';
-		$wgLogActions['emaillog/emaillog']   = 'emailloglogentry';
 		$wgLogActions['emaillog/sentok']     = 'emaillog-sentok-entry';
 		
 		global $wgMessageCache;
