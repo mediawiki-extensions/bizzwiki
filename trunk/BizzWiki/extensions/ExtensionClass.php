@@ -59,6 +59,7 @@
   and looks for the $prefix matching methods to initialize hooks, parser functions and magic words.
 * Added better support for adding 'head' and 'body' scripts whilst preserving parser caching coherency.
 * Added initialization code for '$l' variable -> stops PHP from issuing warnings
+* Added 'UserSettingsChanged' hook (User.php)
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
