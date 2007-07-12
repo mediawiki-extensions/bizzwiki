@@ -60,6 +60,7 @@
 * Added better support for adding 'head' and 'body' scripts whilst preserving parser caching coherency.
 * Added initialization code for '$l' variable -> stops PHP from issuing warnings
 * Added 'UserSettingsChanged' hook (User.php)
+* Removed 'UnwatchArticle' duplicate entry
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -179,7 +180,6 @@ static $hookList = array(
 'UserLogoutComplete',
 'UserRights',
 /*'SpecialVersionExtensionTypes',*/ // reserved special treatment
-'UnwatchArticle',
 'AutoAuthenticate', 
 'GetFullURL',
 'GetLocalURL',
