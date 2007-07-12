@@ -25,7 +25,6 @@ $msgEmailLog['en'] = array(
 	'emailloglogpagetext'		=> 'This is a log of <i>user-to-user emails</i> sent',
 	'emaillog-sentok-entry'		=> 'Email successfully sent',
 	'emaillog-sent-text'		=> 'from user $1 to user $2',
-#	'emailloglogentry'              => '',
 	#'' => '',
 );
 

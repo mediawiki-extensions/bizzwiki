@@ -13,6 +13,7 @@
 	========
 	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
 	2) Modified 'isAllowed' method.
+	3) Added 'UserSettingsChanged' hook
 	
 */
 
@@ -1999,6 +2000,10 @@ class User {
 			), __METHOD__
 		);
 		$this->clearSharedCache();
+		
+		// BizzWiki {{
+		wfRunHooks( 'UserSettingsChanged', array( &$this ) );
+		// BizzWiki }}
 	}
 
 

@@ -144,6 +144,7 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delet
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/rights",     "browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/move",     	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",    	"browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"browse")] = true;
 
 	// Anonymous
 	// #########
@@ -157,6 +158,7 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/delete",	
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/rights",		"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/move",		"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",		"!browse")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"!browse")] = true;
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
 
 	// Namespace accessible by 'Anonynous'
@@ -303,6 +305,12 @@ StubManager::createStub(	'EmailLog',
 							$bwExtPath.'/EmailLog/EmailLog.php',
 							$bwExtPath.'/EmailLog/EmailLog.i18n.php',							
 							array('EmailUserComplete'),
+							true
+						 );
+StubManager::createStub(	'UserSettingsChangedLog', 
+							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.php',
+							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
+							array('UserSettingsChanged'),
 							true
 						 );
 
