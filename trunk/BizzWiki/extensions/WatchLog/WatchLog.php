@@ -21,7 +21,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-StubManager::createStub(	'EmailLog', 
+StubManager::createStub(	'WatchLog', 
 							$IP.'/extensions/WatchLog/WatchLog.php',
 							$IP.'/extensions/WatchLog/WatchLog.i18n.php',							
 							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
