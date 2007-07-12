@@ -22,17 +22,11 @@
  * Installation:
  * include("extensions/ViewsourceRight.php");
  *
- * HISTORY:
- * ========
- * - Corrected missing 'return true' statement in hook.
- * - Removed 'view source' tab when permission is not granted to user.
- *
- * TODO:
- * =====
- * 
- */
-
-ViewsourceRight::singleton();
+== HISTORY ==
+* Corrected missing 'return true' statement in hook.
+* Removed 'view source' tab when permission is not granted to user.
+* Moved Singleton invocation to end of file to accomodate some PHP versions
+*/
 
 class ViewsourceRight extends ExtensionClass
 {
@@ -136,4 +130,6 @@ class ViewsourceRight extends ExtensionClass
 		return true;
 	}
 } // end class definition.
+
+ViewsourceRight::singleton();
 ?>

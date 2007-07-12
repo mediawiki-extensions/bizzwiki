@@ -121,4 +121,13 @@ REL1_10_7:
 - Added 'UserSettingsChanged' hook in User.php (used for logging functionality)
 - Adjusted 'Log/emaillog' browse right for '*' group
 - Added 'ReCaptcha' plug-in -- requires customization to the target site where BizzWiki is deployed.
-- 
+==========
+REL1_10_8:
+##TODO 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context.
+- Adjusted ViewsourceRight: accomodate more PHP versions (no functional change)
+- Adjusted FileSystemSyntaxColoring : accomodate more PHP versions (no functional change)
+- Adjusted ShowRedirectPageText: accomodate more PHP versions (no functional change)
+- Adjusted SidebarEx: accomodate more PHP versions (no functional change)
+- Adjusted AddScriptCss: accomodate more PHP versions (no functional change)
+- Adjusted AddScriptCss: accomodate more PHP versions (no functional change)
+- Adjusted PageFunctions: accomodate more PHP versions (no functional change)

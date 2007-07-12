@@ -23,8 +23,8 @@ $wgCaptchaClass = 'ReCaptcha';
 global $recaptcha_public_key, $recaptcha_private_key;
 
 // Set these in LocalSettings.php
-$recaptcha_public_key = '';
-$recaptcha_private_key = '';
+#$recaptcha_public_key = '';	// BizzWiki
+#$recaptcha_private_key = '';	// BizzWiki
 
 
 $wgExtensionFunctions[] = 'efReCaptcha';

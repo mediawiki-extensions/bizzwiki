@@ -51,7 +51,10 @@
  * History:
  * - v1.0  Builds on existing 'AddScript' extension
  =========== Moved to BizzWiki
-   - Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
+
+== History ==
+* Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
+* Adjusted singleton invocation to end of file (PHP limitation)
    
  * TODO:
  * =====
@@ -59,12 +62,6 @@
  * - internationalize
  *
  */
-
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: AddScriptCss extension will not work!';	
-else
-	AddScriptCssClass::singleton();
 
 class AddScriptCssClass extends ExtensionClass
 {
@@ -221,4 +218,10 @@ class AddScriptCssClass extends ExtensionClass
 	}
 
 } // END CLASS DEFINITION
+
+// Verify if 'ExtensionClass' is present.
+if ( !class_exists('ExtensionClass') )
+	echo 'ExtensionClass missing: AddScriptCss extension will not work!';	
+else
+	AddScriptCssClass::singleton();
 ?>
