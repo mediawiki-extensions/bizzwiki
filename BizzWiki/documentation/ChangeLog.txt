@@ -120,4 +120,3 @@ REL1_10_7:
 - Added 'EmailLog' extension
 - Added 'UserSettingsChanged' hook in User.php (used for logging functionality)
 - Adjusted 'Log/emaillog' browse right for '*' group
--
