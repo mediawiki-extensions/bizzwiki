@@ -40,11 +40,9 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * ParserPhase2 extension (optional)
 
 == HISTORY ==
+* Adjusted singleton invocation to accomodate more PHP versions
 
- */
-
-// Let's create a single instance of this class
-PageFunctionsClass::singleton();
+*/
 
 class PageFunctionsClass extends ExtensionClass
 {
@@ -137,4 +135,7 @@ class PageFunctionsClass extends ExtensionClass
 			return $text;
 	}
 } // end class	
+
+// Let's create a single instance of this class
+PageFunctionsClass::singleton();
 ?>

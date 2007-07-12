@@ -32,11 +32,10 @@ require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
 == History ==
 * Added 'wiki text' section support
 * Added support for hook based syntax highlighting
+* Moved singleton invocation to end of file to accomodate some PHP versions
 
 == Code ==
 </wikitext>*/
-
-FileSystemSyntaxColoring::singleton();
 
 class FileSystemSyntaxColoring extends ExtensionClass
 {
@@ -192,4 +191,6 @@ class FileSystemSyntaxColoring extends ExtensionClass
 	private function getLanguage( $ext ) { return self::$map[ $ext ]; }
 	
 } // end class definition.
+
+FileSystemSyntaxColoring::singleton();
 ?>

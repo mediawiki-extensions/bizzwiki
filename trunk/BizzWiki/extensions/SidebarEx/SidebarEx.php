@@ -58,13 +58,9 @@
  * 
 == History ==
 * Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
+* Moved singleton invocation
 
  */
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'SidebarEx extension: ExtensionClass missing.';	
-else
-	SidebarExClass::singleton();
 
 class SidebarExClass extends ExtensionClass
 {
@@ -218,4 +214,11 @@ class SidebarExClass extends ExtensionClass
 	}
 
 } // END CLASS DEFINITION
+
+// Verify if 'ExtensionClass' is present.
+if ( !class_exists('ExtensionClass') )
+	echo 'SidebarEx extension: ExtensionClass missing.';	
+else
+	SidebarExClass::singleton();
+
 ?>

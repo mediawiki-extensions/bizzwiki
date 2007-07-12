@@ -13,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_7');
+define('BIZZWIKI', '1_10_8');
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
 
@@ -145,11 +145,14 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/right
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/move",     	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",    	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"browse")] = true;
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usetchglog",	"browse")] = true;
 
 	// Anonymous
 	// #########
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","createaccount")] = true;
 
+if (!defined('BIZZWIKIDEMO'))
+{
 	// remove access to some log entries.
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/newusers",	"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/commitfil",	"!browse")] = true; // FileManager extension
@@ -159,7 +162,9 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/rights",	
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/move",		"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",		"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"!browse")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usetchglog",	"!browse")] = true;
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
+}
 
 	// Namespace accessible by 'Anonynous'
 	// ###################################
@@ -353,15 +358,16 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","viewsource")] = true; 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~","raw")] = true; 	
 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,"~","read")]   = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,"~","browse")] = true; 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,"~","viewsource")] = true; 	
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,"~","raw")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"read")]   = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"browse")] = true; 
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"viewsource")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"raw")] = true; 	
 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,"~","read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~","read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,"~","browse")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~","browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",		"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",		"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",		"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",		"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/*",	"browse")] = true;
 }
 
 ?>

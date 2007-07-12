@@ -21,16 +21,14 @@
  * =============
  * 1) ExtensionClass
  *
- * HISTORY:
- * ========
- *
+== HISTORY ==
+* Moved singleton invocation to end of file to accomodate some PHP versions
+
  * TODO:
  * =====
  * - Clean up the '#redirect' wikitext before displaying
  *
  */
-
-ShowRedirectPageText::singleton();
 
 class ShowRedirectPageText extends ExtensionClass
 {
@@ -91,4 +89,6 @@ class ShowRedirectPageText extends ExtensionClass
 	}
 	
 } // end class definition.
+
+ShowRedirectPageText::singleton();
 ?>
