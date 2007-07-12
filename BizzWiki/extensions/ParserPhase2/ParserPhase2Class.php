@@ -53,6 +53,10 @@ class ParserPhase2Class extends ExtensionClass
 			$params = explode('|', $str);
 			$action = array_shift( $params );
 
+			// if we are asked to disable, stop processing.
+			if ('disable'==strtolower($action))
+				break;
+
 			global $wgParser, $wgTitle, $wgContLang;
 
 			// check if the 'mTitle' property is set

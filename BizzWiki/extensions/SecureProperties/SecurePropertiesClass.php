@@ -96,16 +96,16 @@ class SecurePropertiesClass extends ExtensionClass
 
 	private function process( &$args, $action = self::actionGet, $type = self::gobject )
 	{
-		$parser = $args[0];
+		$parser = @$args[0];
 		
 		if ( !$this->isAllowed( $parser->mTitle ) ) 
 			return "<b>SecureProperties:</b> ".wfMsg('badaccess');
 
-		$object   =             $args[1];
-		$property = $fnc      = $args[2];
-		$value    = $param1   = $args[3];
-		$param2               = $args[4];
-		$param3               = $args[5];
+		$object   =             @$args[1];
+		$property = $fnc      = @$args[2];
+		$value    = $param1   = @$args[3];
+		$param2               = @$args[4];
+		$param3               = @$args[5];
 				
 		if ($type == self::gobject)
 			if ( !is_object( $obj = $GLOBALS[$object] ) ) 

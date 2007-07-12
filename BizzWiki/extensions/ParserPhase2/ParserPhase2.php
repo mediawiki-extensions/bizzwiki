@@ -38,6 +38,7 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 == History ==
 * fixed client side caching logic due to a bug in PHP's preg_match_all function
 * fixed issue with $wgParser not having a valid 'mTitle' property set
+* added 'disable' command
 
 == Code ==
 </wikitext>*/
