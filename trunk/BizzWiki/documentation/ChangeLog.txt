@@ -131,3 +131,5 @@ REL1_10_8:
 - Adjusted AddScriptCss: accomodate more PHP versions (no functional change)
 - Adjusted AddScriptCss: accomodate more PHP versions (no functional change)
 - Adjusted PageFunctions: accomodate more PHP versions (no functional change)
+- HierarchicalNamespacePermissions: added page level restrictions enforcement
+- Added 'PageRestrictions' extension: adds 'read' right enforcement at the page level etc.
