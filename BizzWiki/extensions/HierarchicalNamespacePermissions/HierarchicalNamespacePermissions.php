@@ -133,6 +133,7 @@
 * TODO add namespace-independant right checking.
 * added group hierarchy functionality.
 * Added 'getPermissionGroupNamespace' (does not affect core functionality)
+* Added page level restrictions checking
 
 */
 
@@ -198,10 +199,13 @@ class hnpClass
 	}
 	public function setGroupHierarchy( $gh ) { self::$groupHierarchy = $gh; }
 	
-	function hUserIsAllowed( &$user, $ns=null, $titre=null, &$action, &$result )
+	function hUserIsAllowed( &$user, $ns=null, $titre=null, $action, &$result )
 	{
 		$result = false; // disallow by default.
 		if ($action == '') return true;
+		
+		// some translation required.
+		if ($action == 'view' ) $action = 'read';
 		
 		// Namespace independant right ??
 		if ( in_array( $action, $this->lNsI ) )
@@ -242,6 +246,13 @@ class hnpClass
 		if ( $ns === null )    $ns = $cns;
 		if ( $titre === null ) $titre = $cti;
 
+		// Deal with page level restrictions
+		if (!self::checkRestrictions( $user, $wgTitle, $ns, $titre, $action ) )
+		{
+			$result = false;
+			return false;	
+		}
+
 		$result = hnpClass::userCanInternal( $user, $ns, $titre , $action );
 	
 		return false;
@@ -270,6 +281,13 @@ class hnpClass
 
 		#echo " Namespace: $ns  Title=$pt  Action=$a \n <br/>";
 
+		// Deal with page level restrictions
+		if (!self::checkRestrictions( $u, $t, $ns, $pt, $a ) )
+		{
+			$r = false;
+			return false;	
+		}
+
 		// Normal processing path.
 		$r = hnpClass::userCanInternal( $u, $ns, $pt, $a );
 		
@@ -281,11 +299,27 @@ class hnpClass
 		global $wgUser;
 		return hnpClass::userCanInternal($wgUser, $ns, $pt, $a); 
 	}
-	
-	/*
+	private static function checkRestrictions( &$user, &$title, &$ns, &$titre, &$action )
+	{
+		if ( !is_object( $title ) )
+			return true;
+
+		// translate 'view' action to 'read' action
+		if ( $action == 'view' ) $action = 'read';
+
+		// Load Page level restrictions
+		foreach( $title->getRestrictions($action) as $right ) 
+			if( '' != $right && !self::userCanInternal( $user, $ns, $titre, $right ) ) 
+				return false;
+		
+		// didn't find any restrictions that weren't met with the proper right.
+		return true;
+	}
+
+	/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	 * The complex processing takes place here.
 	*/
-	static function userCanInternal( $user, $ns, $pt, $a )
+	static function userCanInternal( &$user, $ns, $pt, $a )
 	{
 		// NOTE: the term "group" is somewhat confusing.
 		//       Use the following semantic to interpret:

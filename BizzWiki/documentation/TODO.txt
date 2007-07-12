@@ -1,5 +1,9 @@
 $Id$
 
+PREVIEW
+=======
+* Verify this interface does not impact security measures
+
 Job Queue
 =========
 * Show Job Queue special page

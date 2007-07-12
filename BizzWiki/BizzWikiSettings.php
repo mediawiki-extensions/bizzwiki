@@ -184,6 +184,8 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
 	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;   // debugging	
+	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","raw")] = true;   // debugging		
+	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","viewsource")] = true;   // debugging			
 }
 
 	// 'Users' inherit all rights from '*' (anonymous)
@@ -220,6 +222,10 @@ function bwKeepYourHandsToYourself()
 	$wgGroupPermissions['user'][hnpClass::buildPermissionKey(NS_USER,$userName,"create")] = true;	
 	$wgGroupPermissions['user'][hnpClass::buildPermissionKey(NS_USER,$userName,"delete")] = true;	
 }
+
+	// Page Level Restrictions
+	// %%%%%%%%%%%%%%%%%%%%%%%
+require('extensions/PageRestrictions/PageRestrictions.php');
 
 // For testing QueryPage.php functionality
 // as in 'SpecialPopularpages.php'.
@@ -321,6 +327,8 @@ StubManager::createStub(	'UserSettingsChangedLog',
 
 // ReCaptcha plug-in
 //  Some customization required below.
+//  Depending on your setup, it might be more appropriate to set these keys
+//  in your LocalSettings.php
 #require('extensions/ReCaptcha/ReCaptcha.php');
 #$recaptcha_public_key = '';
 #$recaptcha_private_key = '';
