@@ -314,6 +314,12 @@ StubManager::createStub(	'UserSettingsChangedLog',
 							true
 						 );
 
+// ReCaptcha plug-in
+//  Some customization required below.
+#require('extensions/ReCaptcha/ReCaptcha.php');
+#$recaptcha_public_key = '';
+#$recaptcha_private_key = '';
+
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 require('extensions/SimpleReplicator/SimpleReplicator.php');
 
