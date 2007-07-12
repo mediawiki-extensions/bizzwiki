@@ -133,3 +133,4 @@ REL1_10_8:
 - Adjusted PageFunctions: accomodate more PHP versions (no functional change)
 - HierarchicalNamespacePermissions: added page level restrictions enforcement
 - Added 'PageRestrictions' extension: adds 'read' right enforcement at the page level etc.
+- Added 'disable' command in ParserPhase2 (addresses documentation case in NS_FILESYSTEM) (!)

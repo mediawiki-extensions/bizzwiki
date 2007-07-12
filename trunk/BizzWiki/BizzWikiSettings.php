@@ -14,6 +14,7 @@
 ****************************************************************************/
 // Define the base of BizzWiki
 define('BIZZWIKI', '1_10_8');
+$bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
 
