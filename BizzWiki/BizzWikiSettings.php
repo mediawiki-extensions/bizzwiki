@@ -82,6 +82,7 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
 require('extensions/RawRight/RawRight.php');
 require('extensions/ViewsourceRight/ViewsourceRight.php');
+require('extensions/WatchRight/WatchRight.php');
 
 // define group hierarchy
 // default is: sysop -> user -> *
@@ -125,6 +126,8 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'viewsource', // BizzWiki specific
 										'browse',     // BizzWiki specific
 										'search',     // BizzWiki specific
+										'watch',		// BizzWiki specific
+										'unwatch',		// BizzWiki specific
 										
 									);
 									
@@ -201,6 +204,8 @@ $bwUserNamespaces = array (	NS_TEMPLATE, NS_TEMPLATE_TALK,
 							NS_USER, NS_USER_TALK														
 							);	
 
+$bwUserNamespaces = array_merge( $bwAnonymousNamespaces, $bwUserNamespaces);
+
 	// Additional rights available to 'User'
 	// #####################################
 foreach( $bwUserNamespaces as $index => $bwx )
@@ -208,6 +213,8 @@ foreach( $bwUserNamespaces as $index => $bwx )
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
 		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","watch")] = true;		
+		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","unwatch")] = true;				
 	}
 
 	// Equivalent functionality to 'KeepYourHandsToYourself' extension
