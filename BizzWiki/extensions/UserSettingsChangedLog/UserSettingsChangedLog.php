@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || EmailLog.php
+| <b>File</b> || UserSettingsChangedLog.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -34,24 +34,24 @@ StubManager::createStub(	'EmailLog',
 == Code ==
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
-	'name'    => 'EmailLog',
+	'name'    => 'UserSettingsChangedLog',
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
-	'description' => 'Provides logging of user-to-user emailing activities', 
+	'description' => 'Provides logging of user settings changed', 
 );
-require_once('EmailLog.i18n.php');
+require_once('UserSettingsChangedLog.i18n.php');
 
-class EmailLog
+class UserSettingsChangedLog
 {
 	public function __construct()
 	{
 		# Add a new log type
 		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]                        = 'emaillog';
-		$wgLogNames  ['emaillog']            = 'emailloglogpage';
-		$wgLogHeaders['emaillog']            = 'emailloglogpagetext';
-		$wgLogActions['emaillog/emaillog']   = 'emailloglogentry';
-		$wgLogActions['emaillog/sentok']     = 'emaillog-sentok-entry';
+		$wgLogTypes[]							= 'usetchglog';
+		$wgLogNames  ['usetchglog']				= 'usetchglog'.'logpage';
+		$wgLogHeaders['usetchglog']				= 'usetchglog'.'logpagetext';
+		$wgLogActions['usetchglog/usetchglog']  = 'usetchglog'.'logentry';
+		$wgLogActions['usetchglog/save']     	= 'usetchglog'.'-saveok-entry';
 		
 		global $wgMessageCache;
 
@@ -60,17 +60,12 @@ class EmailLog
 		foreach( $msg as $key => $value )
 			$wgMessageCache->addMessages( $msg[$key], $key );		
 	}
-	public function hEmailUserComplete( $to, $from, $subject, $text )
+	public function hUserSettingsChanged( &$user )
 	{
-		global $wgUser;
+		$message = wfMsgForContent( 'usetchglog'.'-save-text', $user->mRealName );
 		
-		$toname = $to->name;
-		$fromname = $from->name;
-		
-		$message = wfMsgForContent( 'emaillog-sent-text', $fromname, $toname );
-		
-		$log = new LogPage( 'emaillog' );
-		$log->addEntry( 'sentok', $wgUser->getUserPage(), $message );
+		$log = new LogPage( 'usetchglog' );
+		$log->addEntry( 'saveok', $user->getUserPage(), $message );
 		
 		return true;
 	}	
