@@ -15,10 +15,6 @@ User:
 * View User details: probably special page required for that
 * Delete User extension
 
-RecentChanges
-=============
-* disable automatic deletion
-
 Replication functionality:
 --------------------------
 * Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
@@ -50,6 +46,7 @@ Page History:
 MISC:
 =====
 - Internationalise!
+- CHECK: 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context ??
 
 FileManager:
 ============

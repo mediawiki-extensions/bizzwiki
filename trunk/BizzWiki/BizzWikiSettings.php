@@ -353,7 +353,14 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 #$recaptcha_private_key = '';
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                           REPLICATION FUNCTIONALITY
+//                             *** EXPERIMENTAL ***
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #require('extensions/SimpleReplicator/SimpleReplicator.php');
+
+# e.g. $class = $wgJobClasses[$command];
+#$wgJobClasses[''] = ''; 
+
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

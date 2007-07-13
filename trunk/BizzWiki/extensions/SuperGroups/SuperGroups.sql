@@ -1,5 +1,3 @@
-/* $Id$
- */
 CREATE TABLE /*$wgDBprefix*/supergroups (
   `sgr_user` int(5) unsigned,
   `sgr_group` int(5) unsigned default '0',
