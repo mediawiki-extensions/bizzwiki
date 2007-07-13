@@ -82,6 +82,8 @@ class WatchRight extends ExtensionClass
 	
 	public function hSkinTemplateTabs( &$st , &$content_actions )
 	{
+		global $wgUser;
+		
 		if (!$wgUser->isAllowed( 'watch') )
 			unset( $content_actions['watch'] );
 
