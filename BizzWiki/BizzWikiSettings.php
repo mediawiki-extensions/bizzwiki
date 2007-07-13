@@ -108,6 +108,8 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'readlog',  		// BizzWiki specific
 										'siteupdate',		// BizzWiki specific
 										'undelete',			// BizzWiki specific
+										
+										'skipcaptcha',		// ReCAPTCHA specific
 									);
 
 
@@ -358,9 +360,8 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #require('extensions/SimpleReplicator/SimpleReplicator.php');
 
-# e.g. $class = $wgJobClasses[$command];
-#$wgJobClasses[''] = ''; 
-
+#require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
+#FetchPartnerRC::$partner_url = 'http://xyz.com';
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:

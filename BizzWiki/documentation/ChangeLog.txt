@@ -136,4 +136,5 @@ REL1_10_8: (released ...)
 - Added 'WatchLog' extension
 - Added 'RecentChangesManager' extension
 - Adapter 'Job::factory' method to receive custom jobs as per MW1.11
+- Added 'skipcaptcha' right support
 - 
