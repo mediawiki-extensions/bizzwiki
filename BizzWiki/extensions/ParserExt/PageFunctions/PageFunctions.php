@@ -7,7 +7,8 @@
  *
  * Purpose:  Provides a 'magic word' interface to retrieve
  *           useful page level information.           
- *
+
+(($disable$))
 
 == Features ==
 * Page Title change '#pagetitle'
