@@ -18,6 +18,7 @@ Installation procedure:
 		?>   
 		
 4) Customize the file 'BizzWikiSettings.php'
+   e.g. enable/disable 'ReCAPTCHA' extension
 
 IMPORTANT NOTES
 ===============
@@ -29,3 +30,4 @@ IMPORTANT NOTES
    e.g.
    chown -R apache BizzWiki
    chgrp -R apache BizzWiki
+   

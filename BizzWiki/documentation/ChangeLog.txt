@@ -123,7 +123,6 @@ REL1_10_7: (released 11July2007)
 - Added 'ReCaptcha' plug-in -- requires customization to the target site where BizzWiki is deployed.
 ==========
 REL1_10_8: (released ...)
-##TODO 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context.
 - Adjusted ViewsourceRight: accomodate more PHP versions (no functional change)
 - Adjusted FileSystemSyntaxColoring : accomodate more PHP versions (no functional change)
 - Adjusted ShowRedirectPageText: accomodate more PHP versions (no functional change)
@@ -136,4 +135,5 @@ REL1_10_8: (released ...)
 - Added 'disable' command in ParserPhase2 (addresses documentation case in NS_FILESYSTEM) (!)
 - Added 'WatchLog' extension
 - Added 'RecentChangesManager' extension
+- Adapter 'Job::factory' method to receive custom jobs as per MW1.11
 - 

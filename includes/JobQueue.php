@@ -13,6 +13,8 @@
 	========
 	1) Added 'modified factory method' to enable the jobqueue for custom jobs
 	   (see Bugzilla #7302)
+	2) Removed (1) in place of MW1.11 'Job::factory' method. I have adapted it
+	   to work on MW1.10 as usual but also to accept custom jobs.
 
 */
 
@@ -151,18 +153,16 @@ abstract class Job {
 			case 'html_cache_update': # BC
 				return new HTMLCacheUpdateJob( $title, $params['table'], $params['start'], $params['end'], $id );
 			default :
-				$jobfilename = $command;  // BizzWiki
+				break; //{{BizzWiki}}
 		}
-		// BizzWiki {{
-		try {
-			wfProfileIn(__METHOD__.'-autoload');
-			__autoload($jobfilename);
-			return new $jobfilename ($title, $params, $id);
-			wfProfileOut(__METHOD__.'-autoload');
-		} catch (Exception $e) {
-			throw new MWException("Invalid job command \"$command\"\\n. Could not load class ".$jobfilename." ");
-		}	
-		// BizzWiki }}
+		// {{BizzWiki 
+		global $wgJobClasses;
+		if( isset( $wgJobClasses[$command] ) ) {
+			$class = $wgJobClasses[$command];
+			return new $class( $title, $params, $id );
+		}
+		throw new MWException( "Invalid job command `{$command}`" );
+		// BizzWiki}}
 	}
 
 	static function makeBlob( $params ) {
