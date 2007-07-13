@@ -19,6 +19,10 @@ This extension fetches the 'recentchanges' table from the partner replication no
 * JobQueue.php
 ** Patched  from MW 1.10  *OR*
 ** MW 1.11
+* PHP compiled with 'cURL' extension
+
+== Notes ==
+* The parameter 'rc_timestamp' is not sufficient to determine entry unicity (lack of resolution).
 
 == Installation ==
 
@@ -33,12 +37,20 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 	const id       = '$Id: WatchRight.php 378 2007-07-13 12:52:41Z jeanlou.dupont $';	
 
+	// Database
+	static $tableName = 'recentchanges_partner';
+	
 	// must be setup in settings file
 	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
 	static $partner_url = null;
+	static $timeout = 15; // in seconds
+	static $port = 80; // tcp port
 
 	// i18n messages.
 	static $msg;
+	
+	// Logging
+	static $logName = 'WikiSysop';
 	
 	public static function &singleton( )
 	{ return parent::singleton( ); }
@@ -53,7 +65,7 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 			'name'    => self::thisName, 
 			'version'     => self::getRevisionId( self::id ),
 			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Fetches the replication partner's RecentChanges table",
+			'description' => "Fetches the replication partner's RecentChanges table.",
 			'url' => self::getFullUrl(__FILE__),			
 		);
 		
@@ -65,7 +77,50 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	}
 	
 	public function setup()
-	{	parent::setup(); }
+	{	
+		parent::setup(); 
+
+		global $wgMessageCache;
+		foreach( self::$msg as $key => $value )
+			$wgMessageCache->addMessages( self::$msg[$key], $key );
+
+		// LOGGING			
+		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
+		$wgLogTypes[]						= 'ftchrclog';
+		$wgLogNames  ['ftchrclog'			= 'ftchrclog'.'logpage';
+		$wgLogHeaders['ftchrclog']			= 'ftchrclog'.'logpagetext';
+		$wgLogActions['ftchrclog/fetchok']	= 'ftchrclog'.'-fetchok-entry';
+		$wgLogActions['ftchrclog/fetchfail']= 'ftchrclog'.'-fetchfail-entry';		
+	}
+	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	// setup of this hook occurs in 'ExtensionClass' base class.
+	{
+		global $wgExtensionCredits;
+
+		$update = $this->getUpdate();
+		$result = ' Status: '.$update;
+	
+		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
+			if ($el['name']==self::thisName)
+				$el['description'].=$result;
+				
+		return true; // continue hook-chain.
+	}
+	private function getUpdate()
+	{
+		// 1) check existence of 'recentchanges_partner' table
+		// 2) get last entry
+		$result  = $this->checkTable;
+		$r1      = 'Database table ';
+		$r1     .= $result ? 'exists.':'does not exist.';
+		
+		return __METHOD__.' not implemented yet!';		
+	}
+	public function checkTable()
+	{
+		$dbr = wfGetDB(DB_SLAVE);
+		return $dbr->tableExists(self::$tableName);
+	}
 
 } // end class declaration
 
