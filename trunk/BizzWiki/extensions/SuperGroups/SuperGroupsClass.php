@@ -137,7 +137,7 @@ class SuperGroupsClass extends ExtensionClass
 		$row = $dbr->selectRow( self::$tableName,
 								array('sgr_group'),
 								array('sgr_user' => $uid),
-								'SuperGroups::getSgId'      );
+								__METHOD__      );
 
 		if (!empty($row))
 			return $row->sgr_group;
