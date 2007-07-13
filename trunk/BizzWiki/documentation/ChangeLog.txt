@@ -135,4 +135,5 @@ REL1_10_8: (released ...)
 - Added 'PageRestrictions' extension: adds 'read' right enforcement at the page level etc.
 - Added 'disable' command in ParserPhase2 (addresses documentation case in NS_FILESYSTEM) (!)
 - Added 'WatchLog' extension
+- Added 'RecentChangesManager' extension
 - 

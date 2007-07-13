@@ -12,6 +12,12 @@ User:
 ===========
 * Special:Import --> more granular right i.e. namespace level ??
 * User Preferences change: add LOG entry 
+* View User details: probably special page required for that
+* Delete User extension
+
+RecentChanges
+=============
+* disable automatic deletion
 
 Replication functionality:
 --------------------------
@@ -40,7 +46,6 @@ SuperGroups
 Page History:
 =============
 - remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
-
 
 MISC:
 =====
@@ -80,3 +85,7 @@ Stub Candidates:
 ================
 * RawRight         -> YES
 * ViewSource Right -> NO
+
+Rights Management
+=================
+* "Grant Right" functionality
