@@ -26,12 +26,19 @@ This extension fetches the 'recentchanges' table from the partner replication no
 
 == Code ==
 </wikitext>*/
-
-class FetchPartnerRC extends ExtensionClass
+require('FetchPartnerRC.i18n.php');
+class FetchPartnerRC extends ExtensionClass  // so many extensions rely on ExtensionClass it does't hurt to 'use' it here.
 {
 	const thisName = 'FetchPartnerRC';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 	const id       = '$Id: WatchRight.php 378 2007-07-13 12:52:41Z jeanlou.dupont $';	
+
+	// must be setup in settings file
+	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
+	static $partner_url = null;
+
+	// i18n messages.
+	static $msg;
 	
 	public static function &singleton( )
 	{ return parent::singleton( ); }

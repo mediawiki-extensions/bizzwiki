@@ -8,20 +8,6 @@
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
  
-== Purpose==
-This extension fetches the 'recentchanges' table from the partner replication node.
-
-== Features ==
-
-
-== Dependancies ==
-* [[Extension:ExtensionClass|ExtensionClass]]
-* JobQueue.php
-** Patched  from MW 1.10  *OR*
-** MW 1.11
-
-== Installation ==
-
 == History ==
 
 == Code ==
@@ -29,10 +15,14 @@ This extension fetches the 'recentchanges' table from the partner replication no
 
 class FetchPartnerRCjob extends Job
 {
+	var $url;
+	
 	function __construct( $title, $params, $id = 0 ) 
 	{
 		// ( $command, $title, $params = false, $id = 0 )
 		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $params, $id );
+		
+		$this->url = FetchPartnerRC::$partner_url;
 	}
 
 	function run() 
@@ -41,5 +31,16 @@ class FetchPartnerRCjob extends Job
 		return true;
 	}
 	
-}
+	// http_get from partner
+	// check code -> error --> log
+	
+	
+	
+	// filter 'fetchRC' logs from the partner!
+	
+	// make sure we only fetch from the point where we had stopped previously
+	// use rc_id identifier / rc_timestamp for this purpose.
+	  
+	
+} // end class declaration
 ?>

@@ -1,6 +1,13 @@
 CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
+  -- BIZZWIKI
+  -- unique index
+  uid int NOT NULL auto_increment,
 
-  rc_id int NOT NULL auto_increment,
+  -- BIZZWIKI
+  -- taken from 'tables.sql' in 'maintenance' directory.
+  -- only modified 'rc_id' line
+  
+  rc_id int NOT NULL, 
   rc_timestamp varbinary(14) NOT NULL default '',
   rc_cur_time varbinary(14) NOT NULL default '',
   
@@ -66,7 +73,11 @@ CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
   -- Log params
   rc_params blob NOT NULL default '',
   
-  PRIMARY KEY rc_id (rc_id),
+  -- BIZZWIKI
+  -- PRIMARY KEY rc_id (rc_id),
+  PRIMARY KEY uid (uid),
+  INDEX rc_id (rc_id),
+   
   INDEX rc_timestamp (rc_timestamp),
   INDEX rc_namespace_title (rc_namespace, rc_title),
   INDEX rc_cur_id (rc_cur_id),
