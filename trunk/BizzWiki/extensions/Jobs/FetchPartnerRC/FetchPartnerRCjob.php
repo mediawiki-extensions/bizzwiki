@@ -84,17 +84,28 @@ class FetchPartnerRCjob extends Job
 	}
 	private function errorFetchingList()
 	{
-		// add an entry log.	
+		// add an entry log.
+		$this->updateLog( 'fetchfail',);
 	}
 	private function errorParsingList()
 	{
 		// add an entry log.	
 	}
-	private function successLog()
-	{
-		// add an entry log.	
-	}
 	
+	/**
+		Adds a log entry upon successful operation.
+	 */
+	private function successLog( $compte )
+	{
+		// were there any entries made?
+		$msg = $compte==0 ? 'fetchnc' : 'fetchok';
+		
+		// add an entry log.
+		$this->updateLog( 'fetchok', $msg, $compte );
+	}
+	/**
+		Actual logging takes place here.
+	 */
 	private function updateLog( $action, $msgid, $param1=null, $param2=null )
 	{
 		$message = wfMsgForContent( 'ftchrclog-'.$msgid.'-text', $param1, $param2 );
