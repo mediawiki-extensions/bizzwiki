@@ -20,7 +20,32 @@ class FetchPartnerRCjob extends Job
 	var $lst;
 	var $plst;
 	
-	static $params = array( 'type', 'ns', 'title', 'revid', 'old_revid', 'timestamp' );
+	static $params = array( 	'id'		=> 'rc_id',				// BIZZWIKI specific
+								'type'		=> 'rc_type', 
+								'ns'		=> 'rc_namespace',
+								'pageid'	=> 'rc_cur_id',			// checked
+								'user'		=> 'rc_user',			// ok
+							#				=> 'rc_user_text',		// CHECKME
+								'bot'		=> 'rc_bot',			// ok
+								'minor'		=> 'rc_minor',			// ok
+								'new'		=> 'rc_new',			// ok
+								'title'		=> 'rc_title', 			// ok
+								'revid'		=> 'rc_this_oldid',		// checked 
+								'old_revid'	=> 'rc_last_oldid',		// checked
+							#				=> 'rc_moved_to_ns';	// CHECKME
+							#				=> 'rc_moved_to_title';	// CHECKME
+							#				=> 'rc_patrolled';		// CHECKME														
+							#				=> 'rc_ip';				// CHECKME							
+							#				=> 'rc_old_len';		// CHECKME							
+							#				=> 'rc_new_len';		// CHECKME							
+							#				=> 'rc_deleted';		// CHECKME							
+							#				=> 'rc_logid';			// CHECKME							
+							#				=> 'rc_logtype';		// CHECKME							
+							#				=> 'rc_log_action';		// CHECKME							
+							#				=> 'rc_params';			// CHECKME							
+								'timestamp'	=> 'rc_timestamp', 		// ok
+								'comment'	=> 'rc_comment',		// checked
+							);
 	
 	function __construct( $title, $params, $id = 0 ) 
 	{
@@ -37,24 +62,45 @@ class FetchPartnerRCjob extends Job
 		// User under which we will file the log entry
 		$this->user = User::newFromName( FetchPartnerRC::$logName );
 		
+		// 1) GET THE LIST
 		$result = $this->getPartnerList( $this->url, $this->port, $this->timeout );
 		if (!$result)
-		{
-			
-		}
+			return $this->errorFetchingList();
 		
-		$this->plst = $this->parseDocument();
+		// 2) PARSE THE LIST
+		$this->plst = $err = $this->parseDocument();
+		if ($err === false)
+			return $this->errorParsingList();
+		
+		// 3) FILTER THE LIST
+		$compte = $this->filterList();
+		
+		// 4) INSERT THE LIST
+		
+		// 5) SUCCESSFUL OPERATION
+		$this->successLog();
 		
 		return true;
 	}
-	private function updateLog( $action, $result, $param )
+	private function errorFetchingList()
 	{
-		$result = ($result) ? 'fetchok' : 'fetchfail';
-			
-		$message = wfMsgForContent( 'ftchrclog-'.$result.'-text', $param );
+		// add an entry log.	
+	}
+	private function errorParsingList()
+	{
+		// add an entry log.	
+	}
+	private function successLog()
+	{
+		// add an entry log.	
+	}
+	
+	private function updateLog( $action, $msgid, $param1=null, $param2=null )
+	{
+		$message = wfMsgForContent( 'ftchrclog-'.$msgid.'-text', $param1, $param2 );
 		
 		$log = new LogPage( 'ftchrclog' );
-		$log->addEntry( $result, $this->user->getUserPage(), $message );
+		$log->addEntry( $action, $this->user->getUserPage(), $message );
 	}
 	/**
 		Fetch list from partner replication node.
@@ -63,19 +109,19 @@ class FetchPartnerRCjob extends Job
 	private function getPartnerList( $url, $port, $timeout, $start, $limit )
 	{
 		// we need to adjust the url to access the MW API.
-		$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit;
+		$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags';
 		
 		// make sure we only fetch from the point where we had stopped previously
 		// use rc_id identifier / rc_timestamp for this purpose.
 
 		$ch = curl_init();    							// initialize curl handle
+
 		curl_setopt($ch, CURLOPT_URL, $url);			// set url to post to
 		curl_setopt($ch, CURLOPT_FAILONERROR, 1);		// Fail on errors
 		#curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);   // allow redirects
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); 	// return into a variable
 		curl_setopt($ch, CURLOPT_PORT, $port);         	//Set the port number
 		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);	// times out after 15s
-		
 		#curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
 		
 		$this->document = curl_exec($ch);
@@ -88,7 +134,7 @@ class FetchPartnerRCjob extends Job
 	private function parseDocument()
 	{
 		if (empty( $this->document ))
-			return false;
+			return true;	// the document was empty, hence no problem.
 		
 		$p = null;
 		
@@ -108,6 +154,11 @@ class FetchPartnerRCjob extends Job
 			$p[] = $a;
 		}
 		
+		// if the document was not empty and we end up
+		// with an empty array, something is wrong.
+		if (empty( $p ))
+			return false;
+			
 		return $p;
 	}
 	/**
@@ -117,26 +168,67 @@ class FetchPartnerRCjob extends Job
 	 */
 	private function filterList()
 	{
+		// check that we have the 'rc_id' field
+		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....
+
 		
+		// fetch last id from the recentchanges_partner table
+
+		
+		// our fetched entries cannot be 'lower' than the ones we already got:
+		// filter them out (and keep a record of this)
+
+		
+		// make sure the list is ordered properly.
+
 	}
 	private function filterFetchRC()
 	{
+		$c = null;
 		if (!empty( $this->lst ))	
 			foreach( $this->lst as $index => &$e )
 				
 	}
-	private function ()
+	/**
+			This function gets the last 'compte' entries
+			from the 'recentchanges_partner' table.
+	 */
+	private function getLastEntries( $compte )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
 		
-		$row = $dbr->selectRow( self::$tableName,
-								array('sgr_group'),
-								array('sgr_user' => $uid),
-								__METHOD__      );
+		$row = $dbr->selectRow( self::$tableName,			// table name
+								array('sgr_group'),			//
+								array('sgr_user' => $uid),	// 'WHERE'
+								__METHOD__      );			// debug info.
 
 		if (!empty($row))
 			return $row->sgr_group;
 		
 	}
+	/**
+		Format the rows received from the database
+		to a format we can more easily work with
+		i.e. the same format as we have set for the list
+		we received from the partner replication node.
+	 */
+	private function formatRowList( &$l )
+	{
+		if (empty( $l )) 
+			return;	
+		foreach( $l as $key => $value )
+			
+	}
+	
+	/**
+		Inserts the processed list in the 'recentchanges_partner' table.
+	 */
+	private function insertList()
+	{
+		$dbw = wfGetDB( DB_MASTER );
+		
+		
+	}
+	
 } // end class declaration
 ?>
