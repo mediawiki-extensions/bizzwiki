@@ -1,32 +1,26 @@
 <?php
-/*
- * ViewsourceRight.php
- *
- * @author Jean-Lou Dupont -- www.bluecortex.com
- * @package MediaWiki
- * @subpackage Extensions
- * 
- * <b>Purpose:</b>  This extension adds a 'viewsource' right.
- * Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
- *
- * FEATURES:
- * =========
- * 0) Can be used independantly of BizzWiki environment 
- * 1) No mediawiki installation source level changes
- *
- * DEPENDANCIES:
- * =============
- * 1) ExtensionClass (>v1.3)
- * 2) Hierarchical Namespace Permissions extension
- *
- * Installation:
- * include("extensions/ViewsourceRight.php");
- *
+/*<wikitext>
+ViewsourceRight.php by Jean-Lou Dupont
+
+== Purpose ==
+This extension adds a 'viewsource' right. Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
+
+== FEATURES ==
+* Can be used independantly of BizzWiki environment 
+* No mediawiki installation source level changes
+
+== DEPENDANCIES ==
+* ExtensionClass (>v1.3)
+* Hierarchical Namespace Permissions extension
+
+== Installation ==
+* include("extensions/ViewsourceRight.php");
+
 == HISTORY ==
 * Corrected missing 'return true' statement in hook.
 * Removed 'view source' tab when permission is not granted to user.
 * Moved Singleton invocation to end of file to accomodate some PHP versions
-*/
+</wikitext>*/
 
 class ViewsourceRight extends ExtensionClass
 {

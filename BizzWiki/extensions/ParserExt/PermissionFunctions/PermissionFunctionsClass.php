@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*(($disable$))<wikitext>
 {| border=1
 | <b>File</b> || PermissionFunctionsClass.php
 |-

@@ -1,14 +1,9 @@
 <?php
-/*
- * PageFunctions.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont
- *
- * Purpose:  Provides a 'magic word' interface to retrieve
- *           useful page level information.           
+/*(($disable$))<wikitext>
+PageFunctions.php by Jean-Lou Dupont
 
-(($disable$))
+== Purpose ==
+Provides a 'magic word' interface to retrieve useful page level information.           
 
 == Features ==
 * Page Title change '#pagetitle'
@@ -43,7 +38,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 == HISTORY ==
 * Adjusted singleton invocation to accomodate more PHP versions
 
-*/
+</wikitext>*/
 
 class PageFunctionsClass extends ExtensionClass
 {
