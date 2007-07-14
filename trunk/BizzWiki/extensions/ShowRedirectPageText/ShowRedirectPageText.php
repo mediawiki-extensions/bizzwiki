@@ -1,34 +1,28 @@
 <?php
-/*
- * ShowRedirectPageText.php
- *
- * $Id$
- * @author Jean-Lou Dupont
- * 
- * <b>Purpose:</b>  This extension enables the display of the text included
- *                  in a 'redirect' page.
- *
- *                  The inclusion of wikitext in a redirect page is helpful
- *                  in situations, for example, where redirects are used to manage a 
- *                  'cluster' of Mediawiki serving machines.
- *
- * FEATURES:
- * =========
- * 1) No mediawiki installation source level changes
- * 2) No impact on parser caching
- *
- * DEPENDANCIES:
- * =============
- * 1) ExtensionClass
- *
+/*<wikitext>
+ShowRedirectPageText.php by Jean-Lou Dupont
+
+== Version ==
+$Id$
+
+== Purpose ==
+This extension enables the display of the text included in a 'redirect' page.
+The inclusion of wikitext in a redirect page is helpful in situations, for example, where redirects are used to manage a  'cluster' of Mediawiki serving machines.
+
+== FEATURES ==
+* No mediawiki installation source level changes
+* No impact on parser caching
+
+== DEPENDANCIES ==
+* ExtensionClass
+
 == HISTORY ==
 * Moved singleton invocation to end of file to accomodate some PHP versions
 
- * TODO:
- * =====
- * - Clean up the '#redirect' wikitext before displaying
- *
- */
+== TODO ==
+* Clean up the '#redirect' wikitext before displaying
+
+</wikitext>*/
 
 class ShowRedirectPageText extends ExtensionClass
 {

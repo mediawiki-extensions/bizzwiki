@@ -19,6 +19,7 @@ class FetchPartnerRCjob extends Job
 	var $user;
 	var $lst;
 	var $plst;
+	var $table;
 	
 	static $params = array( 	'id'		=> 'rc_id',				// BIZZWIKI specific
 								'type'		=> 'rc_type', 
@@ -55,6 +56,7 @@ class FetchPartnerRCjob extends Job
 		$this->url  = FetchPartnerRC::$partner_url;
 		$this->port = FetchPartnerRC::$port;
 		$this->timeout = FetchPartnerRC::$timeout;
+		$this->table	= FetchPartnerRC::$tableName;
 	}
 
 	function run() 
@@ -69,8 +71,8 @@ class FetchPartnerRCjob extends Job
 		
 		// 2) PARSE THE LIST
 		$this->plst = $err = $this->parseDocument();
-		if ($err === false)
-			return $this->errorParsingList();
+		if ($err === false)	return $this->errorParsingList();
+		if ($err === true)	return $this->listEmpty();
 		
 		// 3) FILTER THE LIST
 		$compte = $this->filterList();
@@ -90,8 +92,13 @@ class FetchPartnerRCjob extends Job
 	private function errorParsingList()
 	{
 		// add an entry log.	
+		$this->updateLog( 'fetchfail',);
 	}
-	
+	private function listEmpty()
+	{
+		// add an entry log.	
+		$this->updateLog( 'fetchok',);
+	}
 	/**
 		Adds a log entry upon successful operation.
 	 */
@@ -237,8 +244,12 @@ class FetchPartnerRCjob extends Job
 	private function insertList()
 	{
 		$dbw = wfGetDB( DB_MASTER );
-		
-		
+
+		$dbw->insert(	$this->table,
+						array( $field => $id ),
+						__METHOD__,
+			'IGNORE' );
+		wfDebug( __METHOD__.":   \n" );
 	}
 	
 } // end class declaration

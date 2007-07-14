@@ -1,38 +1,29 @@
 <?php
-/*
- * RawRight.php
- *
- * @author Jean-Lou Dupont -- www.bluecortex.com
- * @package MediaWiki
- * @subpackage Extensions
- * 
- * <b>Purpose:</b>  This extension adds a 'raw' right.
- * Only the users with the 'raw' permission can 'raw view' an article's source wikitext.
- *
- * FEATURES:
- * =========
- * 0) Can be used independantly of BizzWiki environment
- * 1) Displays operational information in 'Special:Version' page
- * 2) Integrates with Hierarchical Namespace Permissions extension to provide
- *    'raw' right.
- *
- * DEPENDANCIES:
- * =============
- * 1) ExtensionClass (>v1.3)
- * 2) Hierarchical Namespace Permissions extension
- * 3) MW > 1.10 (or patched earlier version)
- *
- * Installation:
- * include("extensions/RawRight.php");
- *
- * HISTORY:
- * ========
- *
- * TODO
- * ====
- * 1) Internationalization: add messages to cache
- *    i18n file
- */
+/*<wikitext>
+ RawRight.php by Jean-Lou Dupont
+
+== Purpose ==
+This extension adds a 'raw' right. Only the users with the 'raw' permission can 'raw view' an article's source wikitext.
+
+== FEATURES ==
+* Can be used independantly of BizzWiki environment
+* Displays operational information in 'Special:Version' page
+* Integrates with Hierarchical Namespace Permissions extension to provide 'raw' right.
+
+== DEPENDANCIES ==
+* ExtensionClass (>v1.3)
+* Hierarchical Namespace Permissions extension
+* MW > 1.10 (or patched earlier version)
+
+== Installation ==
+* include("extensions/RawRight.php");
+
+== HISTORY ==
+
+
+== TODO ==
+* Internationalization: add messages to cache i18n file
+</wikitext>*/
  
 class RawRight extends ExtensionClass
 {

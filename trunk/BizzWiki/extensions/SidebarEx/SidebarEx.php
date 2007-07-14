@@ -1,66 +1,54 @@
 <?php
-/*
- * SidebarEx.php
- * $Id$
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont 
- *
- * Purpose:  Provides a means of adding page links to the
- * ========  'sidebar' based on group membership.
- *
- * Features:
- * *********
- * 0) Can be used independantly of BizzWiki environment
- * 1) all defined groups are supported (standard MW and ones defined in installation)
- * 2) sidebar page name corresponds to 'group' name
- * 3) No patches to standard MW installation for MW version >= 1.10
- * 4) Group name prioritization
- * 
- * DEPENDANCY:  ExtensionClass extension (>v1.5)
- * 
- * Tested Compatibility:  MW 1.10
- * Patches for MW 1.8.x and MW 1.9.x available
- * 
- * SUGGESTIONS FROM USER(S):
- * ========================
- * 1) Bluecortex, is there a way I can grant other usergroups the ability to see this sidebar? 
- * I think this is an awesome extension, but with our setup it's not effective.
- * What would be cool is if it was a permission I could grant in the localsettings.php, 
- * like makesysop, userrights, or any other standard wiki permission. 
- * Thanks in advance! --24.164.92.162 12:57, 31 May 2007 (EDT) 
- * 
- *
- * INSTALLATION NOTES:
- * -------------------
- * Add to LocalSettings.php:
- * 
- * 1) Define (if desired) the base namespace where the pages will be fetched:
- *    $bwSidebarNs = NS_ADMIN;  // must be defined prior
- * 
- * 2) Define (if desired) the base page where the 'sidebar' pages will be fetched:
- *    $bwSidebarPage = 'Sidebars';
- * 
- * 3) Define the priority list i.e. group membership search order.
- *    $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
- * 
- *    Corresponding sidebar pages:
-                               MediaWiki:Sidebar/somegroup
-                               MediaWiki:Sidebar/sysop
-                               MediaWiki:Sidebar/user
-							   MediaWiki:Sidebar/*
- * 
- * 4) Include the required scripts: 
- *  require("extensions/ExtensionClass.php");
- *  require("extensions/SidebarEx/SidebarEx.php");
- *
- * 5) Apply any page protection deemed necessary
- * 
+/*<wikitext>
+SidebarEx.php by Jean-Lou Dupont
+
+== Version ==
+$Id$
+
+== Purpose ==
+Provides a means of adding page links to the 'sidebar' based on group membership.
+
+== Features ==
+* 0) Can be used independantly of BizzWiki environment
+* 1) all defined groups are supported (standard MW and ones defined in installation)
+* 2) sidebar page name corresponds to 'group' name
+* 3) No patches to standard MW installation for MW version >= 1.10
+* 4) Group name prioritization
+ 
+== DEPENDANCY ==
+* ExtensionClass extension (>v1.5)
+** Tested Compatibility:  MW 1.10
+** Patches for MW 1.8.x and MW 1.9.x available
+
+== INSTALLATION NOTES ==
+<pre>
+ Add to LocalSettings.php:
+ 
+ 1) Define (if desired) the base namespace where the pages will be fetched:
+    $bwSidebarNs = NS_ADMIN;  // must be defined prior
+ 
+ 2) Define (if desired) the base page where the 'sidebar' pages will be fetched:
+    $bwSidebarPage = 'Sidebars';
+ 
+ 3) Define the priority list i.e. group membership search order.
+    $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
+ 
+    Corresponding sidebar pages:
+       MediaWiki:Sidebar/somegroup
+       MediaWiki:Sidebar/sysop
+       MediaWiki:Sidebar/user
+	   MediaWiki:Sidebar/*
+ 
+ 4) Include the required scripts: 
+  require("extensions/ExtensionClass.php");
+  require("extensions/SidebarEx/SidebarEx.php");
+</pre>
+ 
 == History ==
 * Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
 * Moved singleton invocation
 
- */
+</wikitext>*/
 
 class SidebarExClass extends ExtensionClass
 {
