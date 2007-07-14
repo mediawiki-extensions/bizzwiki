@@ -47,6 +47,8 @@ MISC:
 =====
 - Internationalise!
 - CHECK: 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context ??
+- 'notitle' magic word
+- Job for the 'FileManager': reload from filesystem all file from installation.
 
 FileManager:
 ============

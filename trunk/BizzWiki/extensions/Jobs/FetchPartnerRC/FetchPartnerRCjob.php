@@ -186,11 +186,15 @@ class FetchPartnerRCjob extends Job
 	 */
 	private function filterList()
 	{
-		// check that we have the 'rc_id' field
-		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....
-
-		
 		// fetch last id from the recentchanges_partner table
+		// check if the database row looks OK for us.
+		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....		
+		$row = $this->getLastEntries();
+		if (!isset( $row->rc_id ) || !isset( $row->uid ) )
+			return false;
+			
+		
+
 
 		
 		// our fetched entries cannot be 'lower' than the ones we already got:
@@ -208,21 +212,29 @@ class FetchPartnerRCjob extends Job
 				
 	}
 	/**
-			This function gets the last 'compte' entries
+			This function gets the last 'compte' (default to 1) entries
 			from the 'recentchanges_partner' table.
 	 */
-	private function getLastEntries( $compte )
+	private function getLastEntries( $compte=1 )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
-		
-		$row = $dbr->selectRow( self::$tableName,			// table name
-								array('sgr_group'),			//
-								array('sgr_user' => $uid),	// 'WHERE'
-								__METHOD__      );			// debug info.
+			
+		$row = $dbr->selectRow( self::$tableName,			// FROM table name
+								array(	'uid',				// select
+										'rc_id', 
+										'rc_timestamp' ), 	
+								null,						// 'WHERE'
+								__METHOD__,					// debug info.
+								array(
+									'ORDER BY'  => 'uid DESC',
+									'LIMIT' => $compte,
+									)
+						      );
 
-		if (!empty($row))
-			return $row->sgr_group;
-		
+		if (isset($row->uid))
+			return $row;
+			
+		return null;		
 	}
 	/**
 		Format the rows received from the database
@@ -245,12 +257,15 @@ class FetchPartnerRCjob extends Job
 	{
 		$dbw = wfGetDB( DB_MASTER );
 
-		$dbw->insert(	$this->table,
-						array( $field => $id ),
-						__METHOD__,
-			'IGNORE' );
-		wfDebug( __METHOD__.":   \n" );
-	}
+		foreach( $lsts as $params )
+		{
+			$uid = $dbw->nextSequenceValue( 'recentchanges_partner_uid_seq' );
+			$params = array_merge( array('uid' => $uid), $params );
+			$dbw->insert( $this->table, $params, __METHOD__ );
+		}
+		
+		wfDebug( __METHOD__.": end \n" );		
+	} // end insert
 	
 } // end class declaration
 ?>
