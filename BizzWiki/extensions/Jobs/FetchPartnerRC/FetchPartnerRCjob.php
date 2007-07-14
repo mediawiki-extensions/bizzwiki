@@ -35,7 +35,7 @@ class FetchPartnerRCjob extends Job
 								'old_revid'	=> 'rc_last_oldid',		// checked
 							#				=> 'rc_moved_to_ns';	// CHECKME
 							#				=> 'rc_moved_to_title';	// CHECKME
-							#				=> 'rc_patrolled';		// CHECKME														
+								'patrolled'	=> 'rc_patrolled';		// BIZZWIKI specific
 							#				=> 'rc_ip';				// CHECKME							
 							#				=> 'rc_old_len';		// CHECKME							
 							#				=> 'rc_new_len';		// CHECKME							
@@ -65,21 +65,25 @@ class FetchPartnerRCjob extends Job
 		$this->user = User::newFromName( FetchPartnerRC::$logName );
 		
 		// 1) GET THE LIST
-		$result = $this->getPartnerList( $this->url, $this->port, $this->timeout );
+		$result = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document );
 		if (!$result)
 			return $this->errorFetchingList();
 		
 		// 2) PARSE THE LIST
-		$this->plst = $err = $this->parseDocument();
-		if ($err === false)	return $this->errorParsingList();
+		$this->plst = $err = $this->parseDocument( $document, &$missing_uid, &$duplicate_uid );
+		if ($err === false)	return $this->errorParsingList( $missing_uid, $duplicate_uid );
 		if ($err === true)	return $this->listEmpty();
+
+		// 3) SORT THE LIST
+		$this->slst = $this->sortList( $this->plst );
 		
-		// 3) FILTER THE LIST
-		$compte = $this->filterList();
+		// 4) FILTER THE LIST
+		$compte = $this->filterList( $this->slst );
 		
-		// 4) INSERT THE LIST
+		// 5) INSERT THE LIST
+		$this->insertList( $this->lst )	;
 		
-		// 5) SUCCESSFUL OPERATION
+		// 6) SUCCESSFUL OPERATION
 		$this->successLog();
 		
 		return true;
@@ -89,7 +93,7 @@ class FetchPartnerRCjob extends Job
 		// add an entry log.
 		$this->updateLog( 'fetchfail',);
 	}
-	private function errorParsingList()
+	private function errorParsingList( $missing_uid, $duplicate_uid )
 	{
 		// add an entry log.	
 		$this->updateLog( 'fetchfail',);
@@ -124,7 +128,7 @@ class FetchPartnerRCjob extends Job
 		Fetch list from partner replication node.
 		
 	 */
-	private function getPartnerList( $url, $port, $timeout, $start, $limit )
+	private function getPartnerList( $url, $port, $timeout, $start, $limit, &$document )
 	{
 		// we need to adjust the url to access the MW API.
 		$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags';
@@ -142,23 +146,26 @@ class FetchPartnerRCjob extends Job
 		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);	// times out after 15s
 		#curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
 		
-		$this->document = curl_exec($ch);
+		$document = curl_exec($ch);
 		
 		$error = curl_errno($ch)
 		curl_close($ch);
 		
 		return $error;
 	}
-	private function parseDocument()
+	private function parseDocument( &$document, &$missing_uid, &$duplicate_uid )
 	{
-		if (empty( $this->document ))
+		// assume best case.
+		$missing_uid = $duplicate_uid = null;
+		
+		if (empty( $document ))
 			return true;	// the document was empty, hence no problem.
 		
 		$p = null;
 		
 		// start by loading the document	
 		$x = new DOMDocument();
-		$x->loadXML( $this->document );
+		$x->loadXML( $document );
 		
 		// next, extract the relevant elements
 		$rclist = $x->getElementsByTagName('rc');
@@ -169,39 +176,79 @@ class FetchPartnerRCjob extends Job
 			$a = null;
 			foreach( self::$params as $param )
 				$a[ $param ] = $rce->getAttribute( $param );
-			$p[] = $a;
+				
+			// make sure we have a 'uid' present
+			if (!isset( $a['uid'] ))
+				{ $missing_uid = true; $p=null; break; }
+				
+			$uid = $a['uid'];
+			// now make sure we didn't encounter this uid yet in the transaction
+			if (isset( $p[$uid] ))
+				{ $duplicate_uid = $uid; $p=null; break; }
+			// everything looks ok... for this row
+			$p[ $uid ] = $a; 
 		}
-		
+
+		// document empty? special return code.		
+		if (empty( $p ))
+			return true;
+
 		// if the document was not empty and we end up
 		// with an empty array, something is wrong.
-		if (empty( $p ))
+		if ( ($missing_uid !=null) || ($duplicate_uid!=null) )
 			return false;
 			
 		return $p;
+	}
+	/**
+		Sort the list by increasing uid
+	 */
+	private function sortList( &$lst )
+	{
+		return ksort( $lst );
 	}
 	/**
 		Filter List for:
 		- duplicate entries etc.	
 		- fetchRC log entries (!)
 	 */
-	private function filterList()
+	private function filterList( &$lst, &$broken_table, &$last_uid, &$first_fetched_uid, &$filtered_count )
 	{
+		// assume best case.
+		$broken_table = false;
+		$filtered_count = 0;
+		
 		// fetch last id from the recentchanges_partner table
 		// check if the database row looks OK for us.
-		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....		
+		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....
 		$row = $this->getLastEntries();
 		if (!isset( $row->rc_id ) || !isset( $row->uid ) )
-			return false;
+			{ $broken_table = true; return false; }
+		
+		$last_uid = $row->uid;
+
+		// Get our first element from the fetched list
+		reset( $lst );
+		$first_fetched_entry = &current( $lst );
+		$first_fetched_uid = key( $first_fetched_entry );
 			
+		// At this point, we can be faced with 3 cases:
+		// case 1: the normal case (current list & fetched list are synchronized
+		// case 2: the fetched list contains UID we already got in our current list
+		// case 3: we are missing UID entries
 		
-
-
+			// case 1 (normal case... hopefully!)
+		if ( ($last_uid+1) == $first_fetched_uid )
+			return true;
 		
-		// our fetched entries cannot be 'lower' than the ones we already got:
-		// filter them out (and keep a record of this)
+			// case 2 (filter out)
+		if ( $last_uid  >= $first_fetched_uid)
+			foreach( $lst as $uid => &$e )
+				if ( $last_uid >= $uid )
+					{ unset( $lst[$uid] ); $filtered_count++; }
 
-		
-		// make sure the list is ordered properly.
+			// case 3
+			// Even at this point we should check if we are missing some UID...
 
 	}
 	private function filterFetchRC()
@@ -253,7 +300,7 @@ class FetchPartnerRCjob extends Job
 	/**
 		Inserts the processed list in the 'recentchanges_partner' table.
 	 */
-	private function insertList()
+	private function insertList( &$lsts )
 	{
 		$dbw = wfGetDB( DB_MASTER );
 

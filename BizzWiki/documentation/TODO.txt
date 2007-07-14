@@ -23,6 +23,7 @@ Replication functionality:
 * Article::doDeleteArticle : RecentChanges table modified...
 * Article::editUpdates : RecentChanges tables modified, 
 ** Hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
+* SECURE way of gettings the 'user' table (ALL the fields !)
 
 SuperGroups
 -----------
