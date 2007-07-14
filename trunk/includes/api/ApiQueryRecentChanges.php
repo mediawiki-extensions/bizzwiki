@@ -75,6 +75,7 @@ class ApiQueryRecentChanges extends ApiQueryBase {
 
 		$this->addFields(array (
 			'rc_id',				// BizzWiki
+			'rc_patrolled',			// BizzWiki
 			'rc_timestamp',
 			'rc_namespace',
 			'rc_title',
