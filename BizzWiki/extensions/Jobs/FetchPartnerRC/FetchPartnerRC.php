@@ -43,8 +43,9 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	// must be setup in settings file
 	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
 	static $partner_url = null;
-	static $timeout = 15; // in seconds
-	static $port = 80; // tcp port
+	static $timeout 	= 15; // in seconds
+	static $port 		= 80; // tcp port
+	static $limit 		= 500;
 
 	// i18n messages.
 	static $msg;
