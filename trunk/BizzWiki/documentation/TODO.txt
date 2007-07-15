@@ -89,3 +89,8 @@ Stub Candidates:
 Rights Management
 =================
 * "Grant Right" functionality
+
+
+-----------------------------------------------
+MW 1.11 related
+* No need to patch 'ApiQueryRecentChanges' for rc_id : it is now included natively

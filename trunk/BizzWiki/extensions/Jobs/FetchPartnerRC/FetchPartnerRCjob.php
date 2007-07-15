@@ -20,6 +20,8 @@ class FetchPartnerRCjob extends Job
 	var $lst;
 	var $plst;
 	var $table;
+	var $start;
+	var $list_empty;
 	
 	static $params = array( 	'id'		=> 'rc_id',				// BIZZWIKI specific
 								'type'		=> 'rc_type', 
@@ -53,10 +55,13 @@ class FetchPartnerRCjob extends Job
 		// ( $command, $title, $params = false, $id = 0 )
 		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $params, $id );
 		
-		$this->url  = FetchPartnerRC::$partner_url;
-		$this->port = FetchPartnerRC::$port;
-		$this->timeout = FetchPartnerRC::$timeout;
+		$this->start	= null;
+		$this->list_empty = null;
+		$this->url		= FetchPartnerRC::$partner_url;
+		$this->port		= FetchPartnerRC::$port;
+		$this->timeout	= FetchPartnerRC::$timeout;
 		$this->table	= FetchPartnerRC::$tableName;
+		$this->limit 	= FetchPartnerRC::$limit;		
 	}
 
 	function run() 
@@ -65,13 +70,21 @@ class FetchPartnerRCjob extends Job
 		$this->user = User::newFromName( FetchPartnerRC::$logName );
 		
 		// 1) GET THE LIST
-		$result = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document );
+		$this->start = $this->getLastEntry( $uid );
+		
+		// This shouldn't happen! The 'install' procedure hasn't been followed.
+		if ( $uid === null )
+			return false;
+		$this->list_empty = ($this->start === null) ? true:false;
+
+		$result = $this->getPartnerList(	$this->url, $this->port, $this->timeout, 
+											$start, $this->limit, $document, $this->list_empty );
 		if (!$result)
 			return $this->errorFetchingList();
 		
 		// 2) PARSE THE LIST
-		$this->plst = $err = $this->parseDocument( $document, &$missing_uid, &$duplicate_uid );
-		if ($err === false)	return $this->errorParsingList( $missing_uid, $duplicate_uid );
+		$this->plst = $err = $this->parseDocument( $document, &$missing_rc_id, &$duplicate_rc_id );
+		if ($err === false)	return $this->errorParsingList( $missing_rc_id, $duplicate_rc_id );
 		if ($err === true)	return $this->listEmpty();
 
 		// 3) SORT THE LIST
@@ -84,24 +97,31 @@ class FetchPartnerRCjob extends Job
 		$this->insertList( $this->lst )	;
 		
 		// 6) SUCCESSFUL OPERATION
-		$this->successLog();
+		$this->successLog( $compte );
 		
 		return true;
 	}
 	private function errorFetchingList()
 	{
 		// add an entry log.
-		$this->updateLog( 'fetchfail',);
+		$this->updateLog( 'fetchfail', 'fetchfail-text1' );
+		return false;
 	}
-	private function errorParsingList( $missing_uid, $duplicate_uid )
+	private function errorParsingList( $missing_rc_id, $duplicate_rc_id )
 	{
+		if ( $missing_rc_id )
+			$param1 = "Missing 'rc_id'.";
+		if ( $duplicate_rc_id )
+			$param2 = "Duplicate 'rc_id'.";
 		// add an entry log.	
-		$this->updateLog( 'fetchfail',);
+		$this->updateLog( 'fetchfail', 'fetchfail-text2', $param1, $param2 );
+		return false;		
 	}
 	private function listEmpty()
 	{
 		// add an entry log.	
-		$this->updateLog( 'fetchok',);
+		$this->updateLog( 'fetchok', 'fetchnc-text' );
+		return false;		
 	}
 	/**
 		Adds a log entry upon successful operation.
@@ -113,13 +133,14 @@ class FetchPartnerRCjob extends Job
 		
 		// add an entry log.
 		$this->updateLog( 'fetchok', $msg, $compte );
+		return true;
 	}
 	/**
 		Actual logging takes place here.
 	 */
 	private function updateLog( $action, $msgid, $param1=null, $param2=null )
 	{
-		$message = wfMsgForContent( 'ftchrclog-'.$msgid.'-text', $param1, $param2 );
+		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2 );
 		
 		$log = new LogPage( 'ftchrclog' );
 		$log->addEntry( $action, $this->user->getUserPage(), $message );
@@ -128,10 +149,13 @@ class FetchPartnerRCjob extends Job
 		Fetch list from partner replication node.
 		
 	 */
-	private function getPartnerList( $url, $port, $timeout, $start, $limit, &$document )
+	private function getPartnerList( $url, $port, $timeout, $start, $limit, &$document, $empty )
 	{
 		// we need to adjust the url to access the MW API.
-		$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags';
+		if ($empty)
+			$url .= '/api.php?action=query&list=recentchanges&rclimit='.$limit.'&rcprop=user|comment|flags';
+		else
+			$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags';		
 		
 		// make sure we only fetch from the point where we had stopped previously
 		// use rc_id identifier / rc_timestamp for this purpose.
@@ -153,10 +177,10 @@ class FetchPartnerRCjob extends Job
 		
 		return $error;
 	}
-	private function parseDocument( &$document, &$missing_uid, &$duplicate_uid )
+	private function parseDocument( &$document, &$missing_rc_id, &$duplicate_rc_id )
 	{
 		// assume best case.
-		$missing_uid = $duplicate_uid = null;
+		$missing_rc_id = $duplicate_rc_id = null;
 		
 		if (empty( $document ))
 			return true;	// the document was empty, hence no problem.
@@ -177,16 +201,17 @@ class FetchPartnerRCjob extends Job
 			foreach( self::$params as $param )
 				$a[ $param ] = $rce->getAttribute( $param );
 				
-			// make sure we have a 'uid' present
-			if (!isset( $a['uid'] ))
-				{ $missing_uid = true; $p=null; break; }
+			// make sure we have an 'rc_id' present
+			if (!isset( $a['rc_id'] ))
+				{ $missing_rc_id = true; $p=null; break; }
 				
-			$uid = $a['uid'];
-			// now make sure we didn't encounter this uid yet in the transaction
-			if (isset( $p[$uid] ))
-				{ $duplicate_uid = $uid; $p=null; break; }
+			$rc_id = $a['rc_id'];
+			// now make sure we didn't encounter this rc_id yet in the transaction
+			if (isset( $p[$rc_id] ))
+				{ $duplicate_rc_id = $rc_id; $p=null; break; }
+				
 			// everything looks ok... for this row
-			$p[ $uid ] = $a; 
+			$p[ $rc_id ] = $a; 
 		}
 
 		// document empty? special return code.		
@@ -195,7 +220,7 @@ class FetchPartnerRCjob extends Job
 
 		// if the document was not empty and we end up
 		// with an empty array, something is wrong.
-		if ( ($missing_uid !=null) || ($duplicate_uid!=null) )
+		if ( ($missing_rc_id != null) || ($duplicate_rc_id != null) )
 			return false;
 			
 		return $p;
@@ -212,7 +237,12 @@ class FetchPartnerRCjob extends Job
 		- duplicate entries etc.	
 		- fetchRC log entries (!)
 	 */
-	private function filterList( &$lst, &$broken_table, &$last_uid, &$first_fetched_uid, &$filtered_count )
+	private function filterList(	&$lst, 
+									&$broken_table, 
+									&$last_rc_id, 
+									&$first_fetched_rc_id, 
+									&$filtered_count, 
+									&$missing_count )
 	{
 		// assume best case.
 		$broken_table = false;
@@ -222,47 +252,58 @@ class FetchPartnerRCjob extends Job
 		// check if the database row looks OK for us.
 		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....
 		$row = $this->getLastEntries();
-		if (!isset( $row->rc_id ) || !isset( $row->uid ) )
+		if (!isset( $row->rc_id ) || !isset( $row->rc_id ) )
 			{ $broken_table = true; return false; }
 		
-		$last_uid = $row->uid;
+		$last_rc_id = $row->rc_id;
 
 		// Get our first element from the fetched list
 		reset( $lst );
 		$first_fetched_entry = &current( $lst );
-		$first_fetched_uid = key( $first_fetched_entry );
+		$first_fetched_rc_id = key( $first_fetched_entry );
 			
 		// At this point, we can be faced with 3 cases:
 		// case 1: the normal case (current list & fetched list are synchronized
-		// case 2: the fetched list contains UID we already got in our current list
-		// case 3: we are missing UID entries
+		// case 2: the fetched list contains rc_id we already got in our current list
+		// case 3: we are missing rc_id entries
 		
 			// case 1 (normal case... hopefully!)
-		if ( ($last_uid+1) == $first_fetched_uid )
-			return true;
+			// Let's still see if we are missing some
+		#if ( ($last_rc_id+1) == $first_fetched_rc_id )
+		#	return true;
 		
 			// case 2 (filter out)
-		if ( $last_uid  >= $first_fetched_uid)
-			foreach( $lst as $uid => &$e )
-				if ( $last_uid >= $uid )
-					{ unset( $lst[$uid] ); $filtered_count++; }
+		if ( $last_rc_id  >= $first_fetched_rc_id )
+			foreach( $lst as $rc_id => &$e )
+				if ( $last_rc_id >= $rc_id )
+					{ unset( $lst[$rc_id] ); $filtered_count++; }
 
 			// case 3
 			// Even at this point we should check if we are missing some UID...
-
-	}
-	private function filterFetchRC()
-	{
-		$c = null;
-		if (!empty( $this->lst ))	
-			foreach( $this->lst as $index => &$e )
-				
+		$compte = count( $lst ); // max # of entries to deal with regardless
+		$missing_count = 0;
+		$next_expected_rc_id = $last_rc_id+1;
+		reset( $lst );
+		do
+		{
+			$rc_id = key( current( $lst ) );
+			if ($rc_id != $next_expected_rc_id)
+				$missing_count++;
+			next( $lst );
+			$next_expected_rc_id++;
+			compte--;			
+		} while( $compte>0 );
+		
+		if ($missing_count > 0)
+			return false;
+		
+		return true;
 	}
 	/**
 			This function gets the last 'compte' (default to 1) entries
 			from the 'recentchanges_partner' table.
 	 */
-	private function getLastEntries( $compte=1 )
+	private function getLastEntry( &$uid )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
 			
@@ -274,29 +315,22 @@ class FetchPartnerRCjob extends Job
 								__METHOD__,					// debug info.
 								array(
 									'ORDER BY'  => 'uid DESC',
-									'LIMIT' => $compte,
+									'LIMIT' => 1,
 									)
 						      );
 
-		if (isset($row->uid))
-			return $row;
+		if (isset( $row->uid ))
+			$uid = $row->uid;
+		else 
+			$uid = null;
 			
-		return null;		
-	}
-	/**
-		Format the rows received from the database
-		to a format we can more easily work with
-		i.e. the same format as we have set for the list
-		we received from the partner replication node.
-	 */
-	private function formatRowList( &$l )
-	{
-		if (empty( $l )) 
-			return;	
-		foreach( $l as $key => $value )
+		if (isset( $row->rc_id ))
+			$rc_id = $row->rc_id;
+		else
+			$rc_id = null;
 			
+		return $rc_id;		
 	}
-	
 	/**
 		Inserts the processed list in the 'recentchanges_partner' table.
 	 */
