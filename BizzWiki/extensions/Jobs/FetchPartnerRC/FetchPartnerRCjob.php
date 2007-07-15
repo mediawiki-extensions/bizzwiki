@@ -91,13 +91,20 @@ class FetchPartnerRCjob extends Job
 		$this->slst = $this->sortList( $this->plst );
 		
 		// 4) FILTER THE LIST
-		$compte = $this->filterList( $this->slst );
-		
+		$filtered_count = 0;
+		$missing_count	= 0;
+		$this->filterList(	$this->slst,
+							$this->start,
+							&$last_rc_id, 
+							&$first_fetched_rc_id, 
+							&$filtered_count, 
+							&$missing_count );
+
 		// 5) INSERT THE LIST
-		$this->insertList( $this->lst )	;
+		$this->insertList( $this->slst )	;
 		
 		// 6) SUCCESSFUL OPERATION
-		$this->successLog( $compte );
+		$this->successLog( $first_fetched_rc_id, count($this->slst), $filtered_count, $missing_count );
 		
 		return true;
 	}
@@ -126,21 +133,21 @@ class FetchPartnerRCjob extends Job
 	/**
 		Adds a log entry upon successful operation.
 	 */
-	private function successLog( $compte )
+	private function successLog( $first_fetched_rc_id, $compte, $filtered_count, $missing_count )
 	{
 		// were there any entries made?
-		$msg = $compte==0 ? 'fetchnc' : 'fetchok';
+		$msg = $compte==0 ? 'fetchnc-text' : 'fetchok-text';
 		
 		// add an entry log.
-		$this->updateLog( 'fetchok', $msg, $compte );
+		$this->updateLog( 'fetchok', $msg, $compte, $first_fetched_rc_id, $filtered_count, $missing_count );
 		return true;
 	}
 	/**
 		Actual logging takes place here.
 	 */
-	private function updateLog( $action, $msgid, $param1=null, $param2=null )
+	private function updateLog( $action, $msgid, $param1=null, $param2=null, $param3=null, $param4=null )
 	{
-		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2 );
+		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2, $param3, $param4 );
 		
 		$log = new LogPage( 'ftchrclog' );
 		$log->addEntry( $action, $this->user->getUserPage(), $message );
@@ -237,26 +244,16 @@ class FetchPartnerRCjob extends Job
 		- duplicate entries etc.	
 		- fetchRC log entries (!)
 	 */
-	private function filterList(	&$lst, 
-									&$broken_table, 
+	private function filterList(	&$lst,
+									$next_expected_rc_id,
 									&$last_rc_id, 
 									&$first_fetched_rc_id, 
 									&$filtered_count, 
 									&$missing_count )
 	{
 		// assume best case.
-		$broken_table = false;
 		$filtered_count = 0;
 		
-		// fetch last id from the recentchanges_partner table
-		// check if the database row looks OK for us.
-		// We will only get this parameter if we have a patched 'ApiQueryRecentChanges.php' file....
-		$row = $this->getLastEntries();
-		if (!isset( $row->rc_id ) || !isset( $row->rc_id ) )
-			{ $broken_table = true; return false; }
-		
-		$last_rc_id = $row->rc_id;
-
 		// Get our first element from the fetched list
 		reset( $lst );
 		$first_fetched_entry = &current( $lst );
@@ -266,6 +263,8 @@ class FetchPartnerRCjob extends Job
 		// case 1: the normal case (current list & fetched list are synchronized
 		// case 2: the fetched list contains rc_id we already got in our current list
 		// case 3: we are missing rc_id entries
+
+		// NOTE: if $next_expected_rc_id === null, then we are a the start
 		
 			// case 1 (normal case... hopefully!)
 			// Let's still see if we are missing some
@@ -273,20 +272,26 @@ class FetchPartnerRCjob extends Job
 		#	return true;
 		
 			// case 2 (filter out)
-		if ( $last_rc_id  >= $first_fetched_rc_id )
-			foreach( $lst as $rc_id => &$e )
-				if ( $last_rc_id >= $rc_id )
-					{ unset( $lst[$rc_id] ); $filtered_count++; }
+		if ($next_expected_rc_id !== null)
+			if ( $next_expected_rc_id  > $first_fetched_rc_id )
+				foreach( $lst as $rc_id => &$e )
+					if ( $next_expected_rc_id > $rc_id )
+						{ unset( $lst[$rc_id] ); $filtered_count++; }
 
 			// case 3
-			// Even at this point we should check if we are missing some UID...
+			// Even at this point we should check if we are missing some rc_id's...
+			// We are assuming the list we are receiving is ordered by increasing 'rc_id' (see sortList)
 		$compte = count( $lst ); // max # of entries to deal with regardless
 		$missing_count = 0;
-		$next_expected_rc_id = $last_rc_id+1;
 		reset( $lst );
 		do
 		{
 			$rc_id = key( current( $lst ) );
+			
+			// Initialize special start case.
+			if ($next_expected_rc_id === null)
+				$next_expected_rc_id = $rc_id;
+			
 			if ($rc_id != $next_expected_rc_id)
 				$missing_count++;
 			next( $lst );
@@ -294,7 +299,7 @@ class FetchPartnerRCjob extends Job
 			compte--;			
 		} while( $compte>0 );
 		
-		if ($missing_count > 0)
+		if ( ($missing_count > 0) || ($filtered_count > 0) )
 			return false;
 		
 		return true;
