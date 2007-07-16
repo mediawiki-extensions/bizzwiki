@@ -23,7 +23,7 @@ class FetchPartnerRCjob extends Job
 	var $start;
 	var $list_empty;
 	
-	static $params = array( 	'id'		=> 'rc_id',				// BIZZWIKI specific
+	static $paramsList = array( 'id'		=> 'rc_id',				// BIZZWIKI specific
 								'type'		=> 'rc_type', 
 								'ns'		=> 'rc_namespace',
 								'pageid'	=> 'rc_cur_id',			// checked
@@ -35,25 +35,25 @@ class FetchPartnerRCjob extends Job
 								'title'		=> 'rc_title', 			// ok
 								'revid'		=> 'rc_this_oldid',		// checked 
 								'old_revid'	=> 'rc_last_oldid',		// checked
-							#				=> 'rc_moved_to_ns';	// CHECKME
-							#				=> 'rc_moved_to_title';	// CHECKME
-								'patrolled'	=> 'rc_patrolled';		// BIZZWIKI specific
-							#				=> 'rc_ip';				// CHECKME							
-							#				=> 'rc_old_len';		// CHECKME							
-							#				=> 'rc_new_len';		// CHECKME							
-							#				=> 'rc_deleted';		// CHECKME							
-							#				=> 'rc_logid';			// CHECKME							
-							#				=> 'rc_logtype';		// CHECKME							
-							#				=> 'rc_log_action';		// CHECKME							
-							#				=> 'rc_params';			// CHECKME							
+							#				=> 'rc_moved_to_ns',	// CHECKME
+							#				=> 'rc_moved_to_title',	// CHECKME
+								'patrolled'	=> 'rc_patrolled',		// BIZZWIKI specific
+							#				=> 'rc_ip',				// CHECKME							
+							#				=> 'rc_old_len',		// CHECKME							
+							#				=> 'rc_new_len',		// CHECKME							
+							#				=> 'rc_deleted',		// CHECKME							
+							#				=> 'rc_logid',			// CHECKME							
+							#				=> 'rc_logtype',		// CHECKME							
+							#				=> 'rc_log_action',		// CHECKME							
+							#				=> 'rc_params',			// CHECKME							
 								'timestamp'	=> 'rc_timestamp', 		// ok
 								'comment'	=> 'rc_comment',		// checked
 							);
 	
-	function __construct( $title, $params, $id = 0 ) 
+	function __construct( $title=null, $parameters=null, $id = 0 ) 
 	{
 		// ( $command, $title, $params = false, $id = 0 )
-		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $params, $id );
+		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $parameters, $id );
 		
 		$this->start	= null;
 		$this->list_empty = null;
@@ -61,16 +61,18 @@ class FetchPartnerRCjob extends Job
 		$this->port		= FetchPartnerRC::$port;
 		$this->timeout	= FetchPartnerRC::$timeout;
 		$this->table	= FetchPartnerRC::$tableName;
-		$this->limit 	= FetchPartnerRC::$limit;		
+		$this->limit 	= FetchPartnerRC::$limit;
+		$this->tableName= FetchPartnerRC::$tableName;
+		$this->logName  = FetchPartnerRC::$logName;
 	}
 
 	function run() 
 	{
 		// User under which we will file the log entry
-		$this->user = User::newFromName( FetchPartnerRC::$logName );
+		$this->user = User::newFromName( $this->logName );
 		
 		// 1) GET THE LIST
-		$this->start = $this->getLastEntry( $uid );
+		$this->start = $this->getLastEntry( $uid, $this->tableName );
 		
 		// This shouldn't happen! The 'install' procedure hasn't been followed.
 		if ( $uid === null )
@@ -160,9 +162,9 @@ class FetchPartnerRCjob extends Job
 	{
 		// we need to adjust the url to access the MW API.
 		if ($empty)
-			$url .= '/api.php?action=query&list=recentchanges&rclimit='.$limit.'&rcprop=user|comment|flags';
+			$url .= '/api.php?action=query&list=recentchanges&rclimit='.$limit.'&rcprop=user|comment|flags&format=xml';
 		else
-			$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags';		
+			$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags&format=xml';		
 		
 		// make sure we only fetch from the point where we had stopped previously
 		// use rc_id identifier / rc_timestamp for this purpose.
@@ -179,7 +181,7 @@ class FetchPartnerRCjob extends Job
 		
 		$document = curl_exec($ch);
 		
-		$error = curl_errno($ch)
+		$error = curl_errno($ch);
 		curl_close($ch);
 		
 		return $error;
@@ -205,7 +207,7 @@ class FetchPartnerRCjob extends Job
 		foreach( $rclist as &$rce )
 		{
 			$a = null;
-			foreach( self::$params as $param )
+			foreach( self::$paramsList as $param )
 				$a[ $param ] = $rce->getAttribute( $param );
 				
 			// make sure we have an 'rc_id' present
@@ -296,7 +298,7 @@ class FetchPartnerRCjob extends Job
 				$missing_count++;
 			next( $lst );
 			$next_expected_rc_id++;
-			compte--;			
+			$compte--;			
 		} while( $compte>0 );
 		
 		if ( ($missing_count > 0) || ($filtered_count > 0) )
@@ -308,11 +310,11 @@ class FetchPartnerRCjob extends Job
 			This function gets the last 'compte' (default to 1) entries
 			from the 'recentchanges_partner' table.
 	 */
-	private function getLastEntry( &$uid )
+	private function getLastEntry( &$uid, $tableName )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
 			
-		$row = $dbr->selectRow( self::$tableName,			// FROM table name
+		$row = $dbr->selectRow( $tableName,			// FROM table name
 								array(	'uid',				// select
 										'rc_id', 
 										'rc_timestamp' ), 	

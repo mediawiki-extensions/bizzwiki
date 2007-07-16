@@ -5,7 +5,7 @@
  * $Id: EmailLog.i18n.php 350 2007-07-12 00:26:12Z jeanlou.dupont $
  * 
 */
-$FetchPartnerRC::$msg['en'] = array(
+FetchPartnerRC::$msg['en'] = array(
 'ftchrclog'						=> "Fetch Partner's 'Recent Changes' Log",
 'ftchrclog'.'logpage'			=> "Fetch Partner's 'Recent Changes' Log",
 'ftchrclog'.'logpagetext'		=> 'This is a log of fetch operations',
