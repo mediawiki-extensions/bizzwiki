@@ -77,11 +77,8 @@ class FetchPartnerRCjob extends Job
 		$this->user = User::newFromName( $this->logName );
 		
 		// 1) GET THE LIST
-		$this->last_rc_id = $this->getLastEntry( $uid, $this->tableName );
+		$this->last_rc_id = $this->getLastEntry( $this->tableName );
 		
-		// This shouldn't happen! The 'install' procedure hasn't been followed.
-		#if ( $uid === null )
-		#	return false;
 		if ($this->last_rc_id === null)
 		{		
 			$this->list_empty = true;
@@ -301,18 +298,20 @@ class FetchPartnerRCjob extends Job
 				if ( $next_expected_rc_id > $e['rc_id'] )
 					$filtered_count++;
 				else
-					$nlist[] = $e;	// copy here
+					$nlist[$e['rc_id']] = $e;	// copy here
 		}
 		else
 			$nlist = $lst; // copy here
-			
+		
+		ksort( $nlist );
+		
 			// case 3
 			// Even at this point we should check if we are missing some rc_id's...
 			// We are assuming the list we are receiving is ordered by increasing 'rc_id' (see sortList)
-		reset( $nlist );
 		$compte = count( $nlist ); // max # of entries to deal with regardless
 		$missing_count = 0;
-	
+
+		reset( $nlist );	
 		$e=current( $nlist );
 		$next_rc_id = $e['rc_id'];		
 		
@@ -349,13 +348,12 @@ class FetchPartnerRCjob extends Job
 			This function gets the last 'compte' (default to 1) entries
 			from the 'recentchanges_partner' table.
 	 */
-	private function getLastEntry( &$uid, $tableName )
+	private function getLastEntry( $tableName )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
 			
 		$row = $dbr->selectRow( $tableName,			// FROM table name
-								array(	'uid',				// select
-										'rc_id', 
+								array(	'rc_id',				// select
 										'rc_timestamp' ), 	
 								null,						// 'WHERE'
 								__METHOD__,					// debug info.
@@ -365,11 +363,6 @@ class FetchPartnerRCjob extends Job
 									)
 						      );
 
-		if (isset( $row->uid ))
-			$uid = $row->uid;
-		else 
-			$uid = null;
-			
 		if (isset( $row->rc_id ))
 			$rc_id = $row->rc_id;
 		else
@@ -390,7 +383,7 @@ class FetchPartnerRCjob extends Job
 			#$params = array_merge( array('uid' => $uid), $params );
 			$dbw->insert( $this->table, $e, __METHOD__ );
 		}
-		
+		$dbw->commit();		
 		wfDebug( __METHOD__.": end \n" );		
 	} // end insert
 	
