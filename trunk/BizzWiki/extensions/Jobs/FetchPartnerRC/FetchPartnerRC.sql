@@ -1,9 +1,5 @@
 CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
   -- BIZZWIKI
-  -- unique index
-  uid int NOT NULL auto_increment,
-
-  -- BIZZWIKI
   -- taken from 'tables.sql' in 'maintenance' directory.
   -- only modified 'rc_id' line
   
