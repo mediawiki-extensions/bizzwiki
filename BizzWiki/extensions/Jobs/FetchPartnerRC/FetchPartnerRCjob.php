@@ -8,6 +8,9 @@
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
  
+== NOTES ==
+* 'start' parameter of api does not seem to work...
+ 
 == History ==
 
 == Code ==
@@ -22,8 +25,9 @@ class FetchPartnerRCjob extends Job
 	var $table;
 	var $start;
 	var $list_empty;
+	var $flist;
 	
-	static $paramsList = array( 'id'		=> 'rc_id',				// BIZZWIKI specific
+	static $paramsList = array( 'rcid'		=> 'rc_id',				// BIZZWIKI specific
 								'type'		=> 'rc_type', 
 								'ns'		=> 'rc_namespace',
 								'pageid'	=> 'rc_cur_id',			// checked
@@ -47,6 +51,7 @@ class FetchPartnerRCjob extends Job
 							#				=> 'rc_log_action',		// CHECKME							
 							#				=> 'rc_params',			// CHECKME							
 								'timestamp'	=> 'rc_timestamp', 		// ok
+							#	''			=> 'rc_cur_time',		// NEED TO FILL
 								'comment'	=> 'rc_comment',		// checked
 							);
 	
@@ -72,41 +77,53 @@ class FetchPartnerRCjob extends Job
 		$this->user = User::newFromName( $this->logName );
 		
 		// 1) GET THE LIST
-		$this->start = $this->getLastEntry( $uid, $this->tableName );
+		$this->last_rc_id = $this->getLastEntry( $uid, $this->tableName );
 		
 		// This shouldn't happen! The 'install' procedure hasn't been followed.
-		if ( $uid === null )
-			return false;
-		$this->list_empty = ($this->start === null) ? true:false;
-
+		#if ( $uid === null )
+		#	return false;
+		if ($this->last_rc_id === null)
+		{		
+			$this->list_empty = true;
+			$this->expected_rc_id = 1;
+		}
+		else
+		{
+			$this->list_empty = false;			
+			$this->expected_rc_id = $this->last_rc_id+1;
+		}
 		$result = $this->getPartnerList(	$this->url, $this->port, $this->timeout, 
-											$start, $this->limit, $document, $this->list_empty );
-		if (!$result)
+											$this->expected_rc_id, $this->limit, $document, 
+											$this->list_empty );
+		if ( $result !== CURLE_OK )
 			return $this->errorFetchingList();
-		
+
 		// 2) PARSE THE LIST
 		$this->plst = $err = $this->parseDocument( $document, &$missing_rc_id, &$duplicate_rc_id );
 		if ($err === false)	return $this->errorParsingList( $missing_rc_id, $duplicate_rc_id );
 		if ($err === true)	return $this->listEmpty();
 
 		// 3) SORT THE LIST
-		$this->slst = $this->sortList( $this->plst );
-		
+		$this->sortList( $this->plst );
+
 		// 4) FILTER THE LIST
 		$filtered_count = 0;
 		$missing_count	= 0;
-		$this->filterList(	$this->slst,
-							$this->start,
-							&$last_rc_id, 
-							&$first_fetched_rc_id, 
-							&$filtered_count, 
-							&$missing_count );
+		$this->flist = $this->filterList(	$this->plst,
+											$this->expected_rc_id,
+											&$last_rc_id, 
+											&$first_fetched_rc_id, 
+											&$filtered_count, 
+											&$missing_count );
+			
+		// 5) ADJUST 'rc_cur_time'
+		$this->adjustCurTime( $this->flist );
 
-		// 5) INSERT THE LIST
-		$this->insertList( $this->slst )	;
+		// 6) INSERT THE LIST
+		$this->insertList( $this->flist )	;
 		
-		// 6) SUCCESSFUL OPERATION
-		$this->successLog( $first_fetched_rc_id, count($this->slst), $filtered_count, $missing_count );
+		// 7) SUCCESSFUL OPERATION
+		$this->successLog( $this->expected_rc_id, $first_fetched_rc_id, count($this->plst), $filtered_count, $missing_count );
 		
 		return true;
 	}
@@ -135,21 +152,21 @@ class FetchPartnerRCjob extends Job
 	/**
 		Adds a log entry upon successful operation.
 	 */
-	private function successLog( $first_fetched_rc_id, $compte, $filtered_count, $missing_count )
+	private function successLog( $expected_rc_id, $first_fetched_rc_id, $compte, $filtered_count, $missing_count )
 	{
 		// were there any entries made?
 		$msg = $compte==0 ? 'fetchnc-text' : 'fetchok-text';
 		
 		// add an entry log.
-		$this->updateLog( 'fetchok', $msg, $compte, $first_fetched_rc_id, $filtered_count, $missing_count );
+		$this->updateLog( 'fetchok', $msg, $compte, $expected_rc_id, $first_fetched_rc_id, $filtered_count, $missing_count );
 		return true;
 	}
 	/**
 		Actual logging takes place here.
 	 */
-	private function updateLog( $action, $msgid, $param1=null, $param2=null, $param3=null, $param4=null )
+	private function updateLog( $action, $msgid, $param1=null, $param2=null, $param3=null, $param4=null, $param5=null )
 	{
-		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2, $param3, $param4 );
+		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2, $param3, $param4, $param5 );
 		
 		$log = new LogPage( 'ftchrclog' );
 		$log->addEntry( $action, $this->user->getUserPage(), $message );
@@ -160,11 +177,12 @@ class FetchPartnerRCjob extends Job
 	 */
 	private function getPartnerList( $url, $port, $timeout, $start, $limit, &$document, $empty )
 	{
+		// NOTE: the api currently does not support the 'start' parameter.
 		// we need to adjust the url to access the MW API.
-		if ($empty)
+#		if ($empty)
 			$url .= '/api.php?action=query&list=recentchanges&rclimit='.$limit.'&rcprop=user|comment|flags&format=xml';
-		else
-			$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags&format=xml';		
+#		else
+#			$url .= '/api.php?action=query&list=recentchanges&start='.$start.'&rclimit='.$limit.'&rcprop=user|comment|flags&format=xml';		
 		
 		// make sure we only fetch from the point where we had stopped previously
 		// use rc_id identifier / rc_timestamp for this purpose.
@@ -204,12 +222,18 @@ class FetchPartnerRCjob extends Job
 		$rclist = $x->getElementsByTagName('rc');
 		
 		// place the elements in a PHP friendly array
-		foreach( $rclist as &$rce )
+		foreach( $rclist as $rce )
 		{
 			$a = null;
-			foreach( self::$paramsList as $param )
-				$a[ $param ] = $rce->getAttribute( $param );
-				
+			foreach( self::$paramsList as $param => $dbkey )
+			{
+				$value = $rce->getAttribute( $param );
+				// must adjust TIMESTAMP field
+				if ( $param == 'timestamp' )
+					$value = wfTimestamp( TS_MW, $value );
+				$a[ $dbkey ] = $value;
+			}
+			
 			// make sure we have an 'rc_id' present
 			if (!isset( $a['rc_id'] ))
 				{ $missing_rc_id = true; $p=null; break; }
@@ -239,7 +263,7 @@ class FetchPartnerRCjob extends Job
 	 */
 	private function sortList( &$lst )
 	{
-		return ksort( $lst );
+		return ksort( $lst, SORT_NUMERIC );
 	}
 	/**
 		Filter List for:
@@ -253,58 +277,73 @@ class FetchPartnerRCjob extends Job
 									&$filtered_count, 
 									&$missing_count )
 	{
-		// assume best case.
-		$filtered_count = 0;
-		
 		// Get our first element from the fetched list
 		reset( $lst );
 		$first_fetched_entry = &current( $lst );
-		$first_fetched_rc_id = key( $first_fetched_entry );
-			
+		$first_fetched_rc_id = $first_fetched_entry['rc_id'];
+		
 		// At this point, we can be faced with 3 cases:
 		// case 1: the normal case (current list & fetched list are synchronized
 		// case 2: the fetched list contains rc_id we already got in our current list
 		// case 3: we are missing rc_id entries
-
-		// NOTE: if $next_expected_rc_id === null, then we are a the start
-		
-			// case 1 (normal case... hopefully!)
-			// Let's still see if we are missing some
-		#if ( ($last_rc_id+1) == $first_fetched_rc_id )
-		#	return true;
 		
 			// case 2 (filter out)
-		if ($next_expected_rc_id !== null)
-			if ( $next_expected_rc_id  > $first_fetched_rc_id )
-				foreach( $lst as $rc_id => &$e )
-					if ( $next_expected_rc_id > $rc_id )
-						{ unset( $lst[$rc_id] ); $filtered_count++; }
-
+		// assume best case.
+		$filtered_count = 0;
+		
+		// Because of a bug in php v5 wrt to arrays passed by reference,
+		// we need to make a copy of the records we are going to carry forward.
+		$nlist = null;
+		
+		if ( $next_expected_rc_id  > $first_fetched_rc_id )
+		{
+			foreach( $lst as $index => $e )
+				if ( $next_expected_rc_id > $e['rc_id'] )
+					$filtered_count++;
+				else
+					$nlist[] = $e;	// copy here
+		}
+		else
+			$nlist = $lst; // copy here
+			
 			// case 3
 			// Even at this point we should check if we are missing some rc_id's...
 			// We are assuming the list we are receiving is ordered by increasing 'rc_id' (see sortList)
-		$compte = count( $lst ); // max # of entries to deal with regardless
+		reset( $nlist );
+		$compte = count( $nlist ); // max # of entries to deal with regardless
 		$missing_count = 0;
-		reset( $lst );
-		do
-		{
-			$rc_id = key( current( $lst ) );
-			
-			// Initialize special start case.
-			if ($next_expected_rc_id === null)
-				$next_expected_rc_id = $rc_id;
-			
-			if ($rc_id != $next_expected_rc_id)
-				$missing_count++;
-			next( $lst );
-			$next_expected_rc_id++;
-			$compte--;			
-		} while( $compte>0 );
+	
+		$e=current( $nlist );
+		$next_rc_id = $e['rc_id'];		
 		
-		if ( ($missing_count > 0) || ($filtered_count > 0) )
-			return false;
-		
-		return true;
+		if ($compte>1)
+			do
+			{
+				$e=current( $nlist );				
+				$rc_id = $e['rc_id'];
+				
+				if ($rc_id != $next_rc_id)
+					$missing_count++;
+				next( $nlist );
+				// since the api does not respond to the 'start' parameter,
+				// we must reset the 'next_expected_rc_id' everytime as we
+				// do not have a solid reference point.
+				$next_rc_id = $rc_id+1;
+				$compte--;			
+			} while( $compte>0 );
+	
+		return $nlist;
+	}
+	/**
+		Adjust the 'rc_cur_time' field to match the current time
+		where the local 'partner' table was updated.
+	 */
+	private function adjustCurTime( &$lst )
+	{
+		// no need to be that precise in the timestamp
+		$cur_time = wfTimestamp( TS_MW );
+		foreach( $lst as $index => &$e )
+			$e['rc_cur_time'] = $cur_time;
 	}
 	/**
 			This function gets the last 'compte' (default to 1) entries
@@ -345,11 +384,11 @@ class FetchPartnerRCjob extends Job
 	{
 		$dbw = wfGetDB( DB_MASTER );
 
-		foreach( $lsts as $params )
+		foreach( $lsts as $index => &$e )
 		{
-			$uid = $dbw->nextSequenceValue( 'recentchanges_partner_uid_seq' );
-			$params = array_merge( array('uid' => $uid), $params );
-			$dbw->insert( $this->table, $params, __METHOD__ );
+			#$uid = $dbw->nextSequenceValue( 'recentchanges_partner_uid_seq' );
+			#$params = array_merge( array('uid' => $uid), $params );
+			$dbw->insert( $this->table, $e, __METHOD__ );
 		}
 		
 		wfDebug( __METHOD__.": end \n" );		

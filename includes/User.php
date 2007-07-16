@@ -2636,5 +2636,4 @@ class User {
 		$this->invalidateCache();
 	}
 }
-
 ?>

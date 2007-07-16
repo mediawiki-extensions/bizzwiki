@@ -361,7 +361,7 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 #require('extensions/SimpleReplicator/SimpleReplicator.php');
 
 require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
-FetchPartnerRC::$partner_url = 'http://bizzwiki.org';
+FetchPartnerRC::$partner_url = 'http://localhost/wiki';
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
