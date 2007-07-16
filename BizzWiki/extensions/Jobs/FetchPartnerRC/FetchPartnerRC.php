@@ -70,8 +70,9 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 			'url' => self::getFullUrl(__FILE__),			
 		);
 		
+		$dir = dirname( __FILE__ );
 		global $wgAutoloadClasses;
-		$wgAutoloadClasses[] = array( 'FetchPartnerRCjob' => 'FetchPartnerRCjob.php' );
+		$wgAutoloadClasses['FetchPartnerRCjob'] = $dir.'/FetchPartnerRCjob.php' ;
 
 		global $wgJobClasses;
 		$wgJobClasses['fetchRC'] = 'FetchPartnerRCjob'; 
@@ -88,7 +89,7 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 		// LOGGING			
 		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
 		$wgLogTypes[]						= 'ftchrclog';
-		$wgLogNames  ['ftchrclog'			= 'ftchrclog'.'logpage';
+		$wgLogNames  ['ftchrclog']			= 'ftchrclog'.'logpage';
 		$wgLogHeaders['ftchrclog']			= 'ftchrclog'.'logpagetext';
 		$wgLogActions['ftchrclog/fetchok']	= 'ftchrclog'.'-fetchok-entry';
 		$wgLogActions['ftchrclog/fetchfail']= 'ftchrclog'.'-fetchfail-entry';		
@@ -99,7 +100,7 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 		global $wgExtensionCredits;
 
 		$update = $this->getUpdate();
-		$result = ' Status: '.$update;
+		$result = ' Status: '.$this->getUpdate();
 	
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
 			if ($el['name']==self::thisName)
@@ -111,11 +112,11 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	{
 		// 1) check existence of 'recentchanges_partner' table
 		// 2) get last entry
-		$result  = $this->checkTable;
-		$r1      = 'Database table ';
+		$result  = $this->checkTable();
+		$r1      = 'database table ';
 		$r1     .= $result ? 'exists.':'does not exist.';
 		
-		return __METHOD__.' not implemented yet!';		
+		return $r1;
 	}
 	public function checkTable()
 	{
@@ -124,5 +125,5 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	}
 
 } // end class declaration
-
+FetchPartnerRC::singleton();
 ?>
