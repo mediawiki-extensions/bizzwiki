@@ -42,19 +42,33 @@ abstract class PartnerTable
 	{
 		$index = $this->indexName;
 		$table = $this->tableName;
+
+		// try limit case first.
+		$dbr = wfGetDB(DB_SLAVE);		
+		$sql="SELECT $index FROM $table WHERE ($index=1);";
+		$res = $dbr->query( $sql, __METHOD__ );
+		$first_row = $dbr->fetchObject( $res );
+
+		if (!isset( $row->first_row ))
+			return 1;
+		
+		// next, try the generic case.
 		
 		$sql = <<<EOT
 SELECT MIN( a.incid ) AS hole_id
 FROM (
 SELECT $index +1 AS incid
 FROM $table
+ORDER BY $index ASC
 )a
 WHERE a.incid NOT
 IN (
 SELECT $index
-FROM $table);
+FROM $table
+ORDER BY $index ASC
+);
 EOT;
-		$dbr = wfGetDB(DB_SLAVE);
+
 		$res = $dbr->query( $sql, __METHOD__ );
 
 		$row = $dbr->fetchObject( $res );
@@ -67,6 +81,10 @@ EOT;
 	}
 	public function getIdBeforeFirstHole( $holeid )
 	{
+		// protect against limit case (first hole == 1)
+		if ($holeid <= 0)
+			return null;
+			
 		$dbr = wfGetDB( DB_SLAVE ); 
 		$index = $this->indexName;
 		
