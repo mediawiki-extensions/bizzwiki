@@ -31,7 +31,7 @@ This extension fetches the 'recentchanges' table from the partner replication no
 == Code ==
 </wikitext>*/
 require('FetchPartnerRC.i18n.php');
-require('RecentChangesPartnerTable.php');
+require_once('RecentChangesPartnerTable.php');
 
 class FetchPartnerRC extends ExtensionClass  // so many extensions rely on ExtensionClass it does't hurt to 'use' it here.
 {
@@ -47,7 +47,7 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	static $partner_url = null;
 	static $timeout 	= 15; // in seconds
 	static $port 		= 80; // tcp port
-	static $limit 		= 500;
+	static $limit 		= 100;
 
 	// i18n messages.
 	static $msg;

@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || PartnerTable.php
+| <b>File</b> || TableClass.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -17,19 +17,21 @@
 == Code ==
 </wikitext>*/
 
-abstract class PartnerTable
+abstract class TableClass
 {
 	var $tableName;
 	var $indexName;
+	var $timestampName;
 	
-	public function __construct( $tableName, $indexName )
+	public function __construct( $tableName, $indexName, $timestampName=null )
 	{
 		$this->tableName = $tableName;
 		$this->indexName = $indexName;
+		$this->timestampName = $timestampName;
 	}
 
 	/**
-		Function which returns the first 'hole' find in the table
+		Function which returns the first 'hole' found in the table
 		in question.
 		A 'hole' is defined in terms of:
 		- ???_id missing. Applicable to:
@@ -49,7 +51,7 @@ abstract class PartnerTable
 		$res = $dbr->query( $sql, __METHOD__ );
 		$first_row = $dbr->fetchObject( $res );
 
-		if (!isset( $row->first_row ))
+		if (!isset( $first_row->$index ))
 			return 1;
 		
 		// next, try the generic case.
@@ -70,7 +72,6 @@ ORDER BY $index ASC
 EOT;
 
 		$res = $dbr->query( $sql, __METHOD__ );
-
 		$row = $dbr->fetchObject( $res );
 		
 		$hole = null;
@@ -79,7 +80,7 @@ EOT;
 			
 		return $hole;
 	}
-	public function getIdBeforeFirstHole( $holeid )
+	public function getIdTsBeforeFirstHole( $holeid, &$ts, $getTs = false )
 	{
 		// protect against limit case (first hole == 1)
 		if ($holeid <= 0)
@@ -87,9 +88,14 @@ EOT;
 			
 		$dbr = wfGetDB( DB_SLAVE ); 
 		$index = $this->indexName;
+		$ts = $this->timestampName;
+		
+		$select = array( $index );
+		if ($getTs )
+			$select = array_merge( $select, array( $ts ) );
 		
 		$row = $dbr->selectRow( $this->tableName,
-								array(	$index ),			// select
+								$select,					// select
 								array( "$index < $holeid"), // 'WHERE'
 								__METHOD__,					// debug info.
 								array(
@@ -102,6 +108,10 @@ EOT;
 		if (isset( $row->$index ))
 			$before = $row->$index;
 			
+		$ts = null;
+		if (isset( $row->$ts ))
+			$ts = $row->$ts;
+		
 		return $before;		
 	}
 	public function checkExistTable()
@@ -109,15 +119,21 @@ EOT;
 		$dbr = wfGetDB(DB_SLAVE);
 		return $dbr->tableExists($this->tableName);
 	}
-	public function getLastId( )
+	public function getLastId( &$timestamp )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
 		$index = $this->indexName;
+		$ts = $this->timestampName;
+
+		if (isset( $this->timestampName ))
+			$select = array( $index, $ts );
+		else
+			$select = array( $index );
 		
 		$row = $dbr->selectRow( $this->tableName,
-								array(	$index ),			// select
-								null,						// 'WHERE'
-								__METHOD__,					// debug info.
+								$select,				// select
+								null,					// 'WHERE'
+								__METHOD__,				// debug info.
 								array(
 									'ORDER BY'  => $index.' DESC',
 									'LIMIT' => 1,
@@ -125,11 +141,24 @@ EOT;
 						      );
 
 		$last = null;
+		$timestamp = null;
 		if (isset( $row->$index ))
 			$last = $row->$index;
-			
+		if (isset( $row->$ts ))
+			$timestamp = $row->$ts;
 		return $last;		
 	}
+
+	function updateList( &$lst )
+	{
+		$dbw = wfGetDB( DB_MASTER );
+
+		foreach( $lst as $index => &$e )
+			$dbw->replace( $this->tableName, null, $e, __METHOD__ );
+
+		$dbw->commit();		
+		wfDebug( __METHOD__.": end \n" );		
+	} // end insert
 	
 } // end class
 ?>
