@@ -76,7 +76,9 @@ class geshiClass extends ExtensionClass
         $geshi->enable_classes(); 
         $geshi->set_header_type(GESHI_HEADER_PRE); 
         $geshi->set_overall_class("code"); 
-        $geshi->set_encoding("utf-8"); 
+        $geshi->set_encoding("utf-8");
+		// [[mw:user:Brianegge]] suggestion
+		$geshi->set_overall_style('background: #EEEEEE; border: padding: 0.2em'); 
 
 		if (($lines == true) or ($lines==1) or ($lines=='1'))
 			$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
