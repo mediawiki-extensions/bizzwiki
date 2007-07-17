@@ -89,7 +89,8 @@ Stub Candidates:
 Rights Management
 =================
 * "Grant Right" functionality
-
+** see Manual:$wgAddGroups
+** see Manual:$wgRemoveGroups
 
 -----------------------------------------------
 MW 1.11 related
