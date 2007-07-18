@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || SimpleReplicatorClass.php
+| <b>File</b> || ClockTickClass.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -10,7 +10,7 @@
 == Code ==
 </wikitext>*/
 
-class SimpleReplicator
+class ClockTickClass
 {
 	const actionPing = 'ping';
 	
@@ -64,10 +64,6 @@ class SimpleReplicator
 
 	private function primeJobQueue()
 	{
-		// create 'getPartnerRC' job.
-		
-		
-		// insert it in the job queue
 		
 		
 		// we are done here; let the normal process flow
@@ -76,5 +72,5 @@ class SimpleReplicator
 	}
 
 } // end class
-new SimpleReplicator;
+new ClockTickClass;
 ?>
