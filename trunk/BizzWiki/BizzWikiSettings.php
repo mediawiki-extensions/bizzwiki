@@ -362,7 +362,9 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 //                             *** EXPERIMENTAL ***
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #require('extensions/SimpleReplicator/SimpleReplicator.php');
-require('extensions/ClockTick/ClockTick.php');
+
+// Enable this extension if you require locally generated 'ClockTickEvent'
+#require('extensions/ClockTick/ClockTick.php');
 
 StubManager::createStub(	'TaskScheduler', 
 							$bwExtPath.'/Jobs/TaskScheduler/TaskScheduler.php',
@@ -372,8 +374,8 @@ StubManager::createStub(	'TaskScheduler',
 						 );
 
 
-#require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
-#FetchPartnerRC::$partner_url = 'http://localhost/wiki';
+require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
+FetchPartnerRC::$partner_url = 'http://localhost/wiki';
 
 
 ## To enable image uploads, make sure the 'images' directory
