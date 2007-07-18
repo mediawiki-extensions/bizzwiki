@@ -18,8 +18,8 @@ class ClockTickClass
 	{
 		global $wgHooks;
 		
-		$wgHooks['ArticleFromTitle'][] = array( &$this, 'hArticleFromTitle' );
-		$wgHooks['UnknownAction'][] = array( &$this, 'hUnknownAction' );
+		$wgHooks['ArticleFromTitle'][]	= array( &$this, 'hArticleFromTitle' );
+		$wgHooks['UnknownAction'][]		= array( &$this, 'hUnknownAction' );
 	}
 	
 	// ArticleFromTitle Hook
@@ -33,7 +33,9 @@ class ClockTickClass
 		{
 			// make sure we've got a job in the queue for the
 			// replication function.
-			$this->primeJobQueue();
+			wfRunHooks('ClockTickEvent');
+			
+			// build a stub Article to ensure MW does not complain
 			$article = new Article( $title );
 			return false; // stop the hook chain.
 		}
@@ -62,15 +64,10 @@ class ClockTickClass
 		return false; 
 	}
 
-	private function primeJobQueue()
-	{
-		
-		
-		// we are done here; let the normal process flow
-		// pop the job queue in 'Wiki::doJobs()'.
-		return;
-	}
-
 } // end class
+
+// references to this object are kept in 'wgHooks';
+// the garbage collector won't clean this object before
+// the end of the transaction.
 new ClockTickClass;
 ?>
