@@ -2,7 +2,7 @@
 /**
  * Internationalisation file for 'FetchPartnerRC' extension.
  *
- * $Id: EmailLog.i18n.php 350 2007-07-12 00:26:12Z jeanlou.dupont $
+ * $Id$
  * 
 */
 FetchPartnerRC::$msg['en'] = array(
