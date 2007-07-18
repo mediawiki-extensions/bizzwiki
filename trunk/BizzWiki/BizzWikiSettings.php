@@ -365,8 +365,8 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 require('extensions/ClockTick/ClockTick.php');
 
 StubManager::createStub(	'TaskScheduler', 
-							$bwExtPath.'/TaskScheduler/TaskScheduler.php',
-							$bwExtPath.'/TaskScheduler/TaskScheduler.i18n.php',							
+							$bwExtPath.'/Jobs/TaskScheduler/TaskScheduler.php',
+							$bwExtPath.'/Jobs/TaskScheduler/TaskScheduler.i18n.php',							
 							array( 'ClockTickEvent' ), // created by 'ClockTick' extension
 							true // logging included
 						 );
