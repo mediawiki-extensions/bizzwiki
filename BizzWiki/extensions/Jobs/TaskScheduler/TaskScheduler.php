@@ -42,6 +42,8 @@ class TaskScheduler
 	
 	//
 	var $timebase;
+	var $logName;
+	var $user;
 	
 	// database related
 	static $tableName = 'task_scheduler';
@@ -56,6 +58,7 @@ class TaskScheduler
 						);
 	
 	// error codes
+	const errOK					= 0;
 	const errInexistantClass	= 1;
 	const errRunningTask		= 2;
 	
@@ -83,33 +86,57 @@ class TaskScheduler
 	 */
 	public function hClockTickEvent( $timebase )
 	{
+		// User under which we will file the log entry
+		$this->user = User::newFromName( $this->logName );
+		
 		$this->timebase = $timebase;
 		
 		// Get earliest deadline task
 		$tasks = $this->getTasksToRun();
 		
-		foreach( $tasks as $task )
-		{
-			$code = $this->runTask( $task );			
-			$this->updateLog( $task, $code );
-		}
+		if (!empty( $tasks ))
+			foreach( $tasks as $task )
+			{
+				$code = $this->runTask( $task, &$taskErrorCode );
+				$this->updateLog( $task, $code, $taskErrorCode );
+				$this->updateTask( $task );
+			}
 		
 		return true;
 	}
 	/**
+		Returns only the tasks which are scheduled to run
+		at this time.
 	 */
 	public function getTasksToRun()
 	{
-
-		// Is it time?
-		// i.e. is in the deadline in the recent past?
-		// (hopefully, not too distant ;-)
-		if (!$this->isTimeToRun( $task ))
-			continue;
-
+		$tasks = $this->getTasks();
 		
+		if (empty( $tasks ))
+			return null;
+
+		$sTasks = null;
+
+		foreach( $tasks as $task )
+		{
+			// Is this the first time this task is visited?
+			if ( $task['ts_last_run_timestamp'] == 0 )
+			{
+				$this->updateTask( $task );	
+				// don't execute it just now!
+				continue;
+			}
+			// Is it time?
+			// i.e. is in the deadline in the recent past?
+			// (hopefully, not too distant ;-)
+			if (!$this->isTimeToRun( $task ))
+				$sTasks[] = $task;
+		}
+		
+		return $sTasks;
 	}
 	/**
+		Returns an array of all the existing tasks.
 	 */
 	public function getTasks()
 	{
@@ -142,34 +169,26 @@ class TaskScheduler
 		return $tasks;
 	}
 	/**
+			Actually executes the task through its 'run()' method.
 	 */
-	public function runTask( &$task, &$errCode )
+	public function runTask( &$task, &$taskErrorCode )
 	{
-		// assume no error will occur.
-		$code = true;
-		
 		$classe = $task['ts_class'];
 		try
-		{
-			$obj = new $classe;
-		}
+		{ $obj = new $classe; }
 		catch( $e )
-		{
-			$errCode = errInexistantClass;
-			return false;
-		}
+		{ return errInexistantClass; }
 				
 		try 
-		{			
-			$errCode = $obj->run();
+		{
+			// $code must not overlap with the ones
+			// defined here.
+			$taskErrorCode = $obj->run();
 		} 
 		catch( $e )
-		{
-			$errCode = errRunningTask;
-			return false;
-		}
+		{ return errRunningTask; }
 		
-		return $code;		
+		return errOK;		
 	}
 	/**
 		Verifies if the task's expected run time is
@@ -217,6 +236,7 @@ class TaskScheduler
 		return $result;
 	}
 	/**
+		Calculates the task's next run time.
 	 */
 	private function calculateNextRun( &$task )
 	{
@@ -227,14 +247,25 @@ class TaskScheduler
 		return wfTimestamp( TS_MW, time() + $inc );
 	}
 	/**
+		Adds a contextual log entry.
 	 */
-	private function updateLog( &$task, &$code )
+	private function updateLog( &$task, &$code, &$taskErrorCode )
 	{
-		$message = wfMsgForContent( 'schlog-'.$msgid, $param1, $param2, $param3, $param4, $param5 );
+		static $msgMap = array(	
+								errOK 				=> 'text1',
+								errInexistantClass	=> 'text1',
+								errRunningTask		=> 'text2',
+							);
+							
+		$action = ( $code == errOK ) ? 'runok':'runfail';
+		$msgid  = self::$msgMap[$code];
+		$param1 = $task['ts_class'];
+		$param2 = $taskErrorCode;
+		
+		$message = wfMsgForContent( 'schlog-'.$action.'-'.$msgid, $param1, $param2 );
 		
 		$log = new LogPage( 'schlog' );
 		$log->addEntry( $action, $this->user->getUserPage(), $message );
-		
 	}
 
 } // end class declaration
