@@ -13,7 +13,7 @@ CREATE TABLE /*$wgDBprefix*/task_scheduler (
   ts_next_run_timestamp varbinary(14) NOT NULL default '',  
 
   -- the PHP class to use for instantiating an object
-  ts_class var_char(255) binary NOT NULL default '',
+  ts_class varchar(255) binary NOT NULL default '',
  
   -- the frequency at which the task must be run
   -- this is a function of the timebase

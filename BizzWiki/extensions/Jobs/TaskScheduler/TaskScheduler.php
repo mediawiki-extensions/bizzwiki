@@ -42,7 +42,7 @@ class TaskScheduler
 	
 	//
 	var $timebase;
-	var $logName;
+	static $logName = 'WikiSysop';
 	var $user;
 	
 	// database related
@@ -87,7 +87,7 @@ class TaskScheduler
 	public function hClockTickEvent( $timebase )
 	{
 		// User under which we will file the log entry
-		$this->user = User::newFromName( $this->logName );
+		$this->user = User::newFromName( self::$logName );
 		
 		$this->timebase = $timebase;
 		
@@ -129,10 +129,10 @@ class TaskScheduler
 			// Is it time?
 			// i.e. is in the deadline in the recent past?
 			// (hopefully, not too distant ;-)
-			if (!$this->isTimeToRun( $task ))
+			if ($this->isTimeToRun( $task ))
 				$sTasks[] = $task;
 		}
-		
+				
 		return $sTasks;
 	}
 	/**
@@ -149,11 +149,12 @@ class TaskScheduler
 		$index	= 'ts_next_run_timestamp';
 		
 		$dbr = wfGetDB(DB_SLAVE);		
-		$sql="SELECT $fields FROM $table ORDER BY $index ASC;";
 		
-		// resource object containing all the tasks.
-		// must be iterated with 'fetchObject'
-		$res = $dbr->query( $sql, __METHOD__ );
+		$res = $dbr->select($table,
+							$fields,
+							null,
+							__METHOD__, 
+							array( 'ORDER BY' => "$index ASC")  );
 		
 		while ( $task = $dbr->fetchObject( $res ) )
 		{
@@ -174,10 +175,15 @@ class TaskScheduler
 	public function runTask( &$task, &$taskErrorCode )
 	{
 		$classe = $task['ts_class'];
-		try
-		{ $obj = new $classe; }
-		catch( $e )
-		{ return errInexistantClass; }
+		
+		// verify that a matching class definition
+		// can be loaded.		
+		global $wgAutoloadClasses;
+		if ( !$wgAutoloadClasses[$classe] )
+			return errInexistantClass;
+
+		// this, hopefully, should not cause any problem
+		$obj = new $classe;
 				
 		try 
 		{
@@ -185,7 +191,7 @@ class TaskScheduler
 			// defined here.
 			$taskErrorCode = $obj->run();
 		} 
-		catch( $e )
+		catch( Exception $e )
 		{ return errRunningTask; }
 		
 		return errOK;		
@@ -218,13 +224,15 @@ class TaskScheduler
 		$nr = $this->calculateNextRun( $task );
 		$id = $task['ts_id'];
 		
+		$table	= self::$tableName;
+		
 		// do the actual update in the db.
 		$dbw = wfGetDB(DB_MASTER);
 
-		$dbw->update( $this->tableName,
+		$dbw->update( $table,
 			array( /* SET */
-				'ts_last_run'	=> $lr,		// set
-				'rs_next_run'	=> $nr,		// set
+				'ts_last_run_timestamp'	=> $lr,		// set
+				'ts_next_run_timestamp'	=> $nr,		// set
 			),
 			array( 'ts_id' => $id ),		// condition
 			__METHOD__ );
@@ -258,7 +266,7 @@ class TaskScheduler
 							);
 							
 		$action = ( $code == errOK ) ? 'runok':'runfail';
-		$msgid  = self::$msgMap[$code];
+		$msgid  = $msgMap[$code];
 		$param1 = $task['ts_class'];
 		$param2 = $taskErrorCode;
 		
