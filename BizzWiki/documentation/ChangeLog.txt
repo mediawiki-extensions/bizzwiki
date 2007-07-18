@@ -142,4 +142,6 @@ REL1_10_8: (released ...)
 - Added 'FetchPartnerRC' extension (part of Replication functionality which is ongoing)
 - Added auto-detection of 'wfScript' function for MW1.11 API integration.
 - Added 'ClockTick' extension (added 'ClockTickEvent' hook)
+- Added 'clocktick.php' script
+- Added 'TaskScheduler' extension (requires 'ClockTick' extension / 'ClockTickEvent' generator such as 'clocktick.php' script)
 - 

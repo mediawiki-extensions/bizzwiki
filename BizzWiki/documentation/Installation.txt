@@ -31,3 +31,6 @@ IMPORTANT NOTES
    chown -R apache BizzWiki
    chgrp -R apache BizzWiki
    
+NOTES ON REPLICATION FUNCTIONALITY
+==================================
+For Windows users, a useful 'cron' can be found at: http://www.nncron.ru/

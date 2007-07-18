@@ -59,8 +59,6 @@ class ClockTick
 				($_SERVER['REMOTE_ADDR'] == '127.0.0.1')
 			)
 		{
-			// make sure we've got a job in the queue for the
-			// replication function.
 			wfRunHooks('ClockTickEvent', self::$timebase );
 			
 			// build a stub Article to ensure MW does not complain
