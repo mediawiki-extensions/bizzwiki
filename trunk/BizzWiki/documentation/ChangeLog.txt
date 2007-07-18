@@ -141,3 +141,5 @@ REL1_10_8: (released ...)
 - Added API to rights management process (new namespace NS_API)
 - Updated 'hnpClass' to account for API
 - Added 'FetchPartnerRC' extension (part of Replication functionality which is ongoing)
+- Added auto-detection of 'wfScript' function for MW1.11 API integration.
+- 
