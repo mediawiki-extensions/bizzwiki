@@ -37,7 +37,7 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 {
 	const thisName = 'FetchPartnerRC';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id: WatchRight.php 378 2007-07-13 12:52:41Z jeanlou.dupont $';	
+	const id       = '$Id$';	
 
 	// Database
 	static $tableName = 'recentchanges_partner';
