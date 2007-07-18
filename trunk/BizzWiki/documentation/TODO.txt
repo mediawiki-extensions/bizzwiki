@@ -57,6 +57,7 @@ Geshi:
 Special:Undelete
 ================
 * Fixme
+* DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!
 
 SpecialPagesManager
 ===================
