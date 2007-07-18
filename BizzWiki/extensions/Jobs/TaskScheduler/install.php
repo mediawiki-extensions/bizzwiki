@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Installation script for the 'FetchPartnerRC' extension
+ * Installation script for the 'TaskScheduler' extension
  *
  * @author Jean-Lou Dupont
- * $Id: install.php 175 2007-06-16 00:22:09Z jeanlou.dupont $
+ * $Id$
  */
 
-echo "\n\nFetchPartnerRC database table setup\n\n";
+echo "\n\TaskScheduler database table setup\n\n";
 
 # RECURSE DOWN TO FIND '/maintenance' directory
 $maint = $dir = dirname( __FILE__ );
@@ -34,7 +34,7 @@ if (!$found)
 }
 
 # Set up some other paths
-$sql = dirname( __FILE__ ) . '/FetchPartnerRC.sql';
+$sql = dirname( __FILE__ ) . '/TaskScheduler.sql';
 
 # Whine if we don't have appropriate credentials to hand
 if( !isset( $wgDBadminuser ) || !isset( $wgDBadminpassword ) ) {
@@ -61,7 +61,7 @@ if( !$dba->isOpen() ) {
 }
 
 # Do nothing if the table exists
-if( !$dba->tableExists( 'recentchanges_partner' ) ) {
+if( !$dba->tableExists( 'task_scheduler' ) ) {
 	if( $dba->sourceFile( $sql ) ) {
 		echo( "The table has been set up correctly.\n" );
 	}
