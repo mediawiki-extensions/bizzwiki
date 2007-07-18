@@ -27,32 +27,19 @@ class LoggingPartnerTable extends TableClass
 	var $timeout;
 	var $limit;
 	
-	static $paramsList = array( 'rcid'		=> 'rc_id',				// BIZZWIKI specific
-								'type'		=> 'rc_type', 
-								'ns'		=> 'rc_namespace',
-								'pageid'	=> 'rc_cur_id',			// checked
-								'user'		=> 'rc_user',			// ok
-							#				=> 'rc_user_text',		// CHECKME
-								'bot'		=> 'rc_bot',			// ok
-								'minor'		=> 'rc_minor',			// ok
-								'new'		=> 'rc_new',			// ok
-								'title'		=> 'rc_title', 			// ok
-								'revid'		=> 'rc_this_oldid',		// checked 
-								'old_revid'	=> 'rc_last_oldid',		// checked
-							#				=> 'rc_moved_to_ns',	// CHECKME
-							#				=> 'rc_moved_to_title',	// CHECKME
-								'patrolled'	=> 'rc_patrolled',		// BIZZWIKI specific
-							#				=> 'rc_ip',				// CHECKME							
-							#				=> 'rc_old_len',		// CHECKME							
-							#				=> 'rc_new_len',		// CHECKME							
-							#				=> 'rc_deleted',		// CHECKME							
-							#				=> 'rc_logid',			// CHECKME							
-							#				=> 'rc_logtype',		// CHECKME							
-							#				=> 'rc_log_action',		// CHECKME							
-							#				=> 'rc_params',			// CHECKME							
-								'timestamp'	=> 'rc_timestamp', 		// ok
-							#	''			=> 'rc_cur_time',		// NEED TO FILL
-								'comment'	=> 'rc_comment',		// checked
+	static $paramsList = array( 
+								'logid'		=> 'log_id',
+								'timestamp'	=> 'log_timestamp',			// ok
+								log_type
+								log_action
+								log_timestamp
+								log_user
+								log_namespace
+								log_title
+								log_comment
+								log_params
+								log_id
+								log_deleted
 							);
 	
 	// error codes.
@@ -69,7 +56,7 @@ class LoggingPartnerTable extends TableClass
 	
 	var $startup;
 	
-	public function __construct( $table = 'recentchanges_partner', $index = 'rc_id', $ts = 'rc_timestamp' )
+	public function __construct( $table = 'logging_partner', $index = 'log_id', $ts = 'log_timestamp' )
 	{
 		return parent::__construct( $table, $index, $ts );
 	}

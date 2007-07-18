@@ -8,14 +8,6 @@
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
 
-== Implementation ==
-* RecentChanges_Partner table:
-** Find first 'hole'
-** Must take into account 'startup' condition:  table starts at 'rc_id==1'
-
-== NOTES ==
-* 'start' parameter of api does not seem to work...
- 
 == History ==
 
 == Code ==
