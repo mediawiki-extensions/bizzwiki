@@ -1,9 +1,13 @@
 CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
   -- BIZZWIKI
   -- taken from 'tables.sql' in 'maintenance' directory.
-  -- only modified 'rc_id' line
+  -- only modified 'rc_id' line & added 'rc_done'
+  -- rc_id :   not 'auto_increment'
+  -- rc_done:  status indicator for replication
   
+  rc_done tinyint unsigned NOT NULL default '0',
   rc_id int NOT NULL, 
+  
   rc_timestamp varbinary(14) NOT NULL default '',
   rc_cur_time varbinary(14) NOT NULL default '',
   
@@ -69,9 +73,7 @@ CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
   -- Log params
   rc_params blob NOT NULL default '',
   
-  -- BIZZWIKI
-  -- PRIMARY KEY rc_id (rc_id),
-  PRIMARY KEY uid (uid),
+  PRIMARY KEY rc_id (rc_id),
   INDEX rc_id (rc_id),
    
   INDEX rc_timestamp (rc_timestamp),

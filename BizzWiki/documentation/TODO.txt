@@ -15,16 +15,6 @@ User:
 * View User details: probably special page required for that
 * Delete User extension
 
-Replication functionality:
---------------------------
-* Adjust RecentChanges behavior (i.e. delete entry behavior) assuming this table is used for replication
-* MW Special Page for managing the Replicator
-* PHP scripts / Cron Jobs for Replicator
-* Article::doDeleteArticle : RecentChanges table modified...
-* Article::editUpdates : RecentChanges tables modified, 
-** Hook function 'ArticleEditUpdatesDeleteFromRecentchanges' can be used to modify behavior
-* SECURE way of gettings the 'user' table (ALL the fields !)
-
 SuperGroups
 -----------
 0) Configuration in BizzWikiSettings.php
@@ -92,6 +82,19 @@ Rights Management
 ** see Manual:$wgAddGroups
 ** see Manual:$wgRemoveGroups
 
------------------------------------------------
-MW 1.11 related
-* No need to patch 'ApiQueryRecentChanges' for rc_id : it is now included natively
+Replication functionality:
+--------------------------
+* MW Special Page for managing the Replicator
+* PHP scripts / Cron Jobs for Replicator
+* SECURE way of gettings the 'user' table (ALL the fields !)
+
+JOBS:
+=====
+* Jobs Scheduler
+* FetchPartnerRC table: DONE
+* FetchPartnerLog table:
+* FetchPartnerUser table:   when an entry 'user creation log' appears in log?
+* FetchPartnerPage
+* FetchPartnerRevision
+
+
