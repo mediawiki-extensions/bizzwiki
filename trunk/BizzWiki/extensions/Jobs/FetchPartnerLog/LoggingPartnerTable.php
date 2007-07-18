@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || LoggingTable.php
+| <b>File</b> || LoggingPartnerTable.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -19,7 +19,7 @@
 
 require_once( dirname(dirname(__FILE__)).'/TableClass.php');
 
-class RecentChangesPartnerTable extends TableClass
+class LoggingPartnerTable extends TableClass
 {
 	// related to partner API access.
 	var $url;
