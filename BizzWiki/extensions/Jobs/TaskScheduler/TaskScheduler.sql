@@ -21,6 +21,9 @@ CREATE TABLE /*$wgDBprefix*/task_scheduler (
   
   -- the task priority (relative scale)
   ts_priority tinyint unsigned NOT NULL default '0',
+
+  -- a state variable to keep until next round.
+  ts_state varchar(255) binary NOT NULL default '',
  
   PRIMARY KEY ts_id (ts_id),
   INDEX ts_id (ts_id),

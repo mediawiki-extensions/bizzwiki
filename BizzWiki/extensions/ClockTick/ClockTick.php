@@ -35,6 +35,9 @@ class ClockTick
 	const actionPing = 'ping';
 	
 	// timebase in 'seconds'
+	// This variable must be initialized based on the
+	// actual timebase being used. This should ideally be done
+	// in the relevant '*Settings.php' file.
 	static $timebase = 60;
 	
 	function __construct()
