@@ -65,6 +65,7 @@ class RecentChangesPartnerTable extends TableClass
 	var $missing_rc_id;		// only valid if errParsing is returned by update()
 	var $duplicate_rc_id;	// only valid if errParsing is returned by update()
 	var $filtered_count;	// only valid after 'filterList' method
+	var $affected_rows;
 	
 	var $startup;
 	
@@ -98,10 +99,7 @@ class RecentChangesPartnerTable extends TableClass
 		// fetch an update from the partner to kick-start things.
 		if ($holeid == 1)
 		{
-			// choose a date far in the past.
-			$ts = '1971-01-01-T00:00:00Z';
-						
-			$err = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document, $ts, $this->limit );
+			$err = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document, '', 'newer',$this->limit );
 			$this->startup = true;
 		}
 		else
@@ -112,8 +110,8 @@ class RecentChangesPartnerTable extends TableClass
 			$bholeid = $this->getIdTsBeforeFirstHole( $holeid, $ts, true );
 			// convert timestamp to the API's liking
 			// The one returned by the database is in TS_MW format.
-			$tsAPI = wfTimestamp(TS_UNIX, $ts );
-			$err = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document, $tsAPI, $this->limit );
+			$tsAPI = wfTimestamp(TS_ISO_8601, $ts );
+			$err = $this->getPartnerList( $this->url, $this->port, $this->timeout, $document, $tsAPI, 'newer',$this->limit );
 		}
 		if ($err !== CURLE_OK )
 			return errFetchingUrl;
@@ -140,7 +138,7 @@ class RecentChangesPartnerTable extends TableClass
 			$flist = $this->filterList( $plist, $lastid+1, $this->filtered_count );
 			$this->compte = count( $flist );
 			// update the table
-			$this->insertList( $flist );
+			$this->affected_rows = $this->updateList( $flist );
 			return errOK;
 		}
 		$this->filtered_count = 0;
@@ -150,21 +148,23 @@ class RecentChangesPartnerTable extends TableClass
 		// as possible to catch up.
 		$this->catchingUp = true;
 		$this->compte = count( $plist );
-		$this->updateList( $plist );
+		$this->affected_rows = $this->updateList( $plist );
 		return errOK;
 	}
 
-	private function getPartnerList( $url, $port, $timeout, &$document, $from=null, $limit=null )
+	private function getPartnerList( $url, $port, $timeout, &$document, $start='', $dir = 'newer', $limit='' )
 	{
-		if ($limit !== null)
+		$dir = '&rcdir='.$dir;
+		
+		if ($limit !== '')
 			$limit = '&rclimit='.$limit;
-		if ($from !== null)
-			$from = '&rcfrom='.$from;
+		if ($start !== '')
+			$start = '&rcstart='.$start;
 			
 		// NOTE: the api currently does not support the 'start' parameter.
 		// we need to adjust the url to access the MW API.
-		$url .= '/api.php?action=query&list=recentchanges'.$from.$limit.'&rcprop=user|comment|flags&format=xml';		
-		
+		$url .= '/api.php?action=query&list=recentchanges&format=xml'.$start.$limit.$dir;
+
 		// make sure we only fetch from the point where we had stopped previously
 		// use rc_id identifier / rc_timestamp for this purpose.
 
@@ -195,8 +195,8 @@ class RecentChangesPartnerTable extends TableClass
 		
 		// start by loading the document	
 		$x = new DOMDocument();
-		$x->loadXML( $document );
-		
+		@$x->loadXML( $document );
+
 		// next, extract the relevant elements
 		$rclist = $x->getElementsByTagName('rc');
 		

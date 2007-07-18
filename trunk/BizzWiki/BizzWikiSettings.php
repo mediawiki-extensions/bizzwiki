@@ -43,11 +43,13 @@ require($IP.'/includes/Namespace.php');
 	define('NS_BIZZWIKI',   100);
 	define('NS_FILESYSTEM', 102);
 	define('NS_INTERWIKI',  104);
+	define('NS_API',		106);	
 	
 	// Add the new namespaces to the global variables
 	$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
 	$wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
 	$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
+	$wgExtraNamespaces[NS_API]		  = 'Api';	
 
 ## }}
 
@@ -374,6 +376,15 @@ $wgFileExtensions[]  = "zip";
 #require('extensions/Updater/Updater.php');
 
 
+// The API functionality requires this function defined in MW1.11
+if (!defined('wfScript'))
+{
+	function wfScript( $script = 'index' ) 
+	{
+		global $wgScriptPath, $wgScriptExtension;
+		return "{$wgScriptPath}/{$script}{$wgScriptExtension}";
+	}
+}	
 
 
 

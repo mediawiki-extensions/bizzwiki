@@ -134,6 +134,7 @@
 * added group hierarchy functionality.
 * Added 'getPermissionGroupNamespace' (does not affect core functionality)
 * Added page level restrictions checking
+* Added Mediawiki 'API' specific handling
 
 */
 
@@ -232,8 +233,34 @@ class hnpClass
 
 		global $wgTitle;
 		// Does the request come from NS_SPECIAL and namespace dependant??
-		$cns = $wgTitle->getNamespace();
-		$cti = $wgTitle->mDbkeyform;
+
+		// Handle API specific details.
+		if (!is_object( $wgTitle ))
+		{
+			// maybe we are dealing with a request coming from 
+			// the API... check backtrace.
+			$bt = array_pop( debug_backtrace() );
+			
+			if ($bt['class']=='ApiMain')
+			{
+				// allow unrestricted local access.
+				if ($user->mName=='127.0.0.1')
+				{
+					$result = true;
+					return false;	
+				}
+				$cns = NS_API;
+				$cti = 'Main';
+				$skipPageRestrictionsCheck = true;
+			}
+			else
+				die('hnpClass: $wgTitle is not an object!');
+		}
+		else
+		{
+			$cns = $wgTitle->getNamespace();
+			$cti = $wgTitle->mDbkeyform;
+		}
 		
 		if ( ($cns == NS_SPECIAL) && ($ns === null) )
 		{
@@ -247,11 +274,14 @@ class hnpClass
 		if ( $titre === null ) $titre = $cti;
 
 		// Deal with page level restrictions
-		if (!self::checkRestrictions( $user, $wgTitle, $ns, $titre, $action ) )
-		{
-			$result = false;
-			return false;	
-		}
+		if (!$skipPageRestrictionsCheck)
+			if (!self::checkRestrictions( $user, $wgTitle, $ns, $titre, $action ))
+			{
+				$result = false;
+				return false;	
+			}
+
+#		echo 'user='.$user->getName().'ns= '.$ns.' titre='.$titre.' action='.$action.'<br/>';
 
 		$result = hnpClass::userCanInternal( $user, $ns, $titre , $action );
 	
