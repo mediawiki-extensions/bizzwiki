@@ -92,11 +92,13 @@ class ApiMain extends ApiBase {
 		// Special handling for the main module: $parent === $this
 		parent :: __construct($this, $this->mInternalMode ? 'main_int' : 'main');
 
+
 		if (!$this->mInternalMode) {
 			
 			// Impose module restrictions.
 			// If the current user cannot read, 
 			// Remove all modules other than login
+
 			global $wgUser;
 			if (!$wgUser->isAllowed('read')) {
 				self::$Modules = array(

@@ -92,7 +92,7 @@ EOT;
 		
 		$select = array( $index );
 		if ($getTs )
-			$select = array_merge( $select, array( $ts ) );
+			$select[] = $ts;
 		
 		$row = $dbr->selectRow( $this->tableName,
 								$select,					// select
@@ -108,9 +108,10 @@ EOT;
 		if (isset( $row->$index ))
 			$before = $row->$index;
 			
-		$ts = null;
 		if (isset( $row->$ts ))
 			$ts = $row->$ts;
+		else
+			$ts = null;
 		
 		return $before;		
 	}
@@ -153,11 +154,16 @@ EOT;
 	{
 		$dbw = wfGetDB( DB_MASTER );
 
+		$affected_rows = 0;
 		foreach( $lst as $index => &$e )
+		{
 			$dbw->replace( $this->tableName, null, $e, __METHOD__ );
-
+			$affected_rows += $dbw->affectedRows();
+		}
 		$dbw->commit();		
-		wfDebug( __METHOD__.": end \n" );		
+		wfDebug( __METHOD__.": end \n" );
+		
+		return $affected_rows;	
 	} // end insert
 	
 } // end class

@@ -69,6 +69,7 @@ class FetchPartnerRCjob extends Job
 		}
 		$compte = $rct->compte;
 		$filtered_count = $rct->filtered_count;
+		$updated_rows = $rct->affected_rows;
 		
 		if ($rct->almostInSync)
 			$state = "'''normal'''";
@@ -77,7 +78,7 @@ class FetchPartnerRCjob extends Job
 		if ($rct->startup)
 			$state = "'''startup'''";
 
-		$this->successLog( $compte, $filtered_count, $state );
+		$this->successLog( $compte, $filtered_count, $updated_rows, $state );
 		
 		return true;
 	}
@@ -104,13 +105,13 @@ class FetchPartnerRCjob extends Job
 	/**
 		Adds a log entry upon successful operation.
 	 */
-	private function successLog( $compte, $filtered, $state )
+	private function successLog( $compte, $filtered, $updated, $state )
 	{
 		// were there any entries made?
 		$msg = $compte==0 ? 'fetchnc-text' : 'fetchok-text';
 		
 		// add an entry log.
-		$this->updateLog( 'fetchok', $msg, $compte, $filtered, $state );
+		$this->updateLog( 'fetchok', $msg, $compte, $filtered, $updated, $state );
 		return true;
 	}
 	/**
