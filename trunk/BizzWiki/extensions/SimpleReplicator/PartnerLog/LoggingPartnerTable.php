@@ -22,17 +22,15 @@ class LoggingPartnerTable extends PartnerObjectClass
 	var $limit;
 	
 	static $paramsList = array( 
-								'logid'		=> 'log_id',
-								'timestamp'	=> 'log_timestamp',			// ok
-								''			=> 'log_type',
-								''			=> 'log_action',
-								''			=> 'log_timestamp',
-								''			=> 'log_user',
-								''			=> 'log_namespace',
-								''			=> 'log_title',
-								''			=> 'log_comment',
+								'logid'		=> 'log_id',			// ok
+								'timestamp'	=> 'log_timestamp',		// ok
+								'type'		=> 'log_type',			// ok
+								'action'	=> 'log_action',		// ok
+								'user'		=> 'log_user',			// CHECKME
+								'ns'		=> 'log_namespace',		// ok
+								'title'		=> 'log_title',			// ok
+								'comment'	=> 'log_comment',		// ok
 								''			=> 'log_params',
-								''			=> 'log_id',
 								''			=> 'log_deleted',
 							);
 
@@ -46,14 +44,14 @@ class LoggingPartnerTable extends PartnerObjectClass
 	
 	protected function formatURL( $start, $end, $limit, $dir )
 	{
-		$dir = '&rcdir='.$dir;
+		$dir = '&ledir='.$dir;
 		
 		if ($limit !== '')
-			$limit = '&rclimit='.$limit;
+			$limit = '&lelimit='.$limit;
 		if ($start !== '')
-			$start = '&rcstart='.$start;
-			
-		return '/api.php?action=query&list=recentchanges&format=xml&rcprop=user|comment|flags|timestamp|title|ids|sizes'.$start.$limit.$dir;
+			$start = '&lestart='.$start;
+
+		return '/api.php?action=query&list=logevents&format=xml&leprop=user|type|comment|details|timestamp|title|ids'.$start.$limit.$dir;
 	}
 
 } // end class

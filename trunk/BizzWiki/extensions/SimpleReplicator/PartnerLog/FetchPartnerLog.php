@@ -31,9 +31,9 @@ This extension fetches the 'recentchanges' table from the partner replication no
 == Code ==
 </wikitext>*/
 require('FetchPartnerLog.i18n.php');
-require_once('LoggingTable.php');
+require_once('LoggingPartnerTable.php');
 
-class FetchPartnerLog extends ExtensionClass  // so many extensions rely on ExtensionClass it does't hurt to 'use' it here.
+class FetchPartnerLog
 {
 	const thisName = 'FetchPartnerLog';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
@@ -42,61 +42,25 @@ class FetchPartnerLog extends ExtensionClass  // so many extensions rely on Exte
 	// Database
 	static $tableName = 'logging_partner';
 	
-	// must be setup in settings file
-	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
-	static $partner_url = null;
-	static $timeout 	= 15; // in seconds
-	static $port 		= 80; // tcp port
-	static $limit 		= 100;
-
 	// i18n messages.
 	static $msg;
 	
 	// Logging
 	static $logName = 'WikiSysop';
 	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
-	
 	// Our class defines magic words: tell it to our helper class.
 	public function __construct() 
 	{ 
-		parent::__construct( ); 
-	
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Fetches the replication partner's RecentChanges table.",
-			'url' => self::getFullUrl(__FILE__),			
+			'name'			=> self::thisName, 
+			'version'		=> StubManager::getRevisionId( self::id ),
+			'author'		=> 'Jean-Lou Dupont', 
+			'description'	=> "Fetches the replication partner's Logging table.",
+			#'url' => self::getFullUrl(__FILE__),			
 		);
-		
-		$dir = dirname( __FILE__ );
-		global $wgAutoloadClasses;
-		$wgAutoloadClasses['FetchPartnerRCjob'] = $dir.'/FetchPartnerRCjob.php' ;
-
-		global $wgJobClasses;
-		$wgJobClasses['fetchRC'] = 'FetchPartnerRCjob'; 
 	}
-	
-	public function setup()
-	{	
-		parent::setup(); 
-
-		global $wgMessageCache;
-		foreach( self::$msg as $key => $value )
-			$wgMessageCache->addMessages( self::$msg[$key], $key );
-
-		// LOGGING			
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]						= 'ftchrclog';
-		$wgLogNames  ['ftchrclog']			= 'ftchrclog'.'logpage';
-		$wgLogHeaders['ftchrclog']			= 'ftchrclog'.'logpagetext';
-		$wgLogActions['ftchrclog/fetchok']	= 'ftchrclog'.'-fetchok-entry';
-		$wgLogActions['ftchrclog/fetchfail']= 'ftchrclog'.'-fetchfail-entry';		
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;
@@ -127,5 +91,4 @@ class FetchPartnerLog extends ExtensionClass  // so many extensions rely on Exte
 	}
 
 } // end class declaration
-FetchPartnerRC::singleton();
 ?>

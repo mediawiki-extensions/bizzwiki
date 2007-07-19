@@ -92,13 +92,11 @@ class ApiMain extends ApiBase {
 		// Special handling for the main module: $parent === $this
 		parent :: __construct($this, $this->mInternalMode ? 'main_int' : 'main');
 
-
 		if (!$this->mInternalMode) {
 			
 			// Impose module restrictions.
 			// If the current user cannot read, 
 			// Remove all modules other than login
-
 			global $wgUser;
 			if (!$wgUser->isAllowed('read')) {
 				self::$Modules = array(
@@ -476,12 +474,37 @@ class ApiMain extends ApiBase {
 	public function getVersion() {
 		$vers = array ();
 		$vers[] = 'MediaWiki ' . SpecialVersion::getVersion();
-		$vers[] = __CLASS__ . ': $Id: ApiMain.php 24099 2007-07-15 00:52:35Z yurik $';
+		$vers[] = __CLASS__ . ': $Id: ApiMain.php 24227 2007-07-18 05:25:53Z amidaniel $';
 		$vers[] = ApiBase :: getBaseVersion();
 		$vers[] = ApiFormatBase :: getBaseVersion();
 		$vers[] = ApiQueryBase :: getBaseVersion();
 		$vers[] = ApiFormatFeedWrapper :: getVersion(); // not accessible with format=xxx
 		return $vers;
+	}
+
+	/**
+	 * Add or overwrite a module in this ApiMain instance. Intended for use by extending
+	 * classes who wish to add their own modules to their lexicon or override the 
+	 * behavior of inherent ones.
+	 *
+	 * @access protected
+	 * @param $mdlName String The identifier for this module.
+	 * @param $mdlClass String The class where this module is implemented.
+	 */
+	protected function addModule( $mdlName, $mdlClass ) {
+		$this->mModules[$mdlName] = $mdlClass;
+	}
+
+	/**
+	 * Add or overwrite an output format for this ApiMain. Intended for use by extending
+	 * classes who wish to add to or modify current formatters.
+	 *
+	 * @access protected
+	 * @param $fmtName The identifier for this format.
+	 * @param $fmtClass The class implementing this format.
+	 */
+	protected function addFormat( $fmtName, $fmtClass ) {
+		$this->mFormats[$fmtName] = $fmtClass;
 	}
 }
 

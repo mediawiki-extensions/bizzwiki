@@ -50,6 +50,7 @@ class TaskScheduler
 	static $tableName = 'task_scheduler';
 	static $fields = array(
 							'ts_id',
+							'ts_enable',
 							'ts_creation_timestamp',
 							'ts_last_run_timestamp',
 							'ts_next_run_timestamp',
@@ -117,6 +118,10 @@ class TaskScheduler
 
 		foreach( $tasks as $task )
 		{
+			// check if the task is enabled.
+			if (!$task['ts_enable'])
+				continue;
+				
 			// Is this the first time this task is visited?
 			if ( $task['ts_last_run_timestamp'] == 0 )
 			{

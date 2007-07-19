@@ -16,21 +16,14 @@ require_once('RecentChangesPartnerTable.php');
 
 class FetchPartnerRCjob extends Job
 {
-	var $user;
-	
 	function __construct( $title=null, $parameters=null, $id = 0 ) 
 	{
 		// ( $command, $title, $params = false, $id = 0 )
 		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $parameters, $id );
-		
-		$this->logName  = 'WikiSysop';
 	}
 
 	function run() 
 	{
-		// User under which we will file the log entry
-		$this->user = User::newFromName( $this->logName );
-
 		$rct = new RecentChangesPartnerTable();
 		$err = $rct->update();
 
@@ -71,10 +64,10 @@ class FetchPartnerRCjob extends Job
 		$this->updateLog( 'fetchfail', 'fetchfail-text1' );
 		return false;
 	}
-	private function errorParsingList( $missing_rc_id, $duplicate_rc_id )
+	private function errorParsingList( $missing_id, $duplicate_id )
 	{
-		if ( $missing_rc_id )	$param1 = "Missing 'rc_id'.";
-		if ( $duplicate_rc_id )	$param2 = "Duplicate 'rc_id'.";
+		if ( $missing_id )	$param1 = "Missing 'rc_id'.";
+		if ( $duplicate_id )$param2 = "Duplicate 'rc_id'.";
 		// add an entry log.	
 		$this->updateLog( 'fetchfail', 'fetchfail-text2', $param1, $param2 );
 		return false;		
@@ -106,7 +99,7 @@ class FetchPartnerRCjob extends Job
 		
 		$log = new LogPage( 'ftchrclog', false /*don't clog recentchanges list!*/  );
 		
-		$title = Title::makeTitle( NS_SPECIAL, 'log/ftchrlog' );
+		$title = Title::makeTitle( NS_SPECIAL, 'log/ftchrclog' );
 		$log->addEntry( $action, $title, $message );
 	}
 	
