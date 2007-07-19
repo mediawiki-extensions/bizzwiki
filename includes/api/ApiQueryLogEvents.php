@@ -65,7 +65,8 @@ class ApiQueryLogEvents extends ApiQueryBase {
 			'log_timestamp',
 		));
 		
-		$this->addFieldsIf('log_id', $this->fld_ids);
+		// FIXME: Fake out log_id for now until the column is live on Wikimedia
+		// $this->addFieldsIf('log_id', $this->fld_ids);
 		$this->addFieldsIf('page_id', $this->fld_ids);
 		$this->addFieldsIf('log_user', $this->fld_user);
 		$this->addFieldsIf('user_name', $this->fld_user);
@@ -125,7 +126,9 @@ class ApiQueryLogEvents extends ApiQueryBase {
 		$vals = array();
 
 		if ($this->fld_ids) {
-			$vals['logid'] = intval($row->log_id);
+			// FIXME: Fake out log_id for now until the column is live on Wikimedia
+			// $vals['logid'] = intval($row->log_id);
+			$vals['logid'] = 0;
 			$vals['pageid'] = intval($row->page_id);
 		}
 		
@@ -263,7 +266,7 @@ class ApiQueryLogEvents extends ApiQueryBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiQueryLogEvents.php 24108 2007-07-15 06:26:41Z yurik $';
+		return __CLASS__ . ': $Id: ApiQueryLogEvents.php 24256 2007-07-18 21:47:09Z robchurch $';
 	}
 }
 

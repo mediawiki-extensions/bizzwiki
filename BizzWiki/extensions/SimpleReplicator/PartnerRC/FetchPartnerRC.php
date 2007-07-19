@@ -61,9 +61,6 @@ class FetchPartnerRC
 		);
 	}
 	
-	public function setup()
-	{ parent::setup(); }
-	
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{

@@ -3,6 +3,9 @@ CREATE TABLE /*$wgDBprefix*/task_scheduler (
   -- unique ID
   ts_id int NOT NULL auto_increment, 
 
+  -- Task enabled/disabled
+  ts_enable tinyint unsigned NOT NULL default '0', 
+
   -- when was this task created.
   ts_creation_timestamp varbinary(14) NOT NULL default '',
   

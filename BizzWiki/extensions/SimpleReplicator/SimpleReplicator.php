@@ -35,13 +35,13 @@ StubManager::createStub(	'FetchPartnerRC',
 							true // logging included
 						 );
 
-/*
+
 StubManager::createStub(	'FetchPartnerLog', 
-							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.php',
-							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.i18n.php',
-							null,
+							dirname(__FILE__).'/PartnerLog/FetchPartnerLog.php',
+							dirname(__FILE__).'/PartnerLog/FetchPartnerLog.i18n.php',
+							array('SpecialVersionExtensionTypes'),
 							true // logging included
 						 );
-*/
+
 
 ?>
