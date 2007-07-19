@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || XYZ.php
+| <b>File</b> || PartnerObjectClass.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -10,94 +10,142 @@
 == Code ==
 </wikitext>*/
 
-class PartnerObjectClass extends ExtensionClass
+abstract class PartnerObjectClass extends TableClass
 {
-	// Database
-	static $tableName = 'recentchanges_partner';
+	// Partner Machine related
+	var $p_url;
+	var $p_port;
+	var $p_timeout;
 	
-	// must be setup in settings file
-	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
-	static $partner_url = null;
-	static $timeout 	= 15; // in seconds
-	static $port 		= 80; // tcp port
-	static $limit 		= 100;
-
-	// i18n messages.
-	static $msg;
+	// Table Object related
+	var $cur_timestamp_field_name;
+	var $id_field_name;
+	var $document_tag_field;
 	
-	// Logging
-	static $logName = 'WikiSysop';
-	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
-	
-	// Our class defines magic words: tell it to our helper class.
 	public function __construct() 
 	{ 
 		parent::__construct( ); 
 	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Fetches the replication partner's RecentChanges table.",
-			'url' => self::getFullUrl(__FILE__),			
-		);
-		
-		$dir = dirname( __FILE__ );
-		global $wgAutoloadClasses;
-		$wgAutoloadClasses['FetchPartnerRCjob'] = $dir.'/FetchPartnerRCjob.php' ;
-
-		global $wgJobClasses;
-		$wgJobClasses['fetchRC'] = 'FetchPartnerRCjob'; 
+		$this->p_url	= PartnerMachine::$url;
+		$this->p_port	= PartnerMachine::$url;
+		$this->p_timeout= PartnerMachine::$timeout;		
 	}
-	
-	public function setup()
-	{	
-		parent::setup(); 
 
-		global $wgMessageCache;
-		foreach( self::$msg as $key => $value )
-			$wgMessageCache->addMessages( self::$msg[$key], $key );
-
-		// LOGGING			
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]						= 'ftchrclog';
-		$wgLogNames  ['ftchrclog']			= 'ftchrclog'.'logpage';
-		$wgLogHeaders['ftchrclog']			= 'ftchrclog'.'logpagetext';
-		$wgLogActions['ftchrclog/fetchok']	= 'ftchrclog'.'-fetchok-entry';
-		$wgLogActions['ftchrclog/fetchfail']= 'ftchrclog'.'-fetchfail-entry';		
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
-	// setup of this hook occurs in 'ExtensionClass' base class.
+	private function adjustCurTime( &$lst )
 	{
-		global $wgExtensionCredits;
+		if (empty( $this->cur_timestamp_field_name ))
+			return;
+			
+		// no need to be that precise in the timestamp
+		$cur_time = wfTimestamp( TS_MW );
+		foreach( $lst as $index => &$e )
+			$e[$this->cur_timestamp_field_name] = $cur_time;
+	}
 
-		$update = $this->getUpdate();
-		$result = ' Status: '.$this->getUpdate();
-	
-		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'].=$result;
+	/**
+		Filters the list for records falling below $id
+	 */
+	private function filterList( &$lst, $next_expected_id, &$filtered_count )
+	{
+		$filtered_count = 0;
+		
+		// Because of a bug in php v5 wrt to arrays passed by reference,
+		// we need to make a copy of the records we are going to carry forward.
+		$flist = null;
+		
+		foreach( $lst as $index => $e )
+			if ( $next_expected_id > $e[$this->id_field_name] )
+				$filtered_count++;
+			else
+				$flist[$e[$this->$id_field_name]] = $e;	// copy here
+
+		if (!empty( $flist ))
+			ksort( $flist );
+
+		return $flist;	
+	}
+	/**
+		Parse the received XML formatted document.
+	 */
+	private function parseDocument( &$document, &$paramsList, &$missing_id, &$duplicate_id )
+	{
+		if (empty( $document ))
+			return true;	// the document was empty, hence no problem.
+		
+		$p = null;
+		
+		// start by loading the document	
+		$x = new DOMDocument();
+		@$x->loadXML( $document );
+
+		// next, extract the relevant elements
+		$llist = $x->getElementsByTagName($this->document_tag_field);
+		
+		// place the elements in a PHP friendly array
+		foreach( $llist as &$e )
+		{
+			$a = null;
+			foreach( $paramsList as $param => $dbkey )
+			{
+				$value = $e->getAttribute( $param );
 				
-		return true; // continue hook-chain.
+				// must adjust TIMESTAMP field
+				if ( $param == 'timestamp' )
+					$value = wfTimestamp( TS_MW, $value );
+				$a[ $dbkey ] = $value;
+			}
+			
+			// make sure we have an 'id' present
+			if (!isset( $a[$this->id_field_name] ))
+				{ $missing_id = true; $p=null; break; }
+				
+			$id = $a[$this->id_field_name];
+			// now make sure we didn't encounter this 'id' yet in the transaction
+			if (isset( $p[$id] ))
+				{ $duplicate_id = $id; $p=null; break; }
+				
+			// everything looks ok... for this row
+			$p[ $id ] = $a; 
+		}
+
+		// document empty? special return code.		
+		if (empty( $p ))
+			return true;
+
+		// if the document was not empty and we end up
+		// with an empty array, something is wrong.
+		if ( ($missing_id != null) || ($duplicate_id != null) )
+			return false;
+
+		// sort the list for convenience
+		ksort( $p );
+					
+		return $p;
 	}
-	private function getUpdate()
+	/**
+		Use the Mediawiki API to retrieve a 'document' from the partner replication node.
+	 */
+	private function getPartnerList( $url, &$document )
 	{
-		// 1) check existence of 'recentchanges_partner' table
-		// 2) get last entry
-		$result  = $this->checkTable();
-		$r1      = 'database table ';
-		$r1     .= $result ? 'exists.':'does not exist.';
+		$ch = curl_init();    									// initialize curl handle
+
+		curl_setopt($ch, CURLOPT_URL, $url);					// set url to post to
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);				// Fail on errors
+		#curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);   		// allow redirects
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); 			// return into a variable
+		curl_setopt($ch, CURLOPT_PORT, $this->p_port); 			//Set the port number
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->p_timeout);	// times out after 15s
+		#curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
 		
-		return $r1;
+		$document = curl_exec($ch);
+		
+		$error = curl_errno($ch);
+		curl_close($ch);
+		
+		// CURLE_OK if everything OK.
+		return $error;
 	}
-	public function checkTable()
-	{
-		$dbr = wfGetDB(DB_SLAVE);
-		return $dbr->tableExists(self::$tableName);
-	}
+
 
 } // end class declaration
 

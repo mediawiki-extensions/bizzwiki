@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || XYZ.php
+| <b>File</b> || SimpleReplicator.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -15,22 +15,15 @@
 
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
 
-== Installation ==
-To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
-* Apply the following changes to 'LocalSettings.php'
-<source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
-</source>
 
 == History ==
 
 == Code ==
 </wikitext>*/
 
+require('PartnerMachine.php');
 require('PartnerObject.php');
+
 
 ?>

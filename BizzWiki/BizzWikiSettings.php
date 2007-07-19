@@ -364,6 +364,8 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 #require('extensions/SimpleReplicator/SimpleReplicator.php');
 
 // Enable this extension if you require locally generated 'ClockTickEvent'
+// A local 'cron' job must be setup to request a page from the local web server
+// with an 'action=ping' command.
 #require('extensions/ClockTick/ClockTick.php');
 
 StubManager::createStub(	'TaskScheduler', 
