@@ -369,15 +369,15 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 #require('extensions/ClockTick/ClockTick.php');
 
 StubManager::createStub(	'TaskScheduler', 
-							$bwExtPath.'/Jobs/TaskScheduler/TaskScheduler.php',
-							$bwExtPath.'/Jobs/TaskScheduler/TaskScheduler.i18n.php',							
+							$bwExtPath.'/TaskScheduler/TaskScheduler.php',
+							$bwExtPath.'/TaskScheduler/TaskScheduler.i18n.php',							
 							array( 'ClockTickEvent' ), // created by 'ClockTick' extension
 							true // logging included
 						 );
 
 
-require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
-FetchPartnerRC::$partner_url = 'http://localhost/wiki';
+#require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
+#FetchPartnerRC::$partner_url = 'http://localhost/wiki';
 
 
 ## To enable image uploads, make sure the 'images' directory
