@@ -27,20 +27,22 @@ class FetchPartnerRCjob extends Job
 		$rct = new RecentChangesPartnerTable();
 		$err = $rct->update();
 
+		echo 'err= '.$err;
+		
 		switch ($err )
 		{
-			case RecentChangesPartnerTable::errFetchingUrl:
+			case PartnerObjectClass::errFetchingUrl:
 					return $this->errorFetchingList();			
 					
-			case RecentChangesPartnerTable::errListEmpty:
+			case PartnerObjectClass::errListEmpty:
 					return $this->listEmpty();			
 					
-			case RecentChangesPartnerTable::errParsing:
+			case PartnerObjectClass::errParsing:
 					$missing_rc_id = $rct->missing_rc_id;
 					$duplicate_rc_id = $rct->duplicate_rc_id;
 					return $this->errorParsingList( $missing_rc_id, $duplicate_rc_id );
 					
-			case RecentChangesPartnerTable::errOK:
+			case PartnerObjectClass::errOK:
 					break;
 		}
 		$compte = $rct->compte;
@@ -67,7 +69,7 @@ class FetchPartnerRCjob extends Job
 	private function errorParsingList( $missing_id, $duplicate_id )
 	{
 		if ( $missing_id )	$param1 = "Missing 'rc_id'.";
-		if ( $duplicate_id )$param2 = "Duplicate 'rc_id'.";
+		if ( $duplicate_id!=null )$param2 = "Duplicate 'rc_id'=".$duplicate_id.'.';
 		// add an entry log.	
 		$this->updateLog( 'fetchfail', 'fetchfail-text2', $param1, $param2 );
 		return false;		

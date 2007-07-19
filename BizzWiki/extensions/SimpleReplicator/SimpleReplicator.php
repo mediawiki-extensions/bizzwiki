@@ -35,7 +35,7 @@ StubManager::createStub(	'FetchPartnerRC',
 							true // logging included
 						 );
 
-
+$wgAutoloadClasses['FetchPartnerLogJob'] = dirname(__FILE__).'/PartnerLog/FetchPartnerLogJob.php';
 StubManager::createStub(	'FetchPartnerLog', 
 							dirname(__FILE__).'/PartnerLog/FetchPartnerLog.php',
 							dirname(__FILE__).'/PartnerLog/FetchPartnerLog.i18n.php',

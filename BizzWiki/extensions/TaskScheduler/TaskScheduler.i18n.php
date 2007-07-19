@@ -28,14 +28,14 @@ $msgTaskScheduler['en'] = array(
 	'schlog'					=> 'Task Scheduler Log',
 	'schlog'.'logpage'			=> 'Task Scheduler Log',
 	'schlog'.'logpagetext'		=> 'This is a log of events for the Task Scheduler',
-	'schlog'.'-runok-entry'		=> 'Successful task scheduling',
+	'schlog'.'-runok-entry'		=> 'Task Scheduler: Success',
 	'schlog'.'-runok-text1'		=> 'task class {$1} returned code {$2}.',
 
-	'schlog'.'-runfail-entry'	=> 'Unsuccessful task scheduling',	
+	'schlog'.'-runfail-entry'	=> 'Task Scheduler: Failure',	
 	'schlog'.'-runfail-text1'	=> 'inexistant task class {$1}.',	
 	'schlog'.'-runfail-text2'	=> 'error executing task class {$1}.',		
 
-	'schlog'.'-start-entry'		=> 'Starting',
+	'schlog'.'-start-entry'		=> 'Task Scheduler: Starting',
 	'schlog'.'-start-text'		=> 'task class {$1}.',
 	#'' => '',
 );
