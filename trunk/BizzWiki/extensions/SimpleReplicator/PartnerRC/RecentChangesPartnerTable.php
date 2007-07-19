@@ -52,9 +52,9 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 	
 
 	
-	public function __construct( $table = 'recentchanges_partner', $index = 'rc_id', $ts = 'rc_timestamp' )
+	public function __construct( )
 	{
-		parent::__construct( self::$paramsList, $table, $index, $ts );
+		parent::__construct( self::$paramsList, 'recentchanges_partner', 'rc_id', 'rc_timestamp', 'rc' );
 
 		// limit of rc elements to fetch from partner at any one time.
 		$this->limit 	= 100;		

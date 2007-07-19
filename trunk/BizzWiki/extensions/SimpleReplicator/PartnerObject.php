@@ -16,6 +16,8 @@
 
 == Dependancy ==
 * [[Extension:ExtensionClass|ExtensionClass]]
+* PartnerMachine class
+* TableClass class
 
 == History ==
 
