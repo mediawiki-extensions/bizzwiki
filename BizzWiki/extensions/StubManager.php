@@ -181,8 +181,9 @@ class Stub
 	public function __construct( &$class, &$hooks )
 	{
 		global $wgHooks;
-		foreach( $hooks as $hook )
-			$wgHooks[ $hook ][] = array( &$this, 'h'.$hook );
+		if (!empty( $hooks ))
+			foreach( $hooks as $hook )
+				$wgHooks[ $hook ][] = array( &$this, 'h'.$hook );
 		
 		// don't create the object just yet!
 		$this->classe = $class;

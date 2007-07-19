@@ -42,13 +42,6 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	// Database
 	static $tableName = 'recentchanges_partner';
 	
-	// must be setup in settings file
-	// e.g. FetchPartnerRC::$partner_url = 'http://xyz.com';
-	static $partner_url = null;
-	static $timeout 	= 15; // in seconds
-	static $port 		= 80; // tcp port
-	static $limit 		= 100;
-
 	// i18n messages.
 	static $msg;
 	
@@ -72,10 +65,6 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 			'url' => self::getFullUrl(__FILE__),			
 		);
 		
-		$dir = dirname( __FILE__ );
-		global $wgAutoloadClasses;
-		$wgAutoloadClasses['FetchPartnerRCjob'] = $dir.'/FetchPartnerRCjob.php' ;
-
 		global $wgJobClasses;
 		$wgJobClasses['fetchRC'] = 'FetchPartnerRCjob'; 
 	}
