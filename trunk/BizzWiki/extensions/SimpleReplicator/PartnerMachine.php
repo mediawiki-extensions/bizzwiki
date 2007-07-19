@@ -31,5 +31,5 @@ require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
 == Code ==
 </wikitext>*/
 
-$wgAutoloadClasses['PartnerMachine'] = dirname().'/PartnerMachineClass.php';
+$wgAutoloadClasses['PartnerMachine'] = dirname(__FILE__).'/PartnerMachineClass.php';
 ?>

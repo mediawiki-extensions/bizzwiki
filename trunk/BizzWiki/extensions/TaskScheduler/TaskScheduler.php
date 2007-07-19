@@ -21,6 +21,7 @@ this extension provides a 'calendar-based' scheduler. Standard MW 'jobs' can be 
 ** The state variable is kept in the database on each task run completion
 
 == Dependancy ==
+* StubManager extension
 * ClockTick extension
 
 == Installation ==
@@ -68,6 +69,7 @@ class TaskScheduler
 	const errOK					= 0;
 	const errInexistantClass	= 1;
 	const errRunningTask		= 2;
+	const errStarting			= 3;
 	
 	public function __construct()
 	{
@@ -185,12 +187,16 @@ class TaskScheduler
 		
 		// verify that a matching class definition can be loaded.		
 		global $wgAutoloadClasses;
-		if ( !$wgAutoloadClasses[$classe] )
+		if ( !isset($wgAutoloadClasses[$classe] ))
 			return errInexistantClass;
 
 		// this, hopefully, should not cause any problem
 		$obj = new $classe;
-				
+
+		// have a log entry in case something goes wrong
+		// and the condition isn't caught.
+		$this->updateLog( $task, errStarting, null );
+
 		try 
 		{
 			// set and get the task's state variable
@@ -264,15 +270,22 @@ class TaskScheduler
 	/**
 		Adds a contextual log entry.
 	 */
-	private function updateLog( &$task, &$code, &$taskErrorCode )
+	private function updateLog( &$task, $code, $taskErrorCode )
 	{
 		static $msgMap = array(	
 								errOK 				=> 'text1',
 								errInexistantClass	=> 'text1',
 								errRunningTask		=> 'text2',
+								errStarting			=> 'text',
 							);
-							
-		$action = ( $code == errOK ) ? 'runok':'runfail';
+		static $actionMap = array(
+									errOK				=> 'runok',
+									errInexistantClass	=> 'runfail',
+									errRunningTask		=> 'runfail',
+									errStarting			=> 'start',								
+								);
+								
+		$action = $actionMap[$code];
 		$msgid  = $msgMap[$code];
 		$param1 = $task['ts_class'];
 		$param2 = $taskErrorCode;

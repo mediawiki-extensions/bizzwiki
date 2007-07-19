@@ -16,10 +16,6 @@ require_once('RecentChangesPartnerTable.php');
 
 class FetchPartnerRCjob extends Job
 {
-	var $url;
-	var $port;
-	var $timeout;
-	var $limit;
 	var $user;
 	
 	function __construct( $title=null, $parameters=null, $id = 0 ) 
@@ -27,11 +23,7 @@ class FetchPartnerRCjob extends Job
 		// ( $command, $title, $params = false, $id = 0 )
 		parent::__construct( 'fetchRC', Title::newMainPage()/* don't care */, $parameters, $id );
 		
-		$this->url		= FetchPartnerRC::$partner_url;
-		$this->port		= FetchPartnerRC::$port;
-		$this->timeout	= FetchPartnerRC::$timeout;
-		$this->limit 	= FetchPartnerRC::$limit;
-		$this->logName  = FetchPartnerRC::$logName;
+		$this->logName  = 'WikiSysop';
 	}
 
 	function run() 
@@ -40,9 +32,8 @@ class FetchPartnerRCjob extends Job
 		$this->user = User::newFromName( $this->logName );
 
 		$rct = new RecentChangesPartnerTable();
-		$rct->setup( $this->url, $this->port, $this->timeout, $this->limit );
-
 		$err = $rct->update();
+
 		switch ($err )
 		{
 			case RecentChangesPartnerTable::errFetchingUrl:

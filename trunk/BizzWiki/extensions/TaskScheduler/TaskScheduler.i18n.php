@@ -33,6 +33,9 @@ $msgTaskScheduler['en'] = array(
 	'schlog'.'-runfail-entry'	=> 'Unsuccessful task scheduling',	
 	'schlog'.'-runfail-text1'	=> 'inexistant task class {$1}.',	
 	'schlog'.'-runfail-text2'	=> 'error executing task class {$1}.',		
+
+	'schlog'.'-start-entry'		=> 'Starting',
+	'schlog'.'-start-text'		=> 'task class {$1}.',
 	#'' => '',
 );
 
