@@ -33,17 +33,19 @@ abstract class PartnerObjectClass extends TableClass
 	var $missing_id;		// only valid if errParsing is returned by update()
 	var $duplicate_id;		// only valid if errParsing is returned by update()
 	var $filtered_count;	// only valid after 'filterList' method
-	var $affected_rows;
+	var $affected_rows;		// actual number of elements updated in the database
+	var $compte;			// total number of elements
 	var $startup;
 
-	public function __construct( &$params, $tableFieldName, $indexFieldName, $timestampFieldName ) 
+	public function __construct( &$params, $tableFieldName, $indexFieldName, $timestampFieldName, $documentTagField ) 
 	{ 
 		parent::__construct( $tableFieldName, $indexFieldName, $timestampFieldName ); 
-	
+		
 		$this->p_url	= PartnerMachine::$url;
 		$this->p_port	= PartnerMachine::$url;
 		$this->p_timeout= PartnerMachine::$timeout;
-
+		
+		$this->document_tag_field = $documentTagField;
 		$this->params = $params;
 	}
 
@@ -62,7 +64,7 @@ abstract class PartnerObjectClass extends TableClass
 		// fetch an update from the partner to kick-start things.
 		if ($holeid == 1)
 		{
-			$url = $this->formatURL( '', null,$this->limit, 'newer' );
+			$url = $this->p_url.$this->formatURL( '', null,$this->limit, 'newer' );
 			$err = $this->getPartnerList( $url, $document );
 			$this->startup = true;
 		}
@@ -75,7 +77,7 @@ abstract class PartnerObjectClass extends TableClass
 			// convert timestamp to the API's liking
 			// The one returned by the database is in TS_MW format.
 			$tsAPI = wfTimestamp(TS_ISO_8601, $ts );
-			$url = $this->formatURL( $tsAPI, null, $this->limit, 'newer' );
+			$url = $this->p_url.$this->formatURL( $tsAPI, null, $this->limit, 'newer' );
 			$err = $this->getPartnerList( $url, $document );
 		}
 		if ($err !== CURLE_OK )
@@ -122,13 +124,13 @@ abstract class PartnerObjectClass extends TableClass
 	 */
 	private function adjustCurTime( &$lst )
 	{
-		if (empty( $this->cur_timestamp_field_name ))
+		if (empty( $this->timestampName ))
 			return;
 			
 		// no need to be that precise in the timestamp
 		$cur_time = wfTimestamp( TS_MW );
 		foreach( $lst as $index => &$e )
-			$e[$this->cur_timestamp_field_name] = $cur_time;
+			$e[$this->timestampName] = $cur_time;
 	}
 
 	/**
@@ -143,10 +145,10 @@ abstract class PartnerObjectClass extends TableClass
 		$flist = null;
 		
 		foreach( $lst as $index => $e )
-			if ( $next_expected_id > $e[$this->id_field_name] )
+			if ( $next_expected_id > $e[$this->indexName] )
 				$filtered_count++;
 			else
-				$flist[$e[$this->$id_field_name]] = $e;	// copy here
+				$flist[$e[$this->indexName]] = $e;	// copy here
 
 		if (!empty( $flist ))
 			ksort( $flist );
@@ -167,11 +169,14 @@ abstract class PartnerObjectClass extends TableClass
 		$x = new DOMDocument();
 		@$x->loadXML( $document );
 
+#		var_dump( htmlspecialchars($document) );
+#		echo 'tag: '.$this->document_tag_field;
+		
 		// next, extract the relevant elements
 		$llist = $x->getElementsByTagName($this->document_tag_field);
 		
 		// place the elements in a PHP friendly array
-		foreach( $llist as &$e )
+		foreach( $llist as $e )
 		{
 			$a = null;
 			foreach( $paramsList as $param => $dbkey )
@@ -185,10 +190,10 @@ abstract class PartnerObjectClass extends TableClass
 			}
 			
 			// make sure we have an 'id' present
-			if (!isset( $a[$this->id_field_name] ))
+			if (!isset( $a[$this->indexName] ))
 				{ $missing_id = true; $p=null; break; }
 				
-			$id = $a[$this->id_field_name];
+			$id = $a[$this->indexName];
 			// now make sure we didn't encounter this 'id' yet in the transaction
 			if (isset( $p[$id] ))
 				{ $duplicate_id = $id; $p=null; break; }

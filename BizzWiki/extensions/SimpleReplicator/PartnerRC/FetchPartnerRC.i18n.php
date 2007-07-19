@@ -5,7 +5,14 @@
  * $Id$
  * 
 */
-FetchPartnerRC::$msg['en'] = array(
+global $msgFetchPartnerRC;		// required for StubManager
+global $logFetchPartnerRC;		// required for StubManager
+
+// required for StubManager. The format is important:  'log'.$classname
+$logFetchPartnerRC = 'ftchrclog';	
+
+// the format is important here too: 'msg'.$classname
+$msgFetchPartnerRC['en'] = array(
 'ftchrclog'						=> "Fetch Partner's 'Recent Changes' Log",
 'ftchrclog'.'logpage'			=> "Fetch Partner's 'Recent Changes' Log",
 'ftchrclog'.'logpagetext'		=> 'This is a log of fetch operations',

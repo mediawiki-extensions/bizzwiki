@@ -64,9 +64,6 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 			'description' => "Fetches the replication partner's RecentChanges table.",
 			'url' => self::getFullUrl(__FILE__),			
 		);
-		
-		global $wgJobClasses;
-		$wgJobClasses['fetchRC'] = 'FetchPartnerRCjob'; 
 	}
 	
 	public function setup()

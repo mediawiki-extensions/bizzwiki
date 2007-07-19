@@ -35,5 +35,13 @@ StubManager::createStub(	'FetchPartnerRC',
 							true // logging included
 						 );
 
+/*
+StubManager::createStub(	'FetchPartnerLog', 
+							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.php',
+							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.i18n.php',
+							null,
+							true // logging included
+						 );
+*/
 
 ?>
