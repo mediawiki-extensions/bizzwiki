@@ -89,6 +89,7 @@ Replication functionality:
 * MW Special Page for managing the Replicator
 * PHP scripts / Cron Jobs for Replicator
 * SECURE way of gettings the 'user' table (ALL the fields !)
+* Waiting for bug #10644 to be resolved
 
 JOBS:
 =====

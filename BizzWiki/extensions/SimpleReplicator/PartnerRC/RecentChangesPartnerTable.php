@@ -26,7 +26,7 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 								'ns'		=> 'rc_namespace',
 								'pageid'	=> 'rc_cur_id',			// checked
 								'user'		=> 'rc_user',			// ok
-							#				=> 'rc_user_text',		// CHECKME
+								'user_text'	=> 'rc_user_text',		// CHECKME   
 								'bot'		=> 'rc_bot',			// ok
 								'minor'		=> 'rc_minor',			// ok
 								'new'		=> 'rc_new',			// ok
@@ -70,7 +70,7 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 		if ($start !== '')
 			$start = '&rcstart='.$start;
 			
-		return '/api.php?action=query&list=recentchanges&format=xml'.$start.$limit.$dir;
+		return '/api.php?action=query&list=recentchanges&format=xml&rcprop=user|comment|flags|timestamp|title|ids|sizes'.$start.$limit.$dir;
 	}
 
 } // end class

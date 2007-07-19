@@ -144,4 +144,6 @@ REL1_10_8: (released ...)
 - Added 'ClockTick' extension (added 'ClockTickEvent' hook)
 - Added 'clocktick.php' script
 - Added 'TaskScheduler' extension (requires 'ClockTick' extension / 'ClockTickEvent' generator such as 'clocktick.php' script)
-- 
+- Enhanced 'StubManager' to fully handle logging
+- REPLICATION FUNCTIONALITY: added 'FetchPartnerRC' extension
+- REPLICATION FUNCTIONALITY: added 'FetchPartnerLog' extension
