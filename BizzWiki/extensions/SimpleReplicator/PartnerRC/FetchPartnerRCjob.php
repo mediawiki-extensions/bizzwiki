@@ -104,8 +104,10 @@ class FetchPartnerRCjob extends Job
 	{
 		$message = wfMsgForContent( 'ftchrclog-'.$msgid, $param1, $param2, $param3, $param4, $param5 );
 		
-		$log = new LogPage( 'ftchrclog' );
-		$log->addEntry( $action, $this->user->getUserPage(), $message );
+		$log = new LogPage( 'ftchrclog', false /*don't clog recentchanges list!*/  );
+		
+		$title = Title::makeTitle( NS_SPECIAL, 'log/ftchrlog' );
+		$log->addEntry( $action, $title, $message );
 	}
 	
 } // end class declaration

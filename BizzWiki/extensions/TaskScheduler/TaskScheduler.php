@@ -32,12 +32,6 @@ this extension provides a 'calendar-based' scheduler. Standard MW 'jobs' can be 
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[TaskScheduler::thisType][] = array( 
-	'name'    => TaskScheduler::thisName,
-	'version' => StubManager::getRevisionId('$Id$'),
-	'author'  => 'Jean-Lou Dupont',
-	'description' => 'Provides Task Scheduling functionality', 
-);
 // required for logging functionality.
 // The stub manager also loads this file on demand - when the special page 'log' is viewed.
 require_once('TaskScheduler.i18n.php');
@@ -73,22 +67,17 @@ class TaskScheduler
 	
 	public function __construct()
 	{
-		# Add a new log type
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]					= 'schlog';
-		$wgLogNames  ['schlog']			= 'schlog'.'logpage';
-		$wgLogHeaders['schlog']			= 'schlog'.'logpagetext';
-		$wgLogActions['schlog/runok']	= 'schlog'.'-runok-entry';
-		$wgLogActions['schlog/runfail']	= 'schlog'.'-runfail-entry';		
-		
-		global $wgMessageCache;
-
-		$msg = $GLOBALS[ 'msg'.__CLASS__ ];
-		
-		foreach( $msg as $key => $value )
-			$wgMessageCache->addMessages( $msg[$key], $key );		
+		global $wgExtensionCredits;
+		$wgExtensionCredits[self::thisType][] = array( 
+			'name'    => self::thisName,
+			'version' => StubManager::getRevisionId('$Id$'),
+			'author'  => 'Jean-Lou Dupont',
+			'description' => 'Provides Task Scheduling functionality', 
+		);
 	}
-
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
+	{ return true; }
+	
 	/**
 		Main entry point.
 		This method is called when a 'tick' event occurs.
@@ -292,8 +281,9 @@ class TaskScheduler
 		
 		$message = wfMsgForContent( 'schlog-'.$action.'-'.$msgid, $param1, $param2 );
 		
-		$log = new LogPage( 'schlog' );
-		$log->addEntry( $action, $this->user->getUserPage(), $message );
+		$log = new LogPage( 'schlog', false /*don't clog recentchanges list!*/ );
+		$title = Title::makeTitle( NS_SPECIAL, 'log/schlog' );		
+		$log->addEntry( $action, $title, $message );
 	}
 
 } // end class declaration

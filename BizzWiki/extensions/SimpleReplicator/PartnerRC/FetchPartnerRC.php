@@ -33,7 +33,7 @@ This extension fetches the 'recentchanges' table from the partner replication no
 require('FetchPartnerRC.i18n.php');
 require_once('RecentChangesPartnerTable.php');
 
-class FetchPartnerRC extends ExtensionClass  // so many extensions rely on ExtensionClass it does't hurt to 'use' it here.
+class FetchPartnerRC
 {
 	const thisName = 'FetchPartnerRC';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
@@ -48,41 +48,23 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	// Logging
 	static $logName = 'WikiSysop';
 	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
-	
 	// Our class defines magic words: tell it to our helper class.
 	public function __construct() 
 	{ 
-		parent::__construct( ); 
-	
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Fetches the replication partner's RecentChanges table.",
-			'url' => self::getFullUrl(__FILE__),			
+			'name'    		=> self::thisName, 
+			'version'		=> StubManager::getRevisionId( self::id ),
+			'author'		=> 'Jean-Lou Dupont', 
+			'description'	=> "Fetches the replication partner's RecentChanges table.",
+			#'url'			=> self::getFullUrl(__FILE__),			
 		);
 	}
 	
 	public function setup()
-	{	
-		parent::setup(); 
-
-		global $wgMessageCache;
-		foreach( self::$msg as $key => $value )
-			$wgMessageCache->addMessages( self::$msg[$key], $key );
-
-		// LOGGING			
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]						= 'ftchrclog';
-		$wgLogNames  ['ftchrclog']			= 'ftchrclog'.'logpage';
-		$wgLogHeaders['ftchrclog']			= 'ftchrclog'.'logpagetext';
-		$wgLogActions['ftchrclog/fetchok']	= 'ftchrclog'.'-fetchok-entry';
-		$wgLogActions['ftchrclog/fetchfail']= 'ftchrclog'.'-fetchfail-entry';		
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	{ parent::setup(); }
+	
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;
@@ -113,5 +95,4 @@ class FetchPartnerRC extends ExtensionClass  // so many extensions rely on Exten
 	}
 
 } // end class declaration
-FetchPartnerRC::singleton();
 ?>

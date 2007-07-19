@@ -19,8 +19,6 @@ abstract class PartnerObjectClass extends TableClass
 	
 	// Table Object related
 	var $params;
-	var $cur_timestamp_field_name;
-	var $id_field_name;
 	var $document_tag_field;
 
 	// error codes.
@@ -37,9 +35,10 @@ abstract class PartnerObjectClass extends TableClass
 	var $compte;			// total number of elements
 	var $startup;
 
-	public function __construct( &$params, $tableFieldName, $indexFieldName, $timestampFieldName, $documentTagField ) 
+	public function __construct( &$params, $tableFieldName, $indexFieldName, $timestampFieldName, 
+								$documentTagField, $currentTimeFieldName ) 
 	{ 
-		parent::__construct( $tableFieldName, $indexFieldName, $timestampFieldName ); 
+		parent::__construct( $tableFieldName, $indexFieldName, $timestampFieldName, $currentTimeFieldName ); 
 		
 		$this->p_url	= PartnerMachine::$url;
 		$this->p_port	= PartnerMachine::$url;
@@ -124,13 +123,13 @@ abstract class PartnerObjectClass extends TableClass
 	 */
 	private function adjustCurTime( &$lst )
 	{
-		if (empty( $this->timestampName ))
+		if (empty( $this->currentTimestampName ))
 			return;
 			
 		// no need to be that precise in the timestamp
 		$cur_time = wfTimestamp( TS_MW );
 		foreach( $lst as $index => &$e )
-			$e[$this->timestampName] = $cur_time;
+			$e[$this->currentTimestampName] = $cur_time;
 	}
 
 	/**
