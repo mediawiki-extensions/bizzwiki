@@ -99,3 +99,6 @@ JOBS:
 * FetchPartnerRevision
 
 
+Article::doDeleteArticle
+========================
+- Modifies 'recentchanges' table...
