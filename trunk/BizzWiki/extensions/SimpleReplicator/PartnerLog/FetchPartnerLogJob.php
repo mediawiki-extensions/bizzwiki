@@ -12,7 +12,7 @@
 
 == Code ==
 </wikitext>*/
-require_once('LoggingTable.php');
+require_once('LoggingPartnerTable.php');
 
 class FetchPartnerLogJob extends Job
 {
@@ -24,23 +24,23 @@ class FetchPartnerLogJob extends Job
 
 	function run() 
 	{
-		$logt = new LoggingTable();
+		$logt = new LoggingPartnerTable();
 		$err = $logt->update();
 		
 		switch ( $err )
 		{
-			case LoggingTable::errFetchingUrl:
+			case LoggingPartnerTable::errFetchingUrl:
 					return $this->errorFetchingList();			
 					
-			case LoggingTable::errListEmpty:
+			case LoggingPartnerTable::errListEmpty:
 					return $this->listEmpty();			
 					
-			case LoggingTable::errParsing:
+			case LoggingPartnerTable::errParsing:
 					$missing_id = $logt->missing_id;
 					$duplicate_id = $logt->duplicate_id;
 					return $this->errorParsingList( $missing_id, $duplicate_id );
 					
-			case LoggingTable::errOK:
+			case LoggingPartnerTable::errOK:
 					break;
 		}
 		$compte 		= $logt->compte;
@@ -67,7 +67,7 @@ class FetchPartnerLogJob extends Job
 	private function errorParsingList( $missing_id, $duplicate_id )
 	{
 		if ( $missing_id )	$param1 = "Missing 'log_id'.";
-		if ( $duplicate_id )$param2 = "Duplicate 'log_id'.";
+		if ( $duplicate_id!=null )$param2 = "Duplicate 'log_id'=".$duplicate_id.'.';
 		// add an entry log.	
 		$this->updateLog( 'fetchfail', 'fetchfail-text2', $param1, $param2 );
 		return false;		

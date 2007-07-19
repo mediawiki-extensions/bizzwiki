@@ -80,12 +80,12 @@ abstract class PartnerObjectClass extends TableClass
 			$err = $this->getPartnerList( $url, $document );
 		}
 		if ($err !== CURLE_OK )
-			return errFetchingUrl;
+			return PartnerObjectClass::errFetchingUrl;
 			
 		// At this point, we have a document to parse.
 		$plist = $err= $this->parseDocument( $document, $this->params, $this->missing_id, $this->duplicate_id );
-		if ($err === false)	return errParsing;
-		if ($err === true)	return errListEmpty;
+		if ($err === false)	return PartnerObjectClass::errParsing;
+		if ($err === true)	return PartnerObjectClass::errListEmpty;
 		
 		// make sure we have the timestamp in the db format.
 		$this->adjustCurTime( $plist );
@@ -105,7 +105,7 @@ abstract class PartnerObjectClass extends TableClass
 			$this->compte = count( $flist );
 			// update the table
 			$this->affected_rows = $this->updateList( $flist );
-			return errOK;
+			return PartnerObjectClass::errOK;
 		}
 		$this->filtered_count = 0;
 			
@@ -115,7 +115,7 @@ abstract class PartnerObjectClass extends TableClass
 		$this->catchingUp = true;
 		$this->compte = count( $plist );
 		$this->affected_rows = $this->updateList( $plist );
-		return errOK;
+		return PartnerObjectClass::errOK;
 		
 	}
 	/**
@@ -159,6 +159,9 @@ abstract class PartnerObjectClass extends TableClass
 	 */
 	private function parseDocument( &$document, &$paramsList, &$missing_id, &$duplicate_id )
 	{
+		$missing_id = null;
+		$duplicate_id = null;
+		
 		if (empty( $document ))
 			return true;	// the document was empty, hence no problem.
 		
@@ -187,7 +190,8 @@ abstract class PartnerObjectClass extends TableClass
 					$value = wfTimestamp( TS_MW, $value );
 				$a[ $dbkey ] = $value;
 			}
-			
+#		wfVarDump( $a );
+
 			// make sure we have an 'id' present
 			if (!isset( $a[$this->indexName] ))
 				{ $missing_id = true; $p=null; break; }
@@ -201,14 +205,16 @@ abstract class PartnerObjectClass extends TableClass
 			$p[ $id ] = $a; 
 		}
 
-		// document empty? special return code.		
-		if (empty( $p ))
-			return true;
-
 		// if the document was not empty and we end up
 		// with an empty array, something is wrong.
 		if ( ($missing_id != null) || ($duplicate_id != null) )
 			return false;
+
+#		wfVarDump( $p );
+
+		// document empty? special return code.		
+		if (empty( $p ))
+			return true;
 
 		// sort the list for convenience
 		ksort( $p );
