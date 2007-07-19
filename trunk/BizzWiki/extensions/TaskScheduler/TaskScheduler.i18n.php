@@ -18,6 +18,7 @@
 
 global $msgTaskScheduler;		// required for StubManager
 global $logTaskScheduler;		// required for StubManager
+global $actTaskScheduler;		// required for StubManager
 
 // required for StubManager. The format is important:  'log'.$classname
 $logTaskScheduler = 'schlog';	
@@ -39,4 +40,9 @@ $msgTaskScheduler['en'] = array(
 	#'' => '',
 );
 
+$actTaskScheduler= array(
+							'runok',
+							'runfail',
+							'start',
+						);
 ?>

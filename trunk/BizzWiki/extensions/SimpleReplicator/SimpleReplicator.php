@@ -31,7 +31,7 @@ $wgAutoloadClasses['FetchPartnerRCjob'] = dirname(__FILE__).'/PartnerRC/FetchPar
 StubManager::createStub(	'FetchPartnerRC', 
 							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.php',
 							dirname(__FILE__).'/PartnerRC/FetchPartnerRC.i18n.php',
-							null,
+							array('SpecialVersionExtensionTypes'),
 							true // logging included
 						 );
 

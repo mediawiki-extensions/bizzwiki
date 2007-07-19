@@ -43,6 +43,7 @@ MISC:
 
 FileManager:
 ============
+* Fix log entry messages
 - Reload from filesystem functionality
   (instead of deleting & reloading)
 

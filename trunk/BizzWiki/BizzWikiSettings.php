@@ -155,7 +155,9 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usetchglog",	"browse")] = true;
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/watchlog",	"browse")] = true;
-$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/ftchrclog",	"browse")] = true;
+// replication related.
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/ftchrclog",	"browse")] = true;	// partner RC
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/schlog",		"browse")] = true;	// task scheduler
 
 	// Anonymous
 	// #########
@@ -174,6 +176,11 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",		
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usetchglog",	"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/watchlog",	"!browse")] = true;
+
+	// replication related.
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/ftchrclog",	"!browse")] = true;	// partner RC
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/schlog",		"!browse")] = true;	// task scheduler
+
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey("~","~","readlog")] = true;  // debugging
 }
 
@@ -358,26 +365,31 @@ require('extensions/RecentChangesManager/RecentChangesManager.php');
 #$recaptcha_private_key = '';
 
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//                           TASK SCHEDULING FUNCTIONALITY
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StubManager::createStub(	'TaskScheduler', 
+							$bwExtPath.'/TaskScheduler/TaskScheduler.php',
+							$bwExtPath.'/TaskScheduler/TaskScheduler.i18n.php',							
+							array( 'SpecialVersionExtensionTypes','ClockTickEvent' ), // created by 'ClockTick' extension
+							true // logging included
+						 );
+
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                           REPLICATION FUNCTIONALITY
 //                             *** EXPERIMENTAL ***
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#require('extensions/SimpleReplicator/SimpleReplicator.php');
+# Customize 'clocktick.php' as required
+require('extensions/SimpleReplicator/SimpleReplicator.php');
+// Customize the following parameters
+#PartnerMachine::$url		= 'http://bizzwiki.org';
+#PartnerMachine::$port		= 80; 	//HTTP/TCP port
+#PartnerMachine::$timeout	= 15;	//Timeout (in seconds) for request to partner machine
 
 // Enable this extension if you require locally generated 'ClockTickEvent'
 // A local 'cron' job must be setup to request a page from the local web server
 // with an 'action=ping' command.
 #require('extensions/ClockTick/ClockTick.php');
 
-StubManager::createStub(	'TaskScheduler', 
-							$bwExtPath.'/TaskScheduler/TaskScheduler.php',
-							$bwExtPath.'/TaskScheduler/TaskScheduler.i18n.php',							
-							array( 'ClockTickEvent' ), // created by 'ClockTick' extension
-							true // logging included
-						 );
-
-
-#require('extensions/Jobs/FetchPartnerRC/FetchPartnerRC.php');
-#FetchPartnerRC::$partner_url = 'http://localhost/wiki';
 
 
 ## To enable image uploads, make sure the 'images' directory

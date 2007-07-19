@@ -92,7 +92,7 @@ class StubManager
 	}
 	private static function setupLogging( )
 	{
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders;
+		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
 
 		foreach( self::$stubList as $index => $e )
 		{
@@ -101,10 +101,15 @@ class StubManager
 				
 			$class = $e['class'];
 			$log = $GLOBALS[ 'log'.$class ];
-			
+		
 			$wgLogTypes[]       = $log;
 			$wgLogNames  [$log] = $log.'logpage';
 			$wgLogHeaders[$log] = $log.'logpagetext';
+
+			$actions = $GLOBALS[ 'act'.$class ];
+			if (!empty( $actions ))
+				foreach( $actions as $action )
+					$wgLogActions[$log.'/'.$action] = $log.'-'.$action.'-entry'; 
 		}		
 	}
 	private static function setupMessages( )
@@ -152,6 +157,8 @@ class StubManager
 			if ($el['name']==self::thisName)
 				$el['description'] .= $result.'.';
 		
+	
+		return true;
 	}
 	static function getRevisionData( &$id, &$date, $d = null )
 	{

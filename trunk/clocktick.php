@@ -25,6 +25,10 @@
 
 require_once( './includes/WebStart.php' );
 
+// Customize this entry if you require the logs to appear
+// under another user name.
+$wgUser = User::newFromName('WikiReplicator');
+
 wfRunHooks('ClockTickEvent', 60 /* timebase in seconds */ );
 
 ?>

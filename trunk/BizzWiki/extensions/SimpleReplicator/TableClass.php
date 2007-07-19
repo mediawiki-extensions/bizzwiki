@@ -22,12 +22,14 @@ abstract class TableClass
 	var $tableName;
 	var $indexName;
 	var $timestampName;
+	var $currentTimestampName;
 	
-	public function __construct( $tableName, $indexName, $timestampName=null )
+	public function __construct( $tableName, $indexName, $timestampName=null, $currentTimestampName )
 	{
 		$this->tableName = $tableName;
 		$this->indexName = $indexName;
 		$this->timestampName = $timestampName;
+		$this->currentTimestampName = $currentTimestampName;
 	}
 
 	/**
@@ -152,9 +154,13 @@ EOT;
 
 	function updateList( &$lst )
 	{
+		if (empty( $lst ))
+			return 0;
+
 		$dbw = wfGetDB( DB_MASTER );
 
 		$affected_rows = 0;
+
 		foreach( $lst as $index => &$e )
 		{
 			$dbw->replace( $this->tableName, null, $e, __METHOD__ );
