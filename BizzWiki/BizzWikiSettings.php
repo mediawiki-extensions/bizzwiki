@@ -441,6 +441,25 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",	"browse")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",	"browse")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/*","browse")] = true;
+
+	$bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
+									NS_PROJECT, NS_PROJECT_TALK,
+									NS_TEMPLATE,NS_TEMPLATE_TALK,
+									NS_CATEGORY, NS_CATEGORY_TALK,
+									NS_HELP, NS_HELP_TALK,
+									NS_SPECIAL,
+									NS_INTERWIKI // BizzWiki specific
+									); 
+
+	foreach( $bwAnonymousNamespaces as $index => $bwx )
+	{	
+		$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;   
+		$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
+		$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;   		
+		$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","raw")] = true;   
+		$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","viewsource")] = true;
+	}
+	
 }
 
 ?>
