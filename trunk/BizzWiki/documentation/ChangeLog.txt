@@ -147,3 +147,7 @@ REL1_10_8: (released ...)
 - Enhanced 'StubManager' to fully handle logging
 - REPLICATION FUNCTIONALITY: added 'FetchPartnerRC' extension
 - REPLICATION FUNCTIONALITY: added 'FetchPartnerLog' extension
+- StubManager: Minor fixes (removal of some PHP warnings)
+- hnpClass: Minor fixes (removal of some PHP warnings)
+- ForeachFunctions: Minor fixes (removal of some PHP warnings)
+-
