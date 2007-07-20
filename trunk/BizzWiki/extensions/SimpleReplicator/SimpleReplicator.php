@@ -24,6 +24,7 @@
 
 require('PartnerMachine.php');
 require('PartnerObject.php');
+require('PartnerJob.php');
 
 // Stub required for logging & job functionality.
 $wgAutoloadClasses['FetchPartnerRCjob'] = dirname(__FILE__).'/PartnerRC/FetchPartnerRCjob.php';
