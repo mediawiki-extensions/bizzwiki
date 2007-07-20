@@ -102,7 +102,7 @@ class TaskScheduler
 		if (!empty( $tasks ))
 			foreach( $tasks as $task )
 			{
-				$code = $this->runTask( $task, &$taskErrorCode );
+				$code = $this->runTask( $task, $taskErrorCode );
 				$this->updateLog( $task, $code, $taskErrorCode );
 				$this->updateTask( $task );
 			}
@@ -204,7 +204,7 @@ class TaskScheduler
 		{
 			// set and get the task's state variable
 			$state = $task['ts_state'];
-			$taskErrorCode = $obj->run( &$state );
+			$taskErrorCode = $obj->run( $state );
 			$task['ts_state'] = $state;
 		} 
 		catch( Exception $e )

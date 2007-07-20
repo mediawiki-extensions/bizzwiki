@@ -138,9 +138,9 @@ class ForeachFunctionClass extends ExtensionClass
 	public static function replaceVars( &$pattern, &$key, &$value, &$index )
 	{
 		// find $key$ , $value$, $index$ variables in the pattern
-		$r  = str_replace( '$key$',   $key, $pattern );			
-		$r2 = str_replace( '$value$', $value, $r );
-		$r3 = str_replace( '$index$', $index, $r2 );		
+		$r  = @str_replace( '$key$',   $key, $pattern );			
+		$r2 = @str_replace( '$value$', $value, $r );
+		$r3 = @str_replace( '$index$', $index, $r2 );		
 		
 		return $r3;
 	}

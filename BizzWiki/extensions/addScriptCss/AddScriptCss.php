@@ -1,67 +1,55 @@
 <?php
-/*
- * AddScriptCss.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont
- * 
- * Purpose:  Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head
- * ========  or within the page's body.
- *
- * Features:
- * *********
- * 
- * -- Local files (URI) only
- * -- Files must be located in wiki installation
- *    home directory/scripts
- *
- * Examples:
- * =========
- * -- <addscript src='local URL' />
- *    1) e.g. <addscript src=/sarissa/sarissa type=js />
- *    2) e.g. {{#addscript: src=/styleinfo|pos=head|type=css}}
- *
- *    R1) Results in /home/scripts/sarissa/sarissa.js
- *        being added to the page's body section
- *        provided the said file exists.
- *
- *    R2) The CSS file /home/scripts/styleinfo.css will be
- *        added to the page's HEAD section (provided it exists).
- *
- * Syntax:
- * =======
- * Form 1: <addscript src=filename [type={js|css}] [pos={head|body}] />
- *
- * Form 2: {{#addscript:src=filename [|type={js|css} [|pos={head|body}] }}
- *
- * If no 'type' field is present, then the extension assumes 'js'.
- *
- * If no 'pos' field is present, then the extension assumes 'body'
- *
- * DEPENDANCY:  ExtensionClass ( v>=306 )  
- * 
- * USAGE NOTES:
- * ============
- * 1) When using 'pos=body', it is recommended to use
- *    the extension 'ParserCacheControl' in order to better
- *    integrate this extension with the standard MW parser cache.
- * 
- * Tested Compatibility:  MW 1.8.2, 1.10
- *
- * History:
- * - v1.0  Builds on existing 'AddScript' extension
- =========== Moved to BizzWiki
+/*<wikitext>
+{| border=1
+| <b>File</b> || AddScriptCss.php
+|-
+| <b>Revision</b> || $Id$
+|-
+| <b>Author</b> || Jean-Lou Dupont
+|}<br/><br/>
+
+== Purpose== 
+Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head or within the page's body.
+
+== Features ==
+* Security: local files (URI) only
+** Files must be located in wiki installation home directory/scripts
+
+== Examples ==
+<pre><addscript src='local URL' /></pre>
+* (R1) e.g. <addscript src=/sarissa/sarissa type=js />
+* (R2) e.g. {{#addscript: src=/styleinfo|pos=head|type=css}}
+
+:R1) Results in <code>/home/scripts/sarissa/sarissa.js</code> being added to the page's body section provided the said file exists.
+
+:R2) The CSS file <code>/home/scripts/styleinfo.css</code> will be added to the page's HEAD section (provided it exists).
+
+== Syntax ==
+Form 1: <addscript src=filename [type={js|css}] [pos={head|body}] />
+
+Form 2: {{#addscript:src=filename [|type={js|css} [|pos={head|body}] }}
+
+If no 'type' field is present, then the extension assumes 'js'.
+
+If no 'pos' field is present, then the extension assumes 'body'
+
+== DEPENDANCY ==
+ExtensionClass ( v>=306 )  
+ 
+== USAGE NOTES ==
+When using 'pos=body', it is recommended to use the extension 'ParserCacheControl' in order to better integrate this extension with the standard MW parser cache.
+ 
 
 == History ==
 * Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
 * Adjusted singleton invocation to end of file (PHP limitation)
-   
- * TODO:
- * =====
- * - adjust for 'autoloading'
- * - internationalize
- *
- */
+
+== TODO ==
+* - adjust for 'autoloading'
+* - internationalize
+
+== Code ==
+</wikitext>*/
 
 class AddScriptCssClass extends ExtensionClass
 {
@@ -81,7 +69,7 @@ class AddScriptCssClass extends ExtensionClass
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function AddScriptCssClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function AddScriptCssClass( )
 	{
 		parent::__construct( );
 

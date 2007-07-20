@@ -106,7 +106,9 @@ class StubManager
 			$wgLogNames  [$log] = $log.'logpage';
 			$wgLogHeaders[$log] = $log.'logpagetext';
 
-			$actions = $GLOBALS[ 'act'.$class ];
+			$actions = null;
+			if (isset( $GLOBALS[ 'act'.$class ]))
+				$actions = $GLOBALS[ 'act'.$class ];
 			if (!empty( $actions ))
 				foreach( $actions as $action )
 					$wgLogActions[$log.'/'.$action] = $log.'-'.$action.'-entry'; 

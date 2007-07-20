@@ -202,6 +202,8 @@ class hnpClass
 	
 	function hUserIsAllowed( &$user, $ns=null, $titre=null, $action, &$result )
 	{
+		$skipPageRestrictionsCheck = false;
+		
 		$result = false; // disallow by default.
 		if ($action == '') return true;
 		
