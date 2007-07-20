@@ -92,7 +92,8 @@ class SecureHTMLclass extends ExtensionClass
 	 */
 	public function tag_addtohead( &$text, &$params, &$parser )
 	{
-		if (!$this->canProcess( $parser->mTitle) ) return;
+		if (!$this->canProcess( $parser->mTitle) ) 
+			return "<b>SecureHTML:</b> ".wfMsg('badaccess');
 		
 		$this->addHeadScript( $text );		
 	}
