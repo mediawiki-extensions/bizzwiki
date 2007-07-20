@@ -51,11 +51,11 @@ class FileManagerClass extends ExtensionClass
 		# Add a new log type
 		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
 		$wgLogTypes[]                           = 'commitscript';
-		$wgLogNames  ['commitfil']              = 'commitfilelogpage';
-		$wgLogHeaders['commitfil']              = 'commitfilelogpagetext';
-		$wgLogActions['commitfil/commitfil']    = 'commitfilelogentry';
-		$wgLogActions['commitfil/commitok']     = 'commitfilelog-commitok-entry';
-		$wgLogActions['commitfil/commitfail']   = 'commitfilelog-commitfail-entry';
+		$wgLogNames  ['commitfil']              = 'commitfil'.'logpage';
+		$wgLogHeaders['commitfil']              = 'commitfil'.'logpagetext';
+		$wgLogActions['commitfil/commitfil']    = 'commitfil'.'logentry';
+		$wgLogActions['commitfil/commitok']     = 'commitfil'.'-commitok-entry';
+		$wgLogActions['commitfil/commitfail']   = 'commitfil'.'-commitfail-entry';
 		
 		global $wgMessageCache, $wgFileManagerLogMessages;
 		foreach( $wgFileManagerLogMessages as $key => $value )
@@ -107,7 +107,7 @@ class FileManagerClass extends ExtensionClass
 		// -----------------------------------------
 		$action  = ($r === FALSE ? 'commitfail':'commitok' );
 		$nsname  = Namespace::getCanonicalName( $ns );	
-		$message = wfMsgForContent( 'commitfilelog-commit-text', $nsname, $titre );
+		$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre );
 		
 		// we need to limit the text to 'commitscr' because of the database schema.
 		$log = new LogPage( 'commitfil' );

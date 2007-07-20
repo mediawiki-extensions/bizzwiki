@@ -32,15 +32,14 @@
 == History ==
 * fixed for 'wgCapitalLinks' 
 * fixed for suppressing PHP error messages on file_get_contents
- 
- *
- * TODO:
- * =====
- * - internationalization
- * - add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
- * - enhance 'logging' through $type etc.
- * - 
- *
+* fixed logging messages
+
+== TODO ==
+* internationalization
+* add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
+* enhance 'logging' through $type etc.
+*  
+
  */
 
 // Verify if 'ExtensionClass' is present.
