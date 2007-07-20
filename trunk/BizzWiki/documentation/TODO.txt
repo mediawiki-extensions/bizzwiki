@@ -1,22 +1,18 @@
 $Id$
 
-PREVIEW
-=======
+== PREVIEW ==
 * Verify this interface does not impact security measures
 
-Job Queue
-=========
+== Job Queue ==
 * Show Job Queue special page
 
-User:
-===========
+== User ==
 * Special:Import --> more granular right i.e. namespace level ??
 * User Preferences change: add LOG entry 
 * View User details: probably special page required for that
 * Delete User extension
 
-SuperGroups
------------
+== SuperGroups ==
 0) Configuration in BizzWikiSettings.php
 1) TODO special page...
 2) Internationalization...
@@ -30,77 +26,78 @@ SuperGroups
 6) Table creation: integration with overall installation process
    Special page for sg table creation??
 
-Page History:
-=============
-- remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
+== Page History ==
+* remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
 
-MISC:
-=====
-- Internationalise!
-- CHECK: 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context ??
-- 'notitle' magic word
-- Job for the 'FileManager': reload from filesystem all file from installation.
+== MISC ==
+* Internationalise!
+* CHECK: 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context ??
+* 'notitle' magic word
+* Job for the 'FileManager': reload from filesystem all file from installation.
 
-FileManager:
-============
-- Reload from filesystem functionality
-  (instead of deleting & reloading)
+== FileManager ==
+* Reload from filesystem functionality (instead of deleting & reloading)
 
-SpecialPagesManager:
-====================
-- Customized layout functionality
+== SpecialPagesManager ==
+* Customized layout functionality
 
-Geshi:
-======
-- Better documentation
+== Geshi ==
+* Better documentation
 
-Special:Undelete
-================
+== Special:Undelete ==
 * Fixme
 * DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!  (TBD)
 
-SpecialPagesManager
-===================
+== SpecialPagesManager ==
 * Logging functionality?
 
-RecentChanges
-=============
+== RecentChanges ==
 * Enable enhanced view with Javascript by default
 
-Template Links updating:
-========================
+== Template ==
+=== Links updating ===
 * It would seem that 'parser cached' entries are not kept up-to-date when when templates are updated
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
-Stub Candidates:
-================
+== Stub Candidates ==
 * RawRight         -> YES
 * ViewSource Right -> NO
 
-Rights Management
-=================
+== Rights Management ==
 * "Grant Right" functionality
 ** see Manual:$wgAddGroups
 ** see Manual:$wgRemoveGroups
 
-Replication functionality:
---------------------------
+== Replication functionality ==
 * MW Special Page for managing the Replicator
 * PHP scripts / Cron Jobs for Replicator
 * SECURE way of gettings the 'user' table (ALL the fields !)
 * Waiting for bug #10644 to be resolved
 * Waiting for 'LogEvents' API to be fixed
 
-JOBS:
-=====
+== JOBS ==
 * FetchPartnerUser table:   when an entry 'user creation log' appears in log?
 * FetchPartnerPage
 * FetchPartnerRevision
 
-Task Scheduler:
-===============
+== Task Scheduler ==
 * Special Page to manage tasks
 
-Article::doDeleteArticle
-========================
+== Article ==
+=== ::doDeleteArticle ===
 - Modifies 'recentchanges' table...
+
+== Logs ==
+* Enhanced with Javascript: group similiar items
+
+== Security ==
+* HTTPS
+
+== Presentation Layer ==
+* Short URL
+* Integrate 'ImageLink' extension
+* Integrate 'PageAfterAndBefore' extension
+* JS form elements validation helper class
+* 'AutoIncludeScripts': detects which JS scripts to include (TBD)
+** Probably can live with a template which uses 'AddScriptCss' extension
+
