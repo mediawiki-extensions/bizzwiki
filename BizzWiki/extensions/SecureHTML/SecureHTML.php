@@ -16,6 +16,7 @@ This extension enables the usage of 'html' tags (functionality which is controll
 * Cascading: if the base page is allowed to use 'html' tags, then all included pages will be processed
 as if they could.
 * Namespace exemption: configured namespaces are exempted from 'protection' requirement
+* <code><addtohead>some html code here></addtohead></code>
 
 == Dependancy ==
 * ExtensionClass extension
@@ -34,6 +35,7 @@ require('extensions/SecureHTML/SecureHTML.php');
 protected in order to use 'html' tags
 ** use <code>SecureHTMLclass::enableExemptNamespaces = false; </code> to turn off
 ** use <code>SecureHTMLclass::exemptNamespaces[] = NS_XYZ; </code> to add namespaces
+* enhanced with functionality to 'add' content to the document's 'head' section
 
 == Code ==
 </wikitext>*/
