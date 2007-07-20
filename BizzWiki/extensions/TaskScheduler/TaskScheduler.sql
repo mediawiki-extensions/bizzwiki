@@ -6,6 +6,9 @@ CREATE TABLE /*$wgDBprefix*/task_scheduler (
   -- Task enabled/disabled
   ts_enable tinyint unsigned NOT NULL default '0', 
 
+  -- Task Scheduler's lastest error code
+  ts_code tinyint unsigned NOT NULL default '0', 
+
   -- when was this task created.
   ts_creation_timestamp varbinary(14) NOT NULL default '',
   

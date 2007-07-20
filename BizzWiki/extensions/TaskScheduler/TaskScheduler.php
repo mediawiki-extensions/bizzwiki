@@ -19,6 +19,7 @@ this extension provides a 'calendar-based' scheduler. Standard MW 'jobs' can be 
 * A 'task' is allowed to 'serialize' a state variable
 ** The state variable is retrieved and passed on each task run
 ** The state variable is kept in the database on each task run completion
+* If a task class is not found or the 'run' method not accessible, the task is disabled automatically
 
 == Dependancy ==
 * StubManager extension
@@ -51,6 +52,7 @@ class TaskScheduler
 	static $fields = array(
 							'ts_id',
 							'ts_enable',
+							'ts_code',
 							'ts_creation_timestamp',
 							'ts_last_run_timestamp',
 							'ts_next_run_timestamp',
@@ -65,6 +67,10 @@ class TaskScheduler
 	const errInexistantClass	= 1;
 	const errRunningTask		= 2;
 	const errStarting			= 3;
+	
+	// state codes
+	const codeEnabled			= 1;
+	const codeDisabled			= 0;
 	
 	public function __construct()
 	{
@@ -104,6 +110,13 @@ class TaskScheduler
 			{
 				$code = $this->runTask( $task, $taskErrorCode );
 				$this->updateLog( $task, $code, $taskErrorCode );
+
+				// disable any mis-behaving tasks
+				if ( $code != TaskScheduler::errOK )
+					$task['ts_enable'] = TaskScheduler::codeDisabled;
+					
+				$task['ts_code'] = $code;
+				
 				$this->updateTask( $task );
 			}
 		
@@ -210,7 +223,7 @@ class TaskScheduler
 		catch( Exception $e )
 		{ return TaskScheduler::errRunningTask; }
 		
-		return TaskScheduler::errOK;		
+		return TaskScheduler::errOK;
 	}
 	/**
 		Verifies if the task's expected run time is
@@ -236,6 +249,8 @@ class TaskScheduler
 	 */
 	private function updateTask( &$task )
 	{
+		$le = $task['ts_enable'];
+		$lc = $task['ts_code'];		
 		$lr = wfTimestampNow(); 
 		$nr = $this->calculateNextRun( $task );
 		$id = $task['ts_id'];
@@ -247,6 +262,8 @@ class TaskScheduler
 
 		$dbw->update( $table,
 			array( /* SET */
+				'ts_code'				=> $lc,
+				'ts_enable'				=> $le,				
 				'ts_last_run_timestamp'	=> $lr,		// set
 				'ts_next_run_timestamp'	=> $nr,		// set
 			),
