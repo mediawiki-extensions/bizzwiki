@@ -21,7 +21,7 @@ class SecureHTMLclass extends ExtensionClass
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function SecureHTMLclass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function SecureHTMLclass( )
 	{
 		parent::__construct( );
 
@@ -62,20 +62,39 @@ class SecureHTMLclass extends ExtensionClass
 		
 		return true; // continue hook-chain.
 	}
-	private function canProcess( &$article )
+	private function canProcess( &$obj )
 	{
+		if (!is_object( $obj ))
+			return false; // paranoia
+			
+		if (is_a( $obj, 'Article'))
+			$title = $obj->mTitle;
+		elseif (is_a( $obj, 'Title'))
+			$title = $obj;
+		else
+			return false;
+		
 		if (self::$enableExemptNamespaces)
 		{
-			$ns = $article->mTitle->getNamespace();
+			$ns = $title->getNamespace();
 			if ( !empty(self::$exemptNamespaces) )
 				if ( in_array( $ns, self::$exemptNamespaces) )
 					return true;	
 		}
 		
 		// check protection status
-		if ( $article->mTitle->isProtected( 'edit' ) ) return true;
+		if ( $title->isProtected( 'edit' ) ) return true;
 		
 		return false;
+	}
+	/**
+		Parser Tag Magic Word for adding un-restricted content in the document's 'head'
+	 */
+	public function tag_addtohead( &$text, &$params, &$parser )
+	{
+		if (!$this->canProcess( $parser->mTitle) ) return;
+		
+		$this->addHeadScript( $text );		
 	}
 } // END CLASS DEFINITION
 ?>
