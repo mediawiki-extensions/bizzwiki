@@ -98,7 +98,7 @@ class FetchPartnerLogJob extends Job
 		$message = wfMsgForContent( 'fetchlog-'.$msgid, $param1, $param2, $param3, $param4, $param5 );
 		
 		$title = Title::makeTitle( NS_SPECIAL, 'log/fetchlog' );		
-		$log = new LogPage( 'fetchlog' );
+		$log = new LogPage( 'fetchlog', false /* don't clob recentchanges */ );
 		$log->addEntry( $action, $title, $message );
 	}
 	

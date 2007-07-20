@@ -78,12 +78,18 @@ class TaskScheduler
 	}
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	{ return true; }
-	
+
 	/**
 		Main entry point.
 		This method is called when a 'tick' event occurs.
 	 */
 	public function hClockTickEvent( $timebase )
+	{
+		return $this->run( $timebase );	
+	}
+	/**
+	 */
+	public function run( $timebase )
 	{
 		// User under which we will file the log entry
 		$this->user = User::newFromName( self::$logName );
@@ -182,16 +188,19 @@ class TaskScheduler
 		// verify that a matching class definition can be loaded.		
 		global $wgAutoloadClasses;
 		if ( !isset($wgAutoloadClasses[$classe] ))
-			return errInexistantClass;
+			return TaskScheduler::errInexistantClass;
 
 		// this, hopefully, should not cause any problem
 		$obj = new $classe;
 
 		// have a log entry in case something goes wrong
 		// and the condition isn't caught.
-		$this->updateLog( $task, errStarting, null );
+		$this->updateLog( $task, TaskScheduler::errStarting, null );
 
-		try 
+		if (!is_callable( array( $obj, 'run' ) ))
+			return TaskScheduler::errRunningTask;
+
+		try
 		{
 			// set and get the task's state variable
 			$state = $task['ts_state'];
@@ -199,9 +208,9 @@ class TaskScheduler
 			$task['ts_state'] = $state;
 		} 
 		catch( Exception $e )
-		{ return errRunningTask; }
+		{ return TaskScheduler::errRunningTask; }
 		
-		return errOK;		
+		return TaskScheduler::errOK;		
 	}
 	/**
 		Verifies if the task's expected run time is
@@ -267,16 +276,16 @@ class TaskScheduler
 	private function updateLog( &$task, $code, $taskErrorCode )
 	{
 		static $msgMap = array(	
-								errOK 				=> 'text1',
-								errInexistantClass	=> 'text1',
-								errRunningTask		=> 'text2',
-								errStarting			=> 'text',
+								TaskScheduler::errOK 				=> 'text1',
+								TaskScheduler::errInexistantClass	=> 'text1',
+								TaskScheduler::errRunningTask		=> 'text2',
+								TaskScheduler::errStarting			=> 'text',
 							);
 		static $actionMap = array(
-									errOK				=> 'runok',
-									errInexistantClass	=> 'runfail',
-									errRunningTask		=> 'runfail',
-									errStarting			=> 'start',								
+								TaskScheduler::errOK				=> 'runok',
+								TaskScheduler::errInexistantClass	=> 'runfail',
+								TaskScheduler::errRunningTask		=> 'runfail',
+								TaskScheduler::errStarting			=> 'start',								
 								);
 								
 		$action = $actionMap[$code];

@@ -43,7 +43,6 @@ MISC:
 
 FileManager:
 ============
-* Fix log entry messages
 - Reload from filesystem functionality
   (instead of deleting & reloading)
 
@@ -58,7 +57,7 @@ Geshi:
 Special:Undelete
 ================
 * Fixme
-* DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!
+* DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!  (TBD)
 
 SpecialPagesManager
 ===================
@@ -90,16 +89,17 @@ Replication functionality:
 * PHP scripts / Cron Jobs for Replicator
 * SECURE way of gettings the 'user' table (ALL the fields !)
 * Waiting for bug #10644 to be resolved
+* Waiting for 'LogEvents' API to be fixed
 
 JOBS:
 =====
-* Jobs Scheduler
-* FetchPartnerRC table: DONE
-* FetchPartnerLog table:
 * FetchPartnerUser table:   when an entry 'user creation log' appears in log?
 * FetchPartnerPage
 * FetchPartnerRevision
 
+Task Scheduler:
+===============
+* Special Page to manage tasks
 
 Article::doDeleteArticle
 ========================

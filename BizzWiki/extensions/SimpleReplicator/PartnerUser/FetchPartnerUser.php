@@ -1,7 +1,7 @@
 <?php
 /*<wikitext>
 {| border=1
-| <b>File</b> || FetchPartnerRC.php
+| <b>File</b> || FetchPartnerUser.php
 |-
 | <b>Revision</b> || $Id$
 |-
@@ -9,15 +9,9 @@
 |}<br/><br/>
  
 == Purpose==
-This extension fetches the 'recentchanges' table from the partner replication node.
+This extension fetches the 'user' table from the partner replication node.
 
 == Features ==
-
-
-== Dependancies ==
-
-== Notes ==
-* The parameter 'rc_timestamp' is not sufficient to determine entry unicity (lack of resolution).
 
 == Installation ==
 
@@ -25,17 +19,17 @@ This extension fetches the 'recentchanges' table from the partner replication no
 
 == Code ==
 </wikitext>*/
-require('FetchPartnerRC.i18n.php');
-require_once('RecentChangesPartnerTable.php');
+require('FetchPartnerUser.i18n.php');
+require_once('UserPartnerTable.php');
 
-class FetchPartnerRC
+class FetchPartnerUser
 {
-	const thisName = 'FetchPartnerRC';
+	const thisName = 'FetchPartnerUser';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 	const id       = '$Id$';	
 
 	// Database
-	static $tableName = 'recentchanges_partner';
+	static $tableName = 'user_partner';
 	
 	// i18n messages.
 	static $msg;
@@ -51,7 +45,7 @@ class FetchPartnerRC
 			'name'    		=> self::thisName, 
 			'version'		=> StubManager::getRevisionId( self::id ),
 			'author'		=> 'Jean-Lou Dupont', 
-			'description'	=> "Fetches the replication partner's RecentChanges table.",
+			'description'	=> "Fetches the replication partner's User table.",
 			#'url'			=> self::getFullUrl(__FILE__),			
 		);
 	}
