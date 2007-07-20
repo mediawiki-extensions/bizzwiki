@@ -113,6 +113,10 @@ class FileManagerClass extends ExtensionClass
 		$log = new LogPage( 'commitfil' );
 		$log->addEntry( $action, $user->getUserPage(), $message );
 		
+		// disable auto summary
+		// (security issue ...)
+		$flags = ($flags && (!EDIT_AUTOSUMMARY));
+		
 		return true; // continue hook-chain.
 	}
 	public function hArticleFromTitle( &$title, &$article )

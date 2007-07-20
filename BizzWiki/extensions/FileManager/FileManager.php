@@ -1,46 +1,39 @@
 <?php
-/*
- * FileManager.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- * $Id$
- * 
- * Purpose:   This Mediawiki extension enables a user with the 'commitfile' right
- * ========   to edit files in the Mediawiki installation directory.  
- *
- * Features:
- * =========
- * 0) Can be used independantly of BizzWiki environment 
- * 1) New right:      'readfile', 'commitfile'
- * 2) Logging
- * 3) New Namespace 'NS_FILESYSTEM'
- * 4) Support for titles beginning with small caps; need the title to be prefixed with '/'
- *    e.g. to have access to 'includes/Setup.php' just reference the title 'Filesystem:/includes/Setup.php'
- *
- * DEPENDANCY:  
- * ===========
- * 1) Extension 'ExtensionClass' (>=v1.92) 
- *
- * USAGE NOTES:
- * ============
- *
- * Tested Compatibility:  MW 1.10
- * =====================
- *
+/*<wikitext>
+FileManager.php
+* 
+* MediaWiki extension
+* @author: Jean-Lou Dupont (http://www.bluecortex.com)
+* $Id$
+* 
+== Purpose ==
+This Mediawiki extension enables a user with the 'commitfile' right to edit files in the Mediawiki installation directory.  
+
+== Features ==
+* Can be used independantly of BizzWiki environment 
+* New right:      'readfile', 'commitfile'
+* Logging
+* New Namespace 'NS_FILESYSTEM'
+* Support for titles beginning with small caps; need the title to be prefixed with '/'
+** e.g. to have access to 'includes/Setup.php' just reference the title 'Filesystem:/includes/Setup.php'
+* No auto summary upon page creation
+
+== DEPENDANCY ==
+* Extension 'ExtensionClass' (>=v1.92) 
 
 == History ==
 * fixed for 'wgCapitalLinks' 
 * fixed for suppressing PHP error messages on file_get_contents
 * fixed logging messages
+* disabled 'auto summary' upon page creation (clogs recentchanges, logs etc.)
 
 == TODO ==
 * internationalization
 * add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
 * enhance 'logging' through $type etc.
-*  
 
- */
+== Code ==
+</wikitext>*/
 
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
