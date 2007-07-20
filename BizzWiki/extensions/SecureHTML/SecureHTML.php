@@ -9,14 +9,16 @@
 |}<br/><br/>
  
 == Purpose==
-This extension enables the usage of 'html' tags (functionality which is controlled through the
-'$wgRawHtml' global variable) within protected pages.
+This extension enables the usage of 'html' tags (functionality which is controlled through the '$wgRawHtml' global variable) within protected pages.
+The extension also offers the functionality to add content securily to the document's head section.
 
 == Features ==
 * Cascading: if the base page is allowed to use 'html' tags, then all included pages will be processed
 as if they could.
 * Namespace exemption: configured namespaces are exempted from 'protection' requirement
 * <code><addtohead>some html code here></addtohead></code>
+* Parser cache friendliness: content inserted in the script's head persists in the parser cache
+** The extension must be enabled to continue the support of the inserted content
 
 == Dependancy ==
 * ExtensionClass extension
