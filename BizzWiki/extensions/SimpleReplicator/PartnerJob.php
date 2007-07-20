@@ -52,9 +52,9 @@ class PartnerJob extends Job
 					return $this->listEmpty();			
 					
 			case PartnerObjectClass::errParsing:
-					$missing_rc_id		= $table->missing_rc_id;
-					$duplicate_rc_id	= $table->duplicate_rc_id;
-					return $this->errorParsingList( $missing_rc_id, $duplicate_rc_id );
+					$missing_id		= $table->missing_id;
+					$duplicate_id	= $table->duplicate_id;
+					return $this->errorParsingList( $missing_id, $duplicate_id );
 					
 			case PartnerObjectClass::errOK:
 					break;
@@ -79,8 +79,8 @@ class PartnerJob extends Job
 	}
 	private function errorParsingList( $missing_id, $duplicate_id )
 	{
-		if ( $missing_id )			$param1 = "Missing 'rc_id'.";
-		if ( $duplicate_id!=null )	$param2 = "Duplicate 'rc_id'=".$duplicate_id.'.';
+		if ( $missing_id )			$param1 = "Missing 'id'.";
+		if ( $duplicate_id!=null )	$param2 = "Duplicate 'id'=".$duplicate_id.'.';
 		// add an entry log.	
 		$this->updateLog( 'fetchfail', 'fetchfail-text2', $param1, $param2 );
 		return false;		
