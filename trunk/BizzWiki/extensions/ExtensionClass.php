@@ -83,8 +83,8 @@ static $hookList = array(
 'ArticleViewHeader',
 'ArticlePurge',
 'ArticleSave', 
-'ArticleInsertComplete',
-'ArticleSaveComplete',
+'ArticleInsertComplete',		// public function hArticleSave        ( &$article, &$user, $text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
+'ArticleSaveComplete',			// public function hArticleSaveComplete( &$article, &$user, $text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
 'MarkPatrolled', 
 'MarkPatrolledComplete', 
 'WatchArticle', 
@@ -103,7 +103,7 @@ static $hookList = array(
 'FetchChangesList',
 'DiffViewHeader',
 'AlternateEdit', 
-'EditFormPreloadText', 
+'EditFormPreloadText', 			// public function hEditFormPreloadText( &$textbox, &$title ) {}
 'EditPage::attemptSave', 
 'EditFilter', 
 'EditPage::showEditForm:initial',
@@ -205,6 +205,7 @@ static $hookList = array(
 
 // BizzWiki Additions
 'SyntaxHighlight',  // for geshi extension
+'PageVarGet',		// PageFunctions extension
 );
 
 	// filled by subclipse.
