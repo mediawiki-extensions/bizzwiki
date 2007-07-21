@@ -61,6 +61,7 @@
 * Added initialization code for '$l' variable -> stops PHP from issuing warnings
 * Added 'UserSettingsChanged' hook (User.php)
 * Removed 'UnwatchArticle' duplicate entry
+* More support for PageFunctions extension
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -206,6 +207,7 @@ static $hookList = array(
 // BizzWiki Additions
 'SyntaxHighlight',  // for geshi extension
 'PageVarGet',		// PageFunctions extension
+'PageVarSet',		// PageFunctions extension
 );
 
 	// filled by subclipse.

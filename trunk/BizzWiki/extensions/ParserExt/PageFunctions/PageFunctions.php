@@ -42,6 +42,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 == HISTORY ==
 * Adjusted singleton invocation to accomodate more PHP versions
 * Added hook 'PageVarGet'
+* Added hook 'PageVarSet'
 
 </wikitext>*/
 
@@ -121,6 +122,15 @@ class PageFunctionsClass extends ExtensionClass
 	public function hPageVarGet( &$varname, &$value )
 	{
 		$value = $this->pageVars[ $varname ];		
+		return true; // continue hook-chain.
+	}
+	/**
+		Hook based Page Variable 'set'
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	 */
+	public function hPageVarSet( &$varname, &$value )
+	{
+		$this->pageVars[ $varname ] = $value;		
 		return true; // continue hook-chain.
 	}
 	public function mg_varset( &$parser ) 
