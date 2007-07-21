@@ -20,6 +20,8 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * <nowiki>{{#pageexists: 'article title' }}</nowiki>
 * <nowiki>{{#varset:variable name|value }}</nowiki>
 * <nowiki>{{#varget:variable name}}</nowiki>
+* <nowiki>{{#varaset:variable name|array key|array value}}</nowiki>
+* <nowiki>{{#varaget:variable name|array key}}</nowiki>
 * <nowiki>{{#cshow:group|text}}</nowiki>
 ** Where 'group' is the user's group membership check to perform
 
@@ -29,6 +31,8 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * <nowiki>(($#pageexists: 'article title' $))</nowiki>
 * <nowiki>(($#varset:variable name|value $))</nowiki>
 * <nowiki>(($#varget:variable name $))</nowiki>
+* <nowiki>(($#varaset:variable name|array key|array value$))</nowiki>
+* <nowiki>(($#varaget:variable name|array key$))</nowiki>
 * <nowiki>(($#cshow:group|text$))</nowiki>
 
 == DEPENDANCIES ==
@@ -37,6 +41,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 
 == HISTORY ==
 * Adjusted singleton invocation to accomodate more PHP versions
+* Added hook 'PageVarGet'
 
 </wikitext>*/
 
@@ -109,6 +114,15 @@ class PageFunctionsClass extends ExtensionClass
 	}
 
 	// ===============================================================
+	/**
+		Hook based Page Variable 'get'
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	 */
+	public function hPageVarGet( &$varname, &$value )
+	{
+		$value = $this->pageVars[ $varname ];		
+		return true; // continue hook-chain.
+	}
 	public function mg_varset( &$parser ) 
 	{
 		$params = $this->processArgList( func_get_args(), true );
@@ -119,7 +133,28 @@ class PageFunctionsClass extends ExtensionClass
 		$params = $this->processArgList( func_get_args(), true );
 		return $this->pageVars[ $params[0] ];		
 	}
-
+	/**
+		Sets a variable to an array.
+		param 0: variable name
+		param 1: array key
+		param 2: array value corresponding to key.
+	 */
+	public function mg_varaset( &$parser )
+	{
+		$params = $this->processArgList( func_get_args(), true );
+		$this->pageVars[ $params[0] ][ $params[1] ] = $params[2];		
+	
+	}
+	/**
+		Gets a variable to an array.
+		param 0: variable name
+		param 1: array key
+	 */
+	public function mg_varaget( &$parser )
+	{
+		$params = $this->processArgList( func_get_args(), true );
+		return $this->pageVars[ $params[0] ][ $params[1] ];		
+	}
 	// ===============================================================
 	public function mg_cshow( &$parser, &$group, &$text )
 	// Conditional Show: if user is part of $group, then allow for '$text'
