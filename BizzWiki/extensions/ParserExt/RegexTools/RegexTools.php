@@ -13,6 +13,12 @@ Provides 'magic words' performing regular expression pattern ( aka 'regex' )matc
 * Magic Word '#regx' 
 * Magic Word '#regx_vars'
 
+== Usage ==
+* <nowiki>{{#regx:regex pattern string|input}}</nowiki> 
+** returns '1' if match found
+* <nowiki>{{#regx_vars:pattern array name|input}}</nowiki> 
+** returns the index in the pattern array if match found
+
 == Dependancy ==
 * [[Extension:ExtensionClass|ExtensionClass]]
 * [[Extension:PageFunctions|Page Functions extension]]
