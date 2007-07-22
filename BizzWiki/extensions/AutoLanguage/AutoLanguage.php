@@ -14,6 +14,7 @@ This extension provides viewing pages in the language specified by the user's pr
 == Features ==
 * Based language is assumed to be 'en'
 * Base 'page' (i.e. no /$lang sub-page) is assumed to be in 'en' language
+* Parser Cache Friendly
 
 == Usage ==
 * Visit 'page' and redirection to 'page/$lang' will be effected IF $lang != 'en'
