@@ -80,6 +80,11 @@ class RegexNamespaceContext
 	 */
 	public function hArticleAfterFetchContent( &$article, &$content ) 
 	{
+		global $action;
+
+		// only show up the header/footer on page views		
+		if ($action != 'view') return true;
+		
 		if (is_a($article, 'eArticle'))
 			return true;
 			
