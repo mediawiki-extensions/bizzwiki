@@ -127,7 +127,7 @@ static $hookList = array(
 'ParserBeforeStrip',
 'ParserAfterStrip',
 'ParserBeforeTidy',
-'ParserAfterTidy',
+'ParserAfterTidy',						// public function hParserAfterTidy( &$parser, &$text ) {}
 'ParserBeforeInternalParse',
 'InternalParseBeforeLinks', 
 'ParserGetVariableValueVarCache',

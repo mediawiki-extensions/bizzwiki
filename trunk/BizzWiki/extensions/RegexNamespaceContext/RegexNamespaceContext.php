@@ -43,16 +43,15 @@ $wgExtensionCredits[RegexNamespaceContext::thisType][] = array(
 	'description' => "Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext pages insertion.", 
 );
 
-class eArticle extends Article
-{
-	public function __construct( &$title, $oldId=null )
-	{ return parent::__construct( $title, $oldId ); }	
-}
-
 class RegexNamespaceContext
 {
 	const thisType = 'other';
 	const thisName = 'RegexNamespaceContext';
+
+	const headerOpen	= '<!--header_open-->';
+	const headerClose	= '<!--header_close-->';	
+	const footerOpen	= '<!--footer_open-->';
+	const footerClose	= '<!--footer_close-->';	
 
 	static $cpBaseName = 'Context';
 			
@@ -78,21 +77,35 @@ class RegexNamespaceContext
 	}
 	/**
 	 */
-	public function hArticleAfterFetchContent( &$article, &$content ) 
+	public function hParserAfterTidy( &$parser, &$text ) 
 	{
+		static $inProgress = false;
+		if ($inProgress) return true;
+		$inProgress = true;
+		
 		global $action;
-
-		// only show up the header/footer on page views		
 		if ($action != 'view') return true;
 		
-		if (is_a($article, 'eArticle'))
-			return true;
-			
-		$this->getHeaderFooterText( $article, $header, $footer );
-		$content = $header.$content.$footer;
+		$title = $parser->mTitle;
+	
+		$this->getHeaderFooterText( $title, $header, $footer );
+		$text = self::headerOpen.$header.self::headerClose.
+				$text.
+				self::footerOpen.$footer.self::footerClose;
 		
+		$inProgress = false;
 		return true;
-	}	
+	}
+	/**
+	 */
+	private function removeHeaderFooter( &$c )
+	{
+		$ph = '/'.self::headerOpen.'(.*)'.self::headerClose.'/';		
+		$pf = '/'.self::footerOpen.'(.*)'.self::footerClose.'/';
+		
+		$c = preg_replace( $ph, '', $c );
+		$c = preg_replace( $pf, '', $c );		
+	}
 	/**
 	 */
 	protected function getPreloadText( &$title )
@@ -153,7 +166,7 @@ class RegexNamespaceContext
 		if (!is_object( $title ))
 			return null;
 		
-		$article = new eArticle( $title );
+		$article = new Article( $title );
 
 		if ($article->getID() == 0)
 			return null;
