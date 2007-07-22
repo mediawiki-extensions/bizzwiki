@@ -32,6 +32,7 @@ require('extensions/StubManager/StubManager.php');
 The extension that are not candidate for this stubbing facility including those handling 'magic words' of the parser.
 
 == History ==
+* Added one more parameter to '__call' method to accomodate hooks such as ArticleSave.
 
 == Code ==
 </wikitext>*/
@@ -226,6 +227,8 @@ class Stub
 				return $obj->$method( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5] );
 			case 7:
 				return $obj->$method( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6] );
+			case 8:
+				return $obj->$method( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7] );			
 		}
 		
 		throw new MWException( "Too many arguments to method called in ".__METHOD__ );
