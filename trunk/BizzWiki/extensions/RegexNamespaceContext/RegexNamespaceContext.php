@@ -44,11 +44,18 @@ class RegexNamespaceContext
 	const preload = 0;
 	const headerfooter = 1;
 			
-	var $cpNsName;
+	var $cpNsId;
 	var $thisPageName;
 	var $cpTitle;
 	var $cpArticle;
-	var $cpPo;		// parser output object
+	
+	//
+	var $headerPageNs;
+	var $headerPageName;
+	var $footerPageNs;
+	var $footerPageName;
+	var $preloadPageNs;
+	var $preloadPageName;
 	
 	public function __construct()
 	{
@@ -77,7 +84,7 @@ class RegexNamespaceContext
 		$this->setupContext( $title );
 		$this->processContext( self::preload );
 		
-		return $this->page1;
+		return $this->getPageContent( $this->preloadPageNs, $this->preloadPageName );
 	}
 	/**
 	 */
@@ -86,8 +93,8 @@ class RegexNamespaceContext
 		$this->setupContext( $a );
 		$this->processContext( self::headerfooter );
 		
-		$h = $this->page1;
-		$f = $this->page2;
+		$h = $this->getPageContent( $this->headerPageNs, $this->headerPageName );
+		$f = $this->getPageContent( $this->footerPageNs, $this->footerPageName );
 	}
 	/**
 	
@@ -96,7 +103,7 @@ class RegexNamespaceContext
 	{
 		$this->getPageParams( $obj, $ns, $pn );
 		
-		$this->cpNsName	= 		$ns; 
+		$this->cpNsId	= 		$ns; 
 		$this->thisPageName =	$pn;
 	}
 	/**
@@ -106,7 +113,6 @@ class RegexNamespaceContext
 	{
 		$this->loadContextPage();
 		$this->parseContextPage();
-		$this->findMatch();
 	}
 	
 	/**
@@ -115,27 +121,65 @@ class RegexNamespaceContext
 	{
 		// context page is located in the same namespace
 		// under the defined base name
-		$this->cpTitle = Title::makeTitle( $this->cpNsName, $this->thisPageName );
-		$this->cpArticle = new Article( $this->cpTitle );
+		$this->cp = $this->getPageContent( $this->cpNsId, $this->thisPageName, $article, $title );
+		
+		$this->cpTitle = $title;
+		$this->cpArticle = $article;
+	}
+	/**
+	
+	 */
+	public function getPageContent( &$ns, &$pagename, &$article=null, &$title=null )
+	{
+		$title = Title::makeTitle( $ns, $pagename );
+		
+		// paranoia.
+		if (!is_object( $title ))
+			return null;
+			
+		$article = new Article( $title );
 
-		if ($this->cpArticle->getID() == 0)
-			$this->cp = null;
-		else
-			$this->cp = $this->cpArticle->getContent();
+		if ($article->getID() == 0)
+			return null;
+
+		return $article->getContent();
 	}
 	/**
 		Parses the loaded context page.
 		Magic Words registered with the MW Parser will do all the job.
+		We need to pass some parameters:
+		
 	 */
 	private function parseContextPage()
 	{
 		if (empty( $this->cp ))
 			return;
 
+		$params = array(
+							'Namespace'	=> $this->cpNsId,
+							'PageName'	=> $this->thisPageName,
+						);
+
+		// Pass the required parameters in the 'Page' variables
+		// Requires the 'PageFunctions' extension
+		wfRunHooks('PageVarSet', 'ContextVars', $params );
+
 		// the currently loaded parser contains all relevant information.
 		global $wgParser;
-		$this->cpPo = $wgParser->parse( $this->cp, $this->cpTitle, new ParserOptions );
+		$wgParser->parse( $this->cp, $this->cpTitle, new ParserOptions );
 		
+		// Grab the result from the 'Page' variables
+		wfRunHooks('PageVarGet', 'ContextVars', $oParams );
+		
+
+		$this->headerPageName	= $oParams['headerPageName'];
+		$this->headerPageNs		= $oParams['headerPageNs'];		
+
+		$this->footerPageName	= $oParams['footerPageName'];
+		$this->footerPageNs		= $oParams['footerPageNs'];		
+		
+		$this->preloadPageName	= $oParams['preloadPageName'];
+		$this->preloadPageNs	= $oParams['preloadPageNs'];		
 	}	 
 	/**
 	 */

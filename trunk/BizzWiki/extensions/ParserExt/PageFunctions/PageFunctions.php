@@ -12,6 +12,7 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * Page scope variable set '#varset'
 * Page scope variable get '#varget'
 * Wikitext conditional 'show'
+* Hook based variable get and set
 
 == Usage ==
 

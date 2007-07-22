@@ -355,6 +355,14 @@ StubManager::createStub(	'WatchLog',
 							true
 						 );
 
+StubManager::createStub(	'RegexNamespaceContext', 
+							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
+							null,							
+							array('ArticleSave', 'EditFormPreloadText' ),
+							false
+						 );
+
+
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 
 // ReCaptcha plug-in
