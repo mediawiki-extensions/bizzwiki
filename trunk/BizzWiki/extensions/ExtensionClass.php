@@ -83,9 +83,9 @@ static $hookList = array(
 'ArticleViewRedirect', 
 'ArticleViewHeader',
 'ArticlePurge',
-'ArticleSave', 
-'ArticleInsertComplete',		// public function hArticleSave        ( &$article, &$user, $text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
-'ArticleSaveComplete',			// public function hArticleSaveComplete( &$article, &$user, $text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
+'ArticleSave', 					// public function hArticleSave        ( &$article, &$user, &$text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
+'ArticleInsertComplete',		
+'ArticleSaveComplete',			// public function hArticleSaveComplete( &$article, &$user, &$text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
 'MarkPatrolled', 
 'MarkPatrolledComplete', 
 'WatchArticle', 

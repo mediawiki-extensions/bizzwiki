@@ -358,7 +358,7 @@ StubManager::createStub(	'WatchLog',
 StubManager::createStub(	'RegexNamespaceContext', 
 							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
 							null,							
-							array('ArticleSave', 'EditFormPreloadText' ),
+							array('ArticleAfterFetchContent', 'EditFormPreloadText' ),
 							false
 						 );
 
