@@ -365,6 +365,8 @@ StubManager::createStub(	'RegexNamespaceContext',
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 
+require('extensions/DPL/DynamicPageList2.php');
+
 // ReCaptcha plug-in
 //  Some customization required below.
 //  Depending on your setup, it might be more appropriate to set these keys
