@@ -13,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_8alpha');
+define('BIZZWIKI', '1_10_8');
 $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
@@ -413,7 +413,7 @@ StubManager::createStub(	'TaskScheduler',
 //                             *** EXPERIMENTAL ***
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Customize 'clocktick.php' as required
-require('extensions/SimpleReplicator/SimpleReplicator.php');
+#require('extensions/SimpleReplicator/SimpleReplicator.php');
 // Customize the following parameters
 #PartnerMachine::$url		= 'http://bizzwiki.org';
 #PartnerMachine::$port		= 80; 	//HTTP/TCP port
