@@ -17,18 +17,51 @@ Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext 
 == Usage ==
 On a per-namespace basis (only the ones required), edit the page 'Context' and place+customize the following:
 <pre>
+== Preload Patterns ==
+* Preload page upon '*.log' page name
+* add other patterns below
+{{#varaset:preloadPattern|{{NAMESPACE}}:preloadPage|(.*)\.log}}
 
+{{#varaset:ContextVars|preloadPageName|
+ {{#regx_vars:preloadPattern|{{#varaget:ContextVars|PageName}} }}
+}}
+
+== Header Patterns ==
+* Header page for all pages in namespace following the '*.log' pattern
+* add other patterns below
+{{#varaset:headerPattern|{{NAMESPACE}}:PHPheaderPage|(.*)\.php}}
+
+{{#varaset:ContextVars|headerPageName|
+ {{#regx_vars:headerPattern|{{#varaget:ContextVars|PageName}} }}
+}}
+
+== Footer Patterns ==
+* Footer page for all pages in namespace following the '*.log' pattern
+* add other patterns below
+{{#varaset:footerPattern|{{NAMESPACE}}:PHPfooterPage|(.*)\.php}}
+
+{{#varaset:ContextVars|footerPageName|
+ {{#regx_vars:footerPattern|{{#varaget:ContextVars|PageName}} }}
+}}
 </pre>
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 * [[Extension:RegexTools|RegexTools extension]]
+* [[Extension:PageFunctions|PageFunctions extension]]
+* [[Extension:ParserCacheControl|ParserCacheControl extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download [[Extension:ExtensionClass]] extension & put in 'extensions' directory
+* Download [[Extension:ParserCacheControl]] extension & put in 'extensions' directory
+* Download [[Extension:PageFunctions]] extension & put in 'extensions' directory
+* Download [[Extension:RegexTools]] extension & put in 'extensions' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
+require('extensions/PageFunctions.php');
+require('extensions/ParserCacheControl.php');
+require('extensions/RegexTools.php');
 require('extensions/RegexNamespaceContext/RegexNamespaceContext.php');
 </source>
 
@@ -65,10 +98,9 @@ class RegexNamespaceContext
 	var $footerPageName;
 	var $preloadPageName;
 	
-	public function __construct()
-	{ }
+	public function __construct() { }
 	/**
-	
+		Page preloading happens here.
 	 */
 	public function hEditFormPreloadText( &$textbox, &$title )
 	{
@@ -76,6 +108,10 @@ class RegexNamespaceContext
 		return true;
 	}
 	/**
+		This hook makes sure that the parsing phase is completed for the page being
+		_viewed__ *before* adding the 'header' and 'footer' pages.
+		IMPORTANT: parser cache saving must be *disabled* upon editing/updating.
+		Use [[Extension:ParserCacheControl]] if not operating under the BizzWiki platform.
 	 */
 	public function hParserAfterTidy( &$parser, &$text ) 
 	{
@@ -106,16 +142,12 @@ class RegexNamespaceContext
 		$c = preg_replace( $ph, '', $c );
 		$c = preg_replace( $pf, '', $c );		
 	}
-	/**
-	 */
 	protected function getPreloadText( &$title )
 	{
 		$this->processContext( $title );
-	
+
 		return $this->getPageContent( $this->preloadPageName );
 	}
-	/**
-	 */
 	protected function getHeaderFooterText( &$a, &$h, &$f )
 	{
 		$this->processContext( $a );
@@ -123,9 +155,6 @@ class RegexNamespaceContext
 		$h = $this->getPageContent( $this->headerPageName );
 		$f = $this->getPageContent( $this->footerPageName );
 	}
-	/**
-	
-	 */
 	private function processContext( &$obj )
 	{
 		$this->getPageParams( $obj, $ns, $pn );
@@ -138,6 +167,7 @@ class RegexNamespaceContext
 	}
 	
 	/**
+		Load the {{NAMESPACE}}:Context  page
 	 */
 	private function loadContextPage()
 	{
@@ -236,5 +266,4 @@ class RegexNamespaceContext
 		return true;			
 	} 	
 } // end declaration.
-
 ?>
