@@ -122,7 +122,7 @@ class PageFunctionsClass extends ExtensionClass
 	 */
 	public function hPageVarGet( &$varname, &$value )
 	{
-		$value = $this->pageVars[ $varname ];		
+		$value = @$this->pageVars[ $varname ];		
 		return true; // continue hook-chain.
 	}
 	/**
@@ -142,7 +142,7 @@ class PageFunctionsClass extends ExtensionClass
 	public function mg_varget( &$parser ) 
 	{
 		$params = $this->processArgList( func_get_args(), true );
-		return $this->pageVars[ $params[0] ];		
+		return @$this->pageVars[ $params[0] ];		
 	}
 	/**
 		Sets a variable to an array.
@@ -164,7 +164,7 @@ class PageFunctionsClass extends ExtensionClass
 	public function mg_varaget( &$parser )
 	{
 		$params = $this->processArgList( func_get_args(), true );
-		return $this->pageVars[ $params[0] ][ $params[1] ];		
+		return @$this->pageVars[ $params[0] ][ $params[1] ];		
 	}
 	// ===============================================================
 	public function mg_cshow( &$parser, &$group, &$text )

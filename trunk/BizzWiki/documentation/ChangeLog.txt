@@ -158,4 +158,6 @@ REL1_10_8: (released 23July2007)
 - Added 'RegexNamespaceContext' extension
 - Integrated 'MakeSysop' extension
 - Integrated 'DeSysop' extension
+===============================
+REL1_10_9: (released ...) 
 - 
