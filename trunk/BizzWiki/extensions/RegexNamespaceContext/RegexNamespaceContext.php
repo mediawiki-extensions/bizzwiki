@@ -44,7 +44,7 @@ On a per-namespace basis (only the ones required), edit the page 'Context' and p
  {{#regx_vars:footerPattern|{{#varaget:ContextVars|PageName}} }}
 }}
 </pre>
-== Dependancy ==
+== Dependancies ==
 * [[Extension:StubManager|StubManager extension]]
 * [[Extension:RegexTools|RegexTools extension]]
 * [[Extension:PageFunctions|PageFunctions extension]]
