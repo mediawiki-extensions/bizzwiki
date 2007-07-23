@@ -156,4 +156,4 @@ REL1_10_8: (released ...)
 - PageFunctions: added 'PageVarGet' hook
 - Added 'RegexTools' extension
 - Integrated 'DynamicPageList2' extension
-- 
+- Added 'RegexNamespaceContext' extension
