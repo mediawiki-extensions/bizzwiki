@@ -122,7 +122,7 @@ REL1_10_7: (released 11July2007)
 - Adjusted 'Log/emaillog' browse right for '*' group
 - Added 'ReCaptcha' plug-in -- requires customization to the target site where BizzWiki is deployed.
 ==========
-REL1_10_8: (released ...)
+REL1_10_8: (released 23July2007)
 - Adjusted ViewsourceRight: accomodate more PHP versions (no functional change)
 - Adjusted FileSystemSyntaxColoring : accomodate more PHP versions (no functional change)
 - Adjusted ShowRedirectPageText: accomodate more PHP versions (no functional change)
@@ -148,12 +148,12 @@ REL1_10_8: (released ...)
 - REPLICATION FUNCTIONALITY: added 'FetchPartnerRC' extension
 - REPLICATION FUNCTIONALITY: added 'FetchPartnerLog' extension
 - StubManager: Minor fixes (removal of some PHP warnings)
-- hnpClass: Minor fixes (removal of some PHP warnings)
+- hnpClass: Minor fixes (removal of some PHP warnings) (NO FUNCTIONAL CHANGES)
 - ForeachFunctions: Minor fixes (removal of some PHP warnings)
 - FileManager: disabled 'auto summary' features upon page creation
 - Added some documentation files
 - PageFunctions: added 'varaset', 'varaget' magic words
-- PageFunctions: added 'PageVarGet' hook
+- PageFunctions: added 'PageVarGet' and 'PageVarSet' hooks
 - Added 'RegexTools' extension
 - Added 'RegexNamespaceContext' extension
 - Integrated 'MakeSysop' extension
