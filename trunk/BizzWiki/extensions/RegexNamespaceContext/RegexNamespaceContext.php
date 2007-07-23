@@ -81,8 +81,10 @@ class RegexNamespaceContext
 	const thisType = 'other';
 	const thisName = 'RegexNamespaceContext';
 
+	const headerNone	= '<!--header_none-->';
 	const headerOpen	= '<!--header_open-->';
 	const headerClose	= '<!--header_close-->';	
+	const footerNone	= '<!--footer_none-->';	
 	const footerOpen	= '<!--footer_open-->';
 	const footerClose	= '<!--footer_close-->';	
 
@@ -104,6 +106,8 @@ class RegexNamespaceContext
 	 */
 	public function hEditFormPreloadText( &$textbox, &$title )
 	{
+		// add the preload text to the one already presented in textbox variable
+		// just in case other extensions are playing in too e.g. FileManager.
 		$textbox .= $this->getPreloadText( $title );	
 		return true;
 	}
@@ -125,9 +129,9 @@ class RegexNamespaceContext
 		$title = $parser->mTitle;
 	
 		$this->getHeaderFooterText( $title, $header, $footer );
-		$text = self::headerOpen.$header.self::headerClose.
-				$text.
-				self::footerOpen.$footer.self::footerClose;
+		$headerText = ( $header === null ) ? (self::headerNone) : (self::headerOpen.$header.self::headerClose);
+		$footerText = ( $footer === null ) ? (self::footerNone) : (self::footerOpen.$footer.self::footerClose);		
+		$text = $headerText.$text.$footerText;
 		
 		$inProgress = false;
 		return true;
@@ -187,6 +191,9 @@ class RegexNamespaceContext
 	 */
 	public function getPageContent( &$ns, &$pagename=null, &$article=null, &$title=null )
 	{
+		if ( $ns === null )
+			return null;
+			
 		if (is_string( $ns ))
 			$title = Title::newFromText( $ns );
 		else
@@ -232,11 +239,20 @@ class RegexNamespaceContext
 		// Grab the result from the 'Page' variables
 		wfRunHooks('PageVarGet', array( 'ContextVars', &$oParams) );
 		
-		$this->headerPageName	= $oParams['headerPageName'];
+		if (isset($oParams['headerPageName']))
+			$this->headerPageName	= $oParams['headerPageName'];
+		else
+			$this->headerPageName	= null;		
 
-		$this->footerPageName	= $oParams['footerPageName'];
-		
-		$this->preloadPageName	= $oParams['preloadPageName'];
+		if (isset($oParams['footerPageName']))
+			$this->footerPageName	= $oParams['footerPageName'];
+		else
+			$this->footerPageName	= null;			
+
+		if (isset($oParams['preloadPageName']))
+			$this->preloadPageName	= $oParams['preloadPageName'];
+		else
+			$this->preloadPageName	= null;
 
 		wfRunHooks('ContextPageParsingComplete', array( &$this, 'ContextVars' ) );		
 	}	 

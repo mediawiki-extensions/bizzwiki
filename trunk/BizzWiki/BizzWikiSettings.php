@@ -377,6 +377,7 @@ StubManager::createStub(	'RegexNamespaceContext',
 
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
+require('extensions/DocProc/DocProc.php');
 
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
@@ -452,6 +453,8 @@ if (!defined('wfScript'))
   // %%%%%%%%%%%%%%%%%%%%%%%
 if (defined('BIZZWIKIDEMO'))
 {
+	require('extensions/ReCaptcha/ReCaptcha.php');
+	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!read")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"AdminSettings.php","!read")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!raw")] = true;  

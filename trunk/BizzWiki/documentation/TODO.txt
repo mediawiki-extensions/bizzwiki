@@ -62,6 +62,7 @@ $Id$
 == Stub Candidates ==
 * RawRight         -> YES
 * ViewSource Right -> NO
+* DocProc          -> YES
 
 == Rights Management ==
 * "Grant Right" functionality
