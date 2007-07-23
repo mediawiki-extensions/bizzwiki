@@ -85,6 +85,8 @@ require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermis
 require('extensions/RawRight/RawRight.php');
 require('extensions/ViewsourceRight/ViewsourceRight.php');
 require('extensions/WatchRight/WatchRight.php');
+require('extensions/MakeSysop/SpecialMakesysop.php');
+require('extensions/DeSysop/SpecialDesysop.php');
 
 // define group hierarchy
 // default is: sysop -> user -> *
@@ -95,7 +97,7 @@ unset( $wgGroupPermissions );
 $bwNamespaceIndependantRights =  array( 'createaccount',
 										'ipblock-exempt',
 										'hideuser',
-										'userrights',
+										'userrights',		
 										'siteadmin',
 										'import',
 										'importupload',										
@@ -112,6 +114,9 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'undelete',			// BizzWiki specific
 										
 										'skipcaptcha',		// ReCAPTCHA specific
+										'makesysop',		// MakeSysop extension specific
+										'desysop',			// DeSysop extension specific										
+										
 									);
 
 
@@ -140,6 +145,14 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 hnpClass::singleton()->addNamespaceIndependantRights( $bwNamespaceIndependantRights );
 hnpClass::singleton()->addNamespaceDependantRights(   $bwNamespaceDependantRights );
 ## }}
+
+	// Steward Group
+$wgGroupPermissions['steward' ][hnpClass::buildPermissionKey("~","~","makesysop")]		= true;	
+$wgGroupPermissions['steward' ][hnpClass::buildPermissionKey("~","~","userrights")]		= true;	
+
+	// Bureaucrat Group
+$wgGroupPermissions['bureaucrat' ][hnpClass::buildPermissionKey("~","~","makesysop")]	= true;	
+$wgGroupPermissions['bureaucrat' ][hnpClass::buildPermissionKey("~","~","desysop")]		= true;	
 
 	// Sysop gets all the rights.
 	// ##########################

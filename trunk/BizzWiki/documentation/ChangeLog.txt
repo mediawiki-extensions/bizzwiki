@@ -157,3 +157,6 @@ REL1_10_8: (released ...)
 - Added 'RegexTools' extension
 - Integrated 'DynamicPageList2' extension
 - Added 'RegexNamespaceContext' extension
+- Integrated 'MakeSysop' extension
+- Integrated 'DeSysop' extension
+- 
