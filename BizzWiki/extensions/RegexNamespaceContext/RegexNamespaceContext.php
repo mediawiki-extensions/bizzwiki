@@ -104,7 +104,7 @@ class RegexNamespaceContext
 	 */
 	public function hEditFormPreloadText( &$textbox, &$title )
 	{
-		$textbox = $this->getPreloadText( $title );	
+		$textbox .= $this->getPreloadText( $title );	
 		return true;
 	}
 	/**

@@ -405,5 +405,3 @@ class MakesysopStewardForm extends UserrightsForm {
 		$wgMemc->delete( $key );
 	}
 }
-
-
