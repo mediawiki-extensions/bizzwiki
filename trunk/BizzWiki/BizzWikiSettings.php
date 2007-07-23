@@ -378,7 +378,16 @@ StubManager::createStub(	'RegexNamespaceContext',
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 
+/* TODO
 require('extensions/DPL/DynamicPageList2.php');
+
+#Adjust the following parameters according to user permissions:
+$wgDPL2AllowedNamespaces = array(
+
+								);
+$wgDPL2Options['namespace'] 
+$wgDPL2Options['notnamespace'] 
+*/
 
 // ReCaptcha plug-in
 //  Some customization required below.

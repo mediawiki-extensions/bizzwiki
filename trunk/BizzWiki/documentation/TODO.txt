@@ -101,3 +101,7 @@ $Id$
 * 'AutoIncludeScripts': detects which JS scripts to include (TBD)
 ** Probably can live with a template which uses 'AddScriptCss' extension
 
+== DynamicPageList2 ==
+* TODO Integration 'DynamicPageList2' extension
+** namespace level policing
+** settings adjustments
