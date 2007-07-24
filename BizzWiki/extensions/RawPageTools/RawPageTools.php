@@ -11,8 +11,29 @@ Removes 'js' and 'css' tag sections from a queried 'raw page'. This allows for d
 'geshi' type extensions.
 
 == Features ==
+* Allows documenting Javascript/CSS pages whilst still 
+* Preserving the ability to fetch the said page using 'action=raw'
 * Handles <nowiki><js></nowiki> Javascript section
 * Handles <nowiki><css></nowiki> CSS section
+
+== Usage ==
+As example, suppose one as an article page where some Javascript code is documented using
+a 'geshi' extension:
+<pre>
+ <js>
+  // MediawikiClient.js
+  // @author Jean-Lou Dupont
+  // $Id$
+  MediawikiClient = function()
+  {
+	// declare the custom event used to signal
+	// status update re: document loading
+	this.onDocStatusChange =	new YAHOO.util.CustomEvent( "onDocStatusChange" );
+  ...
+  </js>
+</pre>
+A request could be sent for the page using 'action=raw&ctype=text/javascript' and the corresponding 'js' would be
+returned from the said page.
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager]]
