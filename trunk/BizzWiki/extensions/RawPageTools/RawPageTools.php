@@ -15,6 +15,8 @@ Removes 'js' and 'css' tag sections from a queried 'raw page'. This allows for d
 * Preserving the ability to fetch the said page using 'action=raw'
 * Handles <nowiki><js></nowiki> Javascript section
 * Handles <nowiki><css></nowiki> CSS section
+* Since only the extracted section is returned to the requesting browser, additional wikitext can be used on the page
+** Improves documentation possibilities
 
 == Usage ==
 As example, suppose one as an article page where some Javascript code is documented using
