@@ -34,6 +34,7 @@ class geshiClass extends ExtensionClass
 																	// providing the ~same functionality
 		$wgParser->setHook( 'php',	array( $this, 'executePHP' ) );
 		$wgParser->setHook( 'js',	array( $this, 'executeJS' ) );		
+		$wgParser->setHook( 'css',	array( $this, 'executeCSS' ) );				
 	}
 	public function executePHP( &$text, &$argv, &$parser )
 	{
@@ -44,6 +45,11 @@ class geshiClass extends ExtensionClass
 	{
 		$this->extractArgs( $argv, $lang, $lines, $source );
 		return $this->executeMain( $text, 'javascript', $lines, $source );	
+	}
+	public function executeCSS( &$text, &$argv, &$parser )
+	{
+		$this->extractArgs( $argv, $lang, $lines, $source );
+		return $this->executeMain( $text, 'css', $lines, $source );	
 	}
 	public function execute( &$text, &$argv, &$parser )
 	{
