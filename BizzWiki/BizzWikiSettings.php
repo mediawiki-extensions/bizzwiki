@@ -376,6 +376,13 @@ StubManager::createStub(	'RegexNamespaceContext',
 							false
 						 );
 
+StubManager::createStub(	'RawPageTools', 
+							$bwExtPath.'/RawPageTools/RawPageTools.php',
+							null,							
+							array( 'RawPageViewBeforeOutput' ),
+							false
+						 );
+
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 require('extensions/DocProc/DocProc.php');
