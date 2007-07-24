@@ -106,6 +106,10 @@ class RegexNamespaceContext
 	 */
 	public function hEditFormPreloadText( &$textbox, &$title )
 	{
+		// stay away from NS_FILESYSTEM namespace!
+		$ns = $title->getNamespace();
+		if ($ns==NS_FILESYSTEM) return true;		
+
 		// add the preload text to the one already presented in textbox variable
 		// just in case other extensions are playing in too e.g. FileManager.
 		$textbox .= $this->getPreloadText( $title );	
@@ -122,6 +126,10 @@ class RegexNamespaceContext
 		static $inProgress = false;
 		if ($inProgress) return true;
 		$inProgress = true;
+	
+		// stay away from NS_FILESYSTEM namespace!
+		$ns = $parser->mTitle->getNamespace();
+		if ($ns==NS_FILESYSTEM) return true;		
 		
 		global $action;
 		if ($action != 'view') return true;
