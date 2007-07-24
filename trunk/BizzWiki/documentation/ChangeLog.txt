@@ -163,4 +163,5 @@ REL1_10_9: (released ...)
 - Added 'MiscParserFunctions' extension
 - Added 'ImageLink' extension
 - Added 'PageAfterAndBefore' extension
-- 
+- Added 'Magic Words' document for tracking all Magic Words, Tags and Parser Functions supported
+- Added 'NS_FILESYSTEM' to 'off-limits' for RegexNamespaceContext functionality.
