@@ -380,6 +380,7 @@ StubManager::createStub(	'RegexNamespaceContext',
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 require('extensions/DocProc/DocProc.php');
 require('extensions/ImageLink/ImageLink.php');
+require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
 
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
