@@ -181,4 +181,10 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#nowikitext       | Parser Function | MiscParserFunctions }}
 
 {{row|#imagelink        | Parser Function | ImageLink }}
+
+{{row|#pagebefore       | Parser Function | PageAfterAndBefore }}
+{{row|#pageafter        | Parser Function | PageAfterAndBefore }}
+{{row|#firstpage        | Parser Function | PageAfterAndBefore }}
+{{row|#lastpage         | Parser Function | PageAfterAndBefore }}
+
 |}
