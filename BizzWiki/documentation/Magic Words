@@ -180,4 +180,5 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#trim             | Parser Function | MiscParserFunctions }}
 {{row|#nowikitext       | Parser Function | MiscParserFunctions }}
 
+{{row|#imagelink        | Parser Function | ImageLink }}
 |}
