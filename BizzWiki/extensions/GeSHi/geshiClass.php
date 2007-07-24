@@ -32,12 +32,18 @@ class geshiClass extends ExtensionClass
 		$wgParser->setHook( 'geshi',  array( $this, 'execute' ) );
 		$wgParser->setHook( 'source', array( $this, 'execute' ) );  // align with some other extensions
 																	// providing the ~same functionality
-		$wgParser->setHook( 'php', array( $this, 'executePHP' ) );
+		$wgParser->setHook( 'php',	array( $this, 'executePHP' ) );
+		$wgParser->setHook( 'js',	array( $this, 'executeJS' ) );		
 	}
 	public function executePHP( &$text, &$argv, &$parser )
 	{
 		$this->extractArgs( $argv, $lang, $lines, $source );
 		return $this->executeMain( $text, 'php', $lines, $source );	
+	}
+	public function executeJS( &$text, &$argv, &$parser )
+	{
+		$this->extractArgs( $argv, $lang, $lines, $source );
+		return $this->executeMain( $text, 'javascript', $lines, $source );	
 	}
 	public function execute( &$text, &$argv, &$parser )
 	{
