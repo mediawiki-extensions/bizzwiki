@@ -44,7 +44,14 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-require('extensions/RawPageTools/RawPageTools.php');
+
+StubManager::createStub(	'RawPageTools', 
+							$IP.'/extensions/RawPageTools/RawPageTools.php',
+							null,							
+							array( 'RawPageViewBeforeOutput' ),
+							false
+						 );
+
 </source>
 
 == History ==
