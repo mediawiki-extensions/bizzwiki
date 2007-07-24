@@ -343,6 +343,7 @@ require('extensions/ParserExt/PageFunctions/PageFunctions.php');
 require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
 require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 require('extensions/ParserExt/RegexTools/RegexTools.php');
+require('extensions/ParserExt/MiscParserFunctions/MiscParserFunctions.php');
 
 	// Stubs
 	//  Used for rare events handling.

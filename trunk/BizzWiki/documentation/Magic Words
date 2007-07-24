@@ -176,4 +176,8 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#pf               | Parser Function | SecureProperties}}
 {{row|#gg               | Parser Function | SecureProperties}}
 {{row|#gs               | Parser Function | SecureProperties}}
+
+{{row|#trim             | Parser Function | MiscParserFunctions }}
+{{row|#nowikitext       | Parser Function | MiscParserFunctions }}
+
 |}
