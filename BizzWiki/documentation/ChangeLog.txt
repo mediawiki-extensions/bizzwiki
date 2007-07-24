@@ -160,4 +160,5 @@ REL1_10_8: (released 23July2007)
 - Integrated 'DeSysop' extension
 ===============================
 REL1_10_9: (released ...) 
+- Added 'MiscParserFunctions' extension
 - 
