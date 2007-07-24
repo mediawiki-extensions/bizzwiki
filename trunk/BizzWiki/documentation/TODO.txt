@@ -63,6 +63,9 @@ $Id$
 * RawRight         -> YES
 * ViewSource Right -> NO
 * DocProc          -> YES
+* ImageLink        -> YES
+* MiscParserFunctions -> YES
+
 
 == Rights Management ==
 * "Grant Right" functionality
@@ -96,7 +99,6 @@ $Id$
 
 == Presentation Layer ==
 * Short URL
-* Integrate 'ImageLink' extension
 * Integrate 'PageAfterAndBefore' extension
 * JS form elements validation helper class
 * 'AutoIncludeScripts': detects which JS scripts to include (TBD)
