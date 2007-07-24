@@ -17,7 +17,7 @@ Serves to document markup/magic words whilst still executing them as per require
 
 == Usage ==
 Let's say one wants to document & still execute the following wikitext:
-:<docproc code>{{CURRENTTIME}}</docproc>
+:<docproc tag=code>{{CURRENTTIME}}</docproc>
 :Here the wikitext magic word ''CURRENTTIME'' would be executed and the result would be presented next to the 'documented' 
 wikitext enclosed inside a 'code' section.
 
