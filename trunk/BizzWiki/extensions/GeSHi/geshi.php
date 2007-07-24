@@ -22,6 +22,7 @@ Use <nowiki><geshi lang=LANG lines=LINES source=SOURCE></geshi></nowiki> where:
 
 == History ==
 * Added 'source' tag for aligning with some similar extensions.
+* Added 'js' tag for highlighting 'Javascript'
 
 == Code ==
 </wikitext>*/

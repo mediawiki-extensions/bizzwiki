@@ -115,7 +115,7 @@ class FileManagerClass extends ExtensionClass
 		
 		// disable auto summary
 		// (security issue ...)
-		$flags = ($flags && (!EDIT_AUTOSUMMARY));
+		$flags = ($flags & (~EDIT_AUTOSUMMARY));
 		
 		return true; // continue hook-chain.
 	}

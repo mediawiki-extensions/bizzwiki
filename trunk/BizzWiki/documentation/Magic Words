@@ -109,7 +109,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|scriptpath        | magic word      | Parser }}
 {{row|directionmark     | magic word      | Parser }}
 {{row|contentlanguage   | magic word      | Parser }}
-{{row|# REDIRECT         | magic word      | Parser }}
+{{row|# REDIRECT        | magic word      | Parser }}
 
 {{row|msg               | Parser Function | StringFunctions }}
 {{row|msgnw             | Parser Function | StringFunctions }}
@@ -168,6 +168,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|geshi             | Tag             | geshi}}
 {{row|source            | Tag             | geshi}}
 {{row|php               | Tag             | geshi}}
+{{row|js                | Tag             | geshi}}
 
 {{row|#iwl              | Parser Function | InterwikiLinkManager}}
 
@@ -179,6 +180,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 
 {{row|#trim             | Parser Function | MiscParserFunctions }}
 {{row|#nowikitext       | Parser Function | MiscParserFunctions }}
+{{row|#gettagsection    | Parser Function | MiscParserFunctions }}
 
 {{row|#imagelink        | Parser Function | ImageLink }}
 
