@@ -62,6 +62,7 @@
 * Added 'UserSettingsChanged' hook (User.php)
 * Removed 'UnwatchArticle' duplicate entry
 * More support for PageFunctions extension
+* Disabled detection of multiple calls in 'ParserAfterTidy' handler.
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -208,6 +209,7 @@ static $hookList = array(
 'SyntaxHighlight',  // for geshi extension
 'PageVarGet',		// PageFunctions extension
 'PageVarSet',		// PageFunctions extension
+'ContextPageParsingComplete',	// RegexNamespaceContext
 );
 
 	// filled by subclipse.
@@ -748,9 +750,13 @@ phase 2- when the page is rendered, extract the meta information
 	function hookParserAfterTidy( &$parser, &$text )
 	// set the meta information in the parsed 'wikitext'.
 	{
-		static $scriptsListed = false;
-		if ($scriptsListed) return true;
-		$scriptsListed = true;
+		// it seems that trying to protect
+		// against multiple calls break more things
+		// than help.
+		
+#		static $scriptsListed = false;
+#		if ($scriptsListed) return true;
+#		$scriptsListed = true;
 
 		if (!empty(self::$scriptsBodyList))
 			foreach(self::$scriptsBodyList as $sc)
