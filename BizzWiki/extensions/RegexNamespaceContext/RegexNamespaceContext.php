@@ -66,6 +66,7 @@ require('extensions/RegexNamespaceContext/RegexNamespaceContext.php');
 </source>
 
 == History ==
+- Used another parser instance instead of the global wgParser one: better integration with other extensions
 
 == Code ==
 </wikitext>*/
@@ -124,16 +125,18 @@ class RegexNamespaceContext
 	public function hParserAfterTidy( &$parser, &$text ) 
 	{
 		static $inProgress = false;
-		if ($inProgress) return true;
-		$inProgress = true;
-	
-		// stay away from NS_FILESYSTEM namespace!
-		$ns = $parser->mTitle->getNamespace();
-		if ($ns==NS_FILESYSTEM) return true;		
 		
 		global $action;
 		if ($action != 'view') return true;
-		
+
+		// stay away from NS_FILESYSTEM namespace!
+		$ns = $parser->mTitle->getNamespace();
+		if ($ns==NS_FILESYSTEM) return true;		
+
+		// deal with possible re-entrancy.
+		if ($inProgress) return true;
+		$inProgress = true;
+
 		$title = $parser->mTitle;
 	
 		$this->getHeaderFooterText( $title, $header, $footer );
@@ -240,9 +243,9 @@ class RegexNamespaceContext
 		
 		wfRunHooks('PageVarSet', array( 'ContextVars', &$params) );
 
-		// the currently loaded parser contains all relevant information.
-		global $wgParser;
-		$wgParser->parse( $this->cp, $this->cpTitle, new ParserOptions );
+		// grab a new parser in order not to disrupt the current transaction.
+		$parser = new Parser;
+		$parser->parse( $this->cp, $this->cpTitle, new ParserOptions );
 		
 		// Grab the result from the 'Page' variables
 		wfRunHooks('PageVarGet', array( 'ContextVars', &$oParams) );

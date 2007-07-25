@@ -69,7 +69,7 @@ class AddScriptCssClass extends ExtensionClass
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function AddScriptCssClass( )
+	function __construct( )
 	{
 		parent::__construct( );
 
