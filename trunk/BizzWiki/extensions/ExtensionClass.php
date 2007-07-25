@@ -665,11 +665,11 @@ phase 2- when the page is rendered, extract the meta information
 		if ( empty($st) ) return;
 		
 		// try to add scripts only once!
-		if	(!in_array($st, self::$scriptsHeadList)) 
-		{
-			self::$scriptsHeadList[] = $st;						
-			$this->setuScriptsInjectionFeeder();					
-		}
+		if	(in_array($st, self::$scriptsHeadList))
+			return;
+		
+		self::$scriptsHeadList[] = $st;						
+		$this->setupScriptsInjectionFeeder();					
 	}
 	private static function encodeHeadScriptTag( &$st )
 	{
@@ -728,14 +728,14 @@ phase 2- when the page is rendered, extract the meta information
 		if	(!in_array($st, self::$scriptsBodyList)) 
 		{
 			self::$scriptsBodyList[] = $st;
-			$this->setuScriptsInjectionFeeder();
+			$this->setupScriptsInjectionFeeder();
 		}
 	}
 	
 	// Scripts Feeding Logic
 	// Required for both 'head' & 'body' injected scripts.
 	
-	private function setuScriptsInjectionFeeder()
+	private function setupScriptsInjectionFeeder()
 	{
 		static $installed = false;
 		if ( $installed ) return;

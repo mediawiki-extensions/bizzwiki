@@ -169,4 +169,5 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - Geshi: added 'js' & 'css' tags for Javascript & CSS contents
 - Added parser function 'gettagsection' to MiscParserFunctions extension
 - Added 'RawPageTools' extension
+- Fixed 'RegexNamespaceContext' for it to be more friendly with other extensions (e.g. AddScriptCss)
 - 

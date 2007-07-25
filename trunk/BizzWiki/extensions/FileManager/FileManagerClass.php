@@ -204,6 +204,8 @@ class FileManagerClass extends ExtensionClass
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
 
 		$op->enableClientCache(false);
+		
+		return true;
 	}	
 	// public function hUnknownAction( $action, $article )
 	/*  This hook is used to implement the custom 'action=commitscript'

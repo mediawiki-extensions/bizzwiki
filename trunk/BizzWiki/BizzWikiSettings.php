@@ -376,6 +376,7 @@ StubManager::createStub(	'RegexNamespaceContext',
 							false
 						 );
 
+
 StubManager::createStub(	'RawPageTools', 
 							$bwExtPath.'/RawPageTools/RawPageTools.php',
 							null,							
