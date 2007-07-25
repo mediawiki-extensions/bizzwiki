@@ -170,4 +170,5 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - Added parser function 'gettagsection' to MiscParserFunctions extension
 - Added 'RawPageTools' extension
 - Fixed 'RegexNamespaceContext' for it to be more friendly with other extensions (e.g. AddScriptCss)
+- Fixed 'ExtensionClass' for increased integration around 'ParserAfterTidy' hook
 - 
