@@ -9,50 +9,64 @@
  * 
  */
 
-YAHOO.namespace('BIZZWIKI.FormTools');
+YAHOO.namespace('BIZZWIKI.Forms');
+YAHOO.namespace('BIZZWIKI.Form');
 
-YAHOO.BIZZWIKI.FormTools = function() 
+/*********************************************************************************************/
+							BIZZWIKI.Forms
+/*********************************************************************************************/
+
+/**
+ *  Constructor
+ */
+YAHOO.BIZZWIKI.Forms = function() 
 {
 	this.fl = [];
-	//alert('BIZZWIKI.FormTools::constructor');
 };
 
-YAHOO.BIZZWIKI.FormTools.formClass = 'bwForm';
+YAHOO.BIZZWIKI.Forms.formClass = 'bwForm';
 
-YAHOO.BIZZWIKI.FormTools.prototype =
+YAHOO.BIZZWIKI.Forms.prototype =
 {
 	init: function()
 	{
 		// Find all forms of the document.
-		var es = YAHOO.util.Dom.getElementsByClassName(YAHOO.BIZZWIKI.FormTools.formClass, 'form');
-		
-//		alert( var_dump( es ) );
-//		alert( es.length );
+		var es = YAHOO.util.Dom.getElementsByClassName(YAHOO.BIZZWIKI.Forms.formClass, 'form');
 		
 		// create our own supporting FormElement for each
 		for( i=0; i<es.length; i++ )
-			this.fl.push( new YAHOO.BIZZWIKI.FormElement( es[i].id ) );
+			this.fl.push( new YAHOO.BIZZWIKI.Form( es[i].id ) );
 	}
 
 };
 
 /*********************************************************************************************/
+							BIZZWIKI.Form
+/*********************************************************************************************/
 
-YAHOO.BIZZWIKI.FormElement = function( el, attr )
+/**
+ * Constructor
+ * @param {Object} el: unique DOM 'Form' element id
+ * @param {Object} attr
+ */
+YAHOO.BIZZWIKI.Form = function( el, attr )
 {
-	// DOM element's id
-	this.el = el;
     attr = attr || {};		
 	
-   	YAHOO.BIZZWIKI.FormElement.superclass.constructor.call(this, el, attr);
-	
-	alert('BIZZWIKI.FormElement::constructor '+el );
+   	YAHOO.BIZZWIKI.Form.superclass.constructor.call(this, el, attr);
 };
+YAHOO.BIZZWIKI.Form.prototype =
+{
 	
-YAHOO.extend(YAHOO.BIZZWIKI.FormElement, YAHOO.util.Element);
+
+};
+
+// Inheritance declaration
+YAHOO.extend(YAHOO.BIZZWIKI.Form, YAHOO.util.Element);
 
 
 /*********************************************************************************************/
 
-var bwForms = new YAHOO.BIZZWIKI.FormTools;
-YAHOO.util.Event.onDOMReady( function(){ return bwForms.init(); } ); 
+// Make sure we only initialize the forms when the DOM is ready.
+var bwPageForms = new YAHOO.BIZZWIKI.Forms;
+YAHOO.util.Event.onDOMReady( function(){ return bwPageForms.init(); } ); 
