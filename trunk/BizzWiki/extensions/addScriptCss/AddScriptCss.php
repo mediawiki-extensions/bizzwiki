@@ -14,6 +14,7 @@ Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head or wi
 == Features ==
 * Security: local files (URI) only
 ** Files must be located in wiki installation home directory/scripts
+* <code><addtohead>some html code here></addtohead></code>
 
 == Examples ==
 <pre><addscript src='local URL' /></pre>
@@ -44,6 +45,7 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 * Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
 * Adjusted singleton invocation to end of file (PHP limitation)
 * Imported required functionality from ExtensionClass
+* Imported 'addtohead' tag functionality from SecureHTML extension
 
 == TODO ==
 * Get rid of ExtensionClass dependency in favor of StubManager.
@@ -101,6 +103,17 @@ class AddScriptCssClass extends ExtensionClass
 
 	public function tag_addscript( &$text, &$params, &$parser)
 	{ return $this->process( $params );	}
+
+	/**
+		Parser Tag Magic Word for adding un-restricted content in the document's 'head'
+	 */
+	public function tag_addtohead( &$text, &$params, &$parser )
+	{
+		if (!$this->canProcess( $parser->mTitle) ) 
+			return "<b>AddScriptCss:</b> ".wfMsg('badaccess');
+		
+		$this->addHeadScript( $text );		
+	}
 	
 	public function mg_addscript( &$parser )
 	{

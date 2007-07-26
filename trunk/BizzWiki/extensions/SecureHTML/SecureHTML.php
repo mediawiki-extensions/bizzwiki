@@ -16,7 +16,6 @@ The extension also offers the functionality to add content securily to the docum
 * Cascading: if the base page is allowed to use 'html' tags, then all included pages will be processed
 as if they could.
 * Namespace exemption: configured namespaces are exempted from 'protection' requirement
-* <code><addtohead>some html code here></addtohead></code>
 * Parser cache friendliness: content inserted in the script's head persists in the parser cache
 ** The extension must be enabled to continue the support of the inserted content
 
