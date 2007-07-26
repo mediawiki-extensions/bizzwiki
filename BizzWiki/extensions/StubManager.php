@@ -33,6 +33,10 @@ The extension that are not candidate for this stubbing facility including those 
 
 == History ==
 * Added one more parameter to '__call' method to accomodate hooks such as ArticleSave.
+* Added registration functionality for:
+** 'tag' handlers (XML style section)
+** 'mg' (i.e. parser functions)
+** 'MW' (i.e. parser Magic Words)
 
 == Code ==
 </wikitext>*/
@@ -57,7 +61,13 @@ class StubManager
 		$hooks:			array of hooks
 		$logging:		if logging support is required
 	*/
-	public static function createStub( $class, $filename, $i18nfilename = null, $hooks, $logging = false )
+	public static function createStub(	$class, $filename, $i18nfilename = null, 
+										$hooks, 
+										$logging = false,
+										$tags = null,
+										$mgs  = null,
+										$mws  = null
+									)
 	{
 		// need to wait for the proper timing
 		// to initialize things around.
@@ -71,7 +81,10 @@ class StubManager
 									'classfilename' => $filename,
 									'i18nfilename'	=> $i18nfilename,
 									'hooks'			=> $hooks,
-									'logging'		=> $logging
+									'logging'		=> $logging,
+									'tags'			=> $tags,
+									'mgs'			=> $mgs,
+									'mws'			=> $mws
 									);
 	}
 	private static function setupInit()
@@ -89,7 +102,7 @@ class StubManager
 	{
 		self::setupMessages();
 		self::setupLogging();
-		self::setupCreditsHook();			
+		self::setupCreditsHook();
 	}
 	private static function setupLogging( )
 	{
@@ -103,7 +116,7 @@ class StubManager
 			$class = $e['class'];
 			$log = $GLOBALS[ 'log'.$class ];
 		
-			$wgLogTypes[]       = $log;
+			$wgLogTypes  []     = $log;
 			$wgLogNames  [$log] = $log.'logpage';
 			$wgLogHeaders[$log] = $log.'logpagetext';
 
@@ -160,7 +173,6 @@ class StubManager
 			if ($el['name']==self::thisName)
 				$el['description'] .= $result.'.';
 		
-	
 		return true;
 	}
 	static function getRevisionData( &$id, &$date, $d = null )
@@ -183,23 +195,139 @@ class StubManager
 
 class Stub
 {
+	static $tag_prefix	= 'tag_';
+	static $mw_prefix	= 'MW_';
+	static $mg_prefix	= 'mg_';
+
 	static $done = false;
 	
 	var $classe;
 	var $obj;
 	
-	public function __construct( &$class, &$hooks )
+	var $hooks;
+	var $tags;
+	var $mgs;
+	var $mws;
+	
+	public function __construct( &$class, &$hooks, &$tags = null, &$mgs = null, &$mws = null )
 	{
-		global $wgHooks;
-		if (!empty( $hooks ))
-			foreach( $hooks as $hook )
-				$wgHooks[ $hook ][] = array( &$this, 'h'.$hook );
-		
+		$this->setupHooks( $hooks );
+		$this->setupTags( $tags );
+		$this->setupMGs( $mgs );
+		$this->setupMWs( $mws );
+							
 		// don't create the object just yet!
 		$this->classe = $class;
 		$this->obj = null;
 	}
 
+	private function setupHooks( &$hooks )
+	{
+		if (empty( $hooks ))
+			return;
+			
+		global $wgHooks;
+		foreach( $hooks as $hook )
+		{
+			$wgHooks[ $hook ][] = array( &$this, 'h'.$hook );
+			$this->hooks[] = $hook;
+		}
+	}
+	private function setupTags( &$tags )
+	{
+		if (empty( $tags ))
+			return;
+			
+		global $wgParser;
+		foreach($tags as $index => $key)
+		{
+			$wgParser->setHook( "$key", array( $this, self::$tag_prefix.$key ) );
+			$this->tags[] = $tag;
+		}
+	}
+	private function setupMGs( &$mgs )
+	{
+		if (empty( $mgs ))
+			return;
+			
+		global $wgParser;
+		foreach($mgs as $index => $key)
+		{
+			$wgParser->setFunctionHook( "$key", array( $this, self::$mg_prefix.$key ) );			
+			$this->mgs[] = $key;
+		}
+				
+		$this->setupLanguageGetMagicHook();				
+	}
+	private function setupMWs( &$mws )
+	{
+		if (empty( $mws ))
+			return;
+			
+		global $wgParser;
+		foreach($mws as $index => $key)
+		{
+			$wgParser->setFunctionHook( "$key", array( $this, self::$mw_prefix.$key ) );	
+			$this->mws[] = $key;
+		}
+		
+		$this->setupLanguageGetMagicHook();
+	}
+	private function setupLanguageGetMagicHook()
+	{
+		static $done = false;
+		if ($done) return;
+		$done = true;
+
+		global $wgHooks;				
+		$wgHooks['LanguageGetMagic'][] 				= array( $this, 'hLanguageGetMagic');
+		$wgHooks['MagicWordMagicWords'][]			= array( $this, 'hookMagicWordMagicWords' );
+		$wgHooks['MagicWordwgVariableIDs'][]		= array( $this, 'hookMagicWordwgVariableIDs' );
+		$wgHooks['ParserGetVariableValueSwitch'][]	= array( $this, 'hookParserGetVariableValueSwitch' );			
+	}
+	public function hLanguageGetMagic( &$magicwords, $langCode )
+	{
+		// parser functions.
+		foreach($this->mgs as $index => $key )
+			$magicwords [$key] = array( 0, $key );
+
+		// magic words.
+		foreach($this->mws as $index => $key )
+			$magicwords [ defined($key) ? constant($key):$key ] = array( 0, $key );
+
+		return true;
+	}
+	public function hookMagicWordMagicWords( &$mw )
+	{
+		if (!empty( $this->mws ))		
+			foreach ( $this->mws as $index => $key )
+				$mw[] = $key;
+
+		return true;
+	} 
+	public function hookMagicWordwgVariableIDs( &$mw )
+	{
+		if (!empty( $this->mws ))
+			foreach ( $this->mws as $index => $key )
+				$mw[] = constant( $key  );
+
+		return true;
+	} 
+	public function hookParserGetVariableValueSwitch( &$parser, &$varCache, &$id, &$ret )
+	{
+		if (empty( $this->mws )) 
+			return true;
+
+		// when called through {{magic word here}}
+		// will call the method "MW_magic_word"
+		if ( in_array( $id, $this->mws ) )
+		{
+			$method= self::$mw_prefix.$id;	
+			$this->$method( $parser, $varCache, $ret );	
+		}
+		return true;
+	}
+	
 	// intercept all methods called
 	// instantiate the necessary object
 	function __call( $method, $args )
