@@ -87,15 +87,6 @@ class SecureHTMLclass extends ExtensionClass
 		
 		return false;
 	}
-	/**
-		Parser Tag Magic Word for adding un-restricted content in the document's 'head'
-	 */
-	public function tag_addtohead( &$text, &$params, &$parser )
-	{
-		if (!$this->canProcess( $parser->mTitle) ) 
-			return "<b>SecureHTML:</b> ".wfMsg('badaccess');
-		
-		$this->addHeadScript( $text );		
-	}
+
 } // END CLASS DEFINITION
 ?>
