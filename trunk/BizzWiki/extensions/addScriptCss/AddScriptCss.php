@@ -43,8 +43,10 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 == History ==
 * Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
 * Adjusted singleton invocation to end of file (PHP limitation)
+* Imported required functionality from ExtensionClass
 
 == TODO ==
+* Get rid of ExtensionClass dependency in favor of StubManager.
 * - adjust for 'autoloading'
 * - internationalize
 
@@ -203,6 +205,124 @@ class AddScriptCssClass extends ExtensionClass
 			self::error_bad_pos  => 'invalid POS parameter',
 		);
 		return 'AddScriptCss: '.$m[ $errCode ];
+	}
+
+/*  Add scripts & stylesheets functionality.
+This process must be done in two phases:
+phase 1- encode information related to the required
+         scripts & stylesheets in a 'meta form' in
+		 the parser cache text.
+phase 2- when the page is rendered, extract the meta information
+         and include the information appropriately in the 'head' of the page.		  
+************************************************************************************/
+	static $scriptsHeadList = array();
+	static $scriptsBodyList = array();
+
+	function addHeadScript( &$st )
+	{
+		if ( empty($st) ) return;
+		
+		// try to add scripts only once!
+		if	(in_array($st, self::$scriptsHeadList))
+			return;
+		
+		self::$scriptsHeadList[] = $st;						
+		$this->setupScriptsInjectionFeeder();					
+	}
+	private static function encodeHeadScriptTag( &$st )
+	{
+		return '<!-- META_SCRIPTS '.base64_encode($st).' -->';	
+	}
+	
+	// This hook should *ALWAYS* be initialized if we are to have any chance
+	// of catching the 'head' scripts we need to add !! 
+	public function initHeadScriptsHook()
+	{
+		static $installed = false;
+		if ( $installed ) return;
+		$installed = true;
+		
+		global $wgHooks;
+		$wgHooks['OutputPageBeforeHTML'][] = array( $this, 'hookOutputPageBeforeHTML' );		
+	}
+	function hookOutputPageBeforeHTML( &$op, &$text )
+	// This function sifts through 'meta tags' embedded in html comments
+	// and picks out scripts & stylesheet references that need to be put
+	// in the page's HEAD.
+	{
+		static $scriptsAdded = false;
+		
+		// some hooks get called more than once...
+		// In this case, since ExtensionClass provides a 
+		// base class for numerous extensions, then it is very
+		// likely this method will be called more than once;
+		// so, we want to make sure we include the head scripts just once.
+		if ($scriptsAdded) return true;
+		$scriptsAdded = true;
+		
+		if (preg_match_all(
+        	'/<!-- META_SCRIPTS ([0-9a-zA-Z\\+\\/]+=*) -->/m', 
+        	$text, 
+        	$matches)===false) return true;
+			
+    	$data = $matches[1];
+
+	    foreach ($data AS $item) 
+		{
+	        $content = @base64_decode($item);
+	        if ($content) $op->addScript( $content );
+	    }
+	    return true;
+	}
+	
+	
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	public function addBodyScript( &$st )
+	{
+		if ( empty($st) ) return;
+		
+		// try to add scripts only once!
+		if	(!in_array($st, self::$scriptsBodyList)) 
+		{
+			self::$scriptsBodyList[] = $st;
+			$this->setupScriptsInjectionFeeder();
+		}
+	}
+	
+	// Scripts Feeding Logic
+	// Required for both 'head' & 'body' injected scripts.
+	
+	private function setupScriptsInjectionFeeder()
+	{
+		static $installed = false;
+		if ( $installed ) return;
+		$installed = true;
+		
+		global $wgHooks;
+		$wgHooks['ParserAfterTidy'][] = array( $this, 'hookParserAfterTidy' );
+	}
+
+	function hookParserAfterTidy( &$parser, &$text )
+	// set the meta information in the parsed 'wikitext'.
+	{
+		// it seems that trying to protect
+		// against multiple calls break more things
+		// than help.
+		
+#		static $scriptsListed = false;
+#		if ($scriptsListed) return true;
+#		$scriptsListed = true;
+
+		if (!empty(self::$scriptsBodyList))
+			foreach(self::$scriptsBodyList as $sc)
+				$text .= $sc; 
+
+		if (!empty(self::$scriptsHeadList))
+			foreach(self::$scriptsHeadList as $sc)
+				$text .= $this->encodeHeadScriptTag( $sc ); 
+	
+		return true;
 	}
 
 } // END CLASS DEFINITION
