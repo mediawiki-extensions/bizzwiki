@@ -314,7 +314,6 @@ require('extensions/SpecialPagesManager/SpecialPagesManager.php');
 #SpecialPagesManagerClass::singleton()->setPagesPath('page title');
 
 // Form/Page related tools
-require('extensions/addScriptCss/AddScriptCss.php');
 require('extensions/SecureHTML/SecureHTML.php');
 	# SecureHTMLclass::enableExemptNamespaces = false; # turn off
 	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
@@ -384,6 +383,16 @@ StubManager::createStub(	'RawPageTools',
 							false
 						 );
 
+
+StubManager::createStub(	'AddScriptCssClass', 
+							$bwExtPath.'/AddScriptCss/AddScriptCss.php',
+							null,							
+							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
+							false, // no need for logging support
+							array( 'addtohead', 'addscript' ),	// tags
+							array( 'addscript' ), 				//of parser function magic words,
+							null
+						 );
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 require('extensions/DocProc/DocProc.php');

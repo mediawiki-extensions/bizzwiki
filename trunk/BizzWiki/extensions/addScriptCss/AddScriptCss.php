@@ -9,7 +9,8 @@
 |}<br/><br/>
 
 == Purpose== 
-Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head or within the page's body.
+Inserts <script> & <link> (i.e. CSS) scripts at the bottom of the page's head or within the page's body. 
+Securily insert arbitrary code to the page's head using <addtohead>.
 
 == Features ==
 * Security: local files (URI) only
@@ -48,16 +49,29 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 * Adjusted singleton invocation to end of file (PHP limitation)
 * Imported required functionality from ExtensionClass
 * Imported 'addtohead' tag functionality from SecureHTML extension
+* Removed dependency on ExtensionClass
+
+== Installation ==
+<source lang=php>
+require('extensions/StubManager.php');
+StubManager::createStub(	'AddScriptCssClass', 
+							$bwExtPath.'/AddScriptCss/AddScriptCss.php',
+							null,							
+							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
+							false, // no need for logging support
+							array( 'addtohead', 'addscript' ),	// tags
+							array( 'addscript' ), 				//of parser function magic words,
+							null
+						 );
+</source>
 
 == TODO ==
-* Get rid of ExtensionClass dependency in favor of StubManager.
-* - adjust for 'autoloading'
 * - internationalize
 
 == Code ==
 </wikitext>*/
 
-class AddScriptCssClass extends ExtensionClass
+class AddScriptCssClass// extends ExtensionClass
 {
 	// constants.
 	const thisName = 'AddScriptCss';
@@ -72,36 +86,18 @@ class AddScriptCssClass extends ExtensionClass
 		
 	static $base = 'BizzWiki/scripts/';
 
-	public static function &singleton()
-	{ return parent::singleton( );	}
-	
 	function __construct( )
 	{
-		parent::__construct( );
-
 		global $wgScriptPath;
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 
 			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
+			'version'     => StubManager::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
-			'url' => self::getFullUrl(__FILE__),
+			//'url' => self::getFullUrl(__FILE__),
 		);
-
-		// always initialise or else no 'head' scripts will be processed!!
-		$this->initHeadScriptsHook();
 	}
-	public function setup() 
-	{ 
-		parent::setup();
-		
-		// <addscript... />
-		
-		// not required with latest ExtensionClass extension; done automatically.
-		// global $wgParser;
-		// $wgParser->setHook( 'addscript', array( &$this, 'tag_addscript' ) );
-	} 
 
 	public function tag_addscript( &$text, &$params, &$parser)
 	{ return $this->process( $params );	}
@@ -132,7 +128,7 @@ class AddScriptCssClass extends ExtensionClass
 		);
 		// ask initParams to strip off the parameters
 		// which aren't registered in $template.
-		parent::initParams( $params, $template, true );
+		$this->initParams( $params, $template, true );
 	}
 	private function normalizeParams( &$params )
 	{
@@ -242,28 +238,23 @@ phase 2- when the page is rendered, extract the meta information
 			return;
 		
 		self::$scriptsHeadList[] = $st;						
-		$this->setupScriptsInjectionFeeder();					
+		//$this->setupScriptsInjectionFeeder();					
 	}
 	private static function encodeHeadScriptTag( &$st )
 	{
 		return '<!-- META_SCRIPTS '.base64_encode($st).' -->';	
 	}
 	
-	// This hook should *ALWAYS* be initialized if we are to have any chance
-	// of catching the 'head' scripts we need to add !! 
-	public function initHeadScriptsHook()
-	{
-		static $installed = false;
-		if ( $installed ) return;
-		$installed = true;
+	/** 
+		This hook should *ALWAYS* be initialized if we are to have any chance
+		of catching the 'head' scripts we need to add !! 
 		
-		global $wgHooks;
-		$wgHooks['OutputPageBeforeHTML'][] = array( $this, 'hookOutputPageBeforeHTML' );		
-	}
-	function hookOutputPageBeforeHTML( &$op, &$text )
-	// This function sifts through 'meta tags' embedded in html comments
-	// and picks out scripts & stylesheet references that need to be put
-	// in the page's HEAD.
+		This function sifts through 'meta tags' embedded in html comments
+		and picks out scripts & stylesheet references that need to be put
+		in the page's HEAD.
+
+	*/
+	function hOutputPageBeforeHTML( &$op, &$text )
 	{
 		static $scriptsAdded = false;
 		
@@ -301,24 +292,13 @@ phase 2- when the page is rendered, extract the meta information
 		if	(!in_array($st, self::$scriptsBodyList)) 
 		{
 			self::$scriptsBodyList[] = $st;
-			$this->setupScriptsInjectionFeeder();
+			//$this->setupScriptsInjectionFeeder();
 		}
 	}
 	
 	// Scripts Feeding Logic
 	// Required for both 'head' & 'body' injected scripts.
-	
-	private function setupScriptsInjectionFeeder()
-	{
-		static $installed = false;
-		if ( $installed ) return;
-		$installed = true;
-		
-		global $wgHooks;
-		$wgHooks['ParserAfterTidy'][] = array( $this, 'hookParserAfterTidy' );
-	}
-
-	function hookParserAfterTidy( &$parser, &$text )
+	function hParserAfterTidy( &$parser, &$text )
 	// set the meta information in the parsed 'wikitext'.
 	{
 		// it seems that trying to protect
@@ -357,12 +337,62 @@ phase 2- when the page is rendered, extract the meta information
 		
 		return false;
 	}
+	public function initParams( &$alist, &$templateElements, $removeNotInTemplate = true )
+	{
+		if ($removeNotInTemplate)
+			foreach( $templateElements as $index => &$el )
+				if ( !isset($alist[ $el['key'] ]) )
+					unset( $alist[$el['key']] );
+		
+		foreach( $templateElements as $index => &$el )
+			$alist[$el['key']] = $this->getParam( $alist, $el['key'], $el['index'], $el['default'] );
+	}
+
+	public function processArgList( $list, $getridoffirstparam=false )
+	/*
+	 * The resulting list contains:
+	 * - The parameters extracted by 'key=value' whereby (key => value) entries in the list
+	 * - The parameters extracted by 'index' whereby ( index = > value) entries in the list
+	 */
+	{
+		if ($getridoffirstparam)   
+			array_shift( $list );
+			
+		// the parser sometimes includes a boggie
+		// null parameter. get rid of it.
+		if (count($list) >0 )
+			if (empty( $list[count($list)-1] ))
+				unset( $list[count($list)-1] );
+		
+		$result = array();
+		foreach ($list as $index => $el )
+		{
+			$t = explode("=", $el);
+			if (!isset($t[1])) 
+				continue;
+			$result[ "{$t[0]}" ] = $t[1];
+			unset( $list[$index] );
+		}
+		if (empty($result)) 
+			return $list;
+		return array_merge( $result, $list );	
+	}
+	public function getParam( &$alist, $key, $index, $default )
+	/*
+	 *  Gets a parameter by 'key' if present
+	 *  or fallback on getting the value by 'index' and
+	 *  ultimately fallback on default if both previous attempts fail.
+	 */
+	{
+		if (array_key_exists($key, $alist) )
+			return $alist[$key];
+		elseif (array_key_exists($index, $alist) && $index!==null )
+			return $alist[$index];
+		else
+			return $default;
+	}
 
 } // END CLASS DEFINITION
 
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: AddScriptCss extension will not work!';	
-else
-	AddScriptCssClass::singleton();
+new AddScriptCssClass;
 ?>

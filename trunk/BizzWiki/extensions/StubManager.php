@@ -93,7 +93,7 @@ class StubManager
 		$wgAutoloadClasses[$class] = $filename;
 		
 		self::$stubList[] = array(	'class'			=> $class, 
-									'object' 		=> new Stub( $class, $hooks ),
+									'object' 		=> new Stub( $class, $hooks, $tags, $mgs, $mws ),
 									'classfilename' => $filename,
 									'i18nfilename'	=> $i18nfilename,
 									'hooks'			=> $hooks,
@@ -119,6 +119,15 @@ class StubManager
 		self::setupMessages();
 		self::setupLogging();
 		self::setupCreditsHook();
+		self::callSetupMethods();
+	}
+	private static function callSetupMethods()
+	{
+		foreach( self::$stubList as $index => $e )
+		{
+			$obj = $e['object'];
+			$obj->setup();
+		}		
 	}
 	private static function setupLogging( )
 	{
@@ -225,17 +234,29 @@ class Stub
 	var $tags;
 	var $mgs;
 	var $mws;
-	
+
 	public function __construct( &$class, &$hooks, &$tags = null, &$mgs = null, &$mws = null )
 	{
 		$this->setupHooks( $hooks );
-		$this->setupTags( $tags );
-		$this->setupMGs( $mgs );
-		$this->setupMWs( $mws );
-							
+		$this->tags = $tags;
+		$this->mgs  = $mgs;
+		$this->mws  = $mws;
+
+		if ( !empty( $mgs) || !empty( $mws) )
+			$this->setupLanguageGetMagicHook();
+
 		// don't create the object just yet!
 		$this->classe = $class;
 		$this->obj = null;
+	}
+	/**
+		called in the same timing as $wgExtensionFunctions is processed
+	 */
+	public function setup()
+	{
+		$this->setupTags( $this->tags );
+		$this->setupMGs( $this->mgs );
+		$this->setupMWs( $this->mws );
 	}
 
 	private function setupHooks( &$hooks )
@@ -245,10 +266,7 @@ class Stub
 			
 		global $wgHooks;
 		foreach( $hooks as $hook )
-		{
 			$wgHooks[ $hook ][] = array( &$this, self::$hook_prefix.$hook );
-			$this->hooks[] = $hook;
-		}
 	}
 	private function setupTags( &$tags )
 	{
@@ -257,10 +275,7 @@ class Stub
 			
 		global $wgParser;
 		foreach($tags as $index => $key)
-		{
 			$wgParser->setHook( "$key", array( $this, self::$tag_prefix.$key ) );
-			$this->tags[] = $tag;
-		}
 	}
 	private function setupMGs( &$mgs )
 	{
@@ -269,12 +284,7 @@ class Stub
 			
 		global $wgParser;
 		foreach($mgs as $index => $key)
-		{
 			$wgParser->setFunctionHook( "$key", array( $this, self::$mg_prefix.$key ) );			
-			$this->mgs[] = $key;
-		}
-				
-		$this->setupLanguageGetMagicHook();				
 	}
 	private function setupMWs( &$mws )
 	{
@@ -287,8 +297,6 @@ class Stub
 			$wgParser->setFunctionHook( "$key", array( $this, self::$mw_prefix.$key ) );	
 			$this->mws[] = $key;
 		}
-		
-		$this->setupLanguageGetMagicHook();
 	}
 	private function setupLanguageGetMagicHook()
 	{
