@@ -15,6 +15,8 @@ Inserts <script> & <link> (i.e. CSS) tags at the bottom of the page's head or wi
 * Security: local files (URI) only
 ** Files must be located in wiki installation home directory/scripts
 * <code><addtohead>some html code here></addtohead></code>
+* Security:
+** Only 'edit' restricted pages can access 'addtohead' functionality.
 
 == Examples ==
 <pre><addscript src='local URL' /></pre>
@@ -336,6 +338,24 @@ phase 2- when the page is rendered, extract the meta information
 				$text .= $this->encodeHeadScriptTag( $sc ); 
 	
 		return true;
+	}
+
+	private function canProcess( &$obj )
+	{
+		if (!is_object( $obj ))
+			return false; // paranoia
+			
+		if (is_a( $obj, 'Article'))
+			$title = $obj->mTitle;
+		elseif (is_a( $obj, 'Title'))
+			$title = $obj;
+		else
+			return false;
+		
+		// check protection status
+		if ( $title->isProtected( 'edit' ) ) return true;
+		
+		return false;
 	}
 
 } // END CLASS DEFINITION
