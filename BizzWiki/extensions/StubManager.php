@@ -14,17 +14,28 @@ This extension is meant to address 'rare events' handling through class object '
 
 == Features ==
 * Handles 'hook' registration
-* Handles 'parser functions' registration
+* Handles 'parser function' registration
 * Handles 'parser magic word' registration
 * Handles 'parser tag' registration
 * Handles extensions which implement logging functionality
 
 == Usage ==
 To create a stub, use: 
-<code>StubManager::createStub( 'class name', 'full path filename', array of hooks );</code>
+<pre>
+StubManager::createStub(  'class name', 
+                          'full path filename of class file',
+                          'full path filename of i18n file',						  
+                          array of hooks,
+						  $logging, // true if the extension requires logging support
+                          array of tags,
+                          array of parser function magic words,
+                          array of parser magic words
+                        );
+</pre>
 in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code>
 
 == Dependancy ==
+None.
 
 == Installation ==
 To install independantly from BizzWiki:
