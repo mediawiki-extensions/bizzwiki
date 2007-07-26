@@ -115,13 +115,3 @@ YAHOO.BIZZWIKI.prototype =
 
 var BIZZWIKI = new YAHOO.BIZZWIKI;
 
-Array.prototype = 
-{
-	/**
-	 * Mimics PHP's array_key_exists function
-	 * @param {Object} key
-	 */
-	keyExists: function( key )
-	{
-	}
-};
