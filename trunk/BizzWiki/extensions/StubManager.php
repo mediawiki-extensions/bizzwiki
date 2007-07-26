@@ -13,6 +13,11 @@ This extension is meant to address 'rare events' handling through class object '
 (of course this is relative!), use this extension to instantiate a 'stub object' for the required hooks.
 
 == Features ==
+* Handles 'hook' registration
+* Handles 'parser functions' registration
+* Handles 'parser magic word' registration
+* Handles 'parser tag' registration
+* Handles extensions which implement logging functionality
 
 == Usage ==
 To create a stub, use: 
@@ -64,9 +69,9 @@ class StubManager
 	public static function createStub(	$class, $filename, $i18nfilename = null, 
 										$hooks, 
 										$logging = false,
-										$tags = null,
-										$mgs  = null,
-										$mws  = null
+										$tags = null,		// parser 'tag' e.g. <php>
+										$mgs  = null,		// parser function e.g. {{#addscriptcss}}
+										$mws  = null		// parser magic word e.g. {{CURRENTTIME}}
 									)
 	{
 		// need to wait for the proper timing
@@ -195,6 +200,7 @@ class StubManager
 
 class Stub
 {
+	static $hook_prefix	= 'h';
 	static $tag_prefix	= 'tag_';
 	static $mw_prefix	= 'MW_';
 	static $mg_prefix	= 'mg_';
@@ -229,7 +235,7 @@ class Stub
 		global $wgHooks;
 		foreach( $hooks as $hook )
 		{
-			$wgHooks[ $hook ][] = array( &$this, 'h'.$hook );
+			$wgHooks[ $hook ][] = array( &$this, self::$hook_prefix.$hook );
 			$this->hooks[] = $hook;
 		}
 	}
@@ -280,20 +286,22 @@ class Stub
 		$done = true;
 
 		global $wgHooks;				
-		$wgHooks['LanguageGetMagic'][] 				= array( $this, 'hLanguageGetMagic');
-		$wgHooks['MagicWordMagicWords'][]			= array( $this, 'hookMagicWordMagicWords' );
-		$wgHooks['MagicWordwgVariableIDs'][]		= array( $this, 'hookMagicWordwgVariableIDs' );
-		$wgHooks['ParserGetVariableValueSwitch'][]	= array( $this, 'hookParserGetVariableValueSwitch' );			
+		$wgHooks['LanguageGetMagic'            ][] = array( $this, 'hookLanguageGetMagic'             );
+		$wgHooks['MagicWordMagicWords'         ][] = array( $this, 'hookMagicWordMagicWords'          );
+		$wgHooks['MagicWordwgVariableIDs'      ][] = array( $this, 'hookMagicWordwgVariableIDs'       );
+		$wgHooks['ParserGetVariableValueSwitch'][] = array( $this, 'hookParserGetVariableValueSwitch' );			
 	}
-	public function hLanguageGetMagic( &$magicwords, $langCode )
+	public function hookLanguageGetMagic( &$magicwords, $langCode )
 	{
 		// parser functions.
-		foreach($this->mgs as $index => $key )
-			$magicwords [$key] = array( 0, $key );
+		if (!empty( $this->mgs ))		
+			foreach($this->mgs as $index => $key )
+				$magicwords [$key] = array( 0, $key );
 
 		// magic words.
-		foreach($this->mws as $index => $key )
-			$magicwords [ defined($key) ? constant($key):$key ] = array( 0, $key );
+		if (!empty( $this->mws ))				
+			foreach($this->mws as $index => $key )
+				$magicwords [ defined($key) ? constant($key):$key ] = array( 0, $key );
 
 		return true;
 	}
@@ -329,7 +337,7 @@ class Stub
 	}
 	
 	// intercept all methods called
-	// instantiate the necessary object
+	// instantiate the necessary object... only once.
 	function __call( $method, $args )
 	{
 		if ( $this->obj === null )
@@ -359,7 +367,7 @@ class Stub
 				return $obj->$method( $args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7] );			
 		}
 		
-		throw new MWException( "Too many arguments to method called in ".__METHOD__ );
+		throw new MWException( __CLASS__.": too many arguments to method called in ".__METHOD__ );
 	}
 
 } // end class Stub
