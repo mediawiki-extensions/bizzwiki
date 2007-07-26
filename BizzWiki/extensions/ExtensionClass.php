@@ -63,6 +63,8 @@
 * Removed 'UnwatchArticle' duplicate entry
 * More support for PageFunctions extension
 * Disabled detection of multiple calls in 'ParserAfterTidy' handler.
+* Moved 'addscriptcss' functionality to the said extension
+** Goal is to get rid of 'ExtensionClass' in favor of 'StubManager'
 
 </wikitext>*/
 $wgExtensionCredits['other'][] = array( 
@@ -649,124 +651,6 @@ static $hookList = array(
 		global $IP;
 		$relPath = str_replace( $IP, '', $filename ); 
 		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
-	}
-
-/*  Add scripts & stylesheets functionality.
-This process must be done in two phases:
-phase 1- encode information related to the required
-         scripts & stylesheets in a 'meta form' in
-		 the parser cache text.
-phase 2- when the page is rendered, extract the meta information
-         and include the information appropriately in the 'head' of the page.		  
-************************************************************************************/
-	static $scriptsHeadList = array();
-	static $scriptsBodyList = array();
-
-	function addHeadScript( &$st )
-	{
-		if ( empty($st) ) return;
-		
-		// try to add scripts only once!
-		if	(in_array($st, self::$scriptsHeadList))
-			return;
-		
-		self::$scriptsHeadList[] = $st;						
-		$this->setupScriptsInjectionFeeder();					
-	}
-	private static function encodeHeadScriptTag( &$st )
-	{
-		return '<!-- META_SCRIPTS '.base64_encode($st).' -->';	
-	}
-	
-	// This hook should *ALWAYS* be initialized if we are to have any chance
-	// of catching the 'head' scripts we need to add !! 
-	public function initHeadScriptsHook()
-	{
-		static $installed = false;
-		if ( $installed ) return;
-		$installed = true;
-		
-		global $wgHooks;
-		$wgHooks['OutputPageBeforeHTML'][] = array( $this, 'hookOutputPageBeforeHTML' );		
-	}
-	function hookOutputPageBeforeHTML( &$op, &$text )
-	// This function sifts through 'meta tags' embedded in html comments
-	// and picks out scripts & stylesheet references that need to be put
-	// in the page's HEAD.
-	{
-		static $scriptsAdded = false;
-		
-		// some hooks get called more than once...
-		// In this case, since ExtensionClass provides a 
-		// base class for numerous extensions, then it is very
-		// likely this method will be called more than once;
-		// so, we want to make sure we include the head scripts just once.
-		if ($scriptsAdded) return true;
-		$scriptsAdded = true;
-		
-		if (preg_match_all(
-        	'/<!-- META_SCRIPTS ([0-9a-zA-Z\\+\\/]+=*) -->/m', 
-        	$text, 
-        	$matches)===false) return true;
-			
-    	$data = $matches[1];
-
-	    foreach ($data AS $item) 
-		{
-	        $content = @base64_decode($item);
-	        if ($content) $op->addScript( $content );
-	    }
-	    return true;
-	}
-	
-	
-	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-	public function addBodyScript( &$st )
-	{
-		if ( empty($st) ) return;
-		
-		// try to add scripts only once!
-		if	(!in_array($st, self::$scriptsBodyList)) 
-		{
-			self::$scriptsBodyList[] = $st;
-			$this->setupScriptsInjectionFeeder();
-		}
-	}
-	
-	// Scripts Feeding Logic
-	// Required for both 'head' & 'body' injected scripts.
-	
-	private function setupScriptsInjectionFeeder()
-	{
-		static $installed = false;
-		if ( $installed ) return;
-		$installed = true;
-		
-		global $wgHooks;
-		$wgHooks['ParserAfterTidy'][] = array( $this, 'hookParserAfterTidy' );
-	}
-
-	function hookParserAfterTidy( &$parser, &$text )
-	// set the meta information in the parsed 'wikitext'.
-	{
-		// it seems that trying to protect
-		// against multiple calls break more things
-		// than help.
-		
-#		static $scriptsListed = false;
-#		if ($scriptsListed) return true;
-#		$scriptsListed = true;
-
-		if (!empty(self::$scriptsBodyList))
-			foreach(self::$scriptsBodyList as $sc)
-				$text .= $sc; 
-
-		if (!empty(self::$scriptsHeadList))
-			foreach(self::$scriptsHeadList as $sc)
-				$text .= $this->encodeHeadScriptTag( $sc ); 
-	
-		return true;
 	}
 
 } // end class definition.
