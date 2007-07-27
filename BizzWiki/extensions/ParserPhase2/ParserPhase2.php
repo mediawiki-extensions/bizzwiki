@@ -42,12 +42,127 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 
 == Code ==
 </wikitext>*/
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: ParserPhase2 extension will not work!';	
-else
+global $wgExtensionCredits;
+$wgExtensionCredits[ParserPhase2Class::thisType][] = array( 
+	'name'        => ParserPhase2Class::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class ParserPhase2Class
 {
-	require( "ParserPhase2Class.php" );
-	ParserPhase2Class::singleton();
-}
+	// constants.
+	const thisName = 'ParserPhase2Class';
+	const thisType = 'other';
+	
+	const pattern = '/\(\(\$(.*)\$\)\)/siU';
+	
+	function __construct( ) {}
+
+	function hOutputPageBeforeHTML( &$op, &$text )
+	{
+		$m = $this->getList( $text );
+		if ( empty( $m ) ) return true; // nothing to do
+
+		// PHP sometimes messes up in preg_match_all returning an empty array
+		// we need to guard against this or else client side caching always get thrashed!
+		$found = false; 
+		
+		foreach( $m[1] as $index => $str)
+		{
+			// (($magic word|... parameters...$))
+			$params = explode('|', $str);
+			$action = array_shift( $params );
+
+			// if we are asked to disable, stop processing.
+			if ('disable'==strtolower($action))
+				break;
+
+			global $wgParser, $wgTitle, $wgContLang;
+
+			// check if the 'mTitle' property is set
+			if (!is_object($wgParser->mTitle))
+				$wgParser->mTitle = $wgTitle;
+
+			$varname = $wgContLang->lc($action);
+			$idl = MagicWord::getVariableIDs();
+							
+			// First, look for $action in 'parser variables'
+			if (in_array( $varname, $idl ))
+			{
+				$rl[$index] = $this->getValue( $varname );
+				$found = true;
+				continue;
+			}
+
+			// If not found, check for $action in 'parser functions.
+			$function = null;
+	
+			if ( isset( $wgParser->mFunctionSynonyms[1][$action] ) ) 
+				$function = $wgParser->mFunctionSynonyms[1][$action];
+			else 
+			{
+				# Case insensitive functions
+				$function = strtolower( $action );
+				if ( isset( $wgParser->mFunctionSynonyms[0][$action] ) ) 
+					$function = $wgParser->mFunctionSynonyms[0][$action];
+				else
+					$function = false;
+			}
+		
+			if ( $function ) 
+			{
+				$found = true;
+				
+				$funcArgs = array_map( 'trim', $params );
+				$funcArgs = array_merge( array( &$wgParser) , $funcArgs );
+				$result = call_user_func_array( $wgParser->mFunctionHooks[$function], $funcArgs );
+	
+				if ( is_array( $result ) ) 
+				{
+					if ( isset( $result[0] ) ) 
+						$rl[$index] = $result[0];
+					// Extract flags into the local scope
+					// This allows callers to set flags such as nowiki, noparse, found, etc.
+					// extract( $result );
+				} else 
+					$rl[ $index ] = $result;
+			}
+
+		} // end foreach
+
+		// we found some dynamic variables, disable client side caching.
+		// parser caching is not affected.
+		if ( $found )
+			$op->enableClientCache( false );
+
+		$this->replaceList( $text, $m, $rl );
+
+		return true; // be nice with other extensions.
+	}
+	private function getList ( &$text )
+	{
+		// find the (($...$)) matches
+		$r = preg_match_all(self::pattern, $text, $m );	
+		
+		return $m;
+	}
+	private function getValue( $varid )
+	{
+		// ask our friendly MW parser for its help.
+		global $wgParser;
+		$value = $wgParser->getVariableValue( $varid );
+		
+		return $value;
+	}
+	private function replaceList( &$text, &$source, &$target )
+	{
+		foreach( $source[0] as $index => $marker )
+			$text = str_replace( $marker, $target[$index], $text );	
+	}
+
+} // end class
+
 ?>

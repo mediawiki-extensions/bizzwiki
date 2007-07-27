@@ -21,8 +21,18 @@ $bwExtPath = $IP.'/BizzWiki/extensions';
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
-require('extensions/ParserPhase2/ParserPhase2.php');
 require('extensions/StubManager.php');
+
+StubManager::createStub(	'ParserPhase2Class', 
+							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
+							null,
+							array( 'OutputPageBeforeHTML' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
@@ -463,7 +473,6 @@ StubManager::createStub(	'DocProcClass',
 						 );
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
-//require('extensions/DocProc/DocProc.php');
 require('extensions/ImageLink/ImageLink.php');
 require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
 

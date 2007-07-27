@@ -41,7 +41,7 @@ None.
 To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/StubManager/StubManager.php');
+require('extensions/StubManager.php');
 </source>
 
 == Notes ==
@@ -59,8 +59,9 @@ The extension that are not candidate for this stubbing facility including those 
 $wgExtensionCredits[StubManager::thisType][] = array( 
 	'name'    => StubManager::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
-	'author'  => 'Jean-Lou Dupont',
-	'description' => 'Provides stubbing facility for extensions handling rare events. Extensions registered: ', 
+	'author'  		=> 'Jean-Lou Dupont',
+	'description'	=> 'Provides stubbing facility for extensions handling rare events. Extensions registered: ', 
+	'url'			=> StubManager::getFullUrl(__FILE__),				
 );
 
 class StubManager
