@@ -17,10 +17,10 @@ tag <nowiki><noparsercaching/></nowiki>.
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <geshi lang=php>
-require('extensions/ExtensionClass.php');
+require('extensions/StubManager.php');
 require('extensions/ParserTools/ParserTools.php');
 </geshi>
 
@@ -28,12 +28,27 @@ require('extensions/ParserTools/ParserTools.php');
 
 == Code ==
 </wikitext>*/
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: ParserTools extension will not work!';	
-else
+
+global $wgExtensionCredits;
+$wgExtensionCredits[ParserToolsClass::thisType][] = array( 
+	'name'        => ParserToolsClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class ParserToolsClass
 {
-	require( "ParserToolsClass.php" );
-	ParserToolsClass::singleton();
-}
+	// constants.
+	const thisName = 'ParserToolsClass';
+	const thisType = 'other';
+	  
+	
+	function __construct(  ) {	}
+
+	public function tag_noparsercaching( &$text, &$params, &$parser )
+	{ $parser->disableCache(); }
+
+} // end class
 ?>

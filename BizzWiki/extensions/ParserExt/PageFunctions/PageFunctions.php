@@ -37,7 +37,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * <nowiki>(($#cshow:group|text$))</nowiki>
 
 == DEPENDANCIES ==
-* ExtensionClass extension
+* [[Extension:StubManager]] extension
 * ParserPhase2 extension (optional)
 
 == HISTORY ==
@@ -47,37 +47,32 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 
 </wikitext>*/
 
-class PageFunctionsClass extends ExtensionClass
+global $wgExtensionCredits;
+$wgExtensionCredits[PageFunctionsClass::thisType][] = array( 
+	'name'        => PageFunctionsClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Provides page scope functions',
+	'url' 		=> StubManager::getFullUrl(__FILE__),						
+);
+
+class PageFunctionsClass
 {
 	const thisName = 'PageFunctions';
 	const thisType = 'other';
-	const id       = '$Id$';	
 
 	var $pageVars;
 
-	public static function &singleton( )
-	{ return parent::singleton(); }
-	
 	// Our class defines magic words: tell it to our helper class.
-	public function PageFunctionsClass()
+	public function __construct()
 	{	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Provides page scope functions',
-			'url' => self::getFullUrl(__FILE__),						
-		);
-	
 		$this->pageVars = array();
-		return parent::__construct( );	
 	}
 
 	// ===============================================================
 	public function mg_pagetitle( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		return $this->setTitle( $params[0] );
 	}
 	private function setTitle( &$title )
@@ -89,7 +84,7 @@ class PageFunctionsClass extends ExtensionClass
 	// ===============================================================
 	public function mg_pagesubtitle( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->setSubTitle( $params[0] );
 	}
 	private function setSubTitle( &$title )
@@ -101,13 +96,13 @@ class PageFunctionsClass extends ExtensionClass
 	// ===============================================================
 	public function mg_pageexists( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		return $this->doesPageExists( $params[0] );
 	}
 
 	private function doesPageExists( &$title ) 
 	{
-		$a = $this->getArticle( $title );
+		$a = StubManager::getArticle( $title );
 		if (is_object($a)) 
 			$id=$a->getID();
 		else $id = 0;
@@ -136,12 +131,12 @@ class PageFunctionsClass extends ExtensionClass
 	}
 	public function mg_varset( &$parser ) 
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->pageVars[ $params[0] ] = $params[1];		
 	}
 	public function mg_varget( &$parser ) 
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		return @$this->pageVars[ $params[0] ];		
 	}
 	/**
@@ -152,7 +147,7 @@ class PageFunctionsClass extends ExtensionClass
 	 */
 	public function mg_varaset( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->pageVars[ $params[0] ][ $params[1] ] = $params[2];		
 	
 	}
@@ -163,7 +158,7 @@ class PageFunctionsClass extends ExtensionClass
 	 */
 	public function mg_varaget( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		return @$this->pageVars[ $params[0] ][ $params[1] ];		
 	}
 	// ===============================================================
@@ -177,7 +172,4 @@ class PageFunctionsClass extends ExtensionClass
 			return $text;
 	}
 } // end class	
-
-// Let's create a single instance of this class
-PageFunctionsClass::singleton();
 ?>
