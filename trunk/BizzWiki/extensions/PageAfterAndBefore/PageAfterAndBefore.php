@@ -1,41 +1,38 @@
 <?php
 /*
- * PageAfterAndBefore.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- *
- * Purpose:  Provides a 'magic word' interface to retrieve
- *           'preceding' and 'succeding' pages relative to a
- *           given page title.           
- *
- * Features:
- * *********
- *
- * {{#pagebefore: [context]|[namespace]|[title]|[category] }}
- * {{#pageafter:  [context]|[namespace]|[title]|[category] }}
- * {{#firstpage:  [context]|[namespace]|        [category]|[filtercurrent] }}
- * {{#lastpage:   [context]|[namespace]|        [category]|[filtercurrent] }}
- *
- * Where: 
- * -- 'context'       is reserved for future use
- * -- 'namespace'     denotes the canonical name of the namespace one wishes to act on
- * -- 'title'         denotes the 'prefixedDBkey' (i.e. title name with underscores) 
- * -- 'category'      denotes the category name used for filtering titles
- * -- 'filtercurrent' if the current title == last/first page, filter if 'yes'
- *
- * DEPENDANCY:
- * 1) 'ExtensionClass' extension
- *
- * Tested Compatibility:  MW 1.8.2, 1.9.3
- *
- * HISTORY:
- * -- Version 1.0:	initial availability
- *            1.1:  Added support for checking
- *                  IF 'firstpage' == 'currentpage'
- *                  OR 'lastpage'  == 'currentpage'
- *                  THEN don't return title name.
- *          
+PageAfterAndBefore.php
+MediaWiki extension
+@author: Jean-Lou Dupont (http://www.bluecortex.com)
+
+== Purpose ==
+Provides a 'magic word' interface to retrieve 'preceding' and 'succeding' pages relative to a given page title.           
+
+== Features ==
+* <nowiki>{{#pagebefore: [context]|[namespace]|[title]|[category] }}</nowiki>
+* <nowiki>{{#pageafter:  [context]|[namespace]|[title]|[category] }}</nowiki>
+* <nowiki>{{#firstpage:  [context]|[namespace]|        [category]|[filtercurrent] }}</nowiki>
+* <nowiki>{{#lastpage:   [context]|[namespace]|        [category]|[filtercurrent] }}</nowiki>
+
+Where: 
+* 'context'       is reserved for future use
+* 'namespace'     denotes the canonical name of the namespace one wishes to act on
+* 'title'         denotes the 'prefixedDBkey' (i.e. title name with underscores) 
+* 'category'      denotes the category name used for filtering titles
+* 'filtercurrent' if the current title == last/first page, filter if 'yes'
+
+== DEPENDANCY ==
+* [[Extension:ExtensionClass]] extension
+
+== Tested Compatibility ==
+MW 1.8.2, 1.9.3
+
+== HISTORY ==
+* -- Version 1.0:	initial availability
+*            1.1:  Added support for checking
+*                  IF 'firstpage' == 'currentpage'
+*                  OR 'lastpage'  == 'currentpage'
+*                  THEN don't return title name.
+
  */
 $wgExtensionCredits['other'][] = array( 
 	'name'    => 'PageAfterAndBefore Extension', 
