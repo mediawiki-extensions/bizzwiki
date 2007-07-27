@@ -11,6 +11,7 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * Page existence check '#pageexists'
 * Page scope variable set '#varset'
 * Page scope variable get '#varget'
+* Page scope variable set & capture '#varcapset'
 * Wikitext conditional 'show'
 * Hook based variable get and set
 
@@ -23,6 +24,7 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * <nowiki>{{#varget:variable name}}</nowiki>
 * <nowiki>{{#varaset:variable name|array key|array value}}</nowiki>
 * <nowiki>{{#varaget:variable name|array key}}</nowiki>
+* <nowiki>{{#varcapset:variable name|value}}</nowiki>
 * <nowiki>{{#cshow:group|text}}</nowiki>
 ** Where 'group' is the user's group membership check to perform
 
@@ -34,6 +36,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * <nowiki>(($#varget:variable name $))</nowiki>
 * <nowiki>(($#varaset:variable name|array key|array value$))</nowiki>
 * <nowiki>(($#varaget:variable name|array key$))</nowiki>
+* <nowiki>(($#varcapset:variable name|value$))</nowiki>
 * <nowiki>(($#cshow:group|text$))</nowiki>
 
 == DEPENDANCIES ==
@@ -139,6 +142,20 @@ class PageFunctionsClass
 		$params = StubManager::processArgList( func_get_args(), true );
 		return @$this->pageVars[ $params[0] ];		
 	}
+	/**
+		Captures a variable
+		
+		Useful when building complex HTML pages.
+		
+		{{#varcapset: variable name|value }}
+		((#varcapset: variable name|value )) 
+	 */
+	public function mg_varcapset( &$parser )
+	{
+		$params = StubManager::processArgList( func_get_args(), true );
+		$this->pageVars[ $params[0] ] = $params[1];
+		return $params[1];
+	}	 
 	/**
 		Sets a variable to an array.
 		param 0: variable name

@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ParserPhase2.php
 |-
-| <b>Revision</b> || $Id$
+| <b>Revision</b> || $Id: ParserPhase2.php 371 2007-07-12 15:05:24Z jeanlou.dupont $
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
@@ -39,6 +39,14 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 * fixed client side caching logic due to a bug in PHP's preg_match_all function
 * fixed issue with $wgParser not having a valid 'mTitle' property set
 * added 'disable' command
+* Removed dependency on 'ExtensionClass'
+* Added 'stub' capability
+* Added 'EndParserPhase2' hook
+* Added pattern: ((magic word|... )) which more closely maps to standard MW parser function calling
+** DO NOT MIX PATTERNS ON THE SAME PAGE i.e. no (($...$)) mixing up with ((...))
+
+== TODO ==
+* possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)
 
 == Code ==
 </wikitext>*/
@@ -57,7 +65,8 @@ class ParserPhase2Class
 	const thisName = 'ParserPhase2Class';
 	const thisType = 'other';
 	
-	const pattern = '/\(\(\$(.*)\$\)\)/siU';
+	const pattern1 = '/\(\(\$(.*)\$\)\)/siU';
+	const pattern2 = '/\(\((.*)\)\)/siU';	// tracks more closely MW parser functions style
 	
 	function __construct( ) {}
 
@@ -140,14 +149,23 @@ class ParserPhase2Class
 
 		$this->replaceList( $text, $m, $rl );
 
+		wfRunHooks('EndParserPhase2', array( &$op, &$text ) );
+
 		return true; // be nice with other extensions.
 	}
 	private function getList ( &$text )
 	{
 		// find the (($...$)) matches
-		$r = preg_match_all(self::pattern, $text, $m );	
+		$r1 = preg_match_all(self::pattern1, $text, $m1 );
 		
-		return $m;
+		// if we found some, return.
+		if ( ($r1 !== false) && ( $r1!==0 ) )
+			return $m1;
+		
+		// find the ((#...#)) matches	
+		$r2 = preg_match_all(self::pattern2, $text, $m2 );	
+		
+		return $m2;
 	}
 	private function getValue( $varid )
 	{

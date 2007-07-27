@@ -437,6 +437,7 @@ StubManager::createStub(	'PageFunctionsClass',
 							array( 'pagetitle','pagesubtitle','pageexists',
 									'varset', 'varget',
 									'varaset', 'varaget',
+									'varcapset',
 									'cshow'
 									 ),  //of parser function magic words,
 							null
