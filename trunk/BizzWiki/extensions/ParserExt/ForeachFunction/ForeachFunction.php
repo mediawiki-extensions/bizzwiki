@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ForeachFunction.php
 |-
-| <b>Revision</b> || $Id$
+| <b>Revision</b> || $Id: ForeachFunction.php 339 2007-07-10 02:33:36Z jeanlou.dupont $
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
@@ -34,15 +34,15 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 ** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
-* ExtensionClass extension (v>=306)
+* [[Extension:StubManager]] extension (v>=306)
 * ParserPhase2 extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
+require('extensions/StubManager.php');
 require('extensions/ForeachFunction/ForeachFunction.php');
 </source>
 
@@ -50,36 +50,27 @@ require('extensions/ForeachFunction/ForeachFunction.php');
 
 == Code ==
 </wikitext>*/
+global $wgExtensionCredits;
+$wgExtensionCredits[ForeachFunctionClass::thisType][] = array( 
+	'name'			=> ForeachFunctionClass::thisName, 
+	'version'		=> StubManager::getRevisionId( '$Id$' ),
+	'author'		=> 'Jean-Lou Dupont', 
+	'description'	=> 'Looping functions for global objects using parser functions',
+	'url' 			=> StubManager::getFullUrl(__FILE__),			
+);
 
-class ForeachFunctionClass extends ExtensionClass
+class ForeachFunctionClass
 {
 	// constants.
 	const thisName = 'ForeachFunctionClass';
 	const thisType = 'other';
-	const id       = '$Id$';	
 
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
 	static $exemptNamespaces;
 		
-	public static function &singleton()
-	{ return parent::singleton( );	}
-	public function setup() 
-	{ parent::setup();	}
-
-	function ForeachFunctionClass( )
+	function __construct( )
 	{
-		parent::__construct( );
-
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Looping functions for global objects using parser functions',
-			'url' => self::getFullUrl(__FILE__),			
-		);
-
 		// default exempt namespaces from the BizzWiki platform.
 		// won't affect installs of the extension outside the BizzWiki platform.
 		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
@@ -204,5 +195,4 @@ class ForeachFunctionClass extends ExtensionClass
 	}
 
 } // end class.
-
 ?>
