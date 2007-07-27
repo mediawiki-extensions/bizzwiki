@@ -180,3 +180,4 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - RegexTools: removed dependency on ExtensionClass
 - PageFunctions: removed dependency on ExtensionClass
 - ParserTools: removed dependency on ExtensionClass
+- DocProc: removed dependency on ExtensionClass

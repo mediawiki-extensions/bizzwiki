@@ -61,7 +61,8 @@ $Id$
 * ViewSource Right -> NO
 * DocProc          -> YES
 * ImageLink        -> YES
-* MiscParserFunctions -> YES
+* CacheTools       -> YES
+* Geshi            -> YES
 
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension

@@ -452,8 +452,18 @@ StubManager::createStub(	'RegexToolsClass',
 							null
 						 );
 
+StubManager::createStub(	'DocProcClass', 
+							$bwExtPath.'/DocProc/DocProc.php',
+							null,							
+							null,
+							false, 					// no need for logging support
+							array('docproc'),		// tags
+							null, 					// parser Functions
+							null
+						 );
+
 require('extensions/RecentChangesManager/RecentChangesManager.php');
-require('extensions/DocProc/DocProc.php');
+//require('extensions/DocProc/DocProc.php');
 require('extensions/ImageLink/ImageLink.php');
 require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
 

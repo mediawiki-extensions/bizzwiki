@@ -29,10 +29,10 @@ The envisaged target application for this extension is to document wikitext that
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
+require('extensions/StubManager.php');
 require('extensions/DocProc/DocProc.php');
 </source>
 
@@ -40,12 +40,39 @@ require('extensions/DocProc/DocProc.php');
 
 == Code ==
 </wikitext>*/
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: DocProc extension will not work!';	
-else
+
+global $wgExtensionCredits;
+$wgExtensionCredits[DocProcClass::thisType][] = array( 
+	'name'        => DocProcClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => "Documents wikitext with 'markup/magic words' whilst still processing as per normal.",
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class DocProcClass
 {
-	require( "DocProcClass.php" );
-	DocProcClass::singleton();
-}
+	// constants.
+	const thisName = 'DocProc';
+	const thisType = 'other';
+	
+	static $allowedDocTags = array( 'code', 'pre' );
+	static $defaultDocTag = 'code';
+	
+	function __construct( ) {}
+
+	public function tag_docproc( &$text, &$params, &$parser )
+	{
+		$tag = @$params['tag'];
+		
+		// make sure the user is asking for a valid HTML tag for the documentation part.
+		$docTag = (in_array($tag, self::$allowedDocTags)) ? ($tag) : (self::$defaultDocTag);		
+		
+		// parse the wikitext as per required as if the said text wasn't being automatically documented.
+		$pt = $parser->recursiveTagParse( $text, null, $parser );
+		
+		return '<'.$docTag.'>'.htmlspecialchars($text).'</'.$docTag.'>'.$pt;
+	}
+} // end class
+
 ?>
