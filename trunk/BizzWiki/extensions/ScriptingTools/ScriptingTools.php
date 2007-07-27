@@ -6,10 +6,13 @@ ScriptingTools.php by Jean-Lou Dupont
 Provides an interface to page scripting (i.e. Javascript).
 
 == Features ==
+* '#jsminandstore' magic word
+* Secure: only 'edit' protected pages are allowed
 * Respects BizzWiki's global setting for scripts directory '$bwScriptsDirectory'
 * Supports only one Javascript code section per page
 
 == Usage ==
+* Make sure that the scripts directory is writable by the PHP process
 
 == DEPENDANCIES ==
 * [[Extension:StubManager]] extension
@@ -91,7 +94,8 @@ class ScriptingToolsClass
 			
 		$code	= self::extractJsCode( $text );
 		$mincode= self::minify( $code );
-		$err	= self::store( $mincode );
+		$filename = self::getFileName( $article );
+		$err	= self::store( $mincode, $filename );
 		
 		if ($err!==false)
 			self::outputErrorMessage( $err );
@@ -99,7 +103,12 @@ class ScriptingToolsClass
 		// continue hook-chain
 		return true;
 	}
-
+	/**
+	 */
+	public static function outputErrorMessage( $errCode )
+	{
+		
+	}	 
 	/**
 		Iterate through the possible patterns
 		to find the Javascript code on the page.
@@ -113,17 +122,27 @@ class ScriptingToolsClass
 		
 		return null;
 	}
-	
+	/**
+		Minify the Javascript code using the provided
+		external 'Crockford' engine.
+	 */
 	public static function minify( &$code )
 	{
 		require_once( dirname(__FILE__).'/jsmin.php' );
 		$minifier = new JSMin( $code );
 		return $minifier->min();
 	}
-	
-	public static function store( &$code )
+	/**
+	 */
+	public static function store( &$code, &$filename )
 	{
-		
+		return file_put_contents( $filename, $code );
 	}
-	
+	public static function getFileName( &$article )
+	{
+		$title = $article->mTitle;
+		$name  = $title->getDBkey();
+		
+		return self::$base.'/'.$name;
+	}
 }  // end class declaration
