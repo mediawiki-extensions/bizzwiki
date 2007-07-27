@@ -7,6 +7,7 @@ Provides an interface to page scripting (i.e. Javascript).
 
 == Features ==
 * Respects BizzWiki's global setting for scripts directory '$bwScriptsDirectory'
+* Supports only one Javascript code section per page
 
 == Usage ==
 
@@ -32,6 +33,11 @@ class ScriptingToolsClass
 {
 	const thisName = 'ScriptingTools';
 	const thisType = 'other';
+
+	static $patterns = array(
+								'/<javascript(?:.*)\>(.*)(?:\<.?javascript>)/siU',
+								'/<js(?:.*)\>(.*)(?:\<.?js>)/siU',
+							);
 
 	var $doMinAndStore;
 	
@@ -65,7 +71,9 @@ class ScriptingToolsClass
 	public function mg_jsminandstore( &$parser )
 	{
 		// can the user perform this function?
-		
+		$title = $parser->mTitle;
+		if ( !$title->isProtected( 'edit' ) ) 
+			return "<b>ScriptingTools:</b> ".wfMsg('badaccess');
 		
 		// capture the command; it will be carried out
 		// in the ParserAfterTidy hook.
@@ -92,14 +100,25 @@ class ScriptingToolsClass
 		return true;
 	}
 
+	/**
+		Iterate through the possible patterns
+		to find the Javascript code on the page.
+	 */
 	public static function extractJsCode( &$text )
 	{
+		foreach( $patterns as $pattern)		
+			$r = preg_match( $pattern, $text, $m );
+			if ($r>0)
+				return $m[1];
 		
+		return null;
 	}
 	
 	public static function minify( &$code )
 	{
-		
+		require_once( dirname(__FILE__).'/jsmin.php' );
+		$minifier = new JSMin( $code );
+		return $minifier->min();
 	}
 	
 	public static function store( &$code )
