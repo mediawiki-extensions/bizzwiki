@@ -50,10 +50,12 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 * Imported required functionality from ExtensionClass
 * Imported 'addtohead' tag functionality from SecureHTML extension
 * Removed dependency on ExtensionClass
+* Added support for a global setting '$bwScriptsDirectory'
 
 == Installation ==
 <source lang=php>
 require('extensions/StubManager.php');
+#$bwScriptsDirectory = '/scripts';  // optional
 StubManager::createStub(	'AddScriptCssClass', 
 							$bwExtPath.'/AddScriptCss/AddScriptCss.php',
 							null,							
@@ -88,6 +90,11 @@ class AddScriptCssClass// extends ExtensionClass
 
 	function __construct( )
 	{
+		// take on the global setting if found.
+		global $bwScriptsDirectory;
+		if (isset( $bwScriptsDirectory ))		
+			self::$base = $bwScriptsDirectory;
+		
 		global $wgScriptPath;
 		global $wgExtensionCredits;
 		$wgExtensionCredits['other'][] = array( 

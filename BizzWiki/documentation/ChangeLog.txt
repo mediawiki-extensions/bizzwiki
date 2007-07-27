@@ -185,4 +185,5 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - ParserPhase2: added 'EndParserPhase2' hook
 - ParserPhase2: added pattern ((magic word...)) to match more closely stock MediaWiki
 - ParserPhase2: added 'varcapset' parser function
+- Added 'ScriptingTools' extension
 - 

@@ -473,6 +473,16 @@ StubManager::createStub(	'DocProcClass',
 							null
 						 );
 
+StubManager::createStub(	'ScriptingToolsClass', 
+							$bwExtPath.'/ScriptingTools/ScriptingTools.php',
+							null,					// i18n file			
+							array(''),				// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							null, 					// parser Functions
+							null
+						 );
+
 require('extensions/RecentChangesManager/RecentChangesManager.php');
 require('extensions/ImageLink/ImageLink.php');
 require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
