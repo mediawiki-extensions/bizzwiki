@@ -250,7 +250,7 @@ class Stub
 		$this->obj = null;
 	}
 	/**
-		called in the same timing as $wgExtensionFunctions is processed
+		called in the same timing as $wgExtensionFunctions array is processed
 	 */
 	public function setup()
 	{

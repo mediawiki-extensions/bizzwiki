@@ -97,6 +97,8 @@ $Id$
 == Presentation Layer ==
 * Short URL
 * JS form elements validation helper class
+* On-the-fly JS minifier
+* JS file group packager
 
 == DynamicPageList2 ==
 * TODO Integration 'DynamicPageList2' extension
