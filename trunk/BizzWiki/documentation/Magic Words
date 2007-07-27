@@ -158,6 +158,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 
 {{row|addscript         | Tag             | AddScriptCss}}
 {{row|#addscript        | Parser Function | AddScriptCss}}
+{{row|#addtohead        | Tag             | AddScriptCss}}
 
 {{row|NOCLIENTCACHING   | Magic Word      | CacheTools}}
 
@@ -171,6 +172,8 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|js                | Tag             | geshi}}
 
 {{row|#iwl              | Parser Function | InterwikiLinkManager}}
+
+{{row|#html             | Parser Function | SecureHTML }}
 
 {{row|#pg               | Parser Function | SecureProperties}}
 {{row|#ps               | Parser Function | SecureProperties}}

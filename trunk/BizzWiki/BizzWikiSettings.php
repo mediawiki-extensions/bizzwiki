@@ -342,7 +342,7 @@ require('extensions/ParserExt/PageFunctions/PageFunctions.php');
 require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
 require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 require('extensions/ParserExt/RegexTools/RegexTools.php');
-require('extensions/ParserExt/MiscParserFunctions/MiscParserFunctions.php');
+//require('extensions/ParserExt/MiscParserFunctions/MiscParserFunctions.php');
 
 	// Stubs
 	//  Used for rare events handling.
@@ -391,6 +391,16 @@ StubManager::createStub(	'AddScriptCssClass',
 							false, // no need for logging support
 							array( 'addtohead', 'addscript' ),	// tags
 							array( 'addscript' ), 				//of parser function magic words,
+							null
+						 );
+
+StubManager::createStub(	'MiscParserFunctions', 
+							$bwExtPath.'/ParserExt/MiscParserFunctions/MiscParserFunctions.php',
+							null,							
+							null,
+							false, // no need for logging support
+							null,	// tags
+							array( 'trim','nowikitext','gettagsection' ),  //of parser function magic words,
 							null
 						 );
 

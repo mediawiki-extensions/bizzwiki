@@ -16,47 +16,40 @@ Provides miscellaneous parser functions (e.g. #trim, #nowikitext).
 ** Secure: requires the page to be protected for 'edit'
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
+require('extensions/StubManager.php');
 require('extensions/MiscParserFunctions/MiscParserFunctions.php');
 </source>
 
 == History ==
+* Adapted to StubManager's stubbing facility
 
 == Code ==
 </wikitext>*/
 
-class MiscParserFunctions extends ExtensionClass
+global $wgExtensionCredits;
+$wgExtensionCredits[MiscParserFunctions::thisType][] = array( 
+	'name'        => MiscParserFunctions::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Miscellaneous parser functionality',
+	'url' => StubManager::getFullUrl(__FILE__),			
+);
+
+class MiscParserFunctions
 {
 	// constants.
 	const thisName = 'MiscParserFunctions';
 	const thisType = 'other';
-	const id       = '$Id$';		
 	  
-	public static function &singleton()
-	{ return parent::singleton( );	}
-	
 	function __construct( )
-	{
-		parent::__construct( );
-
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Miscellaneous parser functionality',
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	public function setup() 
-	{ parent::setup(); }
+	{	}
 	
 	/**
 		Trims a string.
@@ -144,9 +137,4 @@ class MiscParserFunctions extends ExtensionClass
 
 
 } // end class
-
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: MiscParserFunctions extension will not work!';	
-else
-	MiscParserFunctions::singleton();
 ?>
