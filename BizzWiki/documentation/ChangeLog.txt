@@ -176,8 +176,13 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - AddScriptCss: enhanced to be 'stub'-enabled
 - MiscParserFunctions: enhanced to be 'stub'-enabled
 - ForeachFunction: enhanced to be 'stub'-enabled
-- NamespaceFunctions: removed dependency on ExtensionClass
-- RegexTools: removed dependency on ExtensionClass
-- PageFunctions: removed dependency on ExtensionClass
-- ParserTools: removed dependency on ExtensionClass
-- DocProc: removed dependency on ExtensionClass
+- NamespaceFunctions: removed dependency on ExtensionClass, now is 'stub'-enabled
+- RegexTools: removed dependency on ExtensionClass, now is 'stub'-enabled
+- PageFunctions: removed dependency on ExtensionClass, now is 'stub'-enabled
+- ParserTools: removed dependency on ExtensionClass, now is 'stub'-enabled
+- DocProc: removed dependency on ExtensionClass, now is 'stub'-enabled
+- ParserPhase2: removed dependency on ExtensionClass, now is 'stub'-enabled
+- ParserPhase2: added 'EndParserPhase2' hook
+- ParserPhase2: added pattern ((magic word...)) to match more closely stock MediaWiki
+- ParserPhase2: added 'varcapset' parser function
+- 

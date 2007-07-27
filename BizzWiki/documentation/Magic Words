@@ -143,6 +143,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#varget           | Parser Function | PageFunctions }}
 {{row|#varaset          | Parser Function | PageFunctions }}
 {{row|#varaget          | Parser Function | PageFunctions }}
+{{row|#varcapset        | Parser Function | PageFunctions }}
 {{row|#cshow            | Parser Function | PageFunctions }}
 
 {{row|#foreachx         | Parser Function | ForeachFunction}}
@@ -174,6 +175,8 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#iwl              | Parser Function | InterwikiLinkManager}}
 
 {{row|#html             | Parser Function | SecureHTML }}
+
+{{row|disable           | Parser Function | ParserPhase2 }}
 
 {{row|#pg               | Parser Function | SecureProperties}}
 {{row|#ps               | Parser Function | SecureProperties}}
