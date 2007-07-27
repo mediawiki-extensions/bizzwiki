@@ -175,3 +175,8 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - Moved 'addtohead' tag functionality from SecureHTML to AddScriptCss
 - AddScriptCss: enhanced to be 'stub'-enabled
 - MiscParserFunctions: enhanced to be 'stub'-enabled
+- ForeachFunction: enhanced to be 'stub'-enabled
+- NamespaceFunctions: removed dependency on ExtensionClass
+- RegexTools: removed dependency on ExtensionClass
+- PageFunctions: removed dependency on ExtensionClass
+- ParserTools: removed dependency on ExtensionClass

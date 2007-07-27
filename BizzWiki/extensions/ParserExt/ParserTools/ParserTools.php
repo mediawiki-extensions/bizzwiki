@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ParserTools.php
 |-
-| <b>Revision</b> || $Id$
+| <b>Revision</b> || $Id: ParserTools.php 328 2007-07-09 14:21:31Z jeanlou.dupont $
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
@@ -41,10 +41,9 @@ $wgExtensionCredits[ParserToolsClass::thisType][] = array(
 class ParserToolsClass
 {
 	// constants.
-	const thisName = 'ParserToolsClass';
+	const thisName = 'ParserTools';
 	const thisType = 'other';
 	  
-	
 	function __construct(  ) {	}
 
 	public function tag_noparsercaching( &$text, &$params, &$parser )

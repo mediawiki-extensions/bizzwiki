@@ -22,6 +22,7 @@ $bwExtPath = $IP.'/BizzWiki/extensions';
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
 require('extensions/ParserPhase2/ParserPhase2.php');
+require('extensions/StubManager.php');
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
@@ -319,7 +320,7 @@ require('extensions/SecureHTML/SecureHTML.php');
 	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
 require('extensions/SecureProperties/SecureProperties.php');
-require('extensions/ParserExt/ParserTools/ParserTools.php');
+//require('extensions/ParserExt/ParserTools/ParserTools.php');
 require('extensions/FormProc/FormProc.php');
 
 require('extensions/AutoLanguage/AutoLanguage.php');
@@ -329,6 +330,7 @@ AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 require('extensions/CacheTools/CacheTools.php');
 
+
 	// Parser Extensions
 	// %%%%%%%%%%%%%%%%%
 // http://meta.wikimedia.org/wiki/ParserFunctions
@@ -337,16 +339,16 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
-require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
-require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
+//require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
+//require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
 require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
 require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
-require('extensions/ParserExt/RegexTools/RegexTools.php');
+//require('extensions/ParserExt/RegexTools/RegexTools.php');
 //require('extensions/ParserExt/MiscParserFunctions/MiscParserFunctions.php');
 
 	// Stubs
 	//  Used for rare events handling.
-require('extensions/StubManager.php');
+
 
 StubManager::createStub(	'EmailLog', 
 							$bwExtPath.'/EmailLog/EmailLog.php',
@@ -394,6 +396,18 @@ StubManager::createStub(	'AddScriptCssClass',
 							null
 						 );
 
+// Parser Functions
+StubManager::createStub(	'ForeachFunctionClass', 
+							$bwExtPath.'/ParserExt/ForeachFunction/ForeachFunction.php',
+							null,							
+							null,
+							false, // no need for logging support
+							null,	// tags
+							array( 'foreachx','foreachy','forx' ),  //of parser function magic words,
+							null
+						 );
+
+
 StubManager::createStub(	'MiscParserFunctions', 
 							$bwExtPath.'/ParserExt/MiscParserFunctions/MiscParserFunctions.php',
 							null,							
@@ -401,6 +415,40 @@ StubManager::createStub(	'MiscParserFunctions',
 							false, // no need for logging support
 							null,	// tags
 							array( 'trim','nowikitext','gettagsection' ),  //of parser function magic words,
+							null
+						 );
+
+StubManager::createStub(	'PageFunctionsClass', 
+							$bwExtPath.'/ParserExt/PageFunctions/PageFunctions.php',
+							null,
+							array( 'PageVarGet', 'PageVarSet' ),
+							false, // no need for logging support
+							null,	// tags
+							array( 'pagetitle','pagesubtitle','pageexists',
+									'varset', 'varget',
+									'varaset', 'varaget',
+									'cshow'
+									 ),  //of parser function magic words,
+							null
+						 );
+
+StubManager::createStub(	'ParserToolsClass', 
+							$bwExtPath.'/ParserExt/ParserTools/ParserTools.php',
+							null,							
+							null,
+							false, 						// no need for logging support
+							array('noparsercaching'),	// tags
+							null,
+							null
+						 );
+
+StubManager::createStub(	'RegexToolsClass', 
+							$bwExtPath.'/ParserExt/RegexTools/RegexTools.php',
+							null,							
+							null,
+							false, 						// no need for logging support
+							null,						// tags
+							array('regx_vars', 'regx'), // parser Functions
 							null
 						 );
 
