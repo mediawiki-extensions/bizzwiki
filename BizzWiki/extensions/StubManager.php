@@ -181,6 +181,11 @@ class StubManager
 		
 		global $wgHooks;
 		$wgHooks['SpecialVersionExtensionTypes'][] = 'StubManager::hUpdateExtensionCredits';
+		
+		// load all the extensions so they get a change to show their credits
+		foreach( self::$stubList as $index => $e )
+			#echo $e['classfilename'].' ';
+			require_once( $e['classfilename'] );
 	}
 	public function hUpdateExtensionCredits( &$sp, &$ext )
 	{
@@ -215,6 +220,16 @@ class StubManager
 	}
 	static function getRevisionId( $data=null )
 	{	return self::getRevisionData( $id, $date, $data );	}
+
+	static function getFullUrl( $filename )
+	{ return 'http://www.bizzwiki.org/index.php?title=Filesystem:'.self::getRelativePath( $filename );	}
+
+	static function getRelativePath( $filename )
+	{
+		global $IP;
+		$relPath = str_replace( $IP, '', $filename ); 
+		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
+	}
 	
 } // end class
 
@@ -300,10 +315,6 @@ class Stub
 	}
 	private function setupLanguageGetMagicHook()
 	{
-		static $done = false;
-		if ($done) return;
-		$done = true;
-
 		global $wgHooks;				
 		$wgHooks['LanguageGetMagic'            ][] = array( $this, 'hookLanguageGetMagic'             );
 		$wgHooks['MagicWordMagicWords'         ][] = array( $this, 'hookMagicWordMagicWords'          );

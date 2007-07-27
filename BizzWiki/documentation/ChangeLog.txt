@@ -173,5 +173,5 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - Fixed 'ExtensionClass' for increased integration around 'ParserAfterTidy' hook
 - Enhanced 'StubManager' to cover all required stubbing cases (tags, magic words etc.)
 - Moved 'addtohead' tag functionality from SecureHTML to AddScriptCss
-- AddScriptCss: enhanced to be 'stub'-enable
-- 
+- AddScriptCss: enhanced to be 'stub'-enabled
+- MiscParserFunctions: enhanced to be 'stub'-enabled
