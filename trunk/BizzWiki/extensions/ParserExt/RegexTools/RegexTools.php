@@ -20,16 +20,16 @@ Provides 'magic words' performing regular expression pattern ( aka 'regex' )matc
 ** returns the index in the pattern array if match found
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
+* [[Extension:StubManager|StubManager]]
 * [[Extension:PageFunctions|Page Functions extension]]
 ** Required for 'regx_vars' magic word function
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
+require('extensions/StubManager.php');
 require('extensions/RegexTools/RegexTools.php');
 </source>
 
@@ -37,11 +37,63 @@ require('extensions/RegexTools/RegexTools.php');
 
 == Code ==
 </wikitext>*/
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: RegexTools extension will not work!';	
-else
+
+
+global $wgExtensionCredits;
+$wgExtensionCredits[RegexToolsClass::thisType][] = array( 
+	'name'        => RegexToolsClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => ' ',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class RegexToolsClass
 {
-	require( "RegexToolsClass.php" );
-	RegexToolsClass::singleton();
-}
+	// constants.
+	const thisName = 'RegexToolsClass';
+	const thisType = 'other';
+	  
+	function __construct( ) {}
+
+	/**
+		Returns index in pattern array of *first* pattern match.
+		
+		@param: patternArrayName:	variable name (found in PageFunctions extension) 
+		@param: input:				input string to regex match
+	 */
+	public function mg_regx_vars( &$parser, &$patternArrayName, &$input )
+	{
+		// the worst that can happen is that no valid return values are received.
+		wfRunHooks('PageVarGet', array( &$patternArrayName, &$parray ) );
+		$mIndex = self::regexMatchArray( $parray, $input );	
+		
+		return $mIndex;
+	}
+	public function mg_regx( &$parser, &$patternString, &$input )
+	{
+		return self::regexMatch( $patternString, $input );
+	}
+	
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+	
+	public static function regexMatchArray( &$patternArray, &$input )
+	{
+		if (!empty( $patternArray ))
+			foreach( $patternArray as $index => &$p )
+				if ( self::regexMatch( $p, $input ) )
+					return $index;
+		return null;
+	}
+	public static function regexMatch( &$p, &$input )
+	{
+		$pms= '/'.$p.'/siU';
+
+		$m = preg_match( $pms, $input );
+		if (($m !== false) && ($m>0))
+			return true;
+			
+		return false;
+	}
+} // end class declaration.
 ?>

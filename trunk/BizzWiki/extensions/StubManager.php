@@ -230,6 +230,125 @@ class StubManager
 		$relPath = str_replace( $IP, '', $filename ); 
 		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
 	}
+
+	public static function processArgList( $list, $getridoffirstparam=false )
+	/*
+	 * The resulting list contains:
+	 * - The parameters extracted by 'key=value' whereby (key => value) entries in the list
+	 * - The parameters extracted by 'index' whereby ( index = > value) entries in the list
+	 */
+	{
+		if ($getridoffirstparam)   
+			array_shift( $list );
+			
+		// the parser sometimes includes a boggie
+		// null parameter. get rid of it.
+		if (count($list) >0 )
+			if (empty( $list[count($list)-1] ))
+				unset( $list[count($list)-1] );
+		
+		$result = array();
+		foreach ($list as $index => $el )
+		{
+			$t = explode("=", $el);
+			if (!isset($t[1])) 
+				continue;
+			$result[ "{$t[0]}" ] = $t[1];
+			unset( $list[$index] );
+		}
+		if (empty($result)) 
+			return $list;
+		return array_merge( $result, $list );	
+	}
+	public static function getParam( &$alist, $key, $index, $default )
+	/*
+	 *  Gets a parameter by 'key' if present
+	 *  or fallback on getting the value by 'index' and
+	 *  ultimately fallback on default if both previous attempts fail.
+	 */
+	{
+		if (array_key_exists($key, $alist) )
+			return $alist[$key];
+		elseif (array_key_exists($index, $alist) && $index!==null )
+			return $alist[$index];
+		else
+			return $default;
+	}
+	public static function initParams( &$alist, &$templateElements, $removeNotInTemplate = true )
+	{
+		// v1.92 feature.
+		if ($removeNotInTemplate)
+			foreach( $templateElements as $index => &$el )
+				if ( !isset($alist[ $el['key'] ]) )
+					unset( $alist[$el['key']] );
+		
+		foreach( $templateElements as $index => &$el )
+			$alist[$el['key']] = $this->getParam( $alist, $el['key'], $el['index'], $el['default'] );
+	}
+	public function formatParams( &$alist , &$template )
+	// look at yuiPanel extension for usage example.
+	// $alist = { 'key' => 'value' ... }
+	{
+		foreach ( $alist as $key => $value )
+			// format the entry.
+			self::formatParam( $key, $value, $template );
+	}
+	private static function formatParam( &$key, &$value, &$template )
+	{
+		$format = self::getFormat( $key, $template );
+		if ($format !==null )
+		{
+			switch ($format)
+			{
+				case 'bool':   $value = (bool) $value; break; 
+				case 'int':    $value = (int) $value; break;
+				default:
+				case 'string': $value = (string) $value; break;					
+			}			
+		}
+	}
+	public static function getFormat( &$key, &$template )
+	{
+		$format = null;
+		foreach( $template as $index => &$el )
+			if ( $el['key'] == $key )
+				$format  = $el['format'];
+			
+		return $format;
+	}
+	public static function checkPageEditRestriction( &$title )
+	// v1.1 feature
+	// where $title is a Mediawiki Title class object instance
+	{
+		$proceed = false;
+  
+		$state = $title->getRestrictions('edit');
+		foreach ($state as $index => $group )
+			if ( $group == 'sysop' )
+				$proceed = true;
+
+		return $proceed;		
+	} 
+	public static function getArticle( $article_title )
+	{
+		$title = Title::newFromText( $article_title );
+		  
+		// Can't load page if title is invalid.
+		if ($title == null)	return null;
+		$article = new Article($title);
+
+		return $article;	
+	}
+	
+	static function isSysop( $user = null ) // v1.5 feature
+	{
+		if ($user == null)
+		{
+			global $wgUser;
+			$user = $wgUser;
+		}	
+		return in_array( 'sysop', $user->getGroups() );
+	}
 	
 } // end class
 
