@@ -97,7 +97,7 @@ class ScriptingToolsClass
 		$filename = self::getFileName( $article );
 		$err	= self::store( $mincode, $filename );
 		
-		if ($err!==false)
+		if ($err===false)
 			self::outputErrorMessage( $err );
 			
 		// continue hook-chain
@@ -115,11 +115,12 @@ class ScriptingToolsClass
 	 */
 	public static function extractJsCode( &$text )
 	{
-		foreach( $patterns as $pattern)		
+		foreach( $patterns as $pattern)
+		{	
 			$r = preg_match( $pattern, $text, $m );
 			if ($r>0)
 				return $m[1];
-		
+		}
 		return null;
 	}
 	/**
