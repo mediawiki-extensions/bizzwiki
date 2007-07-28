@@ -195,6 +195,6 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#firstpage        | Parser Function | PageAfterAndBefore }}
 {{row|#lastpage         | Parser Function | PageAfterAndBefore }}
 
-{{row|#jsminandstore    | Parser Function | ScriptingTools }}
+{{row|__jsminandstore__ | Proprietary Word| ScriptingTools }}
 
 |}
