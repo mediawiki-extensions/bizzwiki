@@ -13,6 +13,7 @@ Provides an interface to page scripting (i.e. Javascript).
 * Secure: only 'edit' protected pages are allowed
 * Respects BizzWiki's global setting for scripts directory '$bwScriptsDirectory'
 * Supports only one Javascript code section per page
+* Integrates with 'geshi' extensions highlighting the 'js' or 'javascript' tagged section
 
 == Usage ==
 * Make sure that the scripts directory is writable by the PHP process
@@ -49,7 +50,7 @@ class ScriptingToolsClass
 								'/<js(?:.*)\>(.*)(?:\<.?js>)/siU',
 							);
 
-
+	// relative directory from MediaWiki installation.
 	static $base = 'BizzWiki/scripts/';
 
 	public function __construct() 
