@@ -61,15 +61,53 @@ class ScriptingToolsClass
 			self::$base = $bwScriptsDirectory;
 	}
 
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   Scripting Helper: interface between MediaWiki and Javascript
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+   var Elements;
+   
+   /**
+		Function: mg_epropset
+		
+				{{#epropset: element id contained in pageVariable|property to set|value}}
+		
+		Parameters:
+		
+		parser - passed by MediaWiki
+		
+		pageVariable - page variable containing the element id to set
+		property     - the property
+		value        - the value to set the property to
+		
+    */
+	public function mg_epropset( &$parser, &$pageVariable, &$property, &$value )
+	{
+		$this->Elements[$pageVariable][$property] = $value;		
+	}
+
 	/**
+		Function: hEndParserPhase2
+		
 		This method injects the aggregated script code
 		into the page before it is finally sent to the client
 		browser.
+		
+		Parameters:
+		
+		op   - OutputPage object
+		text - string contained the page's text
 	 */
 	public function hEndParserPhase2( &$op, &$text )
 	{
-		// TODO	
+		// TODO
 	}
+
+
+
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   Minify & Store functionality
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+
 
 	/**
 		Remove the 'magic word' when we display the page.		
