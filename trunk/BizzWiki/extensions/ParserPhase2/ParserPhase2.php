@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*(($disable$))<wikitext>
 {| border=1
 | <b>File</b> || ParserPhase2.php
 |-
@@ -14,25 +14,50 @@ This extension enables performing a 'second pass' through a 'parser cached' page
 all templates & variables in a 'parser cached' page. This extension enables substituting selected 
 variables upon page view whilst still preserving the valuable job performed by the parser/parser cache.
 
+Additionally, the extension enables the execution of 'parser functions' and 'magic words' *after* the
+page's 'tidy' process is executed. This functionality is referred to as 'parser after tidy'. 
+This capability allows for the inclusion of text that would otherwise upset MediaWiki's parser 
+e.g. execution of a parser functions that replaces text in an <html> tagged section.
+
 == Features ==
 * Integrates with the standard Mediawiki Parser Cache
-* Provides a simple 'magic word' based interface to standard Mediawiki variables
+* Provides a simple 'magic word' based interface to standard Mediawiki variables & parser functions
+* Handles two invocation forms for the 'parser phase 2' functionality:
+** (($...$))
+** (( ... ))
 * Does not handle 'nested' magic words e.g. (($ magic word1 | (($magic word 2$)) $))
+* Handles one invocation for the 'parser after tidy' functionality:
+** ((% ... %))
 
 == Usage ==
-(($magic word$))
+=== ParserPhase2 functionality ===
+<code>(($magic word|...parameters...$))  or  (( ))</code>
 :Where 'variable' is a standard Mediawiki magic word e.g. CURRENTTIME, REVISIONID etc.
+=== Parser After Tidy functionality ===
+<code>((%magic word|...parameters...%))</code>
 
 == Dependancy ==
-* ExtensionClass extension
+* [[Extension:StubManager]]
 
 == Installation ==
-To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
-* Apply the following changes to 'LocalSettings.php'
+To install outside the BizzWiki platform:
+* Download [[Extension:StubManager]]
+** Place 'StubManager.php' file in '/extensions' directory
+* Download the extension files from the SVN repository
+** Place the files in '/extensions/ScriptingTools' directory
+* Perform the following changes to 'LocalSettings.php':
 <source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/ParserPhase2/ParserPhase2.php');
+require('/extensions/StubManager.php');
+
+StubManager::createStub(	'ParserPhase2Class', 
+							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
+							null,
+							array( 'OutputPageBeforeHTML','ParserAfterTidy' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
 </source>
 
 == History ==
@@ -44,9 +69,13 @@ require('extensions/ParserPhase2/ParserPhase2.php');
 * Added 'EndParserPhase2' hook
 * Added pattern: ((magic word|... )) which more closely maps to standard MW parser function calling
 ** DO NOT MIX PATTERNS ON THE SAME PAGE i.e. no (($...$)) mixing up with ((...))
+* Added functionality to execute parser functions/magic words just after the 'tidy' process
 
 == TODO ==
 * possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
 </wikitext>*/
@@ -65,21 +94,63 @@ class ParserPhase2Class
 	const thisName = 'ParserPhase2Class';
 	const thisType = 'other';
 	
-	const pattern1 = '/\(\(\$(.*)\$\)\)/siU';
-	const pattern2 = '/\(\((.*)\)\)/siU';	// tracks more closely MW parser functions style
+	// (($ ... $))
+	const pattern1a = '/\(\(\$(.*)\$\)\)/siU';
+	// ((  ...  ))
+	const pattern1b = '/\(\((.*)\)\)/siU';	// tracks more closely MW parser functions style
+	//  ((% ... %))
+	const pattern2  = '/\(\(\%(.*)\%\)\)/siU';
 	
 	function __construct( ) {}
 
-	function hOutputPageBeforeHTML( &$op, &$text )
+	/**
+		'Parser After Tidy' functionality:
+		
+		This function picks up the patterns ((% ... %)) and executes
+		the corresponding parser function/magic word *AFTER* the 'tidy' processed
+		is finished. This way, it is possible to include calls to function that would
+		generate otherwise unallowed wikitext for the parser.
+	 */
+	public function hParserAfterTidy( &$parser, &$text )
 	{
-		$m = $this->getList( $text );
+		$m = $this->getList2( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
+		$this->executeList( $m, $text );
+
+		return true; // be nice with other extensions.
+	}
+
+	/**
+		ParserPhase2 core function: gets a list of replacement to be done,
+		executes the referenced functions and replaces the text in of the page. 
+	 */
+	function hOutputPageBeforeHTML( &$op, &$text )
+	{
+		$m = $this->getList1( $text );
+		if ( empty( $m ) ) return true; // nothing to do
+
+		$this->executeList( $m, $text );
+
+		wfRunHooks('EndParserPhase2', array( &$op, &$text ) );
+
+		return true; // be nice with other extensions.
+	}
+	/**
+		This function handles all the hard work. It relies on MediaWiki's
+		parser to reach the registered 'parser functions' and 'magic words'.
+		
+		It also implements the special keyword (($disable$)) which stops all
+		'parserphase2' and 'parser after tidy' functionality. This is especially useful
+		in case of documentation pages.
+	 */
+	private function executeList( &$liste, &$text )
+	{
 		// PHP sometimes messes up in preg_match_all returning an empty array
 		// we need to guard against this or else client side caching always get thrashed!
 		$found = false; 
 		
-		foreach( $m[1] as $index => $str)
+		foreach( $liste[1] as $index => $str)
 		{
 			// (($magic word|... parameters...$))
 			$params = explode('|', $str);
@@ -145,28 +216,45 @@ class ParserPhase2Class
 		// we found some dynamic variables, disable client side caching.
 		// parser caching is not affected.
 		if ( $found )
-			$op->enableClientCache( false );
-
-		$this->replaceList( $text, $m, $rl );
-
-		wfRunHooks('EndParserPhase2', array( &$op, &$text ) );
-
-		return true; // be nice with other extensions.
+		{
+			global $wgOut;
+			$wgOut->enableClientCache( false );
+		}
+		
+		$this->replaceList( $text, $liste, $rl );
 	}
-	private function getList ( &$text )
+
+	private function getList1 ( &$text )
 	{
 		// find the (($...$)) matches
-		$r1 = preg_match_all(self::pattern1, $text, $m1 );
+		$r1 = preg_match_all(self::pattern1a, $text, $m1 );
 		
 		// if we found some, return.
 		if ( ($r1 !== false) && ( $r1!==0 ) )
 			return $m1;
 		
-		// find the ((#...#)) matches	
-		$r2 = preg_match_all(self::pattern2, $text, $m2 );	
+		// find the ((...)) matches	
+		$r2 = preg_match_all(self::pattern1b, $text, $m2 );	
 		
 		return $m2;
 	}
+	/**
+		Parser After Tidy related.
+	 */
+	private function getList2 ( &$text )
+	{
+		// find the ((%...%)) matches
+		$r = preg_match_all(self::pattern2, $text, $m );
+		
+		// if we found some, return.
+		if ( ($r !== false) && ( $r!==0 ) )
+			return $m;
+		
+		return null;
+	}
+	/**
+		Gets a value associated with a 'magic word'.
+	 */
 	private function getValue( $varid )
 	{
 		// ask our friendly MW parser for its help.
@@ -175,10 +263,15 @@ class ParserPhase2Class
 		
 		return $value;
 	}
+	/**
+		Go through the current page and replaces
+		the all the calls with the return values.
+	 */
 	private function replaceList( &$text, &$source, &$target )
 	{
-		foreach( $source[0] as $index => $marker )
-			$text = str_replace( $marker, $target[$index], $text );	
+		if (!empty( $source[0] ))
+			foreach( $source[0] as $index => $marker )
+				$text = str_replace( $marker, $target[$index], $text );	
 	}
 
 } // end class

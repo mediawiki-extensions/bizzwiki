@@ -6,7 +6,10 @@
 |Jean-Lou Dupont
 }}
 == Purpose ==
-Provides an interface to page scripting (i.e. Javascript).
+Provides an interface to page scripting (i.e. Javascript). 
+The extension provides 'minify and store' functionality for Javascript scripts.
+Furthermore, special keywords are provided as bridge between an HTML based
+page and JS scripts associated with the page (e.g. Mootools based widgets).
 
 == Features ==
 * '__jsminandstore__' magic word to enable 'Minify & Store' operation
@@ -20,11 +23,40 @@ Provides an interface to page scripting (i.e. Javascript).
 
 == DEPENDANCIES ==
 * [[Extension:StubManager]] extension
-* ParserPhase2 extension
-** Relies on the hook 'EndParserPhase2' to feed the script snippets collected through this extension
-** ParserPhase2 extension is *not* required for the 'Minify and Store' functionality.
+* For the 'scripting bridge' functionality, the following constitute dependencies:
+** [[Extension:ParserPhase2]] extension
+*** Relies on the hook 'EndParserPhase2' to feed the script snippets collected through this extension
+*** ParserPhase2 extension is *not* required for the 'Minify and Store' functionality
+** [[Extension:PageFunctions]] extension
+
+== Installation ==
+To install outside the BizzWiki platform:
+* Download [[Extension:StubManager]]
+** Place 'StubManager.php' file in '/extensions' directory
+* Download [[Extension:PageFunctions]] extension (if required)
+** Place 'PageFunctions.php' in '/extensions/PageFunctions' directory
+** Follow the instructions from the extension's description page
+* Download the extension files from the SVN repository
+** Place the files in '/extensions/ScriptingTools' directory
+* Perform the following changes to 'LocalSettings.php':
+<source lang=php>
+require('/extensions/StubManager.php');
+
+StubManager::createStub(	'ScriptingToolsClass', 
+							'/extensions/ScriptingTools/ScriptingTools.php',
+							null,					// i18n file			
+							array('ArticleSave', 'EndParserPhase2', 'ParserAfterTidy' ),	// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							null,					// parser Functions
+							null
+						 );
+</source>
 
 == HISTORY ==
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
 </wikitext>*/
@@ -64,11 +96,12 @@ class ScriptingToolsClass
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    Scripting Helper: interface between MediaWiki and Javascript
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
-   var Elements;
+   var $Elements = array();
    
    /**
 		Function: mg_epropset
 		
+				'Element Property Set'
 				{{#epropset: element id contained in pageVariable|property to set|value}}
 		
 		Parameters:
@@ -86,6 +119,19 @@ class ScriptingToolsClass
 	}
 
 	/**
+		Function: mg_scripttemplate
+		
+				This function allows to specify a page that serves
+				as a 'script template' for interfacing between a MediaWiki page
+				an JS scripts.
+		Parameters:
+		
+	 */
+	public function mg_scripttemplate( &$parser )
+	{
+		
+	}
+	/**
 		Function: hEndParserPhase2
 		
 		This method injects the aggregated script code
@@ -99,9 +145,12 @@ class ScriptingToolsClass
 	 */
 	public function hEndParserPhase2( &$op, &$text )
 	{
-		// TODO
+		/* go through all the properties we collected
+		   and place them in the 'head' of the document
+		   using JS code.
+		*/
+		
 	}
-
 
 
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

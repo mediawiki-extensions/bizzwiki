@@ -26,7 +26,7 @@ require('extensions/StubManager.php');
 StubManager::createStub(	'ParserPhase2Class', 
 							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
 							null,
-							array( 'OutputPageBeforeHTML' ),
+							array( 'OutputPageBeforeHTML','ParserAfterTidy' ),
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
