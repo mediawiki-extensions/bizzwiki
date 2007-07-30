@@ -11,6 +11,7 @@ $Id$
 * User Preferences change: add LOG entry 
 * View User details: probably special page required for that
 * Delete User extension
+* User Log-in/out logs
 
 == SuperGroups ==
 0) Configuration in BizzWikiSettings.php
