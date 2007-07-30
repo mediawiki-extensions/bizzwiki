@@ -19,6 +19,13 @@ page's 'tidy' process is executed. This functionality is referred to as 'parser 
 This capability allows for the inclusion of text that would otherwise upset MediaWiki's parser 
 e.g. execution of a parser functions that replaces text in an <html> tagged section.
 
+== Theory of operation ==
+In the standard MW processing flow, when a page is viewed it is retrieved (either from the cache or 'raw' from the database) and sent to the 'output page' object. What this extension does is intercept the flow process through the 'OutputPageBeforeHTML' hook and:
+* Extracts the <code>(($ magic word| ... $))</code> tags (and other supported invocation formats)
+* Looks for 'magic word' in the dictionary and retrieve the value if found
+* Looks for 'magic word' in the 'parser function' dictionary and execute the function if found
+This same process is performed for both 'parser phase 2' and 'parser after tidy' functionalities.
+
 == Features ==
 * Integrates with the standard Mediawiki Parser Cache
 * Provides a simple 'magic word' based interface to standard Mediawiki variables & parser functions
@@ -50,7 +57,7 @@ To install outside the BizzWiki platform:
 require('/extensions/StubManager.php');
 
 StubManager::createStub(	'ParserPhase2Class', 
-							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
+							'extensions/ParserPhase2/ParserPhase2.php',
 							null,
 							array( 'OutputPageBeforeHTML','ParserAfterTidy' ),
 							false,	// no need for logging support
