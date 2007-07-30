@@ -476,10 +476,10 @@ StubManager::createStub(	'DocProcClass',
 StubManager::createStub(	'ScriptingToolsClass', 
 							$bwExtPath.'/ScriptingTools/ScriptingTools.php',
 							null,					// i18n file			
-							array('ArticleSave', 'EndParserPhase2', 'ParserAfterTidy' ),	// hooks
+							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
 							false, 					// no need for logging support
 							null,					// tags
-							null,	// parser Functions
+							array('epropset'),		// parser Functions
 							null
 						 );
 
