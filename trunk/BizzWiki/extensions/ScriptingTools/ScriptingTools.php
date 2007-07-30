@@ -8,26 +8,36 @@
 == Purpose ==
 Provides an interface to page scripting (i.e. Javascript). 
 The extension provides 'minify and store' functionality for Javascript scripts.
-Furthermore, special keywords are provided as bridge between an HTML based
+Furthermore, a special parser function '#epropset' is provided as bridge between an HTML based
 page and JS scripts associated with the page (e.g. Mootools based widgets).
 
 == Features ==
+* The page can contain normal wikitext without disturbing the intended functionality of this extension
 * '__jsminandstore__' magic word to enable 'Minify & Store' operation
+* Appends '.js' to the file if the source page doesn't end with the '.js' extension
 * Secure: only 'edit' protected pages are allowed
 * Respects BizzWiki's global setting for scripts directory '$bwScriptsDirectory'
 * Supports only one Javascript code section per page
 * Integrates with 'geshi' extensions highlighting the 'js' or 'javascript' tagged section
+* Parser Function '#epropset'
+** Really meant to be called through 'parser after tidy' functionality of [[Extension:ParserPhase2]] extension
 
 == Usage ==
+1) For the 'minify and store' functionality, just edit the desired page and put the JS code
+within 'js' tagged section and place the magic word '__jsminandstore__' inside a comment section within the code OR
+just in the wikitext page itself.
+2) For the 'scripting bridge', more details to come.
+
+== Notes ==
 * Make sure that the scripts directory is writable by the PHP process
 
 == DEPENDANCIES ==
 * [[Extension:StubManager]] extension
 * For the 'scripting bridge' functionality, the following constitute dependencies:
+** [[Extension:PageFunctions]] extension
 ** [[Extension:ParserPhase2]] extension
 *** Relies on the hook 'EndParserPhase2' to feed the script snippets collected through this extension
 *** ParserPhase2 extension is *not* required for the 'Minify and Store' functionality
-** [[Extension:PageFunctions]] extension
 
 == Installation ==
 To install outside the BizzWiki platform:
@@ -35,7 +45,7 @@ To install outside the BizzWiki platform:
 ** Place 'StubManager.php' file in '/extensions' directory
 * Download [[Extension:PageFunctions]] extension (if required)
 ** Place 'PageFunctions.php' in '/extensions/PageFunctions' directory
-** Follow the instructions from the extension's description page
+** Follow the instructions from the extension's description page [[Extension:PageFunctions]]
 * Download the extension files from the SVN repository
 ** Place the files in '/extensions/ScriptingTools' directory
 * Perform the following changes to 'LocalSettings.php':
@@ -45,7 +55,7 @@ require('/extensions/StubManager.php');
 StubManager::createStub(	'ScriptingToolsClass', 
 							'/extensions/ScriptingTools/ScriptingTools.php',
 							null,					// i18n file			
-							array('ArticleSave', 'EndParserPhase2', 'ParserAfterTidy' ),	// hooks
+							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
 							false, 					// no need for logging support
 							null,					// tags
 							null,					// parser Functions
@@ -82,6 +92,9 @@ class ScriptingToolsClass
 								'/<js(?:.*)\>(.*)(?:\<.?js>)/siU',
 							);
 
+	const open_js  = '<script type= "text/javascript">/*<![CDATA[*/';
+	const close_js = '/*]]>*/</script>';	
+
 	// relative directory from MediaWiki installation.
 	static $base = 'BizzWiki/scripts/';
 
@@ -102,7 +115,7 @@ class ScriptingToolsClass
 		Function: mg_epropset
 		
 				'Element Property Set'
-				{{#epropset: element id contained in pageVariable|property to set|value}}
+				((%#epropset: element id contained in pageVariable|property to set|value%))
 		
 		Parameters:
 		
@@ -115,57 +128,80 @@ class ScriptingToolsClass
     */
 	public function mg_epropset( &$parser, &$pageVariable, &$property, &$value )
 	{
-		$this->Elements[$pageVariable][$property] = $value;		
+		// We rely on [[Extension:PageFunctions]] for page level variables.
+		// Usually, the 'pageVariable' containing the element id would have been
+		// captured on the page using '((%#varcapset|eid| element id here %))' parser function
+		// supported through [[Extension:ParserPhase2]] extension.
+		wfRunHooks( 'PageVarGet', array( $pageVariable, &$eid ));
+		
+		$this->Elements[$eid][$property] = $value;
+		
+		// for documentation purpose.
+		return 'element id='.$eid.' property='.$property.' value='.$value;
 	}
 
 	/**
-		Function: mg_scripttemplate
-		
-				This function allows to specify a page that serves
-				as a 'script template' for interfacing between a MediaWiki page
-				an JS scripts.
-		Parameters:
-		
-	 */
-	public function mg_scripttemplate( &$parser )
-	{
-		
-	}
-	/**
-		Function: hEndParserPhase2
+		Function: hParserAfterTidy
 		
 		This method injects the aggregated script code
 		into the page before it is finally sent to the client
-		browser.
+		browser / saved in the parser cache.
 		
 		Parameters:
 		
 		op   - OutputPage object
 		text - string contained the page's text
 	 */
-	public function hEndParserPhase2( &$op, &$text )
+	public function hParserAfterTidy( &$op, &$text )
 	{
+		// Minify & Store Functionality
+		self::findMagicWordAndRemove( $text, true );
+				
+		if (empty( $this->Elements )) return true;
+		
 		/* go through all the properties we collected
-		   and place them in the 'head' of the document
+		   and place them in the 'body' of the document
 		   using JS code.
 		*/
+		$elements = array();
+		$liste    = null;
+		$first_element = true;
 		
+		foreach( $this->Elements as $eid => &$kvpair )
+		{
+			if ($first_element) { $elements = '"'.$eid.'"'; $first_element=false; }
+			else				$elements .= ', "'.$eid.'"';
+			
+			$liste .= 'var Element'.$eid."= {\n";
+			$first = true;
+			foreach( $kvpair as $key => $value )
+			{
+				if (!$first) $liste .= ",\n"; 
+				else $first = false;
+				
+				if (is_numeric( $value ))
+					$liste .= ' "'.$key.'":'.$value;
+				else
+					$liste .= ' "'.$key.'":"'.$value.'"';
+			}
+			$liste .= "\n };\n";
+		}
+
+		$script  = "\n".self::open_js;
+		$script .= "\n".'var PageVars = function() {';
+		$script .= "\n".' var Elements = new Array ( '.$elements.' );';		
+		$script .= "\n ".$liste;
+		$script .= '};';
+		$script .= "\n".self::close_js;
+		$text .= $script;
+		
+		return true;
 	}
 
 
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    Minify & Store functionality
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
-
-
-	/**
-		Remove the 'magic word' when we display the page.		
-	 */
-	public function hParserAfterTidy( &$parser, &$text )
-	{
-		self::findMagicWordAndRemove( $text, true );
-		return true;		
-	}
 
 	/**
 		Grab the JS code and save it in the configured scripts directory
