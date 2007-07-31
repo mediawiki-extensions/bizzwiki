@@ -536,7 +536,17 @@ StubManager::createStub(	'ScriptingToolsClass',
 						 );
 
 require('extensions/RecentChangesManager/RecentChangesManager.php');
-require('extensions/ImageLink/ImageLink.php');
+//require('extensions/ImageLink/ImageLink.php');
+StubManager::createStub(	'ImageLinkClass', 
+							$bwExtPath.'/ImageLink/ImageLink.php',
+							null,					// i18n file			
+							array('ParserAfterTidy'),	// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							array('imagelink'),	// parser Functions
+							null
+						 );
+
 require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
 
 /* TODO

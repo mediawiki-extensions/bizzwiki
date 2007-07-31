@@ -60,7 +60,6 @@ $Id$
 * PageRestrictions -> NO
 * FileManager      -> NO
 
-* ImageLink        -> YES
 * FormTools        -> YES
 * SpecialPagesManager      -> YES
 * ShowRedirectPageText     -> YES
