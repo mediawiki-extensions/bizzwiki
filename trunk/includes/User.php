@@ -1746,7 +1746,7 @@ class User {
 	 * @param string $action Action to be checked
 	 * @return boolean True: action is allowed, False: action should not be allowed
 	 */
-	function isAllowed($action='', $ns = null, $title = null /* BizzWiki addition */ ) 
+	function isAllowed($action='', $ns = null /* BizzWiki addition */, $title = null /* BizzWiki addition */ ) 
 	{
 		if ( $action === '' )
 			// In the spirit of DWIM
