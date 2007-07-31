@@ -19,12 +19,17 @@ page's 'tidy' process is executed. This functionality is referred to as 'parser 
 This capability allows for the inclusion of text that would otherwise upset MediaWiki's parser 
 e.g. execution of a parser functions that replaces text in an <html> tagged section.
 
+Finally, the extension enables the execution of 'parser functions' and 'magic words' *before* the
+page's 'strip' process is executed i.e. before the MediaWiki begins parsing the page. 
+This functionality is referred to as 'parser before strip'. 
+
 == Theory of operation ==
 In the standard MW processing flow, when a page is viewed it is retrieved (either from the cache or 'raw' from the database) and sent to the 'output page' object. What this extension does is intercept the flow process through the 'OutputPageBeforeHTML' hook and:
 * Extracts the <code>(($ magic word| ... $))</code> tags (and other supported invocation formats)
 * Looks for 'magic word' in the dictionary and retrieve the value if found
 * Looks for 'magic word' in the 'parser function' dictionary and execute the function if found
 This same process is performed for both 'parser phase 2' and 'parser after tidy' functionalities.
+See [[Extension:ParserPhase2/Flow Summary]] for more details.
 
 == Features ==
 * Integrates with the standard Mediawiki Parser Cache
@@ -35,6 +40,8 @@ This same process is performed for both 'parser phase 2' and 'parser after tidy'
 * Does not handle 'nested' magic words e.g. (($ magic word1 | (($magic word 2$)) $))
 * Handles one invocation for the 'parser after tidy' functionality:
 ** ((% ... %))
+* Handles one invocation for the 'parser before strip' functionality:
+** ((@ ... @))
 
 == Usage ==
 === ParserPhase2 functionality ===
@@ -42,6 +49,8 @@ This same process is performed for both 'parser phase 2' and 'parser after tidy'
 :Where 'variable' is a standard Mediawiki magic word e.g. CURRENTTIME, REVISIONID etc.
 === Parser After Tidy functionality ===
 <code>((%magic word|...parameters...%))</code>
+=== Parser Before Strip functionality ===
+<code>((@magic word|...parameters...@))</code>
 
 == Dependancy ==
 * [[Extension:StubManager]]
@@ -59,7 +68,7 @@ require('/extensions/StubManager.php');
 StubManager::createStub(	'ParserPhase2Class', 
 							'extensions/ParserPhase2/ParserPhase2.php',
 							null,
-							array( 'OutputPageBeforeHTML','ParserAfterTidy' ),
+							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
@@ -77,6 +86,7 @@ StubManager::createStub(	'ParserPhase2Class',
 * Added pattern: ((magic word|... )) which more closely maps to standard MW parser function calling
 ** DO NOT MIX PATTERNS ON THE SAME PAGE i.e. no (($...$)) mixing up with ((...))
 * Added functionality to execute parser functions/magic words just after the 'tidy' process
+* Added functionality to execute parser functions/magic words just BEFORE the 'stip' process i.e. before the parser really begins.
 
 == TODO ==
 * possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)

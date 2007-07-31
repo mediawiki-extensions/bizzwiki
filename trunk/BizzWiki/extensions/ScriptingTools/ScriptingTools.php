@@ -1,9 +1,21 @@
 <?php
 /*(($disable$))<wikitext>
-{{extension:
-|ScriptingTools.php
-|$Id$
-|Jean-Lou Dupont
+{{Extension
+|name        = ScriptingTools
+|status      = stable
+|type        = Parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ScriptingTools/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
 == Purpose ==
 Provides an interface to page scripting (i.e. Javascript). 
