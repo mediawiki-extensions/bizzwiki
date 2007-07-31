@@ -348,7 +348,17 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 require('extensions/SidebarEx/SidebarEx.php');
 
 // Generic Syntax Highlighter
-require('extensions/GeSHi/geshi.php');
+// require('extensions/GeSHi/geshi.php');
+StubManager::createStub(	'geshiClass', 
+							$bwExtPath.'/GeSHi/geshi.php',
+							null,
+							array( 'SyntaxHighlight' ),
+							false,	// no need for logging support
+							array( 'geshi', 'source', 'php','js', 'css' ),	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 
 // Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
@@ -369,7 +379,8 @@ AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
-require('extensions/CacheTools/CacheTools.php');
+// Functionality reallocated to 'PageFunctions' extension.
+// require('extensions/CacheTools/CacheTools.php'); 
 
 
 	// Parser Extensions
@@ -470,8 +481,8 @@ StubManager::createStub(	'PageFunctionsClass',
 									'varaset', 'varaget',
 									'varcapset',
 									'cshow'
-									 ),  //of parser function magic words,
-							null
+									 ),  				//of parser function magic words,
+							array( 'noclientcaching' )	// magic words
 						 );
 
 StubManager::createStub(	'ParserToolsClass', 

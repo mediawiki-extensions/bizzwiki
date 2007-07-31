@@ -56,14 +56,11 @@ $Id$
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
 == Stub Candidates ==
-* DocProc          -> YES
 * ImageLink        -> YES
-* CacheTools       -> YES
-* Geshi            -> YES
 * FormTools        -> YES
 * FileManager      -> YES
 * PageRestrictions -> YES
-* SideBarEx        -> YES
+* SideBarEx        -> NO
 * SpecialPagesManager      -> YES
 * ShowRedirectPageText     -> YES
 * RecentChangesManager     -> YES
