@@ -14,52 +14,56 @@ The inclusion of wikitext in a redirect page is helpful in situations, for examp
 * No impact on parser caching
 
 == DEPENDANCIES ==
-* ExtensionClass
+* [[Extension:StubManager]]
+
+== Installation ==
+<source lang=php>
+require('extensions/StubManager.php');
+StubManager::createStub(	'ShowRedirectPageText', 
+							'extensions/ShowRedirectPageText/ShowRedirectPageText.php',
+							null,
+							array( 'ArticleViewHeader', 'OutputPageParserOutput' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+</source>
 
 == HISTORY ==
 * Moved singleton invocation to end of file to accomodate some PHP versions
+* Removed dependency on ExtensionClass
+* Added 'stubbing' through StubManager
 
 == TODO ==
 * Clean up the '#redirect' wikitext before displaying
 
 </wikitext>*/
 
-class ShowRedirectPageText extends ExtensionClass
+$wgExtensionCredits[ShowRedirectPageText::thisType][] = array( 
+	'name'        => ShowRedirectPageText::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Provides viewing a wikitext included in a redirect page',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class ShowRedirectPageText
 {
 	const defaultAction = true;   // by default, show the text
 	
 	const thisName = 'ShowRedirectPageText';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
 	
 	var $found;
 	var $actionState;
 
-	public static function &singleton( )
-	{ return parent::singleton( ); }
-	
-	// Our class defines magic words: tell it to our helper class.
-	public function ShowRedirectPageText() 
-	{ 
-		parent::__construct( ); 
-	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Provides viewing a wikitext included in a redirect page',
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	
-	public function setup()
+	public function __construct() 
 	{
-		parent::setup();
-		
 		$this->found = null;
 		$this->actionState = self::defaultAction;
 	}
+
 	public function setActionState( $s ) { $this->actionState = $s ;}
 
 	public function hArticleViewHeader( &$article )
@@ -83,6 +87,4 @@ class ShowRedirectPageText extends ExtensionClass
 	}
 	
 } // end class definition.
-
-ShowRedirectPageText::singleton();
 ?>

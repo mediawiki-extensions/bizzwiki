@@ -349,7 +349,16 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 require('extensions/NewUserLog/Newuserlog.php');
 
 // Show Redirect Page Text extension
-require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
+//require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
+StubManager::createStub(	'ShowRedirectPageText', 
+							$bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText.php',
+							null,
+							array( 'ArticleViewHeader', 'OutputPageParserOutput' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
 
 // Interwiki table management
 require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');

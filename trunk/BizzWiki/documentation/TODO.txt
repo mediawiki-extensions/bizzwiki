@@ -60,9 +60,8 @@ $Id$
 * PageRestrictions -> NO
 * FileManager      -> NO
 
-* FormTools        -> YES
+* FormTools                -> YES
 * SpecialPagesManager      -> YES
-* ShowRedirectPageText     -> YES
 * RecentChangesManager     -> YES
 * PageAfterAndBefore       -> YES
 * InterWikiLinkManager     -> YES

@@ -198,4 +198,5 @@ REL1_10_9: (released ...)
 - Merged functionality of CacheTools in PageFunctions
 - Adjusted 'geshi' for 'stubbing'
 - Adjusted 'FileSystemSyntaxColoring' for stubbing
--
+- Adjusted 'ImageLink' for stubbing
+- Adjusted 'ShowRedirectPageText' for stubbing
