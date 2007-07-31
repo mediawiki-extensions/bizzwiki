@@ -27,7 +27,7 @@ Use <nowiki><geshi lang=LANG lines=LINES source=SOURCE></geshi></nowiki> where:
 
 == Code ==
 </wikitext>*/
-global $wgExtensionCredits;
+
 $wgExtensionCredits[geshiClass::thisType][] = array( 
 	'name'        	=> geshiClass::thisName, 
 	'version'     	=> StubManager::getRevisionId( '$Id$' ),
