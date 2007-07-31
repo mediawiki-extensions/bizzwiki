@@ -126,7 +126,7 @@ class ScriptingToolsClass
 		value        - the value to set the property to
 		
     */
-	public function mg_epropset( &$parser, &$pageVariable, &$property, &$value )
+	public function mg_epropset( &$parser, &$pageVariable, &$property, &$value, &$verbose=null )
 	{
 		// We rely on [[Extension:PageFunctions]] for page level variables.
 		// Usually, the 'pageVariable' containing the element id would have been
@@ -137,7 +137,15 @@ class ScriptingToolsClass
 		$this->Elements[$eid][$property] = $value;
 		
 		// for documentation purpose.
-		return 'element id='.$eid.' property='.$property.' value='.$value;
+		if ($verbose !== null)
+			return 'element id='.$eid.' property='.$property.' value='.$value;
+			
+		return null;
+	}
+
+	public function mg_epropset2( &$parser, &$eid, &$property, &$value )
+	{
+		$this->Elements[$eid][$property] = $value;
 	}
 
 	/**

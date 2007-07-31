@@ -26,7 +26,7 @@ require('extensions/StubManager.php');
 StubManager::createStub(	'ParserPhase2Class', 
 							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
 							null,
-							array( 'OutputPageBeforeHTML','ParserAfterTidy' ),
+							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
@@ -479,7 +479,7 @@ StubManager::createStub(	'ScriptingToolsClass',
 							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
 							false, 					// no need for logging support
 							null,					// tags
-							array('epropset'),		// parser Functions
+							array('epropset','epropset2'),	// parser Functions
 							null
 						 );
 
@@ -509,19 +509,20 @@ $wgDPL2Options['notnamespace']
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                           TASK SCHEDULING FUNCTIONALITY
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/*
 StubManager::createStub(	'TaskScheduler', 
 							$bwExtPath.'/TaskScheduler/TaskScheduler.php',
 							$bwExtPath.'/TaskScheduler/TaskScheduler.i18n.php',							
 							array( 'SpecialVersionExtensionTypes','ClockTickEvent' ), // created by 'ClockTick' extension
 							true // logging included
 						 );
-
+*/
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                           REPLICATION FUNCTIONALITY
 //                             *** EXPERIMENTAL ***
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # Customize 'clocktick.php' as required
-require('extensions/SimpleReplicator/SimpleReplicator.php');
+#require('extensions/SimpleReplicator/SimpleReplicator.php');
 // Customize the following parameters
 #PartnerMachine::$url		= 'http://bizzwiki.org';
 #PartnerMachine::$port		= 80; 	//HTTP/TCP port
