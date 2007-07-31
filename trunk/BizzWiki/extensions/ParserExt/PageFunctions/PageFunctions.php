@@ -38,6 +38,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * <nowiki>(($#varaget:variable name|array key$))</nowiki>
 * <nowiki>(($#varcapset:variable name|value$))</nowiki>
 * <nowiki>(($#cshow:group|text$))</nowiki>
+* <nowiki>(($noclientcaching$))</nowiki>
 
 == DEPENDANCIES ==
 * [[Extension:StubManager]] extension
@@ -47,6 +48,7 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * Adjusted singleton invocation to accomodate more PHP versions
 * Added hook 'PageVarGet'
 * Added hook 'PageVarSet'
+* Added 'noclientcaching' magic word
 
 </wikitext>*/
 
@@ -188,5 +190,21 @@ class PageFunctionsClass
 		if (in_array( $group, $g ))
 			return $text;
 	}
+	
+	/**
+		Magic Word 'noclientcaching'
+
+		The actual action of disabling the client caching process is already performed through
+		'ParserCache2' extension when processing 'magic words' such as this one (($noclientcaching$)).
+		If on the contrary this function is called through the usual {{noclientcaching}} statement, then
+		1) If 'parser caching' is used, this statement will have limited effect
+		2) If 'parser caching' is not used, then this statement will have an effect everytime the page is visited.
+	 */
+	public function MW_noclientcaching( &$parser, &$varcache, &$ret )
+	{
+		global $wgOut;
+		$wgOut->enableClientCache(false);
+	}
+
 } // end class	
 ?>
