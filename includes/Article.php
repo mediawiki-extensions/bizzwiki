@@ -12,6 +12,7 @@
 	History:
 	========
 	1) disabled save article in parser cache upon article creation/update
+	2) Modified 'doDeleteArticle' so that it does not delete RecentChanges entries
 
 */
 
@@ -2132,7 +2133,9 @@ class Article {
 		if ( !$dbw->cleanupTriggers() ) {
 
 			# Clean up recentchanges entries...
+			/* BIZZWIKI begin {{
 			$dbw->delete( 'recentchanges', array( 'rc_namespace' => $ns, 'rc_title' => $t ), __METHOD__ );
+			   BIZZWIKI end}} */
 		}
 
 		# Clear caches
