@@ -153,7 +153,15 @@ class ParserPhase2Class
 		$m = $this->getList1( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
-		$this->executeList( $m, $text );
+		$found = $this->executeList( $m, $text );
+
+		// we found some dynamic variables, disable client side caching.
+		// parser caching is not affected.
+		if ( $found )
+		{
+			global $wgOut;
+			$wgOut->enableClientCache( false );
+		}
 
 		wfRunHooks('EndParserPhase2', array( &$op, &$text ) );
 
@@ -236,15 +244,9 @@ class ParserPhase2Class
 
 		} // end foreach
 
-		// we found some dynamic variables, disable client side caching.
-		// parser caching is not affected.
-		if ( $found )
-		{
-			global $wgOut;
-			$wgOut->enableClientCache( false );
-		}
-		
 		$this->replaceList( $text, $liste, $rl );
+
+		return $found;
 	}
 
 	private function getList1 ( &$text )
