@@ -42,6 +42,9 @@ $wgExtensionCredits['other'][] = array(
 
 class PageAfterAndBefore extends ExtensionClass
 {
+	const thisName = 'PageAfterAndBefore';
+	const thisType = 'other';
+	
 	public static function &singleton( )
 	{ return parent::singleton(); }
 	

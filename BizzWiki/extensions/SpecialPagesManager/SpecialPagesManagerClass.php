@@ -10,41 +10,27 @@
 == Code ==
 </wikitext>*/
 
-class SpecialPagesManagerClass extends ExtensionClass
+$wgExtensionCredits[SpecialPagesManagerClass::thisType][] = array( 
+	'name'        		=> SpecialPagesManagerClass::thisName, 
+	'version'     		=> StubManager::getRevisionId( '$Id$' ),
+	'author'      		=> 'Jean-Lou Dupont', 
+	'description' 		=> 'Provides management functions for BizzWiki Special Pages',
+	'url' 				=> StubManager::getFullUrl(__FILE__),			
+);
+
+class SpecialPagesManagerClass
 {
 	// constants.
 	const thisName = 'SpecialPagesManagerClass';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
 	
 	// defines.
 	var $spPage;
 
-	public static function &singleton( ) 		// required by ExtensionClass
-	{ return parent::singleton( ); }
-	public function setup() 					// required by ExtensionClass
-	{ parent::setup(); }
-		
-	public function SpecialPagesManagerClass()
+	public function __construct()
 	{
-		parent::__construct(); 			// required by ExtensionClass
-
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Provides management functions for BizzWiki Special Pages',
-			'url' => self::getFullUrl(__FILE__),			
-		);
-		
 		// Base page for the enhanced Special Pages
 		$this->spPage = Namespace::getCanonicalName(NS_BIZZWIKI).':Special Pages';
-		
-		// Create the special page (the standard MW style one)
-		global $wgSpecialPages, $wgAutoloadClasses;
-		$wgSpecialPages['SpecialPagesManagerUpdater'] = 'SpecialPagesManagerUpdater';
-		$wgAutoloadClasses['SpecialPagesManagerUpdater'] = dirname(__FILE__) . "/SpecialPagesManagerUpdater.php" ;		
 	}
 	
 	// Use this method to change the enhanced special page's title.

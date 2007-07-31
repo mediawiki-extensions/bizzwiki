@@ -382,7 +382,7 @@ StubManager::createStub(	'geshiClass',
 // Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
  // Use the following to customize the source path of the files.
-#SpecialPagesManagerClass::singleton()->setPagesPath('page title');
+ // TODO
 
 // Form/Page related tools
 require('extensions/SecureHTML/SecureHTML.php');
