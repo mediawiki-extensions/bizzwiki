@@ -62,7 +62,6 @@ $Id$
 
 * FormTools                -> YES
 * SpecialPagesManager      -> YES
-* RecentChangesManager     -> YES
 * PageAfterAndBefore       -> YES
 * InterWikiLinkManager     -> YES
 

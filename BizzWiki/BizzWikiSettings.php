@@ -544,7 +544,17 @@ StubManager::createStub(	'ScriptingToolsClass',
 							null
 						 );
 
-require('extensions/RecentChangesManager/RecentChangesManager.php');
+//require('extensions/RecentChangesManager/RecentChangesManager.php');
+StubManager::createStub(	'RecentChangesManager', 
+							$bwExtPath.'/RecentChangesManager/RecentChangesManager.php',
+							null,					// i18n file			
+							array('ArticleEditUpdatesDeleteFromRecentchanges'),	// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							null,					// parser Functions
+							null
+						 );
+
 //require('extensions/ImageLink/ImageLink.php');
 StubManager::createStub(	'ImageLinkClass', 
 							$bwExtPath.'/ImageLink/ImageLink.php',
