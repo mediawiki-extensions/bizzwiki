@@ -251,8 +251,8 @@ class StubManager
 		// the parser sometimes includes a boggie
 		// null parameter. get rid of it.
 		if (count($liste) >0 )
-			if (empty( $liste[count($list)-1] ))
-				unset( $liste[count($list)-1] );
+			if (empty( $liste[count($liste)-1] ))
+				unset( $liste[count($liste)-1] );
 		
 		$result = array();
 		foreach ($liste as $index => $el )
