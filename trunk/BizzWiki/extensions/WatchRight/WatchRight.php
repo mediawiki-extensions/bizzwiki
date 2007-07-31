@@ -1,13 +1,23 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || WatchRight.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+{{Extension
+|name        = WatchRight
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/WatchRight/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+
 == Purpose==
 Provides watch/unwatch rights enforcement.
 
@@ -15,49 +25,49 @@ Provides watch/unwatch rights enforcement.
 
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
+* [[Extension:StubManager]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download [[Extension:StubManager]]
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/WatchRight/WatchRight.php');
+require('extensions/StubManager.php');
+StubManager::createStub(	'WatchRight', 
+							'extensions/WatchRight/WatchRight.php',
+							null,
+							array( 'WatchArticle','UnwatchArticle','SkinTemplateTabs' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
 </source>
 
 == History ==
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
 </wikitext>*/
 
-class WatchRight extends ExtensionClass
+global $wgExtensionCredits;
+$wgExtensionCredits[WatchRight::thisType][] = array( 
+	'name'    		=> WatchRight::thisName, 
+	'version'		=> StubManager::getRevisionId( '$Id$' ),
+	'author'		=> 'Jean-Lou Dupont', 
+	'description'	=> "Enforces 'watch/unwatch' rights",
+	'url' 			=> StubManager::getFullUrl(__FILE__),			
+);
+
+class WatchRight
 {
 	const thisName = 'WatchRight';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
 	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
+	public function __construct() {}
 	
-	// Our class defines magic words: tell it to our helper class.
-	public function __construct() 
-	{ 
-		parent::__construct( ); 
-	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Enforces 'watch/unwatch' rights",
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	
-	public function setup()
-	{	parent::setup(); }
-
 	public function hWatchArticle( &$user, &$article )
 	{
 		if (!$user->isAllowed( 'watch' ))
@@ -93,6 +103,4 @@ class WatchRight extends ExtensionClass
 		return true;
 	}
 } // end class definition.
-
-WatchRight::singleton();
 ?>

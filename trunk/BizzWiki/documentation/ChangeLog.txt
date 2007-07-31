@@ -190,4 +190,7 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - ParserPhase2: added pattern ((@magic word...@)): parser functions executed BEFORE Strip process
 - Adjusted 'StubManager' to remove some PHP warnings
 - Added 'svn:keywords $Id$' to all files
+- WatchRight extension: removed dependency on ExtensionClass, now is 'stub'-enabled
+- Added 'oversight' to the rights being managed  (see Special:Ipblocklist)
+- Article.php: modified 'doDeleteArticle' method so that it does not delete RecentChanges entries (for the replicator)
 - 

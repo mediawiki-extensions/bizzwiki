@@ -95,7 +95,17 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
 require('extensions/RawRight/RawRight.php');
 require('extensions/ViewsourceRight/ViewsourceRight.php');
-require('extensions/WatchRight/WatchRight.php');
+//require('extensions/WatchRight/WatchRight.php');
+StubManager::createStub(	'WatchRight', 
+							$bwExtPath.'/WatchRight/WatchRight.php',
+							null,
+							array( 'WatchArticle','UnwatchArticle','SkinTemplateTabs' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 require('extensions/MakeSysop/SpecialMakesysop.php');
 require('extensions/DeSysop/SpecialDesysop.php');
 
@@ -116,6 +126,7 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'deleterevision',	// TODO
 										'hiderevision',		// TODO
 										'block',
+										'oversight',
 										'bot',             	// TODO
 										'proxyunbannable', 	// TODO
 										'trackback',		// TODO

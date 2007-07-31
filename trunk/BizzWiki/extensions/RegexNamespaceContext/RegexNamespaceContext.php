@@ -18,10 +18,13 @@ Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext 
 On a per-namespace basis (only the ones required), edit the page 'Context' and place+customize the following:
 <pre>
 == Preload Patterns ==
-* Preload page upon '*.log' page name
+* Preloads '{{NAMESPACE}}:preloadPage' page upon '*.log' page name
 * add other patterns below
 {{#varaset:preloadPattern|{{NAMESPACE}}:preloadPage|(.*)\.log}}
+...more patterns here...
 
+=== Preload Generation ===
+Do not modify the following:
 {{#varaset:ContextVars|preloadPageName|
  {{#regx_vars:preloadPattern|{{#varaget:ContextVars|PageName}} }}
 }}
@@ -29,8 +32,11 @@ On a per-namespace basis (only the ones required), edit the page 'Context' and p
 == Header Patterns ==
 * Header page for all pages in namespace following the '*.log' pattern
 * add other patterns below
-{{#varaset:headerPattern|{{NAMESPACE}}:PHPheaderPage|(.*)\.php}}
+{{#varaset:headerPattern|{{NAMESPACE}}:LogHeaderPage|(.*)\.log}}
+...more patterns here...
 
+=== Header Generation ===
+Do not modify the following:
 {{#varaset:ContextVars|headerPageName|
  {{#regx_vars:headerPattern|{{#varaget:ContextVars|PageName}} }}
 }}
@@ -38,8 +44,11 @@ On a per-namespace basis (only the ones required), edit the page 'Context' and p
 == Footer Patterns ==
 * Footer page for all pages in namespace following the '*.log' pattern
 * add other patterns below
-{{#varaset:footerPattern|{{NAMESPACE}}:PHPfooterPage|(.*)\.php}}
+{{#varaset:footerPattern|{{NAMESPACE}}:LogFooterPage|(.*)\.log}}
+...more patterns here...
 
+=== Footer Generation ===
+Do not modify the following:
 {{#varaset:ContextVars|footerPageName|
  {{#regx_vars:footerPattern|{{#varaget:ContextVars|PageName}} }}
 }}

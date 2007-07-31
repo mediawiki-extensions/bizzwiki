@@ -10,8 +10,9 @@ $Id$
 * Special:Import --> more granular right i.e. namespace level ??
 * User Preferences change: add LOG entry 
 * View User details: probably special page required for that
-* Delete User extension
+* "Delete User" extension
 * User Log-in/out logs
+* 'Block User' functionality: make sure the user is disallowed any 'edit' access
 
 == SuperGroups ==
 0) Configuration in BizzWikiSettings.php
