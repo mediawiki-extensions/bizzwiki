@@ -18,30 +18,49 @@ This extension 'colors' a page in the NS_FILESYSTEM namespace based on its synta
 * Uses the hook 'SyntaxHighlighting' or defaults to PHP's highlight
 
 == Dependancy ==
-* ExtensionClass
+* [[Extension:StubManager]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download [[Extension:StubManager]] extension
 * Apply the following changes to 'LocalSettings.php'
 <geshi lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+require('extensions/StubManager.php');
+StubManager::createStub(	'FileSystemSyntaxColoring', 
+							'extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
+							null,
+							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 </geshi>
 
 == History ==
 * Added 'wiki text' section support
 * Added support for hook based syntax highlighting
 * Moved singleton invocation to end of file to accomodate some PHP versions
+* Removed dependency on ExtensionClass
+* Added stubbing capability through 'StubManager'
 
 == Code ==
 </wikitext>*/
 
-class FileSystemSyntaxColoring extends ExtensionClass
+global $wgExtensionCredits;
+$wgExtensionCredits[FileSystemSyntaxColoring::thisType][] = array( 
+	'name'    		=> FileSystemSyntaxColoring::thisName, 
+	'version'		=> StubManager::getRevisionId( '$Id$' ),
+	'author'		=> 'Jean-Lou Dupont', 
+	'description'	=>  'Syntax highlights filesystem related pages',
+	'url' 			=> StubManager::getFullUrl(__FILE__),			
+);
+
+class FileSystemSyntaxColoring
 {
 	const thisName = 'FileSystem Syntax Coloring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
 		
 	var $found;
 	var $text;
@@ -57,32 +76,12 @@ class FileSystemSyntaxColoring extends ExtensionClass
 							#'' => '',
 						);
 
-	public static function &singleton( )
-	{ return parent::singleton( ); }
-	
-	// Our class defines magic words: tell it to our helper class.
-	public function FileSystemSyntaxColoring() 
-	{ 
-		parent::__construct( ); 
-	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version' => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' =>  'Syntax highlights filesystem related pages',
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	
-	public function setup()
+	public function __construct() 
 	{
-		parent::setup();
-		
 		$this->text  = null;
 		$this->found = false;
 	}
-
+	
 	public function hArticleAfterFetchContent( &$article, &$content )
 	{
 		// we are only interested in page views.
@@ -191,6 +190,4 @@ class FileSystemSyntaxColoring extends ExtensionClass
 	private function getLanguage( $ext ) { return self::$map[ $ext ]; }
 	
 } // end class definition.
-
-FileSystemSyntaxColoring::singleton();
 ?>

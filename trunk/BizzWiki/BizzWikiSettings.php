@@ -333,7 +333,17 @@ $wgLoginLanguageSelector = false;
 require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
-require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+//require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
+StubManager::createStub(	'FileSystemSyntaxColoring', 
+							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
+							null,
+							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 
 // New User Logging
 require('extensions/NewUserLog/Newuserlog.php');
