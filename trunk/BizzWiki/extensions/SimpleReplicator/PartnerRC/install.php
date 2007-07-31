@@ -4,7 +4,7 @@
  * Installation script for the 'FetchPartnerRC' extension
  *
  * @author Jean-Lou Dupont
- * $Id: install.php 175 2007-06-16 00:22:09Z jeanlou.dupont $
+ * $Id$
  */
 
 echo "\n\nFetchPartnerRC database table setup\n\n";

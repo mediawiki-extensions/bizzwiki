@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ParserTools.php
 |-
-| <b>Revision</b> || $Id: ParserTools.php 328 2007-07-09 14:21:31Z jeanlou.dupont $
+| <b>Revision</b> || $Id$
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>

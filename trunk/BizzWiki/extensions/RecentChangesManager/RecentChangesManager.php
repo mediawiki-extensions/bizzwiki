@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || RecentChangesManager.php
 |-
-| <b>Revision</b> || $Id: WatchRight.php 378 2007-07-13 12:52:41Z jeanlou.dupont $
+| <b>Revision</b> || $Id$
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
@@ -35,7 +35,7 @@ class RecentChangesManager extends ExtensionClass
 {
 	const thisName = 'RecentChangesManager';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id: WatchRight.php 378 2007-07-13 12:52:41Z jeanlou.dupont $';	
+	const id       = '$Id$';	
 	
 	public static function &singleton( )
 	{ return parent::singleton( ); }
