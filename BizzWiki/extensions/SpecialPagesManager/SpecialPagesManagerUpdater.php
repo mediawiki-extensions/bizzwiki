@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || SpecialPagesManagerUpdater.php
 |-
-| <b>Revision</b> || $Id: SpecialPagesManagerUpdater.php 284 2007-07-04 14:51:16Z jeanlou.dupont $
+| <b>Revision</b> || $Id$
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>

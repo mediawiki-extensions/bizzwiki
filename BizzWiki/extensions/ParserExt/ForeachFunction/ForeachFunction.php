@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ForeachFunction.php
 |-
-| <b>Revision</b> || $Id: ForeachFunction.php 339 2007-07-10 02:33:36Z jeanlou.dupont $
+| <b>Revision</b> || $Id$
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
