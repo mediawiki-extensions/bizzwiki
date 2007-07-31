@@ -2,7 +2,7 @@
 /*<wikitext>
 {{extension:
 |ImageLink.php
-|$Id: ImageLink.php 463 2007-07-24 01:42:13Z jeanlou.dupont $
+|$Id$
 |Jean-Lou Dupont
 }}
  
