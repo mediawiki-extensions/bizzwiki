@@ -54,7 +54,7 @@ class FetchPartnerLog
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
 			'name'			=> self::thisName, 
-			'version'		=> StubManager::getRevisionId( self::id ),
+			'version'		=> StubManager::getRevisionId( '$Id$' ),
 			'author'		=> 'Jean-Lou Dupont', 
 			'description'	=> "Fetches the replication partner's Logging table.",
 			#'url' => self::getFullUrl(__FILE__),			

@@ -206,21 +206,15 @@ class StubManager
 		
 		return true;
 	}
-	static function getRevisionData( &$id, &$date, $d = null )
-	{
-		$date = null;
-		
+	static function getRevisionId( $svnId=null )
+	{	
+		if ( $svnId === null )
+			return null;
+			
 		// e.g. $Id$
-		if ($d===null)
-			$data = explode( ' ', self::id );
-		else
-			$data = explode( ' ', $d );
-		$id   = $data[2];
-		$date = $data[3];
-		return $id;
+		$data = explode( ' ', $svnId );
+		return $data[2];
 	}
-	static function getRevisionId( $data=null )
-	{	return self::getRevisionData( $id, $date, $data );	}
 
 	static function getFullUrl( $filename )
 	{ return 'http://www.bizzwiki.org/index.php?title=Filesystem:'.self::getRelativePath( $filename );	}

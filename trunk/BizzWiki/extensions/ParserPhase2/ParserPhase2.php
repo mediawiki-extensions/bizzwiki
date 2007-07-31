@@ -3,7 +3,7 @@
 {| border=1
 | <b>File</b> || ParserPhase2.php
 |-
-| <b>Revision</b> || $Id: ParserPhase2.php 371 2007-07-12 15:05:24Z jeanlou.dupont $
+| <b>Revision</b> || $Id$
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
