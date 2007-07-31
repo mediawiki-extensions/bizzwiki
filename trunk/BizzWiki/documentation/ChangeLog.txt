@@ -200,3 +200,4 @@ REL1_10_9: (released ...)
 - Adjusted 'FileSystemSyntaxColoring' for stubbing
 - Adjusted 'ImageLink' for stubbing
 - Adjusted 'ShowRedirectPageText' for stubbing
+- Adjusted 'RecentChangesManager' for stubbing

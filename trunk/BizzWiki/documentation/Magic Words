@@ -145,6 +145,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#varaget          | Parser Function | PageFunctions }}
 {{row|#varcapset        | Parser Function | PageFunctions }}
 {{row|#cshow            | Parser Function | PageFunctions }}
+{{row|NOCLIENTCACHING   | Magic Word      | PageFunctions}}
 
 {{row|#foreachx         | Parser Function | ForeachFunction}}
 {{row|#foreachy         | Parser Function | ForeachFunction}}
@@ -160,8 +161,6 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|addscript         | Tag             | AddScriptCss}}
 {{row|#addscript        | Parser Function | AddScriptCss}}
 {{row|#addtohead        | Tag             | AddScriptCss}}
-
-{{row|NOCLIENTCACHING   | Magic Word      | CacheTools}}
 
 {{row|dpl               | Parser Function | DynamicPageList}}
 
