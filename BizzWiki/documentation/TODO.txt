@@ -57,10 +57,11 @@ $Id$
 
 == Stub Candidates ==
 * SideBarEx        -> NO
+* PageRestrictions -> NO
+* FileManager      -> NO
+
 * ImageLink        -> YES
 * FormTools        -> YES
-* FileManager      -> YES
-* PageRestrictions -> YES
 * SpecialPagesManager      -> YES
 * ShowRedirectPageText     -> YES
 * RecentChangesManager     -> YES

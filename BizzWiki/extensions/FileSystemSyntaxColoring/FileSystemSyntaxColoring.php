@@ -89,7 +89,9 @@ class FileSystemSyntaxColoring
 		if ($action != 'view') return true;
 		
 		// grab the content for later inspection.
-		$this->text = $article->mContent;		
+		$this->text = $article->mContent;
+		
+		return true;
 	}
 
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
