@@ -186,4 +186,8 @@ TODO!!! FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bit
 - ParserPhase2: added pattern ((magic word...)) to match more closely stock MediaWiki
 - ParserPhase2: added 'varcapset' parser function
 - Added 'ScriptingTools' extension
+- ParserPhase2: added pattern ((%magic word...%)): parser functions executed AFTER Tidy process
+- ParserPhase2: added pattern ((@magic word...@)): parser functions executed BEFORE Strip process
+- Adjusted 'StubManager' to remove some PHP warnings
+- Added 'svn:keywords $Id$' to all files
 - 

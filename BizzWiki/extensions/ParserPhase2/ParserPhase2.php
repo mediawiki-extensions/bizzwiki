@@ -107,8 +107,24 @@ class ParserPhase2Class
 	const pattern1b = '/\(\((.*)\)\)/siU';	// tracks more closely MW parser functions style
 	//  ((% ... %))
 	const pattern2  = '/\(\(\%(.*)\%\)\)/siU';
+	//  ((@ ... @))
+	const pattern3  = '/\(\(\@(.*)\@\)\)/siU';
 	
 	function __construct( ) {}
+
+	/**
+		The parser functions enclosed in ((@ ... @)) are executed
+		before the MediaWiki starts parsing the wikitext.
+	 */
+	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
+	{
+		$m = $this->getList3( $text );
+		if ( empty( $m ) ) return true; // nothing to do
+
+		$this->executeList( $m, $text );
+
+		return true; // be nice with other extensions.
+	}
 
 	/**
 		'Parser After Tidy' functionality:
@@ -252,6 +268,20 @@ class ParserPhase2Class
 	{
 		// find the ((%...%)) matches
 		$r = preg_match_all(self::pattern2, $text, $m );
+		
+		// if we found some, return.
+		if ( ($r !== false) && ( $r!==0 ) )
+			return $m;
+		
+		return null;
+	}
+	/**
+		Parser Before Strip related.
+	 */
+	private function getList3 ( &$text )
+	{
+		// find the ((%...%)) matches
+		$r = preg_match_all(self::pattern3, $text, $m );
 		
 		// if we found some, return.
 		if ( ($r !== false) && ( $r!==0 ) )
