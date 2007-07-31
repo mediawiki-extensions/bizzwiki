@@ -201,3 +201,4 @@ REL1_10_9: (released ...)
 - Adjusted 'ImageLink' for stubbing
 - Adjusted 'ShowRedirectPageText' for stubbing
 - Adjusted 'RecentChangesManager' for stubbing
+- Adjusted 'SpecialPagesManager' for stubbing
