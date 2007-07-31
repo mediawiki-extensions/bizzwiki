@@ -189,7 +189,7 @@ REL1_10_9: (released ...)
 - ParserPhase2: added pattern ((%magic word...%)): parser functions executed AFTER Tidy process
 - ParserPhase2: added pattern ((@magic word...@)): parser functions executed BEFORE Strip process
 - Adjusted 'StubManager' to remove some PHP warnings
-- Added 'svn:keywords $Id$' to all files
+- Added 'svn:keywords 'Id' to all files
 - WatchRight extension: removed dependency on ExtensionClass, now is 'stub'-enabled
 - Added 'oversight' to the rights being managed  (see Special:Ipblocklist)
 - Article.php: modified 'doDeleteArticle' method so that it does not delete RecentChanges entries (for the replicator)

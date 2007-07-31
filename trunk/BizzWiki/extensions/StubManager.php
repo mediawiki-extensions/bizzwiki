@@ -238,7 +238,7 @@ class StubManager
 		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
 	}
 
-	public static function processArgList( $list, $getridoffirstparam=false )
+	public static function processArgList( $liste, $getridoffirstparam=false )
 	/*
 	 * The resulting list contains:
 	 * - The parameters extracted by 'key=value' whereby (key => value) entries in the list
@@ -246,16 +246,16 @@ class StubManager
 	 */
 	{
 		if ($getridoffirstparam)   
-			array_shift( $list );
+			array_shift( $liste );
 			
 		// the parser sometimes includes a boggie
 		// null parameter. get rid of it.
-		if (count($list) >0 )
-			if (empty( $list[count($list)-1] ))
-				unset( $list[count($list)-1] );
+		if (count($liste) >0 )
+			if (empty( $liste[count($list)-1] ))
+				unset( $liste[count($list)-1] );
 		
 		$result = array();
-		foreach ($list as $index => $el )
+		foreach ($liste as $index => $el )
 		{
 			$t = explode("=", $el);
 			if (!isset($t[1])) 
@@ -264,8 +264,8 @@ class StubManager
 			unset( $list[$index] );
 		}
 		if (empty($result)) 
-			return $list;
-		return array_merge( $result, $list );	
+			return $liste;
+		return array_merge( $result, $liste );	
 	}
 	public static function getParam( &$alist, $key, $index, $default )
 	/*
@@ -434,10 +434,7 @@ class Stub
 			
 		global $wgParser;
 		foreach($mws as $index => $key)
-		{
 			$wgParser->setFunctionHook( "$key", array( $this, self::$mw_prefix.$key ) );	
-			$this->mws[] = $key;
-		}
 	}
 	private function setupLanguageGetMagicHook()
 	{
