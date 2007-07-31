@@ -40,9 +40,6 @@ $Id$
 == SpecialPagesManager ==
 * Customized layout functionality
 
-== Geshi ==
-* Better documentation
-
 == Special:Undelete ==
 * Fixme
 * DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!  (TBD)
@@ -59,12 +56,20 @@ $Id$
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
 == Stub Candidates ==
-* RawRight         -> YES
-* ViewSource Right -> NO
 * DocProc          -> YES
 * ImageLink        -> YES
 * CacheTools       -> YES
 * Geshi            -> YES
+* FormTools        -> YES
+* FileManager      -> YES
+* PageRestrictions -> YES
+* SideBarEx        -> YES
+* SpecialPagesManager      -> YES
+* ShowRedirectPageText     -> YES
+* RecentChangesManager     -> YES
+* PageAfterAndBefore       -> YES
+* InterWikiLinkManager     -> YES
+* FileSystemSyntaxColoring -> YES
 
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension
@@ -88,8 +93,6 @@ $Id$
 * Special Page to manage tasks
 
 == Article ==
-=== ::doDeleteArticle ===
-- Modifies 'recentchanges' table...
 
 == Logs ==
 * Enhanced with Javascript: group similiar items
@@ -100,7 +103,6 @@ $Id$
 == Presentation Layer ==
 * Short URL
 * JS form elements validation helper class
-* On-the-fly JS minifier
 * JS file group packager
 
 == DynamicPageList2 ==

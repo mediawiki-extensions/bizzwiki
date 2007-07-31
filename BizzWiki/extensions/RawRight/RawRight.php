@@ -11,49 +11,51 @@ This extension adds a 'raw' right. Only the users with the 'raw' permission can 
 * Integrates with Hierarchical Namespace Permissions extension to provide 'raw' right.
 
 == DEPENDANCIES ==
-* ExtensionClass (>v1.3)
+* [[Extension:StubManager]]
 * Hierarchical Namespace Permissions extension
 * MW > 1.10 (or patched earlier version)
 
 == Installation ==
-* include("extensions/RawRight.php");
+<source lang=php>
+require('extensions/StubManager.php');
+StubManager::createStub(	'RawRight', 
+							'extensions/RawRight/RawRight.php',
+							null,
+							array( 'SpecialVersionExtensionTypes','RawPageViewBeforeOutput' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+</source>
 
 == HISTORY ==
-
+* Removed dependency on ExtensionClass
+* Added 'stub'-enabled capability (usage of StubManager)
 
 == TODO ==
 * Internationalization: add messages to cache i18n file
 </wikitext>*/
+
+	
+global $wgExtensionCredits;
+$wgExtensionCredits[RawRight::thisType][] = array( 
+	'name'    		=> RawRight::thisName, 
+	'version'		=> StubManager::getRevisionId( '$Id$' ),
+	'author'		=> 'Jean-Lou Dupont', 
+	'description'	=> "Status: ",
+	'url'			=> StubManager::getFullUrl(__FILE__),			
+);
  
-class RawRight extends ExtensionClass
+class RawRight
 {
 	const thisName = 'RawRight';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
-	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
 	
 	// Our class defines magic words: tell it to our helper class.
-	public function RawRight() 
-	{ 
-		parent::__construct( ); 
-	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Status: ",
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	
-	public function setup()
-	{
-		parent::setup();
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	public function __construct() {}
+
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;
@@ -96,6 +98,4 @@ class RawRight extends ExtensionClass
 		return true; // continue hook-chain.
 	}
 } // end class definition.
-
-RawRight::singleton();
 ?>
