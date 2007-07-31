@@ -397,7 +397,7 @@ StubManager::createStub(	'RawPageTools',
 
 
 StubManager::createStub(	'AddScriptCssClass', 
-							$bwExtPath.'/AddScriptCss/AddScriptCss.php',
+							$bwExtPath.'/addScriptCss/AddScriptCss.php',
 							null,							
 							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
 							false, // no need for logging support
