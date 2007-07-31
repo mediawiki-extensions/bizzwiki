@@ -362,6 +362,16 @@ StubManager::createStub(	'ShowRedirectPageText',
 
 // Interwiki table management
 require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
+StubManager::createStub(	'InterWikiLinkManagerClass', 
+							$bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager.php',
+							null,
+							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
+							false,	// no need for logging support
+							null,	// tags
+							array('iwl'),	// no parser functions
+							null	// no magic words
+						 );
+
 
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
