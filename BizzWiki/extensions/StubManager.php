@@ -1,12 +1,22 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || StubManager.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+{{Extension
+|name        = StubManager
+|status      = stable
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
  
 == Purpose==
 This extension is meant to address 'rare events' handling through class object 'stubs'. For infrequent events 
@@ -55,7 +65,9 @@ The extension that are not candidate for this stubbing facility including those 
 ** 'MW' (i.e. parser Magic Words)
 
 == Code ==
+[[Extension:StubManager/code]]
 </wikitext>*/
+// <source lang=php>
 $wgExtensionCredits[StubManager::thisType][] = array( 
 	'name'    => StubManager::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
@@ -515,4 +527,5 @@ class Stub
 	}
 
 } // end class Stub
+// </source>
 ?>
