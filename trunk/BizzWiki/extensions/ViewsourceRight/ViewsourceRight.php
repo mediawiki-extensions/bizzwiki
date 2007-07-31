@@ -1,56 +1,77 @@
 <?php
 /*<wikitext>
-ViewsourceRight.php by Jean-Lou Dupont
-
+{{Extension
+|name        = ViewsourceRight
+|status      = stable
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ViewsourceRight/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+ 
 == Purpose ==
-This extension adds a 'viewsource' right. Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
+This extension adds a 'viewsource' right. 
+Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
 
 == FEATURES ==
 * Can be used independantly of BizzWiki environment 
 * No mediawiki installation source level changes
 
 == DEPENDANCIES ==
-* ExtensionClass (>v1.3)
+* [[Extension:StubManager]]
 * Hierarchical Namespace Permissions extension
 
 == Installation ==
-* include("extensions/ViewsourceRight.php");
+<source lang=php>
+require('extensions/StubManager.php');
+StubManager::createStub(	'ViewsourceRight', 
+							'extensions/ViewsourceRight/ViewsourceRight.php',
+							null,
+							array( 'UpdateExtensionCredits','AlternateEdit', 'SkinTemplateTabs' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+</source>
 
 == HISTORY ==
 * Corrected missing 'return true' statement in hook.
 * Removed 'view source' tab when permission is not granted to user.
 * Moved Singleton invocation to end of file to accomodate some PHP versions
+* Removed dependency on ExtensionClass
+* Made 'stub'-enabled
+
 </wikitext>*/
 
-class ViewsourceRight extends ExtensionClass
+	
+global $wgExtensionCredits;
+$wgExtensionCredits[ViewsourceRight::thisType][] = array( 
+	'name'    		=> ViewsourceRight::thisName, 
+	'version'		=> StubManager::getRevisionId( '$Id$' ),
+	'author'		=> 'Jean-Lou Dupont', 
+	'description'	=> "Enforces 'viewsource' right. Status: ",
+	'url'			=> StubManager::getFullUrl(__FILE__),			
+);
+
+class ViewsourceRight
 {
 	const thisName = 'ViewsourceRight';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
-	const id       = '$Id$';	
-	
-	public static function &singleton( )
-	{ return parent::singleton( ); }
 	
 	// Our class defines magic words: tell it to our helper class.
-	public function ViewsourceRight() 
-	{ 
-		parent::__construct( ); 
-	
-		global $wgExtensionCredits;
-		$wgExtensionCredits[self::thisType][] = array( 
-			'name'    => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'  => 'Jean-Lou Dupont', 
-			'description' => "Enforces 'viewsource' right. Status: ",
-			'url' => self::getFullUrl(__FILE__),			
-		);
-	}
-	
-	public function setup()
-	{
-		parent::setup();
-	}
-	public function hUpdateExtensionCredits( &$sp, &$extensionTypes )
+	public function __construct() {} 
+
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;
@@ -119,11 +140,10 @@ class ViewsourceRight extends ExtensionClass
 				'href' => $st->mTitle->getLocalUrl( $st->editUrlOptions() )
 			);
 		}
-		else unset( $content_actions['viewsource'] );
+		else 
+			unset( $content_actions['viewsource'] );
 
 		return true;
 	}
 } // end class definition.
-
-ViewsourceRight::singleton();
 ?>

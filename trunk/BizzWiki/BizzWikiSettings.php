@@ -93,8 +93,28 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	4) Provision the new permission settings
 */
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
-require('extensions/RawRight/RawRight.php');
-require('extensions/ViewsourceRight/ViewsourceRight.php');
+//require('extensions/RawRight/RawRight.php');
+StubManager::createStub(	'RawRight', 
+							$bwExtPath.'/RawRight/RawRight.php',
+							null,
+							array( 'SpecialVersionExtensionTypes','RawPageViewBeforeOutput' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
+//require('extensions/ViewsourceRight/ViewsourceRight.php');
+StubManager::createStub(	'ViewsourceRight', 
+							$bwExtPath.'/ViewsourceRight/ViewsourceRight.php',
+							null,
+							array( 'SpecialVersionExtensionTypes','AlternateEdit', 'SkinTemplateTabs' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 //require('extensions/WatchRight/WatchRight.php');
 StubManager::createStub(	'WatchRight', 
 							$bwExtPath.'/WatchRight/WatchRight.php',
