@@ -56,17 +56,16 @@ $Id$
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
 == Stub Candidates ==
+* SideBarEx        -> NO
 * ImageLink        -> YES
 * FormTools        -> YES
 * FileManager      -> YES
 * PageRestrictions -> YES
-* SideBarEx        -> NO
 * SpecialPagesManager      -> YES
 * ShowRedirectPageText     -> YES
 * RecentChangesManager     -> YES
 * PageAfterAndBefore       -> YES
 * InterWikiLinkManager     -> YES
-* FileSystemSyntaxColoring -> YES
 
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension

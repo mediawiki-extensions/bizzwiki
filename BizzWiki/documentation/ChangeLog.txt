@@ -197,4 +197,5 @@ REL1_10_9: (released ...)
 - Adjusted 'RawRight' for 'stubbing'
 - Merged functionality of CacheTools in PageFunctions
 - Adjusted 'geshi' for 'stubbing'
-- 
+- Adjusted 'FileSystemSyntaxColoring' for stubbing
+-
