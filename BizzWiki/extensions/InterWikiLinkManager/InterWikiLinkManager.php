@@ -4,7 +4,7 @@
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- * $Id: InterWikiLinkManager.php 189 2007-06-17 19:24:24Z jeanlou.dupont $
+ * $Id$
  * 
  * Purpose:   This Mediawiki extension enables a user with the appropriate rights
  * ========   to manage the InterWiki Links of the database.
