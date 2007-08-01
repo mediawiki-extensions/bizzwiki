@@ -24,7 +24,7 @@ $msgUserSettingsChangedLog['en'] = array(
 	'usetchglog'.'logpage'			=> 'User Settings Changed Log',
 	'usetchglog'.'logpagetext'		=> "This is a log of changes to a user's settings",
 	'usetchglog'.'-saveok-entry'	=> 'Settings saved ok',
-	'usetchglog'.'-save-text'		=> " real name ''$1''",
+	'usetchglog'.'-save-text'		=> " user name [[User:$1]]",
 	#'' => '',
 );
 

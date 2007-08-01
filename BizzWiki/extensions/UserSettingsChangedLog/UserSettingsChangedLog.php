@@ -32,14 +32,17 @@ StubManager::createStub(	'UserSettingsChangedLog',
 </source>
 
 == History ==
+* Changed format of log entry to include [[User:username]]
+* Fixed multiple entries in the log when the user changes a preference setting
+* Fixed to not add log entries upon account creation
 
 == Code ==
 </wikitext>*/
 $wgExtensionCredits[UserSettingsChangedLog::thisType][] = array( 
-	'name'    => UserSettingsChangedLog::thisName,
-	'version' => StubManager::getRevisionId('$Id$'),
-	'author'  => 'Jean-Lou Dupont',
-	'description' => 'Provides logging of user settings changed', 
+	'name'    		=> UserSettingsChangedLog::thisName,
+	'version' 		=> StubManager::getRevisionId('$Id$'),
+	'author'  		=> 'Jean-Lou Dupont',
+	'description'	=> 'Provides logging of user settings changed', 
 );
 require_once('UserSettingsChangedLog.i18n.php');
 
@@ -67,19 +70,30 @@ class UserSettingsChangedLog
 	}
 	public function hUserSettingsChanged( &$user )
 	{
+		// case 1: new account creation
+		// Just bail out.
+		global $wgUser;
+		if ( $wgUser->getID() == 0 )
+			return true;
+
+		// Case 2:
 		// we need some protection against multiple saves per transaction.
 		// SpecialPreferences.php does multiple saves regularly...
-		static $logDone = false;
-		if ($logDone)
-			return true;
-		$logDone = true;
+		static $firstTimePassed = false;
 		
-		$message = wfMsgForContent( 'usetchglog'.'-save-text', $user->mRealName );
+		if ($firstTimePassed === false)
+		{
+			$firstTimePassed = true;
+			return true;
+		}
+		
+		$title = $user->getUserPage();
+		$message = wfMsgForContent( 'usetchglog'.'-save-text', $user->mName );
 		
 		$log = new LogPage( 'usetchglog' );
-		$log->addEntry( 'saveok', $user->getUserPage(), $message );
-		
-		return true;
-	}	
+		$log->addEntry( 'saveok', $title, $message );
+
+		return true;		
+	}
 }
 ?>

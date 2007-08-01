@@ -8,7 +8,6 @@ $Id$
 
 == User ==
 * Special:Import --> more granular right i.e. namespace level ??
-* User Preferences change: add LOG entry 
 * View User details: probably special page required for that
 * "Delete User" extension
 * User Log-in/out logs
@@ -93,8 +92,16 @@ $Id$
 * Short URL
 * JS form elements validation helper class
 * JS file group packager
+* List of templates used on a page.
 
 == DynamicPageList2 ==
 * TODO Integration 'DynamicPageList2' extension
 ** namespace level policing
 ** settings adjustments
+
+== Things to watch out for ==
+=== UserSettingsChangedLog ===
+* Relies on a particular timing - skips the first call
+
+=== API ===
+* Log_Id field will be fixed when WikiMedia processes the field correctly -- won't need a patch anymore
