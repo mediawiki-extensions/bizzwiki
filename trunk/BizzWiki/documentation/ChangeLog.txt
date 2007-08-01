@@ -159,7 +159,7 @@ REL1_10_8: (released 23July2007)
 - Integrated 'MakeSysop' extension
 - Integrated 'DeSysop' extension
 ===============================
-REL1_10_9: (released ...) 
+REL1_10_9: (released 31/07/2007) 
 - Added 'MiscParserFunctions' extension
 - Added 'ImageLink' extension
 - Added 'PageAfterAndBefore' extension
