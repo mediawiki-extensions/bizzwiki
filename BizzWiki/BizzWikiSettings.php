@@ -361,7 +361,7 @@ StubManager::createStub(	'ShowRedirectPageText',
 						 );
 
 // Interwiki table management
-require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
+//require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 StubManager::createStub(	'InterWikiLinkManagerClass', 
 							$bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager.php',
 							null,
@@ -576,7 +576,16 @@ StubManager::createStub(	'ImageLinkClass',
 							null
 						 );
 
-require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
+//require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
+StubManager::createStub(	'PageAfterAndBefore', 
+							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
+							null,					// i18n file			
+							null,					// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							array('pagebefore', 'pageafter', 'firstpage', 'lastpage' ),	// parser Functions
+							null
+						 );
 
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');

@@ -290,7 +290,7 @@ class StubManager
 					unset( $alist[$el['key']] );
 		
 		foreach( $templateElements as $index => &$el )
-			$alist[$el['key']] = $this->getParam( $alist, $el['key'], $el['index'], $el['default'] );
+			$alist[$el['key']] = self::getParam( $alist, $el['key'], $el['index'], $el['default'] );
 	}
 	public function formatParams( &$alist , &$template )
 	// look at yuiPanel extension for usage example.

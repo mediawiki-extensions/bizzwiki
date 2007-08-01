@@ -1,4 +1,5 @@
-<?php/*<wikitext>
+<?php
+/*<wikitext>
 {{Extension
 |name        = InterWikiLinkManager
 |status      = stable
@@ -56,7 +57,7 @@ $wgExtensionCredits[InterWikiLinkManagerClass::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Manages the InterWiki links table. Namespace for extension is ',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> StubManager::getFullUrl(__FILE__)		
 );
 
 class InterWikiLinkManagerClass
