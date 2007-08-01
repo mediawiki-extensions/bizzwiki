@@ -14,6 +14,7 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * Page scope variable set & capture '#varcapset'
 * Wikitext conditional 'show'
 * Hook based variable get and set
+* Client side page caching control
 
 == Usage ==
 
@@ -42,7 +43,29 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 
 == DEPENDANCIES ==
 * [[Extension:StubManager]] extension
-* ParserPhase2 extension (optional)
+* [[Extension:ParserPhase2]] extension (optional)
+
+== Installation ==
+To install outside of the BizzWiki platform, perform the following
+changes to 'LocalSettings.php':
+
+<source lang=php>
+require_once($IP.'/extensions/StubManager.php');
+StubManager::createStub(	'PageFunctionsClass', 
+							$IP.'/extensions/ParserExt/PageFunctions/PageFunctions.php',
+							null,
+							array( 'PageVarGet', 'PageVarSet' ),
+							false, // no need for logging support
+							null,	// tags
+							array( 'pagetitle','pagesubtitle','pageexists',
+									'varset', 'varget',
+									'varaset', 'varaget',
+									'varcapset',
+									'cshow'
+									 ),  				//of parser function magic words,
+							array( 'noclientcaching' )	// magic words
+						 );
+</source>
 
 == HISTORY ==
 * Adjusted singleton invocation to accomodate more PHP versions
