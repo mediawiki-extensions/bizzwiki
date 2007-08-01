@@ -57,7 +57,7 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 require('extensions/StubManager.php');
 #$bwScriptsDirectory = '/scripts';  // optional
 StubManager::createStub(	'AddScriptCssClass', 
-							$bwExtPath.'/AddScriptCss/AddScriptCss.php',
+							'extensions/AddScriptCss/AddScriptCss.php',
 							null,							
 							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
 							false, // no need for logging support
@@ -72,13 +72,20 @@ StubManager::createStub(	'AddScriptCssClass',
 
 == Code ==
 </wikitext>*/
+		
+$wgExtensionCredits[AddScriptCssClass::thisType][] = array( 
+	'name'        => AddScriptCssClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
+	'url' 		=> StubManager::getFullUrl(__FILE__),
+);
 
 class AddScriptCssClass// extends ExtensionClass
 {
 	// constants.
 	const thisName = 'AddScriptCss';
 	const thisType = 'other'; 
-	const id       = '$Id$';
 
 	// error codes.
 	const error_none     = 0;
@@ -94,16 +101,6 @@ class AddScriptCssClass// extends ExtensionClass
 		global $bwScriptsDirectory;
 		if (isset( $bwScriptsDirectory ))		
 			self::$base = $bwScriptsDirectory;
-		
-		global $wgScriptPath;
-		global $wgExtensionCredits;
-		$wgExtensionCredits['other'][] = array( 
-			'name'        => self::thisName, 
-			'version'     => StubManager::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
-			//'url' => self::getFullUrl(__FILE__),
-		);
 	}
 
 	public function tag_addscript( &$text, &$params, &$parser)
