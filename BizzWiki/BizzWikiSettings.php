@@ -401,7 +401,17 @@ require('extensions/SecureHTML/SecureHTML.php');
 
 require('extensions/SecureProperties/SecureProperties.php');
 //require('extensions/ParserExt/ParserTools/ParserTools.php');
-require('extensions/FormProc/FormProc.php');
+//require('extensions/FormProc/FormProc.php');
+StubManager::createStub(	'FormProcClass', 
+							$bwExtPath.'/FormProc/FormProc.php',
+							null,
+							array( 'UnknownAction' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null	// no magic words
+						 );
+
 
 require('extensions/AutoLanguage/AutoLanguage.php');
 AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
