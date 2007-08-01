@@ -58,7 +58,7 @@ class ApiQueryImageInfo extends ApiQueryBase {
 				$title = Title :: makeTitle(NS_IMAGE, $dbKey);
 				$img = wfFindFile($title);
 
-				$vals = array();
+				$data = array();
 				if ( !$img ) {
 					$data['missing'] = '';			
 				} else {
@@ -71,8 +71,11 @@ class ApiQueryImageInfo extends ApiQueryBase {
 
 						if ($fld_timestamp)
 							$vals['timestamp'] = wfTimestamp(TS_ISO_8601, $line->img_timestamp);
-						if ($fld_user)
+						if ($fld_user) {
 							$vals['user'] = $line->img_user_text;
+							if(!$line->img_user)
+								$vals['anon'] = '';
+						}
 						if ($fld_size) {
 							$vals['size'] = $line->img_size;
 							$vals['width'] = $line->img_width;
@@ -137,7 +140,6 @@ class ApiQueryImageInfo extends ApiQueryBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiQueryImageInfo.php 23819 2007-07-07 03:05:09Z yurik $';
+		return __CLASS__ . ': $Id: ApiQueryImageInfo.php 24453 2007-07-30 08:09:15Z yurik $';
 	}
 }
-?>

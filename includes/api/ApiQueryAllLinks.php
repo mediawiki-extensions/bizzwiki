@@ -70,7 +70,7 @@ class ApiQueryAllLinks extends ApiQueryGeneratorBase {
 		if (!is_null($params['from']))
 			$this->addWhere('pl_title>=' . $db->addQuotes(ApiQueryBase :: titleToKey($params['from'])));
 		if (isset ($params['prefix']))
-			$this->addWhere("pl_title LIKE '" . $db->strencode(ApiQueryBase :: titleToKey($params['prefix'])) . "%'");
+			$this->addWhere("pl_title LIKE '" . $db->escapeLike(ApiQueryBase :: titleToKey($params['prefix'])) . "%'");
 
 		if (is_null($resultPageSet)) {
 			$this->addFields(array (
@@ -174,6 +174,6 @@ class ApiQueryAllLinks extends ApiQueryGeneratorBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiQueryAllLinks.php 24092 2007-07-14 19:04:31Z yurik $';
+		return __CLASS__ . ': $Id: ApiQueryAllLinks.php 24453 2007-07-30 08:09:15Z yurik $';
 	}
 }

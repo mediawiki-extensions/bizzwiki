@@ -99,6 +99,7 @@ class ApiQuerySiteinfo extends ApiQueryBase {
 	
 	protected function appendInterwikiMap($property, $filter) {
 
+		$this->resetQueryParams();
 		$this->addTables('interwiki');
 		$this->addFields(array('iw_prefix', 'iw_local', 'iw_url'));
 
@@ -209,7 +210,7 @@ class ApiQuerySiteinfo extends ApiQueryBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiQuerySiteinfo.php 23953 2007-07-10 13:46:22Z yurik $';
+		return __CLASS__ . ': $Id: ApiQuerySiteinfo.php 24494 2007-07-31 17:53:37Z yurik $';
 	}
 }
 
