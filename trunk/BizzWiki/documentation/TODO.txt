@@ -60,9 +60,6 @@ $Id$
 * PageRestrictions -> NO
 * FileManager      -> NO
 
-* FormTools                -> YES
-* PageAfterAndBefore       -> YES
-
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension
 * "Grant Right" functionality
