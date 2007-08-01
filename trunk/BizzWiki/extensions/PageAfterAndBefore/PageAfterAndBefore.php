@@ -1,11 +1,26 @@
 <?php
 /*
-PageAfterAndBefore.php
-MediaWiki extension
-@author: Jean-Lou Dupont (http://www.bluecortex.com)
+/*<wikitext>
+{{Extension
+|name        = PageAfterAndBefore
+|status      = stable
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/PageAfterAndBefore/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
 
 == Purpose ==
-Provides a 'magic word' interface to retrieve 'preceding' and 'succeding' pages relative to a given page title.           
+Provides a 'magic word' interface to retrieve 'preceeding' and 'succeeding' pages relative to a given page title.           
 
 == Features ==
 * <nowiki>{{#pagebefore: [context]|[namespace]|[title]|[category] }}</nowiki>
@@ -21,10 +36,31 @@ Where:
 * 'filtercurrent' if the current title == last/first page, filter if 'yes'
 
 == DEPENDANCY ==
-* [[Extension:ExtensionClass]] extension
+* [[Extension:StubManager]] extension
 
 == Tested Compatibility ==
-MW 1.8.2, 1.9.3
+MW 1.8.2, 1.9.3, 1.10
+
+== Installation ==
+To install outside the BizzWiki platform:
+* Download [[Extension:StubManager]]
+** Place 'StubManager.php' file in '/extensions' directory
+* Download [[Extension:PageAfterAndBefore]] extension
+** Place 'PageAfterAndBefore.php' in '/extensions/PageAfterAndBefore' directory
+* Perform the following changes to 'LocalSettings.php':
+<source lang=php>
+require('/extensions/StubManager.php');
+
+StubManager::createStub(	'PageAfterAndBefore', 
+							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
+							null,					// i18n file			
+							null,					// hooks
+							false, 					// no need for logging support
+							null,					// tags
+							array('pagebefore', 'pageafter', 'firstpage', 'lastpage' ),	// parser Functions
+							null
+						 );
+</source>
 
 == HISTORY ==
 * -- Version 1.0:	initial availability
@@ -32,34 +68,32 @@ MW 1.8.2, 1.9.3
 *                  IF 'firstpage' == 'currentpage'
 *                  OR 'lastpage'  == 'currentpage'
 *                  THEN don't return title name.
+* Removed dependency on ExtensionClass
+* Added Stubbing capability
 
- */
-$wgExtensionCredits['other'][] = array( 
-	'name'    => 'PageAfterAndBefore Extension', 
-	'version' => '$Id$',
-	'author'  => 'Jean-Lou Dupont', 
+== Code ==
+</wikitext>*/
+$wgExtensionCredits[PageAfterAndBefore::thisType][] = array( 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => "Provides a 'magic word' interface to retrieve 'preceeding' and 'succeeding' pages relative to a given page title.",
+	'url' 		=> StubManager::getFullUrl(__FILE__),						
 );
 
-class PageAfterAndBefore extends ExtensionClass
+class PageAfterAndBefore
 {
 	const thisName = 'PageAfterAndBefore';
 	const thisType = 'other';
 	
-	public static function &singleton( )
-	{ return parent::singleton(); }
-	
 	// Our class defines magic words: tell it to our helper class.
-	public function __construct()
-	{	return parent::__construct( );	}
-	public function setup()
-	{ parent::setup(); }
+	public function __construct() {}
 
 	// ===============================================================
 	var $cList = array();
 
 	public function mg_pagebefore( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->setupParams($params);
 
 		$res = $this->getPages( $params['namespace'], $params['title'], 'desc',$params['category'] );
@@ -67,7 +101,7 @@ class PageAfterAndBefore extends ExtensionClass
 	}
 	public function mg_pageafter( &$parser )
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->setupParams($params);
 
 		$res = $this->getPages( $params['namespace'], $params['title'], 'asc',$params['category'] );		
@@ -76,7 +110,7 @@ class PageAfterAndBefore extends ExtensionClass
 	public function mg_firstpage( &$parser )
 	// If 'namespace' is not supplied, defaults to current page's namespace
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->setupParams($params);
 		
 		$res = $this->getPages( $params['namespace'], '' , 'asc', $params['category'] );
@@ -89,7 +123,7 @@ class PageAfterAndBefore extends ExtensionClass
 	public function mg_lastpage( &$parser )
 	// If 'namespace' is not supplied, defaults to current page's namespace
 	{
-		$params = $this->processArgList( func_get_args(), true );
+		$params = StubManager::processArgList( func_get_args(), true );
 		$this->setupParams($params);
 
 		$res = $this->getPages( $params['namespace'], '' , 'desc', $params['category'] );		
@@ -112,7 +146,7 @@ class PageAfterAndBefore extends ExtensionClass
 			array( 'key' => 'filtercurrent', 'index' => '4', 'default' => 'yes' ),
 			#array( 'key' => '', 'index' => '', 'default' => '' ),
 		);
-		parent::initParams( $params, $template );
+		StubManager::initParams( $params, $template );
 	}
 /*
 	public function mg_xyz( &$parser, $params )
@@ -185,6 +219,4 @@ class PageAfterAndBefore extends ExtensionClass
 	}
 
 } // end class	
-
-PageAfterAndBefore::singleton();
 ?>

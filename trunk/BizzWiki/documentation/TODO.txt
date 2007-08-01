@@ -62,7 +62,6 @@ $Id$
 
 * FormTools                -> YES
 * PageAfterAndBefore       -> YES
-* InterWikiLinkManager     -> YES
 
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension
