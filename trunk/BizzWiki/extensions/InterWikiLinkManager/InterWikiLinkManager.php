@@ -4,7 +4,7 @@
  * 
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- * $Id$
+ * $Id: InterWikiLinkManager.php 189 2007-06-17 19:24:24Z jeanlou.dupont $
  * 
  * Purpose:   This Mediawiki extension enables a user with the appropriate rights
  * ========   to manage the InterWiki Links of the database.
@@ -65,6 +65,8 @@ class InterWikiLinkManagerClass
 
 	// preload wikitext
 	// ================
+	
+	const mgword = 'iwl';
 	
 	const header = "
 {| border='1'
@@ -200,7 +202,7 @@ class InterWikiLinkManagerClass
 	private function formatMagicWordLine( $prefix, &$el )
 	{
 		return '
-{{#'.self::$mgwords[0].':'.
+{{#'.self::mgword.':'.
 	$prefix.'|'.
 	$el['uri']   .'|'.
 	$el['local'] .'|'.
@@ -298,6 +300,8 @@ class InterWikiLinkManagerClass
 		
 		foreach ( $dlist as $prefix )
 			$db->query("DELETE FROM $tbl WHERE iw_prefix = '$prefix'");
+			
+		$db->commit();			
 	}
 	
 // TODO =================================================================================
