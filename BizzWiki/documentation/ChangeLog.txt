@@ -205,3 +205,4 @@ REL1_10_9: (released ...)
 - Adjusted 'InterWikiLinkManager' for stubbing
 - Adjusted 'PageAfterAndBefore' for stubbing
 - Adjusted 'FormProc' for stubbing
+- Adjusted 'AutoLanguage' for stubbing

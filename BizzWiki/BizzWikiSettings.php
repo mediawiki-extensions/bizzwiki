@@ -413,10 +413,17 @@ StubManager::createStub(	'FormProcClass',
 						 );
 
 
-require('extensions/AutoLanguage/AutoLanguage.php');
-AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
-AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
-AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
+//require('extensions/AutoLanguage/AutoLanguage.php');
+StubManager::createStub(	'AutoLanguage', 
+							$bwExtPath.'/AutoLanguage/AutoLanguage.php',
+							null,							
+							array('ArticleFromTitle'),
+							false
+						 );
+
+#AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
+#AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
+#AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
 // Functionality reallocated to 'PageFunctions' extension.
 // require('extensions/CacheTools/CacheTools.php'); 
