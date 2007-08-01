@@ -1,49 +1,55 @@
-<?php
-/*
- * InterWikiLinkManager.php
- * 
- * MediaWiki extension
- * @author: Jean-Lou Dupont (http://www.bluecortex.com)
- * $Id$
- * 
- * Purpose:   This Mediawiki extension enables a user with the appropriate rights
- * ========   to manage the InterWiki Links of the database.
- *
- * Features:
- * =========
- * 0) Can be used independantly of BizzWiki environment 
- * 1) Rights policing
- * 2) Logging
- * 3) New Namespace 'NS_INTERWIKI'
- *
- * DEPENDANCY:  
- * ===========
- * 1) Extension 'ExtensionClass' 
- *
- * USAGE NOTES:
- * ============
- * 1) Use "Interwiki:Main Page" to manage the interwiki links
- * 2) Use the magic word {{#iwl: prefix | URI | local flag | transclusion flag }}
- * 3) Appropriate rights management should be in place (e.g. Hierarchical Namespace Permissions extension)
- *
- * INSTALLATION:
- * =============
- * 1) Create NS_INTERWIKI namespace in LocalSettings.php
- * 2) Require ExtensionClass.php
- * 3) Require InterWikiLinkManager.php
- * 4) Set Permissions
- *
- * Tested Compatibility:  MW 1.10
- * =====================
- *
- * History:
- * ========
- *
- * TODO:
- * =====
- * - Add validation
- *
- */
+<?php/*<wikitext>
+{{Extension
+|name        = InterWikiLinkManager
+|status      = stable
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/InterWikiLinkManager/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+
+== Purpose ==   
+This Mediawiki extension enables a user with the appropriate rights to manage the InterWiki Links of the database.
+
+== Features ==
+* Can be used independantly of BizzWiki environment 
+* Rights policing
+* Logging
+* New Namespace 'NS_INTERWIKI'
+
+== DEPENDANCY ==
+* [[Extension:StubManager]]
+
+== USAGE NOTES ==
+* Use "Interwiki:Main Page" to manage the interwiki links
+* Use the magic word {{#iwl: prefix | URI | local flag | transclusion flag }}
+* Appropriate rights management should be in place (e.g. Hierarchical Namespace Permissions extension)
+
+== INSTALLATION ==
+To install outside of the [[Extension:BizzWiki]] platform:
+* Create NS_INTERWIKI namespace in LocalSettings.php
+* Require 'StubManager.php'
+* Require 'InterWikiLinkManager.php'
+* Set Permissions
+
+== History ==
+* Removed dependency on ExtensionClass
+* Added 'stubbing' capability
+
+== TODO ==
+* Add more validation
+
+== Code ==
+</wikitext>*/
 
 $wgExtensionCredits[InterWikiLinkManagerClass::thisType][] = array( 
 	'name'        => InterWikiLinkManagerClass::thisName, 
