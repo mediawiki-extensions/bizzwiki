@@ -151,7 +151,7 @@ class ApiLogin extends ApiBase {
 		global $wgMemc;
 		
 		$key = $this->getMemCacheKey();
-		$val =& $wgMemc->get( $key );
+		$val = $wgMemc->get( $key );
 
 		$val['lastReqTime'] = time();
 		if (!isset($val['count'])) {
@@ -242,7 +242,7 @@ class ApiLogin extends ApiBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiLogin.php 23765 2007-07-06 02:19:56Z yurik $';
+		return __CLASS__ . ': $Id: ApiLogin.php 24367 2007-07-25 01:46:50Z nickj $';
 	}
 }
 

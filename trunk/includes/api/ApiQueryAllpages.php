@@ -63,7 +63,7 @@ class ApiQueryAllpages extends ApiQueryGeneratorBase {
 		if (!is_null($params['from']))
 			$this->addWhere('page_title>=' . $db->addQuotes(ApiQueryBase :: titleToKey($params['from'])));
 		if (isset ($params['prefix']))
-			$this->addWhere("page_title LIKE '" . $db->strencode(ApiQueryBase :: titleToKey($params['prefix'])) . "%'");
+			$this->addWhere("page_title LIKE '" . $db->escapeLike(ApiQueryBase :: titleToKey($params['prefix'])) . "%'");
 
 		if (is_null($resultPageSet)) {
 			$this->addFields(array (
@@ -165,7 +165,7 @@ class ApiQueryAllpages extends ApiQueryGeneratorBase {
 	}
 
 	public function getVersion() {
-		return __CLASS__ . ': $Id: ApiQueryAllpages.php 24092 2007-07-14 19:04:31Z yurik $';
+		return __CLASS__ . ': $Id: ApiQueryAllpages.php 24453 2007-07-30 08:09:15Z yurik $';
 	}
 }
 

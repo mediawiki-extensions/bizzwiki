@@ -67,6 +67,7 @@ class ApiQuery extends ApiBase {
 		'imageusage' => 'ApiQueryBacklinks',
 		'logevents' => 'ApiQueryLogEvents',
 		'recentchanges' => 'ApiQueryRecentChanges',
+		'search' => 'ApiQuerySearch',
 		'usercontribs' => 'ApiQueryContributions',
 		'watchlist' => 'ApiQueryWatchlist',
 		'exturlusage' => 'ApiQueryExtLinksUsage',
@@ -74,7 +75,7 @@ class ApiQuery extends ApiBase {
 
 	private $mQueryMetaModules = array (
 		'siteinfo' => 'ApiQuerySiteinfo',
-	//	'userinfo' => 'ApiQueryUserinfo',
+		'userinfo' => 'ApiQueryUserInfo',
 	);
 
 	private $mSlaveDB = null;
@@ -484,7 +485,7 @@ class ApiQuery extends ApiBase {
 	public function getVersion() {
 		$psModule = new ApiPageSet($this);
 		$vers = array ();
-		$vers[] = __CLASS__ . ': $Id: ApiQuery.php 24092 2007-07-14 19:04:31Z yurik $';
+		$vers[] = __CLASS__ . ': $Id: ApiQuery.php 24494 2007-07-31 17:53:37Z yurik $';
 		$vers[] = $psModule->getVersion();
 		return $vers;
 	}

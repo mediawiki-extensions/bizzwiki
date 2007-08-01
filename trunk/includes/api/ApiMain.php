@@ -456,8 +456,7 @@ class ApiMain extends ApiBase {
 	public function isSysop() {
 		if (!isset ($this->mIsSysop)) {
 			global $wgUser;
-			$this->mIsSysop = in_array( 'sysop',
-				$wgUser->getGroups());
+			$this->mIsSysop = in_array( 'sysop', $wgUser->getGroups());
 		}
 
 		return $this->mIsSysop;
@@ -474,7 +473,7 @@ class ApiMain extends ApiBase {
 	public function getVersion() {
 		$vers = array ();
 		$vers[] = 'MediaWiki ' . SpecialVersion::getVersion();
-		$vers[] = __CLASS__ . ': $Id: ApiMain.php 24227 2007-07-18 05:25:53Z amidaniel $';
+		$vers[] = __CLASS__ . ': $Id: ApiMain.php 24494 2007-07-31 17:53:37Z yurik $';
 		$vers[] = ApiBase :: getBaseVersion();
 		$vers[] = ApiFormatBase :: getBaseVersion();
 		$vers[] = ApiQueryBase :: getBaseVersion();
