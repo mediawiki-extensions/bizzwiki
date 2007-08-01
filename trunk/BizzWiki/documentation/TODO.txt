@@ -59,6 +59,9 @@ $Id$
 * PageRestrictions -> NO
 * FileManager      -> NO
 
+* SecureHTML       -> YES
+* SecureProperties -> YES
+
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension
 * "Grant Right" functionality

@@ -213,5 +213,7 @@ REL1_10_10: (released ...)
 - UserSettingsChangedLog: changed log entry format to be more useful for the replicator
 - UserSettingsChangedLog: Fixed multiple entries in the log when the user changes a preference setting
 - UserSettingsChangedLog: Fixed to not add log entries upon account creation
+- Added 'reload' right (FileManager extension)
+- FileManager: added 'reload' capability
 
 
