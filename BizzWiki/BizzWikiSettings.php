@@ -179,7 +179,7 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'search',     // BizzWiki specific
 										'watch',		// BizzWiki specific
 										'unwatch',		// BizzWiki specific
-										
+										'reload',		// BizzWiki specific
 									);
 									
 // Critical permission system initialization -- DO NOT TOUCH

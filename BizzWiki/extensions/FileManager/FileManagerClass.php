@@ -187,13 +187,18 @@ class FileManagerClass extends ExtensionClass
 		// verified adequately.
 		if (! $title->userCan(self::actionCommit) ) return true;		
 
-		global $IP;
-		$filename = $title->getText();
-		$text = @file_get_contents( $IP.'/'.$filename );
+		$text = self::getFileContentsFromTitle( $title );
 	
 		return true; // be nice.
 	}
-
+	static function getFileContentsFromTitle( &$title )
+	{
+		global $IP;
+		$filename = $title->getText();
+		$text = @file_get_contents( $IP.'/'.$filename );
+		
+		return $text;
+	}
 	function hOutputPageBeforeHTML( &$op, &$text )
 	// make sure we disable client side caching for NS_FILESYSTEM namespace.
 	{
@@ -206,10 +211,49 @@ class FileManagerClass extends ExtensionClass
 		$op->enableClientCache(false);
 		
 		return true;
-	}	
-	// public function hUnknownAction( $action, $article )
-	/*  This hook is used to implement the custom 'action=commitscript'
+	}
+	/**
+		Place the 'reload' tab.
 	 */
+	public function hSkinTemplateTabs( &$st , &$content_actions )
+	{
+		// make sure we are in the right namespace.
+		$ns = $st->mTitle->getNamespace();
+		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
+		
+		// second, make sure the user has the 'reload' right.
+		global $wgUser;
+		if ( !$wgUser->isAllowed('reload') )
+			return true;
+		
+		$content_actions['reload'] = array(
+			'text' => 'reload',
+			'href' => $st->mTitle->getLocalUrl( 'action=reload' )
+		);
+
+		return true;
+	}
+	
+	/**
+		This hook handles 'action=reload' query.
+	 */	
+	public function hUnknownAction( $action, $article )
+	{
+		// make sure we are in the right namespace.
+		$ns = $article->mTitle->getNamespace();
+		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
+		
+		// second, make sure the user has the 'reload' right.
+		global $wgUser;
+		if ( !$wgUser->isAllowed('reload') )
+			return true;
+			
+		$text = self::getFileContentsFromTitle( $article->mTitle );
+		
+		$article->updateArticle( $text, '', false, false );
+		
+		return false;
+	}
 	
 } // END CLASS DEFINITION
 ?>

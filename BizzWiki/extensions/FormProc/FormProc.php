@@ -69,6 +69,9 @@ StubManager::createStub(	'FormProcClass',
 * removed dependency on ExtensionClass
 * added stubbing capability through StubManager
 
+== See Also ==
+* [[Extension:BizzWiki|BizzWiki platform]]
+
 == Code ==
 </wikitext>*/
 

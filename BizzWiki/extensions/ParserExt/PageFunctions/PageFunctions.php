@@ -67,6 +67,9 @@ StubManager::createStub(	'PageFunctionsClass',
 						 );
 </source>
 
+== See also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
+
 == HISTORY ==
 * Adjusted singleton invocation to accomodate more PHP versions
 * Added hook 'PageVarGet'

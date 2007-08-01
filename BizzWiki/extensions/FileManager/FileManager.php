@@ -26,6 +26,7 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * fixed for suppressing PHP error messages on file_get_contents
 * fixed logging messages
 * disabled 'auto summary' upon page creation (clogs recentchanges, logs etc.)
+* added 'reload' functionality
 
 == TODO ==
 * internationalization
