@@ -3,7 +3,7 @@
 {{Extension
 |name        = FormProc
 |status      = stable
-|type        = other
+|type        = hook
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -33,13 +33,14 @@ The processing code resides in the database. The code can be 'syntax highlighted
 
 == Example ==
 === Form Processing Page 'MyFormProc' ===
+<pre> <!-- remove pre section -->
 <php>
   class MyFormProcClass
   {
   	 function submit() {}
   }
 </php>
-
+</pre>
 == Dependancy ==
 * [[Extension:StubManager]] extension
 * [[Extension:RunPHP Class]] extension

@@ -206,3 +206,12 @@ REL1_10_9: (released 31/07/2007)
 - Adjusted 'PageAfterAndBefore' for stubbing
 - Adjusted 'FormProc' for stubbing
 - Adjusted 'AutoLanguage' for stubbing
+===============================
+REL1_10_10: (released ...) 
+- Integrated MW API from SVN @ 24515
+- Fixed ApiQueryLogEvents for returning the correct 'log_id' value
+- UserSettingsChangedLog: changed log entry format to be more useful for the replicator
+- UserSettingsChangedLog: Fixed multiple entries in the log when the user changes a preference setting
+- UserSettingsChangedLog: Fixed to not add log entries upon account creation
+
+

@@ -37,8 +37,8 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 							#				=> 'rc_moved_to_title',	// CHECKME
 								'patrolled'	=> 'rc_patrolled',		// BIZZWIKI specific
 							#				=> 'rc_ip',				// CHECKME							
-							#				=> 'rc_old_len',		// CHECKME							
-							#				=> 'rc_new_len',		// CHECKME							
+								'oldlen'	=> 'rc_old_len',		// ok
+								'newlen'	=> 'rc_new_len',		// ok
 							#				=> 'rc_deleted',		// CHECKME							
 							#				=> 'rc_logid',			// CHECKME							
 							#				=> 'rc_logtype',		// CHECKME							
