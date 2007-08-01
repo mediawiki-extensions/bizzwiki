@@ -37,23 +37,23 @@ The processing code resides in the database. The code can be 'syntax highlighted
 <php>
   class MyFormProcClass
   {
-  	 function submit() {}
+  	 function submit() { implement your handler here }
   }
 </php>
 </pre>
-== Dependancy ==
+== Dependancies ==
 * [[Extension:StubManager]] extension
 * [[Extension:RunPHP Class]] extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
 require('extensions/RunPHP_class.php');
 StubManager::createStub(	'FormProcClass', 
-							'extensions/FormProc/FormProc.php',
+							$IP.'/extensions/FormProc/FormProc.php',
 							null,
 							array( 'UnknownAction' ),
 							false,	// no need for logging support
