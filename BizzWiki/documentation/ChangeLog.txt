@@ -207,7 +207,7 @@ REL1_10_9: (released 31/07/2007)
 - Adjusted 'FormProc' for stubbing
 - Adjusted 'AutoLanguage' for stubbing
 ===============================
-REL1_10_10: (released ...) 
+REL1_10_10: (released 02/08/2007) 
 - Integrated MW API from SVN @ 24515
 - Fixed ApiQueryLogEvents for returning the correct 'log_id' value
 - UserSettingsChangedLog: changed log entry format to be more useful for the replicator

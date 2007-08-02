@@ -13,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_10alpha');
+define('BIZZWIKI', '1_10_10');
 $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
