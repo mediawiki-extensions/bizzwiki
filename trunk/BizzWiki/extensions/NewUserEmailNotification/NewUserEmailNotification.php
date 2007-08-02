@@ -1,12 +1,22 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || NewUserEmailNotification.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+{{Extension
+|name        = NewUserEmailNotification
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/NewUserEmailNotification/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
  
 == Purpose==
 Provides email notification of new user account creation.
