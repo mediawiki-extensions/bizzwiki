@@ -26,7 +26,7 @@ Provides email notification of new user account creation.
 * Uses '$wgEmergencyContact' as 'to' contact address
 
 == Dependancy ==
-* StubManager Extension
+* [[Extension:StubManager]] Extension
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -39,7 +39,7 @@ StubManager::createStub(	'NewUserEmailNotification',
 							$IP.'/extensions/NewUserEmailNotification/NewUserEmailNotification.php',
 							$IP.'/extensions/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
 							array('AddNewAccount'),
-							true
+							false
 						 );
 </source>
 
@@ -47,6 +47,9 @@ StubManager::createStub(	'NewUserEmailNotification',
 
 == TODO ==
 * add more error checking
+
+== See Also ==
+This extension is part of [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
 </wikitext>*/
