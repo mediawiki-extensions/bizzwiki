@@ -107,8 +107,9 @@ class InterWikiLinkManagerClass
 			$hresult = '<b>not defined!</b>';
 
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'].=$hresult;
+			if (@isset($el['name']))		
+				if ($el['name']==self::thisName)
+					$el['description'].=$hresult;
 				
 		return true; // continue hook-chain.
 	}
