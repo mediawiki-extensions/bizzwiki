@@ -1,12 +1,22 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || UserSettingsChangedLog.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+{{Extension
+|name        = UserSettingsChangedLog
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/UserSettingsChangedLog/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
  
 == Purpose==
 Provides logging of user settings changes.
@@ -43,6 +53,7 @@ $wgExtensionCredits[UserSettingsChangedLog::thisType][] = array(
 	'version' 		=> StubManager::getRevisionId('$Id$'),
 	'author'  		=> 'Jean-Lou Dupont',
 	'description'	=> 'Provides logging of user settings changed', 
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 require_once('UserSettingsChangedLog.i18n.php');
 

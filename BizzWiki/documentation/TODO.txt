@@ -61,6 +61,7 @@ $Id$
 
 * SecureHTML       -> YES
 * SecureProperties -> YES
+* TaskScheduler    -> TBD
 
 == Rights Management ==
 * Integrate 'ConfirmAccount' extension

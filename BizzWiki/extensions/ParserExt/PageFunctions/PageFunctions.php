@@ -1,6 +1,22 @@
 <?php
 /*(($disable$))<wikitext>
-PageFunctions.php by Jean-Lou Dupont
+{{Extension
+|name        = PageFunctions
+|status      = beta
+|type        = parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/PageFunctions/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
 
 == Purpose ==
 Provides a 'magic word' interface to retrieve useful page level information.           
