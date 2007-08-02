@@ -89,7 +89,6 @@ class NewUserEmailNotification
 		global $wgSitename;
 		
 		$subject = wfMsg('newuseremailnotification-subject', $wgSitename);
-		// "Site Name: $1\nUser name: $2\nReal user name: $3\n",
 		$body    = wfMsg('newuseremailnotification-body', $wgSitename, $from_user->mName, $from_user->mRealName   );
 		
 		$to = 		new MailAddress( $to_address, $to_name );
