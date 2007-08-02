@@ -16,7 +16,7 @@ global $msgNewUserEmailNotification;		// required for StubManager
 
 // the format is important here too: 'msg'.$classname
 $msgNewUserEmailNotification['en'] = array(
-'newuseremailnotification-subject'	=> 'New User Account Creation Notification on site $1',
+'newuseremailnotification-subject'	=> '$1 site: New User Account Creation Notification',
 'newuseremailnotification-body'		=> "Site Name: $1\nUser name: $2\nReal user name: $3\n",
 #'' => '',
 );

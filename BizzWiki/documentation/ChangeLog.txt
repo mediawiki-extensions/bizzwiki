@@ -218,3 +218,5 @@ REL1_10_10: (released 02/08/2007)
 - FIXED broken 'ForeachFunction': missing file
 ===============================
 REL1_10_11: (released ...) 
+- Added 'NewUserEmailNotification' extension
+-
