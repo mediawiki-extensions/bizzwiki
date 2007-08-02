@@ -50,6 +50,7 @@ StubManager::createStub(	'ViewsourceRight',
 * Moved Singleton invocation to end of file to accomodate some PHP versions
 * Removed dependency on ExtensionClass
 * Made 'stub'-enabled
+* Added some protection against !isset indexes in '$wgExtensionCredits'
 
 </wikitext>*/
 
@@ -82,8 +83,9 @@ class ViewsourceRight
 			$result = '<b>not operational: missing Hierarchical Namespace Permissions extension </b>';
 		
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'].=$result;
+			if (isset($el['name']))		
+				if ($el['name']==self::thisName)
+					$el['description'].=$result;
 				
 		return true; // continue hook-chain.
 	}
