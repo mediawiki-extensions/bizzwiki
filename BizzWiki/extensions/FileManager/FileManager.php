@@ -27,6 +27,7 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * fixed logging messages
 * disabled 'auto summary' upon page creation (clogs recentchanges, logs etc.)
 * added 'reload' functionality
+* Added some protection against !isset indexes in '$wgExtensionCredits'
 
 == TODO ==
 * internationalization

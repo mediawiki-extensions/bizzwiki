@@ -45,6 +45,7 @@ To install outside of the [[Extension:BizzWiki]] platform:
 == History ==
 * Removed dependency on ExtensionClass
 * Added 'stubbing' capability
+* Fixed missing 'h' in hook 'SpecialVersionExtensionTypes' handler method
 
 == TODO ==
 * Add more validation
@@ -94,7 +95,7 @@ class InterWikiLinkManagerClass
 		$this->iwl     = array();
 		$this->new_iwl = array();
 	}
-	public function SpecialVersionExtensionTypes( &$sp, &$extensionTypes )
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;

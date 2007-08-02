@@ -32,6 +32,7 @@ StubManager::createStub(	'RawRight',
 == HISTORY ==
 * Removed dependency on ExtensionClass
 * Added 'stub'-enabled capability (usage of StubManager)
+* Added some protection against !isset indexes in '$wgExtensionCredits'
 
 == TODO ==
 * Internationalization: add messages to cache i18n file
@@ -78,8 +79,9 @@ class RawRight
 			$rresult = '<b>RawPageViewBeforeOutput hook <i>not</i> operational</b>';
 		
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'].=$hresult." and ".$rresult;
+			if (isset($el['name']))
+				if ($el['name']==self::thisName)
+					$el['description'].=$hresult." and ".$rresult;
 				
 		return true; // continue hook-chain.
 	}
