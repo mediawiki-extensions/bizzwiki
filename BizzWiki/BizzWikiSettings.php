@@ -657,7 +657,8 @@ StubManager::createStub(	'TaskScheduler',
 $wgEnableUploads     = true;
 
 ## This must be set if the 'Updater' extension is to be functional
-$wgFileExtensions[]  = "zip";
+#$wgFileExtensions[]  = "zip";
+$wgFileExtensions[]  = "png";
 
 // Updater extension (ongoing)
 #require('extensions/Updater/Updater.php');

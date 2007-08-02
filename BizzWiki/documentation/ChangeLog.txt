@@ -215,5 +215,4 @@ REL1_10_10: (released ...)
 - UserSettingsChangedLog: Fixed to not add log entries upon account creation
 - Added 'reload' right (FileManager extension)
 - FileManager: added 'reload' capability
-
-
+- FIXED broken 'ForeachFunction': missing file
