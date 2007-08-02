@@ -34,15 +34,15 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 ** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
-* [[Extension:StubManager]] extension (v>=306)
+* ExtensionClass extension (v>=306)
 * ParserPhase2 extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
+* Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/StubManager.php');
+require('extensions/ExtensionClass.php');
 require('extensions/ForeachFunction/ForeachFunction.php');
 </source>
 
@@ -50,13 +50,13 @@ require('extensions/ForeachFunction/ForeachFunction.php');
 
 == Code ==
 </wikitext>*/
-global $wgExtensionCredits;
+
 $wgExtensionCredits[ForeachFunctionClass::thisType][] = array( 
-	'name'			=> ForeachFunctionClass::thisName, 
-	'version'		=> StubManager::getRevisionId( '$Id$' ),
-	'author'		=> 'Jean-Lou Dupont', 
-	'description'	=> 'Looping functions for global objects using parser functions',
-	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'name'        => ForeachFunctionClass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Looping functions for global objects using parser functions',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
 class ForeachFunctionClass
