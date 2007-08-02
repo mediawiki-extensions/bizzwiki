@@ -1,0 +1,201 @@
+Here is a list of the currently supported parser related 'tags', 'magic words' and 'parser functions' (list version $Id$).
+{| border=1
+{{row|code              | tag             | Parser }}
+{{row|html              | tag             | Parser }}
+{{row|pre               | tag             | Parser }}
+{{row|math              | tag             | Parser }}
+{{row|hiero             | tag             | Parser }}
+{{row|__ TOC __           | magic word      | Parser }}
+{{row|__ FORCETOC __      | magic word      | Parser }}
+{{row|__ TOC __           | magic word      | Parser }}
+{{row|__ NOEDITSECTION __ | magic word      | Parser }}
+{{row|__ NEWSECTIONLINK __| magic word      | Parser }}
+{{row|__ NOCONTENTCONVERT __| magic word    | Parser }}
+{{row|__ NOCC __          | magic word      | Parser }}
+{{row|__ NOGALLERY __     | magic word      | Parser }}
+{{row|__ NOTITLECONVERT __| magic word      | Parser }}
+{{row|__ NOTC __          | magic word      | Parser }}
+{{row|__ END __           | magic word      | Parser }}
+{{row|__ START __         | magic word      | Parser }}
+{{row|int               | parser function | Parser }}
+{{row|ns                | parser function | Parser }}
+{{row|urlencode         | parser function | Parser }}
+{{row|lcfirst           | parser function | Parser }}
+{{row|ucfirst           | parser function | Parser }}
+{{row|lc                | parser function | Parser }}
+{{row|uc                | parser function | Parser }}
+{{row|localurl          | parser function | Parser }}
+{{row|localurle         | parser function | Parser }}
+{{row|fullurl           | parser function | Parser }}
+{{row|fullurle          | parser function | Parser }}
+{{row|formatnum         | parser function | Parser }}
+{{row|grammar           | parser function | Parser }}
+{{row|plural            | parser function | Parser }}
+{{row|numberofpages     | parser function | Parser }}
+{{row|numberofusers     | parser function | Parser }}
+{{row|numberofarticles  | parser function | Parser }}
+{{row|numberoffiles     | parser function | Parser }}
+{{row|numberofadmins    | parser function | Parser }}
+{{row|numberofedits     | parser function | Parser }}
+{{row|language          | parser function | Parser }}
+{{row|padleft           | parser function | Parser }}
+{{row|padright          | parser function | Parser }}
+{{row|anchorencode      | parser function | Parser }}
+{{row|special           | parser function | Parser }}
+{{row|defaultsort       | parser function | Parser }}
+{{row|displaytitle      | parser function | Parser }}
+{{row|pagesinnamespace  | parser function | Parser }}
+
+{{row|currentmonth      | magic word      | Parser }}
+{{row|currentmonthname  | magic word      | Parser }}
+{{row|currentmonthnamegen| magic word     | Parser }}
+{{row|currentmonthabbrev| magic word      | Parser }}
+{{row|currentday        | magic word      | Parser }}
+{{row|currentday2       | magic word      | Parser }}
+{{row|localmonth        | magic word      | Parser }}
+{{row|localmonthname    | magic word      | Parser }}
+{{row|localmonthnamegen | magic word      | Parser }}
+{{row|localmonthabbrev  | magic word      | Parser }}
+{{row|localday          | magic word      | Parser }}
+{{row|localday2         | magic word      | Parser }}
+{{row|pagename          | magic word      | Parser }}
+{{row|pagenamee         | magic word      | Parser }}
+{{row|fullpagename      | magic word      | Parser }}
+{{row|fullpagenamee     | magic word      | Parser }}
+{{row|subpagename       | magic word      | Parser }}
+{{row|subpagenamee      | magic word      | Parser }}
+{{row|basepagename      | magic word      | Parser }}
+{{row|basepagenamee     | magic word      | Parser }}
+{{row|talkpagename      | magic word      | Parser }}
+{{row|talkpagenamee     | magic word      | Parser }}
+{{row|subjectpagename   | magic word      | Parser }}
+{{row|subjectpagenamee  | magic word      | Parser }}
+{{row|revisionid        | magic word      | Parser }}
+{{row|revisionday       | magic word      | Parser }}
+{{row|revisionday2      | magic word      | Parser }}
+{{row|revisionmonth     | magic word      | Parser }}
+{{row|revisionyear      | magic word      | Parser }}
+{{row|revisiontimestamp | magic word      | Parser }}
+{{row|namespace         | magic word      | Parser }}
+{{row|namespacee        | magic word      | Parser }}
+{{row|talkspace         | magic word      | Parser }}
+{{row|talkspacee        | magic word      | Parser }}
+{{row|subjectspace      | magic word      | Parser }}
+{{row|subjectspacee     | magic word      | Parser }}
+{{row|currentdayname    | magic word      | Parser }}
+{{row|currentyear       | magic word      | Parser }}
+{{row|currenttime       | magic word      | Parser }}
+{{row|currenthour       | magic word      | Parser }}
+{{row|currentweek       | magic word      | Parser }}
+{{row|currentdow        | magic word      | Parser }}
+{{row|localdayname      | magic word      | Parser }}
+{{row|localyear         | magic word      | Parser }}
+{{row|localtime         | magic word      | Parser }}
+{{row|localhour         | magic word      | Parser }}
+{{row|localweek         | magic word      | Parser }}
+{{row|localdow          | magic word      | Parser }}
+{{row|numberofarticles  | magic word      | Parser }}
+{{row|numberoffiles     | magic word      | Parser }}
+{{row|numberofusers     | magic word      | Parser }}
+{{row|numberofpages     | magic word      | Parser }}
+{{row|numberofadmins    | magic word      | Parser }}
+{{row|numberofedits     | magic word      | Parser }}
+{{row|currenttimestamp  | magic word      | Parser }}
+{{row|localtimestamp    | magic word      | Parser }}
+{{row|currentversion    | magic word      | Parser }}
+{{row|sitename          | magic word      | Parser }}
+{{row|server            | magic word      | Parser }}
+{{row|servername        | magic word      | Parser }}
+{{row|scriptpath        | magic word      | Parser }}
+{{row|directionmark     | magic word      | Parser }}
+{{row|contentlanguage   | magic word      | Parser }}
+{{row|# REDIRECT        | magic word      | Parser }}
+
+{{row|msg               | Parser Function | StringFunctions }}
+{{row|msgnw             | Parser Function | StringFunctions }}
+{{row|raw               | Parser Function | StringFunctions }}
+{{row|subst             | Parser Function | StringFunctions }}
+
+{{row|len               | Parser Function | StringFunctions }}
+{{row|pos               | Parser Function | StringFunctions }}
+{{row|rpos              | Parser Function | StringFunctions }}
+{{row|sub               | Parser Function | StringFunctions }}
+{{row|pad               | Parser Function | StringFunctions }}
+{{row|replace           | Parser Function | StringFunctions }}
+{{row|explode           | Parser Function | StringFunctions }}
+{{row|urlencode         | Parser Function | StringFunctions }}
+{{row|urldecode         | Parser Function | StringFunctions }}
+
+{{row|expr              | Parser Function | ParserFunctions }}
+{{row|if                | Parser Function | ParserFunctions }}
+{{row|ifeq              | Parser Function | ParserFunctions }}
+{{row|ifexpr            | Parser Function | ParserFunctions }}
+{{row|switch            | Parser Function | ParserFunctions }}
+{{row|ifexist           | Parser Function | ParserFunctions }}
+{{row|time              | Parser Function | ParserFunctions }}
+{{row|rel2abs           | Parser Function | ParserFunctions }}
+{{row|titleparts        | Parser Function | ParserFunctions }}
+
+{{row|#pagetitle        | Parser Function | PageFunctions }}
+{{row|#pagesubtitle     | Parser Function | PageFunctions }}
+{{row|#pageexists       | Parser Function | PageFunctions }}
+{{row|#varset           | Parser Function | PageFunctions }}
+{{row|#varget           | Parser Function | PageFunctions }}
+{{row|#varaset          | Parser Function | PageFunctions }}
+{{row|#varaget          | Parser Function | PageFunctions }}
+{{row|#varcapset        | Parser Function | PageFunctions }}
+{{row|#cshow            | Parser Function | PageFunctions }}
+{{row|NOCLIENTCACHING   | Magic Word      | PageFunctions}}
+
+{{row|#foreachx         | Parser Function | ForeachFunction}}
+{{row|#foreachy         | Parser Function | ForeachFunction}}
+{{row|#forx             | Parser Function | ForeachFunction}}
+
+{{row|noparsercaching   | Tag             | ParserTools}}
+
+{{row|#checkpermission  | Parser Function | PermissionFunctions}}
+
+{{row|#regx             | Parser Function | RegexTools}}
+{{row|#regx_vars        | Parser Function | RegexTools}}
+
+{{row|addscript         | Tag             | AddScriptCss}}
+{{row|#addscript        | Parser Function | AddScriptCss}}
+{{row|#addtohead        | Tag             | AddScriptCss}}
+
+{{row|dpl               | Parser Function | DynamicPageList}}
+
+{{row|docproc           | Tag             | DocProc}}
+
+{{row|geshi             | Tag             | geshi}}
+{{row|source            | Tag             | geshi}}
+{{row|php               | Tag             | geshi}}
+{{row|js                | Tag             | geshi}}
+
+{{row|#iwl              | Parser Function | InterwikiLinkManager}}
+
+{{row|#html             | Parser Function | SecureHTML }}
+
+{{row|disable           | Parser Function | ParserPhase2 }}
+
+{{row|#pg               | Parser Function | SecureProperties}}
+{{row|#ps               | Parser Function | SecureProperties}}
+{{row|#pf               | Parser Function | SecureProperties}}
+{{row|#gg               | Parser Function | SecureProperties}}
+{{row|#gs               | Parser Function | SecureProperties}}
+
+{{row|#trim             | Parser Function | MiscParserFunctions }}
+{{row|#nowikitext       | Parser Function | MiscParserFunctions }}
+{{row|#gettagsection    | Parser Function | MiscParserFunctions }}
+
+{{row|#imagelink        | Parser Function | ImageLink }}
+
+{{row|#pagebefore       | Parser Function | PageAfterAndBefore }}
+{{row|#pageafter        | Parser Function | PageAfterAndBefore }}
+{{row|#firstpage        | Parser Function | PageAfterAndBefore }}
+{{row|#lastpage         | Parser Function | PageAfterAndBefore }}
+
+{{row|__jsminandstore__ | Proprietary Word| ScriptingTools }}
+{{row|#epropset         | Parser Function | ScriptingTools }}
+
+{{row|__NOCOMMIT__      | Proprietary Word| FileManager }}
+|}
