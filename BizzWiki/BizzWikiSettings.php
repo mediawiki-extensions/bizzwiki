@@ -13,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_10');
+define('BIZZWIKI', '1_10_11alpha');
 $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
@@ -602,6 +602,13 @@ StubManager::createStub(	'PageAfterAndBefore',
 							null,					// tags
 							array('pagebefore', 'pageafter', 'firstpage', 'lastpage' ),	// parser Functions
 							null
+						 );
+
+StubManager::createStub(	'NewUserEmailNotification', 
+							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.php',
+							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
+							array('AddNewAccount'),
+							false
 						 );
 
 /* TODO

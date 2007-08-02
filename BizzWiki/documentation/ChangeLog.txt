@@ -216,3 +216,5 @@ REL1_10_10: (released 02/08/2007)
 - Added 'reload' right (FileManager extension)
 - FileManager: added 'reload' capability
 - FIXED broken 'ForeachFunction': missing file
+===============================
+REL1_10_11: (released ...) 

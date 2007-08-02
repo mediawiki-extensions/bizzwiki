@@ -63,6 +63,7 @@ The extension that are not candidate for this stubbing facility including those 
 ** 'tag' handlers (XML style section)
 ** 'mg' (i.e. parser functions)
 ** 'MW' (i.e. parser Magic Words)
+* fixed annoying warning about undefined offset.
 
 == Code ==
 [[Extension:StubManager/code]]
@@ -213,14 +214,16 @@ class StubManager
 		$result=trim($result);
 		
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if ($el['name']==self::thisName)
-				$el['description'] .= $result.'.';
+			if (@isset($el['name']))
+				if ($el['name']==self::thisName)
+					$el['description'] .= $result.'.';
 		
 		return true;
 	}
 	static function getRevisionId( $svnId=null )
 	{	
-		if ( $svnId === null )
+		// fixed annoying warning about undefined offset.
+		if ( $svnId === null || $svnId == '$Id$')
 			return null;
 			
 		// e.g. $Id$
