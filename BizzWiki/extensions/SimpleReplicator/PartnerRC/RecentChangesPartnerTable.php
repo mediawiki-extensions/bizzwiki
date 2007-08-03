@@ -21,6 +21,8 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 {
 	var $limit;
 	
+	const tablePrefix = 'rc';
+	
 	static $paramsList = array( 'rcid'		=> 'rc_id',				// BIZZWIKI specific
 								'type'		=> 'rc_type', 
 								'ns'		=> 'rc_namespace',
@@ -54,7 +56,14 @@ class RecentChangesPartnerTable extends PartnerObjectClass
 	
 	public function __construct( )
 	{
-		parent::__construct( self::$paramsList, 'recentchanges_partner', 'rc_id', 'rc_timestamp', 'rc','rc_cur_time' );
+		parent::__construct(	self::tablePrefix,
+								self::$paramsList, 
+								'recentchanges_partner', 
+								'rc_id', 
+								'rc_timestamp', 
+								'rc',
+								'rc_cur_time' 
+							);
 
 		// limit of rc elements to fetch from partner at any one time.
 		$this->limit 	= 500;		

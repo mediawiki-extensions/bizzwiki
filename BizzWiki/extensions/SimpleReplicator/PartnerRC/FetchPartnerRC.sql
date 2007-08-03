@@ -3,9 +3,9 @@ CREATE TABLE /*$wgDBprefix*/recentchanges_partner (
   -- taken from 'tables.sql' in 'maintenance' directory.
   -- only modified 'rc_id' line & added 'rc_done'
   -- rc_id :   not 'auto_increment'
-  -- rc_done:  status indicator for replication
+  -- rc_status:  status indicator for replication
   
-  rc_done tinyint unsigned NOT NULL default '0',
+  rc_status tinyint unsigned NOT NULL default '0',
   rc_id int NOT NULL, 
   
   rc_timestamp varbinary(14) NOT NULL default '',
