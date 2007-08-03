@@ -87,13 +87,50 @@ EOT;
 
 		$res = $dbr->query( $sql, __METHOD__ );
 		$row = $dbr->fetchObject( $res );
-		
+		$this->freeResult( $res );
+				
 		$hole = null;
 		if (isset( $row->hole_id ))
 			$hole = $row->hole_id;
 			
 		return $hole;
 	}
+	/**
+		Get a number of entries of the table 
+		starting at a defined index.
+	 */
+	public function getList( $startIndex, $limit )
+	{
+		$index  = $this->indexName;
+		$table  = $this->tableName;
+		
+		$dbr = wfGetDB( DB_SLAVE ); 
+/*
+			$res = $db->select( array( 'page', 'revision' ),
+				array( 'rev_id', 'rev_user_text' ),
+				array(
+					'page_namespace' => $this->mTitle->getNamespace(),
+					'page_title' => $this->mTitle->getDBkey(),
+					'rev_page = page_id'
+				), __METHOD__, $this->getSelectOptions( array(
+					'ORDER BY' => 'rev_timestamp DESC',
+					'LIMIT' => $num
+				) )
+			);
+*/		
+
+		$res = $dbr->select($table, 
+							$vars, 
+							$conds='', 
+							__METHOD__, 
+							null );
+
+		$rows = $dbr->fetchObject( $res );
+		$this->freeResult( $res );
+				
+		return $rows;				
+	}
+		
 	public function getIdTsBeforeFirstHole( $holeid, &$ts, $getTs = false )
 	{
 		// protect against limit case (first hole == 1)

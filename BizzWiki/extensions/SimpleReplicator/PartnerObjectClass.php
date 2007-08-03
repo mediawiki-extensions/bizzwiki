@@ -173,6 +173,11 @@ abstract class PartnerObjectClass extends TableClass
 	}
 	/**
 		Update the 'status' field of the entries.
+		1) We need to get a snapshot of the local partner table 
+		   to understand how to update the status of the entries.
+		   
+		- The missing entries must be created with a status 'statusRetry'
+		- The entries with 
 		
 		IMPORTANT: we can only assess the status of the entries
 				   within the bounds of the data-set we get from
@@ -181,7 +186,13 @@ abstract class PartnerObjectClass extends TableClass
 	 */
 	private function processForHoles( $holeid, &$lst )	 
 	{
-		
+		#$this->lowestFetchedId 		
+		#$this->highestFetchedId
+		foreach( $lst as $id => &$e )
+		{
+			// first, make sure we within the boundaries
+			// of the 	
+		}
 	}
 	/**
 		Update the 'status' field of each record.
@@ -257,7 +268,7 @@ abstract class PartnerObjectClass extends TableClass
 		
 		// next, extract the relevant elements
 		$llist = $x->getElementsByTagName($this->document_tag_field);
-		
+
 		// place the elements in a PHP friendly array
 		foreach( $llist as $e )
 		{
@@ -299,8 +310,14 @@ abstract class PartnerObjectClass extends TableClass
 
 		// sort the list for convenience
 		ksort( $p );
-					
-		return $p;
+
+		// get the lowest & highest id's
+		reset( $p );
+		$this->lowestFetchedId  = key( $p );
+		end( $p );
+		$this->highestFetchedId = key( $p );
+
+ 		return $p;
 	}
 	/**
 		Use the Mediawiki API to retrieve a 'document' from the partner replication node.
