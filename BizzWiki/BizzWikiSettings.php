@@ -213,6 +213,7 @@ $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/watch
 // replication related.
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/ftchrclog",	"browse")] = true;	// partner RC
 $wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/schlog",		"browse")] = true;	// task scheduler
+$wgGroupPermissions['sysop' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usrloglog",	"browse")] = true;	// UserLoginLogoutLog
 
 	// Anonymous
 	// #########
@@ -609,6 +610,15 @@ StubManager::createStub(	'NewUserEmailNotification',
 							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
 							array('AddNewAccount'),
 							false
+						 );
+
+StubManager::createStub(	'UserLoginLogoutLog', 
+							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.php',
+							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
+							array(	'UserLoginForm', 'UserLoginComplete', 
+									'UserLogout', 'UserLogoutComplete',
+									'SpecialVersionExtensionTypes' ),
+							true
 						 );
 
 /* TODO
