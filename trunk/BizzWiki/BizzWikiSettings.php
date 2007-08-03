@@ -93,6 +93,7 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	4) Provision the new permission settings
 */
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
+
 StubManager::createStub(	'RawRight', 
 							$bwExtPath.'/RawRight/RawRight.php',
 							null,
@@ -331,7 +332,6 @@ $wgLoginLanguageSelector = false;
 require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
-//require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php');
 StubManager::createStub(	'FileSystemSyntaxColoring', 
 							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
 							null,
@@ -347,7 +347,6 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 require('extensions/NewUserLog/Newuserlog.php');
 
 // Show Redirect Page Text extension
-//require('extensions/ShowRedirectPageText/ShowRedirectPageText.php');
 StubManager::createStub(	'ShowRedirectPageText', 
 							$bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText.php',
 							null,
@@ -359,7 +358,6 @@ StubManager::createStub(	'ShowRedirectPageText',
 						 );
 
 // Interwiki table management
-//require('extensions/InterWikiLinkManager/InterWikiLinkManager.php');
 StubManager::createStub(	'InterWikiLinkManagerClass', 
 							$bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager.php',
 							null,
@@ -375,7 +373,6 @@ StubManager::createStub(	'InterWikiLinkManagerClass',
 require('extensions/SidebarEx/SidebarEx.php');
 
 // Generic Syntax Highlighter
-// require('extensions/GeSHi/geshi.php');
 StubManager::createStub(	'geshiClass', 
 							$bwExtPath.'/GeSHi/geshi.php',
 							null,
@@ -398,8 +395,7 @@ require('extensions/SecureHTML/SecureHTML.php');
 	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
 require('extensions/SecureProperties/SecureProperties.php');
-//require('extensions/ParserExt/ParserTools/ParserTools.php');
-//require('extensions/FormProc/FormProc.php');
+
 StubManager::createStub(	'FormProcClass', 
 							$bwExtPath.'/FormProc/FormProc.php',
 							null,
@@ -410,8 +406,6 @@ StubManager::createStub(	'FormProcClass',
 							null	// no magic words
 						 );
 
-
-//require('extensions/AutoLanguage/AutoLanguage.php');
 StubManager::createStub(	'AutoLanguage', 
 							$bwExtPath.'/AutoLanguage/AutoLanguage.php',
 							null,							
@@ -423,10 +417,6 @@ StubManager::createStub(	'AutoLanguage',
 #AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 #AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
 
-// Functionality reallocated to 'PageFunctions' extension.
-// require('extensions/CacheTools/CacheTools.php'); 
-
-
 	// Parser Extensions
 	// %%%%%%%%%%%%%%%%%
 // http://meta.wikimedia.org/wiki/ParserFunctions
@@ -435,19 +425,21 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
-	// Stubs
-	//  Used for rare events handling.
 StubManager::createStub(	'PermissionFunctions', 
 							$bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions.php',
-							null,	// no i18n file						
-							null,	// no hooks
+							null,							
+							null,
 							false, // no need for logging support
 							null,	// tags
 							array( 'checkpermission' ),  //of parser function magic words,
-							null	// no magic words
+							null
 						 );
 
 require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
+
+	// Stubs
+	//  Used for rare events handling.
+
 
 StubManager::createStub(	'EmailLog', 
 							$bwExtPath.'/EmailLog/EmailLog.php',
@@ -476,12 +468,14 @@ StubManager::createStub(	'RegexNamespaceContext',
 							false
 						 );
 
+
 StubManager::createStub(	'RawPageTools', 
 							$bwExtPath.'/RawPageTools/RawPageTools.php',
 							null,							
 							array( 'RawPageViewBeforeOutput' ),
 							false
 						 );
+
 
 StubManager::createStub(	'AddScriptCssClass', 
 							$bwExtPath.'/addScriptCss/AddScriptCss.php',
