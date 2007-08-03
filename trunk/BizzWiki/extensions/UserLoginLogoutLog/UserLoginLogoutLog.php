@@ -37,7 +37,6 @@ The user 'WikiAgent' should be created in order to handle 'login error' events.
 To install independantly from BizzWiki:
 * Download 'StubManager' extension
 * Download this extension's file(s) and place them in the extension's directory
-* Download patched '/includes/User.php' file from BizzWiki distribution and put in '$IP./includes' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
@@ -52,6 +51,9 @@ StubManager::createStub(	'UserLoginLogoutLog',
 </source>
 
 == History ==
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
 </wikitext>*/
