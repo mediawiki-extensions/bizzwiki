@@ -58,32 +58,30 @@ abstract class TableClass
 	 */
 	public function getFirstHole()
 	{
-		$index = $this->indexName;
-		$table = $this->tableName;
+		$index  = $this->indexName;
+		$table  = $this->tableName;
+		$status = $this->table_prefix.'_status';
 
-		// try limit case first.
+		// conditions to declare a valid 'hole'
+		$statEmpty = self::statusEmpty;
+		$statRetry = self::statusRetry;		
+
 		$dbr = wfGetDB(DB_SLAVE);		
-		$sql="SELECT $index FROM $table WHERE ($index=1);";
-		$res = $dbr->query( $sql, __METHOD__ );
-		$first_row = $dbr->fetchObject( $res );
-
-		if (!isset( $first_row->$index ))
-			return 1;
-		
-		// next, try the generic case.
 		
 		$sql = <<<EOT
 SELECT MIN( a.incid ) AS hole_id
-FROM (
-SELECT $index +1 AS incid
-FROM $table
-ORDER BY $index ASC
-)a
-WHERE a.incid NOT
-IN (
-SELECT $index
-FROM $table
-ORDER BY $index ASC
+FROM 
+(
+ SELECT $index +1 AS incid
+ FROM $table
+ WHERE ($status = '{$statEmpty}' OR $status = '{$statRetry}')
+ ORDER BY $index ASC
+) a
+WHERE a.incid NOT IN 
+(
+ SELECT $index
+ FROM $table
+ ORDER BY $index ASC
 );
 EOT;
 
@@ -136,6 +134,10 @@ EOT;
 		$dbr = wfGetDB(DB_SLAVE);
 		return $dbr->tableExists($this->tableName);
 	}
+	/**
+		Returns the index & timestamp (if any) of the 
+		'last entry' in the table.
+	 */
 	public function getLastId( &$timestamp )
 	{
 		$dbr = wfGetDB( DB_SLAVE ); 
