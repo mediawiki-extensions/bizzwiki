@@ -61,7 +61,7 @@ Do not modify the following:
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download [[Extension:ExtensionClass]] extension & put in 'extensions' directory
+* Download [[Extension:StubManager]] extension & put in 'extensions' directory
 * Download [[Extension:ParserCacheControl]] extension & put in 'extensions' directory
 * Download [[Extension:PageFunctions]] extension & put in 'extensions' directory
 * Download [[Extension:RegexTools]] extension & put in 'extensions' directory
