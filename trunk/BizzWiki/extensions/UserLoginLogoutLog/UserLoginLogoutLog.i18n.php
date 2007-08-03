@@ -20,11 +20,16 @@ $logUserLoginLogoutLog = 'usrloglog';
 
 // the format is important here too: 'msg'.$classname
 $msgUserLoginLogoutLog['en'] = array(
-	'usrloglog'					=> 'User Settings Changed Log',
-	'usrloglog'.'logpage'			=> 'User Settings Changed Log',
-	'usrloglog'.'logpagetext'		=> "This is a log of changes to a user's settings",
-	'usrloglog'.'-saveok-entry'	=> 'Settings saved ok',
-	'usrloglog'.'-save-text'		=> " user name [[User:$1]]",
+	'usrloglog'						=> 'User Log-in/Log-out Log',
+	'usrloglog'.'logpage'			=> 'User Log-in/Log-out Log',
+	'usrloglog'.'logpagetext'		=> "This is a log of user log-in/log-out events",
+	'usrloglog'.'-loginok-entry'	=> 'Log-in successful',
+	'usrloglog'.'-loginok-text'		=> " [[User:$1]] ",
+	'usrloglog'.'-loginerr-entry'	=> 'Log-in unsuccessful',
+	'usrloglog'.'-loginerr-text'	=> " $1 message: $2 ",
+	'usrloglog'.'-logoutok-entry'	=> 'Log-out successful',
+	'usrloglog'.'-logoutok-text'	=> " [[User:$1]] ",
+	
 	#'' => '',
 );
 
