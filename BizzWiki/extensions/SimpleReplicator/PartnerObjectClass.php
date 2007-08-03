@@ -28,19 +28,12 @@ abstract class PartnerObjectClass extends TableClass
 	// Table Object related
 	var $params;
 	var $document_tag_field;
-	var $table_prefix;			// e.g. RecentChanges == 'rc', Logging == 'log' etc.
 
 	// error codes.
 	const errOK			 = 0;
 	const errFetchingUrl = 1;
 	const errListEmpty   = 2;
 	const errParsing     = 3;
-	
-	// status codes.
-	const statusEmpty	= 0;	// not done yet.
-	const statusOK		= 1;	// OK.
-	const statusRetry	= 2;	// Will retry once.
-	const statusFail	= 3;	// not found on partner.
 	
 	// state variables
 	var $missing_id;		// only valid if errParsing is returned by update()
@@ -53,13 +46,11 @@ abstract class PartnerObjectClass extends TableClass
 	public function __construct( $table_prefix, &$params, $tableFieldName, $indexFieldName, $timestampFieldName, 
 								$documentTagField, $currentTimeFieldName ) 
 	{ 
-		parent::__construct( $tableFieldName, $indexFieldName, $timestampFieldName, $currentTimeFieldName ); 
+		parent::__construct( $table_prefix, $tableFieldName, $indexFieldName, $timestampFieldName, $currentTimeFieldName ); 
 		
 		$this->p_url	= PartnerMachine::$url;
 		$this->p_port	= PartnerMachine::$url;
 		$this->p_timeout= PartnerMachine::$timeout;
-		
-		$this->table_prefix = $table_prefix;
 		
 		$this->document_tag_field = $documentTagField;
 		$this->params = $params;
@@ -79,8 +70,6 @@ abstract class PartnerObjectClass extends TableClass
 				
 		Case 3: Catching Up
 				The local replicator found 'holes' in the local copy of the partner table.
-
-		Case 4: 
 		
 	 */
 	public function update( )
@@ -136,6 +125,9 @@ abstract class PartnerObjectClass extends TableClass
 		{
 			$this->almostInSync = true;
 			$flist = $this->filterList( $plist, $lastid+1, $this->filtered_count );
+			
+			// update the status field (e.g. rc_status)			
+			$this->updateStatus( $flist );
 			$this->compte = count( $flist );
 			// update the table
 			$this->affected_rows = $this->updateList( $flist );
@@ -148,9 +140,28 @@ abstract class PartnerObjectClass extends TableClass
 		// as possible to catch up.
 		$this->catchingUp = true;
 		$this->compte = count( $plist );
+		
+		// update the status field (e.g. rc_status)
+		$this->updateStatus( $flist );		
 		$this->affected_rows = $this->updateList( $plist );
 		return PartnerObjectClass::errOK;
 		
+	}
+	/**
+		Update the 'status' field of each record.
+		The status helps the replicator know what to do
+		with each row:
+		- retry to fetch the record
+		- abandon retries
+		etc.
+		
+		The entries we fetched from the partner
+		and we are about to commit locally get a 'statusOK' code.
+	 */
+	private function updateStatus( &$lst )	
+	{
+		foreach( $lst as $index => &$e )
+			$e[ $this->table_prefix.'_status' ] = self::statusOK;
 	}
 	/**
 		Adjust the 'current timestamp' field of the table, if any.
@@ -167,7 +178,7 @@ abstract class PartnerObjectClass extends TableClass
 	}
 
 	/**
-		Filters the list for records falling below $id
+		Filters the list for records falling below $next_expected_id
 	 */
 	private function filterList( &$lst, $next_expected_id, &$filtered_count )
 	{
