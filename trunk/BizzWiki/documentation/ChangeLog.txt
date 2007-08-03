@@ -219,4 +219,5 @@ REL1_10_10: (released 02/08/2007)
 ===============================
 REL1_10_11: (released ...) 
 - Added 'NewUserEmailNotification' extension
--
+- Added 'UserLoginLogoutLog' extension
+- Adjusted 'PermissionFunctions' for stubbing

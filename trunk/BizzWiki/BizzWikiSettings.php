@@ -93,7 +93,6 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	4) Provision the new permission settings
 */
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
-//require('extensions/RawRight/RawRight.php');
 StubManager::createStub(	'RawRight', 
 							$bwExtPath.'/RawRight/RawRight.php',
 							null,
@@ -104,7 +103,6 @@ StubManager::createStub(	'RawRight',
 							null	// no magic words
 						 );
 
-//require('extensions/ViewsourceRight/ViewsourceRight.php');
 StubManager::createStub(	'ViewsourceRight', 
 							$bwExtPath.'/ViewsourceRight/ViewsourceRight.php',
 							null,
@@ -115,7 +113,6 @@ StubManager::createStub(	'ViewsourceRight',
 							null	// no magic words
 						 );
 
-//require('extensions/WatchRight/WatchRight.php');
 StubManager::createStub(	'WatchRight', 
 							$bwExtPath.'/WatchRight/WatchRight.php',
 							null,
@@ -438,16 +435,19 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 
-//require( 'extensions/ParserExt/ForeachFunction/ForeachFunction.php' );
-//require('extensions/ParserExt/PageFunctions/PageFunctions.php'); 
-require('extensions/ParserExt/PermissionFunctions/PermissionFunctions.php');
-require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
-//require('extensions/ParserExt/RegexTools/RegexTools.php');
-//require('extensions/ParserExt/MiscParserFunctions/MiscParserFunctions.php');
-
 	// Stubs
 	//  Used for rare events handling.
+StubManager::createStub(	'PermissionFunctions', 
+							$bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions.php',
+							null,	// no i18n file						
+							null,	// no hooks
+							false, // no need for logging support
+							null,	// tags
+							array( 'checkpermission' ),  //of parser function magic words,
+							null	// no magic words
+						 );
 
+require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 
 StubManager::createStub(	'EmailLog', 
 							$bwExtPath.'/EmailLog/EmailLog.php',
@@ -476,14 +476,12 @@ StubManager::createStub(	'RegexNamespaceContext',
 							false
 						 );
 
-
 StubManager::createStub(	'RawPageTools', 
 							$bwExtPath.'/RawPageTools/RawPageTools.php',
 							null,							
 							array( 'RawPageViewBeforeOutput' ),
 							false
 						 );
-
 
 StubManager::createStub(	'AddScriptCssClass', 
 							$bwExtPath.'/addScriptCss/AddScriptCss.php',
@@ -572,7 +570,6 @@ StubManager::createStub(	'ScriptingToolsClass',
 							null
 						 );
 
-//require('extensions/RecentChangesManager/RecentChangesManager.php');
 StubManager::createStub(	'RecentChangesManager', 
 							$bwExtPath.'/RecentChangesManager/RecentChangesManager.php',
 							null,					// i18n file			
@@ -583,7 +580,6 @@ StubManager::createStub(	'RecentChangesManager',
 							null
 						 );
 
-//require('extensions/ImageLink/ImageLink.php');
 StubManager::createStub(	'ImageLinkClass', 
 							$bwExtPath.'/ImageLink/ImageLink.php',
 							null,					// i18n file			
@@ -594,7 +590,6 @@ StubManager::createStub(	'ImageLinkClass',
 							null
 						 );
 
-//require('extensions/PageAfterAndBefore/PageAfterAndBefore.php');
 StubManager::createStub(	'PageAfterAndBefore', 
 							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
 							null,					// i18n file			
