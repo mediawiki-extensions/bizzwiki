@@ -20,6 +20,7 @@
 class LoggingPartnerTable extends PartnerObjectClass
 {
 	var $limit;
+	const tablePrefix = 'log';
 	
 	static $paramsList = array( 
 								'logid'		=> 'log_id',			// ok
@@ -36,7 +37,14 @@ class LoggingPartnerTable extends PartnerObjectClass
 
 	public function __construct( )
 	{
-		parent::__construct( self::$paramsList, 'logging_partner', 'log_id', 'log_timestamp', 'item', null);
+		parent::__construct(self::tablePrefix, 
+							self::$paramsList, 
+							'logging_partner', 
+							'log_id', 
+							'log_timestamp', 
+							'item', 
+							null
+							);
 
 		// limit of log elements to fetch from partner at any one time.
 		$this->limit 	= 500;		

@@ -3,9 +3,9 @@ CREATE TABLE /*$wgDBprefix*/logging_partner (
   -- taken from 'tables.sql' in 'maintenance' directory.
   -- only modified 'rc_id' line & added 'rc_done'
   -- log_id :   not 'auto_increment'
-  -- log_done:  status indicator for replication
+  -- log_status:  status indicator for replication
 
-  log_done tinyint unsigned NOT NULL default '0',
+  log_status tinyint unsigned NOT NULL default '0',
   
   -- Symbolic keys for the general log type and the action type
   -- within the log. The output format will be controlled by the

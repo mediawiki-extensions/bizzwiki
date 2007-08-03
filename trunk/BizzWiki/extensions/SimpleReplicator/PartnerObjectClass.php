@@ -7,6 +7,14 @@
 |-
 | <b>Author</b> || Jean-Lou Dupont
 |}<br/><br/>
+
+== Notes ==
+* Make sure that no entries from the 'partner' table get deleted
+** RecentChanges
+** Loging
+* The partner table definition must include a field '*_status'
+
+
 == Code ==
 </wikitext>*/
 
@@ -20,12 +28,19 @@ abstract class PartnerObjectClass extends TableClass
 	// Table Object related
 	var $params;
 	var $document_tag_field;
+	var $table_prefix;			// e.g. RecentChanges == 'rc', Logging == 'log' etc.
 
 	// error codes.
 	const errOK			 = 0;
 	const errFetchingUrl = 1;
 	const errListEmpty   = 2;
 	const errParsing     = 3;
+	
+	// status codes.
+	const statusEmpty	= 0;	// not done yet.
+	const statusOK		= 1;	// OK.
+	const statusRetry	= 2;	// Will retry once.
+	const statusFail	= 3;	// not found on partner.
 	
 	// state variables
 	var $missing_id;		// only valid if errParsing is returned by update()
@@ -35,7 +50,7 @@ abstract class PartnerObjectClass extends TableClass
 	var $compte;			// total number of elements
 	var $startup;
 
-	public function __construct( &$params, $tableFieldName, $indexFieldName, $timestampFieldName, 
+	public function __construct( $table_prefix, &$params, $tableFieldName, $indexFieldName, $timestampFieldName, 
 								$documentTagField, $currentTimeFieldName ) 
 	{ 
 		parent::__construct( $tableFieldName, $indexFieldName, $timestampFieldName, $currentTimeFieldName ); 
@@ -44,10 +59,30 @@ abstract class PartnerObjectClass extends TableClass
 		$this->p_port	= PartnerMachine::$url;
 		$this->p_timeout= PartnerMachine::$timeout;
 		
+		$this->table_prefix = $table_prefix;
+		
 		$this->document_tag_field = $documentTagField;
 		$this->params = $params;
 	}
+	/**
+		Case 1: Startup
+				Basically, the local table is empty i.e. 'first hole id == 1'
+				==> just fetch a list to kick-start. 
+					Depending how 'out of sync' the replicator pair is, this should either
+					close the gap (i.e. Almost in Sync) or trigger 'Catching Up'
+				
+		Case 2: Almost in Sync
+				The local replicator is almost in sync with the partner;
+				no 'holes' are present. The local replicator just fetches
+				updates on a regular basis.
+				=> just fetch the 'newest' list from the partner.
+				
+		Case 3: Catching Up
+				The local replicator found 'holes' in the local copy of the partner table.
 
+		Case 4: 
+		
+	 */
 	public function update( )
 	{
 		$this->startup		= false;
@@ -69,9 +104,8 @@ abstract class PartnerObjectClass extends TableClass
 		}
 		else
 		{
-			// let's find a first hole.
-			$holeid = $this->getFirstHole();
-			// and get the timestamp of the preceeding entry
+			// We already got a 'first hole'.
+			// Now get the timestamp of the preceeding entry
 			$bholeid = $this->getIdTsBeforeFirstHole( $holeid, $ts, true );
 			// convert timestamp to the API's liking
 			// The one returned by the database is in TS_MW format.
