@@ -23,13 +23,22 @@ abstract class TableClass
 	var $indexName;
 	var $timestampName;
 	var $currentTimestampName;
+	var $table_prefix;			// e.g. RecentChanges == 'rc', Logging == 'log' etc.
+		
+	// status codes.
+	const statusEmpty	= 0;	// not done yet.
+	const statusOK		= 1;	// OK.
+	const statusRetry	= 2;	// Will retry once.
+	const statusFail	= 3;	// not found on partner.
+
 	
-	public function __construct( $tableName, $indexName, $timestampName=null, $currentTimestampName )
+	public function __construct( $table_prefix, $tableName, $indexName, $timestampName=null, $currentTimestampName )
 	{
-		$this->tableName = $tableName;
-		$this->indexName = $indexName;
-		$this->timestampName = $timestampName;
-		$this->currentTimestampName = $currentTimestampName;
+		$this->tableName = 				$tableName;
+		$this->indexName = 				$indexName;
+		$this->timestampName = 			$timestampName;
+		$this->currentTimestampName =	$currentTimestampName;
+		$this->table_prefix = 			$table_prefix;		
 	}
 
 	/**
@@ -41,6 +50,11 @@ abstract class TableClass
 			'revision' table
 			'page' table
 			etc.
+		Futhermore, a 'hole' is defined by the '*_status' field:
+			- statusEmpty -> valid hole
+			- statusOK    -> hole filled ;-)
+			- statusRetry -> last chance to fill the hole
+			- statusFail  -> finished retrying - do not touch.
 	 */
 	public function getFirstHole()
 	{
