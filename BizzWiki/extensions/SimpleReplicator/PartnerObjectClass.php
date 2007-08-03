@@ -40,8 +40,12 @@ abstract class PartnerObjectClass extends TableClass
 	var $duplicate_id;		// only valid if errParsing is returned by update()
 	var $filtered_count;	// only valid after 'filterList' method
 	var $affected_rows;		// actual number of elements updated in the database
+	var $fail_count;		// the number of rows that couldn't be fetched, even after a retry.
 	var $compte;			// total number of elements
 	var $startup;
+	
+	var $lowestFetchedId;
+	var $highestFetchedId;
 
 	public function __construct( $table_prefix, &$params, $tableFieldName, $indexFieldName, $timestampFieldName, 
 								$documentTagField, $currentTimeFieldName ) 
@@ -54,6 +58,13 @@ abstract class PartnerObjectClass extends TableClass
 		
 		$this->document_tag_field = $documentTagField;
 		$this->params = $params;
+		
+		// some initialisation
+		$this->filtered_count = 0;
+		$this->affected_rows = 0;
+		$this->fail_count = 0;
+		$this->lowestFetchedId = null;
+		$this->highestFetchedId = null;
 	}
 	/**
 		Case 1: Startup
@@ -70,6 +81,10 @@ abstract class PartnerObjectClass extends TableClass
 				
 		Case 3: Catching Up
 				The local replicator found 'holes' in the local copy of the partner table.
+				Make sure to look for 'valid' holes i.e.
+					- statusEmpty
+					- statusRetry
+				
 		
 	 */
 	public function update( )
@@ -106,6 +121,9 @@ abstract class PartnerObjectClass extends TableClass
 			return PartnerObjectClass::errFetchingUrl;
 			
 		// At this point, we have a document to parse.
+		// RETURN IF THE LIST IS EMPTY OR INVALID
+		// so that the rest of the process don't get confused i.e.
+		// marking entries for 'retry' where we really can't do this now!
 		$plist = $err= $this->parseDocument( $document, $this->params, $this->missing_id, $this->duplicate_id );
 		if ($err === false)	return PartnerObjectClass::errParsing;
 		if ($err === true)	return PartnerObjectClass::errListEmpty;
@@ -115,7 +133,13 @@ abstract class PartnerObjectClass extends TableClass
 		
 		// Now we have a parsed document to process.
 		// -----------------------------------------
-		$lastid = $this->getLastId( $ts );
+		$lastid = $this->getLastId( $tsOfLastId );
+
+		// From this point we can determine some status about the entries in the local table i.e.
+		//  If we were expecting the fill some 'holes' and we didn't get the appropriate data, 
+		//  then we must flags those.
+		//  E.g. we were expecting entries starting at [$holeid] with for timestamp [$tsAPI]
+		$this->processForHoles( $holeid, $plist );
 		
 		// If the last id recorded in the local table equals
 		// that of the 'previous' hole, then we have ~ synchronized situation;
@@ -145,6 +169,18 @@ abstract class PartnerObjectClass extends TableClass
 		$this->updateStatus( $flist );		
 		$this->affected_rows = $this->updateList( $plist );
 		return PartnerObjectClass::errOK;
+		
+	}
+	/**
+		Update the 'status' field of the entries.
+		
+		IMPORTANT: we can only assess the status of the entries
+				   within the bounds of the data-set we get from
+				   the partner i.e. between [start id;end id]
+				   of the list returned by the partner.
+	 */
+	private function processForHoles( $holeid, &$lst )	 
+	{
 		
 	}
 	/**
@@ -235,7 +271,7 @@ abstract class PartnerObjectClass extends TableClass
 					$value = wfTimestamp( TS_MW, $value );
 				$a[ $dbkey ] = $value;
 			}
-#		wfVarDump( $a );
+			#wfVarDump( $a );
 
 			// make sure we have an 'id' present
 			if (!isset( $a[$this->indexName] ))
