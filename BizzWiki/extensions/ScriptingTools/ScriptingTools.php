@@ -65,7 +65,7 @@ To install outside the BizzWiki platform:
 require('/extensions/StubManager.php');
 
 StubManager::createStub(	'ScriptingToolsClass', 
-							'/extensions/ScriptingTools/ScriptingTools.php',
+							$IP.'/extensions/ScriptingTools/ScriptingTools.php',
 							null,					// i18n file			
 							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
 							false, 					// no need for logging support
@@ -189,10 +189,10 @@ class ScriptingToolsClass
 		
 		foreach( $this->Elements as $eid => &$kvpair )
 		{
-			if ($first_element) { $elements = '"'.$eid.'"'; $first_element=false; }
-			else				$elements .= ', "'.$eid.'"';
+			if ($first_element) { $elements = 'PageElement'.$eid; $first_element=false; }
+			else				$elements .= ', PageElement'.$eid;
 			
-			$liste .= 'var Element'.$eid."= {\n";
+			$liste .= 'var PageElement'.$eid."= {\n";
 			$first = true;
 			foreach( $kvpair as $key => $value )
 			{
@@ -208,10 +208,8 @@ class ScriptingToolsClass
 		}
 
 		$script  = "\n".self::open_js;
-		$script .= "\n".'var PageVars = function() {';
-		$script .= "\n".' var Elements = new Array ( '.$elements.' );';		
 		$script .= "\n ".$liste;
-		$script .= '};';
+		$script .= "\n".' var PageElements = new Array ( '.$elements.' );';		
 		$script .= "\n".self::close_js;
 		$text .= $script;
 		
