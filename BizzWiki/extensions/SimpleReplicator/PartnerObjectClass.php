@@ -139,7 +139,7 @@ abstract class PartnerObjectClass extends TableClass
 		//  If we were expecting the fill some 'holes' and we didn't get the appropriate data, 
 		//  then we must flags those.
 		//  E.g. we were expecting entries starting at [$holeid] with for timestamp [$tsAPI]
-		$this->processForHoles( $holeid, $plist );
+		$this->fail_count = $this->processForHoles( $holeid, $plist );
 		
 		// If the last id recorded in the local table equals
 		// that of the 'previous' hole, then we have ~ synchronized situation;
@@ -166,7 +166,7 @@ abstract class PartnerObjectClass extends TableClass
 		$this->compte = count( $plist );
 		
 		// update the status field (e.g. rc_status)
-		$this->updateStatus( $flist );		
+		$this->updateStatus( $plist );		
 		$this->affected_rows = $this->updateList( $plist );
 		return PartnerObjectClass::errOK;
 		
@@ -175,6 +175,8 @@ abstract class PartnerObjectClass extends TableClass
 		Update the 'status' field of the entries.
 		1) We need to get a snapshot of the local partner table 
 		   to understand how to update the status of the entries.
+		   
+		2) Starting @ $holeid, 
 		   
 		- The missing entries must be created with a status 'statusRetry'
 		- The entries with 
@@ -186,14 +188,66 @@ abstract class PartnerObjectClass extends TableClass
 	 */
 	private function processForHoles( $holeid, &$lst )	 
 	{
-		#$this->lowestFetchedId 		
-		#$this->highestFetchedId
-		foreach( $lst as $id => &$e )
+		$fail_count = 0;
+		
+		$current_rows = $this->getIdList( $holeid, 500 );
+		if (empty( $current_rows ))		
+			return null;
+			
+		foreach( $current_rows as &$e )
 		{
-			// first, make sure we within the boundaries
-			// of the 	
-		}
-	}
+			// is there a corresponding id from the fetched list?
+			// If YES, then you have nothing to do: the downstream
+			// process will take care of this.
+			// BUT if we do not have a corresponding id coming from
+			// the partner, let's update the 'status' field.
+			$id = $e[$this->indexName];
+			
+			// we got an entry from the partner: GOOD!
+			if ( isset($lst[$id]) )
+				continue;
+			
+			// we do not have an entry from the partner for $id
+			// are we still within boundaries?
+			// If YES, then update the status field.
+			// If NO, then we do not much to do here... for now.
+			if ( ( $id < $this->lowestFetchedId ) || ( $id > $this->highestFetchedId ) )
+				continue;								
+			
+			// at this point, we are missing an id from the fetched list
+			// AND we the said id is within the boundaries of the fetched list.
+			// Let's update the local status of the entry.
+			$status = $e[$this->statusName];
+			$new_status = null;
+			switch( $status )
+			{
+				case self::statusEmpty:
+					$new_status = self::statusRetry;
+					break;
+				
+				// If OK, we are still OK!
+				// If fail, still fail.
+				case self::statusFail:
+				case self::statusOK:
+					$new_status = $status;
+					break;
+					
+				case self::statusRetry:
+					$new_status = self::statusFail;
+					$fail_count++;
+					break;
+
+				default:
+					throw new MWException( __METHOD__.': received invalid status code.' );
+			}//end switch
+
+			$e[$this->statusName] = $new_status;
+		
+		}//end foreach
+		
+		return $fail_count;
+	}// end method
+	
 	/**
 		Update the 'status' field of each record.
 		The status helps the replicator know what to do
@@ -204,11 +258,14 @@ abstract class PartnerObjectClass extends TableClass
 		
 		The entries we fetched from the partner
 		and we are about to commit locally get a 'statusOK' code.
+		Make sure not to set the entries already touched by an 
+		upstream process!
 	 */
 	private function updateStatus( &$lst )	
 	{
 		foreach( $lst as $index => &$e )
-			$e[ $this->table_prefix.'_status' ] = self::statusOK;
+			if (!isset( $e[ $this->statusName ] ))
+				$e[ $this->statusName ] = self::statusOK;
 	}
 	/**
 		Adjust the 'current timestamp' field of the table, if any.

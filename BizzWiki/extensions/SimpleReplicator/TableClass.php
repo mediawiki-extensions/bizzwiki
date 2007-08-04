@@ -38,7 +38,8 @@ abstract class TableClass
 		$this->indexName = 				$indexName;
 		$this->timestampName = 			$timestampName;
 		$this->currentTimestampName =	$currentTimestampName;
-		$this->table_prefix = 			$table_prefix;		
+		$this->table_prefix = 			$table_prefix;
+		$this->statusName =				$table_prefix.'_status';	
 	}
 
 	/**
@@ -60,7 +61,7 @@ abstract class TableClass
 	{
 		$index  = $this->indexName;
 		$table  = $this->tableName;
-		$status = $this->table_prefix.'_status';
+		$status = $this->statusName;
 
 		// conditions to declare a valid 'hole'
 		$statEmpty = self::statusEmpty;
@@ -98,32 +99,24 @@ EOT;
 	/**
 		Get a number of entries of the table 
 		starting at a defined index.
+		The column returned are:
+			- ?_id (i.e. index)
+			- ?_status
 	 */
-	public function getList( $startIndex, $limit )
+	public function getIdList( $startIndex, $limit )
 	{
 		$index  = $this->indexName;
 		$table  = $this->tableName;
+		$status = $this->statusName;
 		
 		$dbr = wfGetDB( DB_SLAVE ); 
-/*
-			$res = $db->select( array( 'page', 'revision' ),
-				array( 'rev_id', 'rev_user_text' ),
-				array(
-					'page_namespace' => $this->mTitle->getNamespace(),
-					'page_title' => $this->mTitle->getDBkey(),
-					'rev_page = page_id'
-				), __METHOD__, $this->getSelectOptions( array(
-					'ORDER BY' => 'rev_timestamp DESC',
-					'LIMIT' => $num
-				) )
-			);
-*/		
 
 		$res = $dbr->select($table, 
-							$vars, 
-							$conds='', 
+							array( $index, $status ), 
+							array( "$index >= $startIndex" ),
 							__METHOD__, 
-							null );
+							array( 'LIMIT' => $limit, 'ORDER BY' => "$index ASC" ) 
+							);
 
 		$rows = $dbr->fetchObject( $res );
 		$this->freeResult( $res );

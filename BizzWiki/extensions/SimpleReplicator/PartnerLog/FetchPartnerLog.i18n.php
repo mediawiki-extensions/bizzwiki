@@ -26,7 +26,7 @@ $msgFetchPartnerLog['en'] = array(
 'fetchlog'.'logpage'			=> "Fetch Partner's 'Logging' table Log",
 'fetchlog'.'logpagetext'		=> 'This is a log of fetch operations',
 'fetchlog'.'-fetchok-entry'		=> 'Partner Log: Fetching successful',
-'fetchlog'.'-fetchok-text'		=> "processed $1, filtered $2 and updated $3 entries. State=$4.",
+'fetchlog'.'-fetchok-text'		=> "processed $1, filtered $2, updated $3 and failed $5 entries. State=$4.",
 'fetchlog'.'-fetchnc-text'		=> 'no new entry.',
 'fetchlog'.'-fetchfail-entry'	=> 'Partner Log: Fetching unsuccessful',
 'fetchlog'.'-fetchfail-text1'	=> 'error accessing URL.',
