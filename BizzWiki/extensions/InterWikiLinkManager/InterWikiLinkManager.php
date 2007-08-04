@@ -3,7 +3,7 @@
 {{Extension
 |name        = InterWikiLinkManager
 |status      = stable
-|type        = other
+|type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -32,15 +32,30 @@ This Mediawiki extension enables a user with the appropriate rights to manage th
 
 == USAGE NOTES ==
 * Use "Interwiki:Main Page" to manage the interwiki links
-* Use the magic word {{#iwl: prefix | URI | local flag | transclusion flag }}
+* Use the magic word <code>{{#iwl: prefix | URI | local flag | transclusion flag }}</code>
 * Appropriate rights management should be in place (e.g. Hierarchical Namespace Permissions extension)
+
+== Example ==
+An example of 'Interwiki:Main Page' using the magic word '#iwl' [[Extension:InterWikiLinkManager/Example|here]].
 
 == INSTALLATION ==
 To install outside of the [[Extension:BizzWiki]] platform:
-* Create NS_INTERWIKI namespace in LocalSettings.php
-* Require 'StubManager.php'
-* Require 'InterWikiLinkManager.php'
-* Set Permissions
+<source lang=php>
+define('NS_INTERWIKI', 100);             // just an example
+require_once($IP.'/includes/Namespace.php');  
+$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
+$wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
+require('extensions/StubManager.php');
+StubManager::createStub(	'InterWikiLinkManagerClass', 
+							$IP.'/extensions/InterWikiLinkManager/InterWikiLinkManager.php',
+							null,
+							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
+							false,			// no need for logging support
+							null,			// tags
+							array('iwl'),	// no parser functions
+							null			// no magic words
+						 );
+</source>
 
 == History ==
 * Removed dependency on ExtensionClass
@@ -49,6 +64,13 @@ To install outside of the [[Extension:BizzWiki]] platform:
 
 == TODO ==
 * Add more validation
+
+== See also ==
+This extension is part of the BizzWiki package [[Extension:BizzWiki]].
+
+[[Extension:Special page to work with the interwiki table]] provides similar functionality, but as a Special:Interwiki page.
+
+[[category:interwiki extensions]]
 
 == Code ==
 </wikitext>*/
