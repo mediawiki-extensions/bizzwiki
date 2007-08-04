@@ -62,12 +62,13 @@ class PartnerJob extends Job
 		$compte 		= $table->compte;
 		$filtered_count = $table->filtered_count;
 		$updated_rows 	= $table->affected_rows;
+		$fail_count		= $table->fail_count;
 		
 		if ($table->almostInSync)	$state = "'''normal'''";
 		if ($table->catchingUp)		$state = "'''catching up'''";
 		if ($table->startup)		$state = "'''startup'''";
 
-		$this->successLog( $compte, $filtered_count, $updated_rows, $state );
+		$this->successLog( $compte, $filtered_count, $updated_rows, $state, $fail_count );
 		
 		return true;
 	}
@@ -94,13 +95,13 @@ class PartnerJob extends Job
 	/**
 		Adds a log entry upon successful operation.
 	 */
-	private function successLog( $compte, $filtered, $updated, $state )
+	private function successLog( $compte, $filtered, $updated, $state, $fail_count )
 	{
 		// were there any entries made?
 		$msg = $compte==0 ? 'fetchnc-text' : 'fetchok-text';
 		
 		// add an entry log.
-		$this->updateLog( 'fetchok', $msg, $compte, $filtered, $updated, $state );
+		$this->updateLog( 'fetchok', $msg, $compte, $filtered, $updated, $state, $fail_count );
 		return true;
 	}
 	/**

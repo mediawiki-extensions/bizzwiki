@@ -26,7 +26,7 @@ $msgFetchPartnerRC['en'] = array(
 'ftchrclog'.'logpage'			=> "Fetch Partner's 'Recent Changes' Log",
 'ftchrclog'.'logpagetext'		=> 'This is a log of fetch operations',
 'ftchrclog'.'-fetchok-entry'	=> 'Partner RC: Fetching successful',
-'ftchrclog'.'-fetchok-text'		=> "processed $1, filtered $2 and updated $3 entries. State=$4.",
+'ftchrclog'.'-fetchok-text'		=> "processed $1, filtered $2, updated $3 and failed $5 entries. State=$4.",
 'ftchrclog'.'-fetchnc-entry'	=> 'Partner RC: Fetching successful',
 'ftchrclog'.'-fetchnc-text'		=> 'no new entry.',
 'ftchrclog'.'-fetchfail-entry'	=> 'Partner RC: Fetching unsuccessful',
