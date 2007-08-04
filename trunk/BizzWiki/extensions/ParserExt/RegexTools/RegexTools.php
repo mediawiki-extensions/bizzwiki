@@ -44,7 +44,7 @@ $wgExtensionCredits[RegexToolsClass::thisType][] = array(
 	'name'        => RegexToolsClass::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
-	'description' => ' ',
+	'description' => "Provides 'magic words' performing regular expression pattern ( aka 'regex' ) matching.",
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
