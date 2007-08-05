@@ -339,7 +339,8 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
-							null	// no magic words
+							null,	// no magic words
+							array( NS_FILESYSTEM )
 						 );
 
 
@@ -365,7 +366,8 @@ StubManager::createStub(	'InterWikiLinkManagerClass',
 							false,	// no need for logging support
 							null,	// tags
 							array('iwl'),	// no parser functions
-							null	// no magic words
+							null,	// no magic words
+							array( NS_INTERWIKI )
 						 );
 
 
@@ -390,11 +392,30 @@ require('extensions/SpecialPagesManager/SpecialPagesManager.php');
  // TODO
 
 // Form/Page related tools
-require('extensions/SecureHTML/SecureHTML.php');
-	# SecureHTMLclass::enableExemptNamespaces = false; # turn off
-	# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
+StubManager::createStub(	'SecureHTMLclass', 
+							$bwExtPath.'/SecureHTML/SecureHTML.php',
+							null,
+							array( 'ArticleSave', 'ArticleViewHeader' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null,	// no magic words
+							null	// no namespace triggering
+						 );
+# SecureHTMLclass::enableExemptNamespaces = false; # turn off
+# SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
-require('extensions/SecureProperties/SecureProperties.php');
+StubManager::createStub(	'SecurePropertiesClass', 
+							$bwExtPath.'/SecureProperties/SecureProperties.php',
+							null,	// no i18n
+							null, 	// no hooks
+							false,	// no need for logging support
+							null,	// tags
+							array( 'pg', 'ps', 'pf', 'gg', 'gs' ),
+							null,	// no magic words
+							null	// no namespace triggering
+						 );
+
 
 StubManager::createStub(	'FormProcClass', 
 							$bwExtPath.'/FormProc/FormProc.php',

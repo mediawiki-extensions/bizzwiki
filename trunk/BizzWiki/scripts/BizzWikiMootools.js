@@ -36,3 +36,11 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
 </wikitext>*/
+
+// register an 'onload' event 
+
+// process the PageElements list
+
+// register each component with Mootools
+
+

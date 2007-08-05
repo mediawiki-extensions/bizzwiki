@@ -39,7 +39,8 @@ StubManager::createStub(  'class name',
 						  $logging, // true if the extension requires logging support
                           array of tags,
                           array of parser function magic words,
-                          array of parser magic words
+                          array of parser magic words,
+						  array of namespaces that trigger the extension
                         );
 </pre>
 in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code>
@@ -64,6 +65,7 @@ The extension that are not candidate for this stubbing facility including those 
 ** 'mg' (i.e. parser functions)
 ** 'MW' (i.e. parser Magic Words)
 * fixed annoying warning about undefined offset.
+* added namespace(s) trigger
 
 == Code ==
 [[Extension:StubManager/code]]
@@ -96,7 +98,8 @@ class StubManager
 										$logging = false,
 										$tags = null,		// parser 'tag' e.g. <php>
 										$mgs  = null,		// parser function e.g. {{#addscriptcss}}
-										$mws  = null		// parser magic word e.g. {{CURRENTTIME}}
+										$mws  = null,		// parser magic word e.g. {{CURRENTTIME}}
+										$nss  = null		// namespaces as trigger
 									)
 	{
 		// need to wait for the proper timing
@@ -107,14 +110,15 @@ class StubManager
 		$wgAutoloadClasses[$class] = $filename;
 		
 		self::$stubList[] = array(	'class'			=> $class, 
-									'object' 		=> new Stub( $class, $hooks, $tags, $mgs, $mws ),
+									'object' 		=> new Stub( $class, $hooks, $tags, $mgs, $mws, $nss ),
 									'classfilename' => $filename,
 									'i18nfilename'	=> $i18nfilename,
 									'hooks'			=> $hooks,
 									'logging'		=> $logging,
 									'tags'			=> $tags,
 									'mgs'			=> $mgs,
-									'mws'			=> $mws
+									'mws'			=> $mws,
+									'nss'			=> $nss
 									);
 	}
 	private static function setupInit()
@@ -378,13 +382,15 @@ class Stub
 	var $tags;
 	var $mgs;
 	var $mws;
+	var $nss;
 
-	public function __construct( &$class, &$hooks, &$tags = null, &$mgs = null, &$mws = null )
+	public function __construct( &$class, &$hooks, &$tags = null, &$mgs = null, &$mws = null, $nss = null )
 	{
 		$this->setupHooks( $hooks );
 		$this->tags = $tags;
 		$this->mgs  = $mgs;
 		$this->mws  = $mws;
+		$this->nss  = $nss;
 
 		if ( !empty( $mgs) || !empty( $mws) )
 			$this->setupLanguageGetMagicHook();
@@ -496,6 +502,15 @@ class Stub
 	// instantiate the necessary object... only once.
 	function __call( $method, $args )
 	{
+		// Check triggers
+		// Can really only act on the namespace we can
+		// derive from the global wgTitle unfortunately.
+		global $wgTitle;
+		if (is_object( $wgTitle ))
+			if ( $this->nss !== null )	// if none provided, act as normal
+				if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
+					return true;
+		
 		if ( $this->obj === null )
 			$obj = $this->obj = new $this->classe;  // un-stub
 		else
