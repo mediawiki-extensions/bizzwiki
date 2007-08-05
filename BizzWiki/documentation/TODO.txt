@@ -59,8 +59,6 @@ $Id$
 * PageRestrictions -> NO
 * FileManager      -> NO
 
-* SecureHTML       -> YES
-* SecureProperties -> YES
 * TaskScheduler    -> TBD
 
 == Rights Management ==

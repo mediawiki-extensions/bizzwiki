@@ -221,3 +221,8 @@ REL1_10_11: (released ...)
 - Added 'NewUserEmailNotification' extension
 - Added 'UserLoginLogoutLog' extension
 - Adjusted 'PermissionFunctions' for stubbing
+- StubManager: added namespace triggering functionality
+- Adjusted 'InterWikiLinkManager' for namespace triggering
+- Adjusted 'FileSystemSyntaxColoring' for namespace triggering
+- Adjusted 'SecureHTML' for removing dependancy on ExtensionClass. Made 'stub'-enabled
+- 

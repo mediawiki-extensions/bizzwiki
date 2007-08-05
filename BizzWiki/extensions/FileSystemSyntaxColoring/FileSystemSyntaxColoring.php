@@ -33,7 +33,8 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
-							null	// no magic words
+							null,	// no magic words
+							array( NS_FILESYSTEM )
 						 );
 
 </geshi>
@@ -44,6 +45,7 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 * Moved singleton invocation to end of file to accomodate some PHP versions
 * Removed dependency on ExtensionClass
 * Added stubbing capability through 'StubManager'
+* Added namespace trigger
 
 == Code ==
 </wikitext>*/

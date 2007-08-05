@@ -1,13 +1,23 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || SecureHTML.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+{{Extension
+|name        = SecureHTML
+|status      = stable
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/SecureHTML/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+
 == Purpose==
 This extension enables the usage of 'html' tags (functionality which is controlled through the '$wgRawHtml' global variable) within protected pages.
 The extension also offers the functionality to add content securily to the document's head section.
@@ -20,15 +30,24 @@ as if they could.
 ** The extension must be enabled to continue the support of the inserted content
 
 == Dependancy ==
-* ExtensionClass extension
+* [[Extension:StubManager]] extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/SecureHTML/SecureHTML.php');
+require_once('extensions/StubManager.php');
+StubManager::createStub(	'SecureHTMLclass', 
+							$IP.'/extensions/SecureHTML/SecureHTML.php',
+							null,
+							array( 'ArticleSave', 'ArticleViewHeader' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null,	// no magic words
+							null	// no namespace triggering
+						 );
+
 </source>
 
 == History ==
@@ -37,16 +56,84 @@ protected in order to use 'html' tags
 ** use <code>SecureHTMLclass::enableExemptNamespaces = false; </code> to turn off
 ** use <code>SecureHTMLclass::exemptNamespaces[] = NS_XYZ; </code> to add namespaces
 * enhanced with functionality to 'add' content to the document's 'head' section
+* Removed dependency on ExtensionClass
+* Enabled for 'StubManager'
+
+== Todo ==
+* Fix for allowing more customization of 'exempt' namespaces even when using StubManager
 
 == Code ==
 </wikitext>*/
 
-// Verify if 'ExtensionClass' is present.
-if ( !class_exists('ExtensionClass') )
-	echo 'ExtensionClass missing: SecureHTML extension will not work!';	
-else
+$wgExtensionCredits[SecureHTMLclass::thisType][] = array( 
+	'name'        => SecureHTMLclass::thisName, 
+	'version'     => StubManager::getRevisionId( '$Id$' ),
+	'author'      => 'Jean-Lou Dupont', 
+	'description' => 'Enables secure HTML code on protected pages',
+	'url' 		=> StubManager::getFullUrl(__FILE__),			
+);
+
+class SecureHTMLclass
 {
-	require( "SecureHTMLclass.php" );
-	SecureHTMLclass::singleton();
-}
+	// constants.
+	const thisName = 'SecureHTMLclass';
+	const thisType = 'other';
+	  
+	static $enableExemptNamespaces = true;
+	static $exemptNamespaces;
+	  
+	function __construct( )
+	{
+		// default exempt namespaces from the BizzWiki platform.
+		// won't affect installs of the extension outside the BizzWiki platform.
+		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
+		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
+	}
+
+	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
+	// This hook is required for adapting to 'parser cache' article saving
+	{ return $this->process( $article ); }
+
+	public function hArticleViewHeader( &$article )
+	// This hook is required when 'parser caching' functionality is not used.
+	{ return $this->process( $article ); }
+	
+	private function process( &$article )
+	{
+		if (!$this->canProcess( $article ) ) return true;
+				
+		// Now that we know we are on a protected page,
+		// enable raw html for the benefit of the 'parser cache' saving process
+		global $wgRawHtml;
+		$wgRawHtml = true;
+		
+		return true; // continue hook-chain.
+	}
+	private function canProcess( &$obj )
+	{
+		if (!is_object( $obj ))
+			return false; // paranoia
+			
+		if (is_a( $obj, 'Article'))
+			$title = $obj->mTitle;
+		elseif (is_a( $obj, 'Title'))
+			$title = $obj;
+		else
+			return false;
+		
+		if (self::$enableExemptNamespaces)
+		{
+			$ns = $title->getNamespace();
+			if ( !empty(self::$exemptNamespaces) )
+				if ( in_array( $ns, self::$exemptNamespaces) )
+					return true;	
+		}
+		
+		// check protection status
+		if ( $title->isProtected( 'edit' ) ) return true;
+		
+		return false;
+	}
+
+} // END CLASS DEFINITION
 ?>

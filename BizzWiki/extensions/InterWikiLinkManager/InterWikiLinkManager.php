@@ -25,6 +25,7 @@ This Mediawiki extension enables a user with the appropriate rights to manage th
 * Can be used independantly of BizzWiki environment 
 * Rights policing
 * Logging
+** Summary field contains logging info - visible in 'RecentChanges'
 * New Namespace 'NS_INTERWIKI'
 
 == DEPENDANCY ==
@@ -53,7 +54,8 @@ StubManager::createStub(	'InterWikiLinkManagerClass',
 							false,			// no need for logging support
 							null,			// tags
 							array('iwl'),	// no parser functions
-							null			// no magic words
+							null,			// no magic words
+							array( NS_INTERWIKI ) // namespace trigger							
 						 );
 </source>
 
@@ -61,6 +63,7 @@ StubManager::createStub(	'InterWikiLinkManagerClass',
 * Removed dependency on ExtensionClass
 * Added 'stubbing' capability
 * Fixed missing 'h' in hook 'SpecialVersionExtensionTypes' handler method
+* Added namespace trigger
 
 == TODO ==
 * Add more validation
