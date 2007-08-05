@@ -21,6 +21,7 @@
 == Purpose==
 This extension is meant to address 'rare events' handling through class object 'stubs'. For infrequent events 
 (of course this is relative!), use this extension to instantiate a 'stub object' for the required hooks.
+The net effect is lower transaction times thereby speeding up MediaWiki based sites.
 
 == Features ==
 * Handles 'hook' registration
@@ -28,6 +29,10 @@ This extension is meant to address 'rare events' handling through class object '
 * Handles 'parser magic word' registration
 * Handles 'parser tag' registration
 * Handles extensions which implement logging functionality
+* Handles 'namespace triggering': reduces even further the load time per transaction
+
+== Audience ==
+This extension is meant for 'extension writers'.
 
 == Usage ==
 To create a stub, use: 
@@ -43,7 +48,10 @@ StubManager::createStub(  'class name',
 						  array of namespaces that trigger the extension
                         );
 </pre>
-in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code>
+in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code> 
+
+== Examples ==
+See [[Extension:EmailLog|Email Log extension]].
 
 == Dependancy ==
 None.
@@ -55,9 +63,6 @@ To install independantly from BizzWiki:
 require('extensions/StubManager.php');
 </source>
 
-== Notes ==
-The extension that are not candidate for this stubbing facility including those handling 'magic words' of the parser.
-
 == History ==
 * Added one more parameter to '__call' method to accomodate hooks such as ArticleSave.
 * Added registration functionality for:
@@ -68,6 +73,9 @@ The extension that are not candidate for this stubbing facility including those 
 * added namespace(s) trigger
 
 == Code ==
+Get it here [[Extension:StubManager/code]]. Please check SVN link provided above for the latest version.
+
+== Live Code ==
 [[Extension:StubManager/code]]
 </wikitext>*/
 // <source lang=php>
