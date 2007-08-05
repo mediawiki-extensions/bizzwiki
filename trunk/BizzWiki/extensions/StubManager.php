@@ -130,19 +130,23 @@ class StubManager
 				$liste[$paramKey] = $params[$paramKey];
 				unset( $params[$paramKey] );
 			}
+			else
+				$liste[$paramKey] = null;				
+				
 		// create a stub object.
-		$liste['object'] = new Stub( $liste['class'], 
+		$cListe['object'] = new Stub( $liste['class'], 
 								$liste['hooks'], 
 								$liste['tags'],
 								$liste['mgs'], 
 								$liste['mws'], 
-								$liste['nss'] 
+								$liste['nss'],
+								$params			// pass along the remaining parameters
 								);
  
 		// merge with the other parameters.
-		$cListe = array_merge( $params, $liste );
+		$dListe = array_merge( $params, $cListe );
 
-		self::$stubList[] = $cListe;
+		self::$stubList[] = $dListe;
 		
 		// need to wait for the proper timing
 		// to initialize things around.
@@ -434,6 +438,12 @@ class StubManager
 	
 } // end class
 
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 class Stub
 {
 	static $hook_prefix	= 'h';
@@ -452,14 +462,21 @@ class Stub
 	var $mws;
 	var $nss;
 
-	public function __construct( &$class, &$hooks, &$tags = null, &$mgs = null, &$mws = null, $nss = null )
+	public function __construct( &$class, 
+								&$hooks, 
+								&$tags = null, 
+								&$mgs = null, 
+								&$mws = null, 
+								$nss = null,
+								$params = null )
 	{
 		$this->setupHooks( $hooks );
 		$this->tags = $tags;
 		$this->mgs  = $mgs;
 		$this->mws  = $mws;
 		$this->nss  = $nss;
-
+		$this->params  = $params;
+		
 		if ( !empty( $mgs) || !empty( $mws) )
 			$this->setupLanguageGetMagicHook();
 
@@ -580,7 +597,7 @@ class Stub
 					return true;
 		
 		if ( $this->obj === null )
-			$obj = $this->obj = new $this->classe;  // un-stub
+			$obj = $this->obj = new $this->classe( $this->params );  // un-stub
 		else
 			$obj = $this->obj;
 		
