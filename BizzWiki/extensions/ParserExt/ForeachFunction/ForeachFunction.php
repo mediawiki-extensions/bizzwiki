@@ -1,17 +1,28 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || ForeachFunction.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+{{Extension
+|name        = ForeachFunction
+|status      = beta
+|type        = parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/ForeachFunction/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
  
 == Purpose==
 This extension provides 'looping' functionality (e.g. 'foreach') for iterating through arrays.
 
-== Features ==
+== Feature ==
+* Security: only pages with protection on 'edit' can use the keywords provided by this extension
 
 == Usage ==
 === Simple Array ===
@@ -34,17 +45,28 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 ** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
-* ExtensionClass extension (v>=306)
-* ParserPhase2 extension
+* [[Extension:StubManager]]
+* [[Extension:ParserPhase2]] extension
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'ExtensionClass' extension
+* Download 'StubManager' extension
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/ExtensionClass.php');
-require('extensions/ForeachFunction/ForeachFunction.php');
+require('extensions/StubManager.php');
+StubManager::createStub(	'ForeachFunctionClass', 
+							$IP.'/extensions/ParserExt/ForeachFunction/ForeachFunction.php',
+							null,							
+							null,
+							false, // no need for logging support
+							null,	// tags
+							array( 'foreachx','foreachy','forx' ),  //of parser function magic words,
+							null
+						 );
 </source>
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == History ==
 
