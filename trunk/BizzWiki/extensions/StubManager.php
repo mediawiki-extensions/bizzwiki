@@ -72,6 +72,9 @@ require('extensions/StubManager.php');
 * fixed annoying warning about undefined offset.
 * added namespace(s) trigger
 
+== See also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
+
 == Code ==
 Get it here [[Extension:StubManager/code]]. Please check SVN link provided above for the latest version.
 
