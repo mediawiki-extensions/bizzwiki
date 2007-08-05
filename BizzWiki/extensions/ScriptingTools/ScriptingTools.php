@@ -83,7 +83,6 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 </wikitext>*/
 
-global $wgExtensionCredits;
 $wgExtensionCredits[ScriptingToolsClass::thisType][] = array( 
 	'name'        => ScriptingToolsClass::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
