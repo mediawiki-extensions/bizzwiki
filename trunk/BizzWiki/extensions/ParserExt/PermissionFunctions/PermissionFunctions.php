@@ -3,7 +3,7 @@
 {{Extension
 |name        = PermissionFunctions
 |status      = beta
-|type        = other
+|type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -42,7 +42,7 @@ To install independantly from BizzWiki:
 <source lang=php>
 require('extensions/StubManager.php');
 StubManager::createStub(	'PermissionFunctions', 
-							$IP.'extensions/ParserExt/PermissionFunctions/PermissionFunctions.php',
+							$IP.'/extensions/ParserExt/PermissionFunctions/PermissionFunctions.php',
 							null,							
 							null,
 							false, // no need for logging support
@@ -51,6 +51,9 @@ StubManager::createStub(	'PermissionFunctions',
 							null
 						 );
 </source>
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == History ==
 
