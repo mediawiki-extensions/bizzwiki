@@ -416,7 +416,6 @@ StubManager::createStub(	'SecurePropertiesClass',
 							null	// no namespace triggering
 						 );
 
-
 StubManager::createStub(	'FormProcClass', 
 							$bwExtPath.'/FormProc/FormProc.php',
 							null,
@@ -424,7 +423,8 @@ StubManager::createStub(	'FormProcClass',
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions
-							null	// no magic words
+							null,	// no magic words
+							null	// no namespace triggering							
 						 );
 
 StubManager::createStub(	'AutoLanguage', 
