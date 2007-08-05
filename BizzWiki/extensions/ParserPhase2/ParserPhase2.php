@@ -1,12 +1,22 @@
 <?php
 /*(($disable$))<wikitext>
-{| border=1
-| <b>File</b> || ParserPhase2.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+{{Extension
+|name        = ParserPhase2
+|status      = stable
+|type        = Parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserPhase2/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
  
 == Purpose==
 This extension enables performing a 'second pass' through a 'parser cached' page replacing for 
@@ -60,7 +70,7 @@ To install outside the BizzWiki platform:
 * Download [[Extension:StubManager]]
 ** Place 'StubManager.php' file in '/extensions' directory
 * Download the extension files from the SVN repository
-** Place the files in '/extensions/ScriptingTools' directory
+** Place the files in '/extensions/ParserPhase2' directory
 * Perform the following changes to 'LocalSettings.php':
 <source lang=php>
 require('/extensions/StubManager.php');
