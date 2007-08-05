@@ -97,6 +97,61 @@ class StubManager
 	const thisName = 'StubManager';
 	static $logTable;
 	
+	static $paramsList = array(	'class',		// mandatory
+								'classfilename',// mandatory
+								'i18nfilename',
+								'hooks',
+								'logging',
+								'tags',
+								'mgs',
+								'mws',
+								);
+	
+	/**
+	
+	 */
+	public static function createStub2( $params )
+	{
+		if (!is_array( $params ))
+			{ wfDebug(__METHOD__.' $params not an array.'); return; }
+
+		// need to make sure we've got the mandatory parameters covered.		
+		if (!isset( $params['class'] ))
+			{ wfDebug(__METHOD__.' missing "class" parameter.'); return; }		
+
+		if (!isset( $params['filename'] ))
+			{ wfDebug(__METHOD__.' missing "filename" parameter.'); return; }		
+
+		// pick up all the parameters that StubManager knows about directly;
+		// the others will be passed to the 'Stub' class.
+		foreach( self::$paramsList as $paramKey )
+			if (isset( $params[$paramKey] ))
+			{
+				$liste[$paramKey] = $params[$paramKey];
+				unset( $params[$paramKey] );
+			}
+		// create a stub object.
+		$liste['object'] = new Stub( $liste['class'], 
+								$liste['hooks'], 
+								$liste['tags'],
+								$liste['mgs'], 
+								$liste['mws'], 
+								$liste['nss'] 
+								);
+ 
+		// merge with the other parameters.
+		$cListe = array_merge( $params, $liste );
+
+		self::$stubList[] = $cListe;
+		
+		// need to wait for the proper timing
+		// to initialize things around.
+		self::setupInit();
+
+		global $wgAutoloadClasses;
+		$wgAutoloadClasses[$liste['class']] = $liste['filename']; 
+	}
+	
 	/*
 		$class: 		class of object to create when 'destubbing'
 		$filename:		filename where class definition resides
@@ -129,9 +184,11 @@ class StubManager
 									'tags'			=> $tags,
 									'mgs'			=> $mgs,
 									'mws'			=> $mws,
-									'nss'			=> $nss
 									);
 	}
+	/**
+		Create callback that will initialise all the stubs.
+	 */
 	private static function setupInit()
 	{
 		static $initHooked = false;
