@@ -61,7 +61,6 @@ $wgExtensionCredits[NewUserEmailNotification::thisType][] = array(
 	'url'			=> StubManager::getFullUrl(__FILE__),				
 );
 require_once( 'NewUserEmailNotification.i18n.php');
-require_once( $IP.'includes/UserMailer.php' );
 		
 class NewUserEmailNotification
 {
@@ -71,6 +70,9 @@ class NewUserEmailNotification
 	public function __construct()
 	{
 		global $wgMessageCache;
+		global $IP;
+		
+		require_once( $IP.'includes/UserMailer.php' );
 
 		$msg = $GLOBALS[ 'msg'.__CLASS__ ];
 		
