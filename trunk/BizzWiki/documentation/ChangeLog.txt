@@ -227,4 +227,5 @@ REL1_10_11: (released ...)
 - Adjusted 'SecureHTML' for removing dependancy on ExtensionClass. Made 'stub'-enabled
 - Added 'SkinTools' extension
 - Added 'UserTools' extension ( new right 'userdetails' )
+- Fixed major bug in 'RegexNamespaceContext'
 - 
