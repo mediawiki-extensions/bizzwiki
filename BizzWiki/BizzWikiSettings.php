@@ -152,11 +152,11 @@ $bwNamespaceIndependantRights =  array( 'createaccount',
 										'readlog',  		// BizzWiki specific
 										'siteupdate',		// BizzWiki specific
 										'undelete',			// BizzWiki specific
-										
+										'userdetails',		// BizzWiki specific			
+																				
 										'skipcaptcha',		// ReCAPTCHA specific
 										'makesysop',		// MakeSysop extension specific
-										'desysop',			// DeSysop extension specific										
-										
+										'desysop',			// DeSysop extension specific	
 									);
 
 
@@ -640,7 +640,7 @@ StubManager::createStub2(	array(	'class' 		=> 'SkinTools',
 
 StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
 									'classfilename'	=> $bwExtPath.'/ParserExt/UserTools/UserTools.php',
-									'mgs'			=> array( 'userlanguage', 'usergetoption' ),
+									'mgs'			=> array( 'usergetoption' ),
 								)
 						);
 
