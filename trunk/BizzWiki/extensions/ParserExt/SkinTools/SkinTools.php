@@ -28,6 +28,7 @@ This extension is really meant to be used with [[Extension:ParserPhase2]].
 * Clear all actions from the page: (($#clearactions$))
 * Remove a list of actions from the page: (($#removeactions|action1|action ...$))
 * Add an action on the current page: (($#addaction|action|action text$))
+* Add an action with more granular control: (($#addaction|action|action text|subpage|action name in tab$))
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -97,13 +98,17 @@ class SkinTools
 				$this->actionsToRemove[] = $actionToRemove;
 	}
 
-	public function mg_addaction( &$parser, $action, $actionText )
+	public function mg_addaction( &$parser, $action, $actionText, $actionSubPage = null, $actionOverride = null )
 	{
 		$params = StubManager::processArgList( func_get_args(), true );		
 		if (empty( $action ) || empty( $actionText))
 			return 'SkinTools: invalid parameters';
 
-		$this->actionsToAdd[] = array( 'action' => $action, 'actionText' => $actionText );
+		$this->actionsToAdd[] = array(	'action' 		=> $action, 
+										'actionText' 	=> $actionText,
+										'actionSubPage'	=> $actionSubPage,
+										'actionOverride' => $actionOverride
+									);
 	}	
 	/**
 		For modifying the 'action' toolbar on a page.
@@ -121,11 +126,22 @@ class SkinTools
 
 		if (!empty( $this->actionsToAdd ))
 			foreach( $this->actionsToAdd as $actionDetails )
-				$content_actions[ $actionDetails['action'] ] = array(
+			{
+				if (!empty($actionDetails['actionSubPage']))
+					$title = Title::newFromText( $st->mTitle->getPrefixedText().'/'.$actionDetails['actionSubPage'] );
+				else
+					$title = $st->mTitle;
+				
+				if (!empty($actionDetails['actionOverride']))
+					$action = $actionDetails['actionOverride'];
+				else
+					$action = $actionDetails['action'];
+					
+				$content_actions[ $action ] = array(
 					'text' => $actionDetails['actionText'],
-					'href' => $st->mTitle->getLocalUrl( 'action='.$actionDetails['action'] )
+					'href' => $title->getLocalUrl( 'action='.$actionDetails['action'] )
 				);
-		
+			}
 		return true;
 	}
 	
