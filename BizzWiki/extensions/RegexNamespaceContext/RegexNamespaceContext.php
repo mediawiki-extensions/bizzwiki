@@ -117,13 +117,17 @@ class RegexNamespaceContext
 	var $thisPageName;
 	var $cpTitle;
 	var $cpArticle;
+	var $disable;
 	
 	//
 	var $headerPageName;
 	var $footerPageName;
 	var $preloadPageName;
 	
-	public function __construct() { }
+	public function __construct() 
+	{ 
+		$this->disable = false;
+	}
 	/**
 		Page preloading happens here.
 	 */
@@ -138,6 +142,10 @@ class RegexNamespaceContext
 		$textbox .= $this->getPreloadText( $title );	
 		return true;
 	}
+	public function hBeforePageDisplay( &$op )
+	{
+		$this->disable = true;	
+	}
 	/**
 		This hook makes sure that the parsing phase is completed for the page being
 		_viewed__ *before* adding the 'header' and 'footer' pages.
@@ -146,6 +154,9 @@ class RegexNamespaceContext
 	 */
 	public function hParserAfterTidy( &$parser, &$text ) 
 	{
+		if ($this->disable)
+			return true;
+			
 		// just do the page asked for in the transaction.
 		// This hook also gets called when MediaWiki parses other strings
 		// making up the 'skin', so make sure only to go through this loop once!
