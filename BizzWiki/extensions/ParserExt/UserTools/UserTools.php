@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/UserTools/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/UserTools/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -23,7 +23,10 @@ Provides a secure magic word 'usergetoption' to retrieve user options.
 
 == Usage ==
 This extension is really meant to be used with [[Extension:ParserPhase2]].
-* E.g. <code>(($#usergetoption|email|default$))</code>
+* E.g. <code>(($#cusergetoption|email|default$))</code>
+** Get the current user's email option
+* E.g. <code>(($#usergetoption|user id or name|email|default$))</code>
+** Get the specified user's email option IFF the current has the 'userdetails' right
 
 == Features ==
 * Options are categorized as either 'RESTRICTED' or 'UNRESTRICTED' for privacy reasons
@@ -40,7 +43,7 @@ To install independantly from BizzWiki:
 require('extensions/StubManager.php');
 StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
 									'classfilename'	=> $IP.'/extensions/ParserExt/UserTools/UserTools.php',
-									'mgs'			=> array( 'usergetoption' ),
+									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
 								)
 						);
 </source>
@@ -106,7 +109,7 @@ class UserTools
 	/**
 	
 	 */
-	public function mg_usergetoption( &$parser, $whichOption, $default = null )
+	public function mg_cusergetoption( &$parser, $whichOption, $default = null )
 	{
 		global $wgUser;
 		
@@ -118,6 +121,30 @@ class UserTools
 
 		return $this->getOption( $wgUser, $whichOption, $default );
 	}
+	/**
+	 */
+	public function mg_usergetoption( &$parser, $user, $whichOption, $default = null )
+	{
+		global $wgUser;
+		
+		// if the option is marked 'restricted', make sure
+		// the current user has the right to access the requested 'option'
+		if ($this->isRestricted( $option ))
+			if (!$wgUser->isAllowed('userdetails'))	
+				return null;
+
+		if (is_numeric( $user ))
+		{
+			$user = User::newFromId( $user );
+			if ($user->getID() == 0)
+				$user = User::newFromName( $user, true /* validate */);
+		}
+		else
+			$user = User::newFromName( $user, true /* validate */);
+		
+		return $this->getOption( $user, $whichOption, $default );
+	}
+
 	/**
 		Returns 'true' (restricted) if the option is not found.
 	 */
