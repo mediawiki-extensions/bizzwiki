@@ -3,7 +3,7 @@
 {{Extension
 |name        = SkinTools
 |status      = beta
-|type        = other
+|type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -22,22 +22,23 @@
 Provides skin level functions.
 
 == Features ==
-* (($#clearactions$))
-* (($#removeactions|action1|action ...$))
+* Clear all actions from the page: (($#clearactions$))
+* Remove a list of actions from the page: (($#removeactions|action1|action ...$))
+* Add an action on the current page: (($#addaction|action|action text$))
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
+* Download 'StubManager' extension (make sure to have the latest version)
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
 StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
 									'classfilename'	=> $IP.'/extensions/ParserExt/SkinTools/SkinTools.php',
 									'hooks'			=> array( 'SkinTemplateTabs' ),
-									'mgs'			=> array( 'clearactions', 'removeactions' ),
+									'mgs'			=> array( 'clearactions', 'removeactions', 'addaction' ),
 								)
 						);
 
@@ -67,12 +68,14 @@ class SkinTools
 
 	var $actions;
 	var $actionsToRemove;
+	var $actionsToAdd;
 
 	// Our class defines magic words: tell it to our helper class.
 	public function __construct()
 	{	
 		$this->actions  = null;
 		$this->actionsToRemove = null;
+		$this->actionsToAdd = null;		
 	}
 	public function mg_clearactions( &$parser )
 	{
@@ -84,9 +87,19 @@ class SkinTools
 	public function mg_removeactions( &$parser )
 	{
 		$params = StubManager::processArgList( func_get_args(), true );
-		foreach( $params as $actionToRemove )
-			$this->actionsToRemove[] = $actionToRemove;
+		if (isset( $params ))
+			foreach( $params as $actionToRemove )
+				$this->actionsToRemove[] = $actionToRemove;
 	}
+
+	public function mg_addaction( &$parser, $action, $actionText )
+	{
+		$params = StubManager::processArgList( func_get_args(), true );		
+		if (empty( $action ) || empty( $actionText))
+			return 'SkinTools: invalid parameters';
+
+		$this->actionsToAdd[] = array( 'action' => $action, 'actionText' => $actionText );
+	}	
 	/**
 		For modifying the 'action' toolbar on a page.
 	 */
@@ -100,6 +113,13 @@ class SkinTools
 		if (!empty( $this->actionsToRemove ))
 			foreach( $this->actionsToRemove as $action )
 				unset( $content_actions[$action] );
+
+		if (!empty( $this->actionsToAdd ))
+			foreach( $this->actionsToAdd as $actionDetails )
+				$content_actions[ $actionDetails['action'] ] = array(
+					'text' => $actionDetails['actionText'],
+					'href' => $st->mTitle->getLocalUrl( 'action='.$actionDetails['action'] )
+				);
 		
 		return true;
 	}
