@@ -1,11 +1,23 @@
 <?php
 /*<wikitext>
-{{extension:
-|RegexNamespaceContext.php
-|$Id$
-|Jean-Lou Dupont
+{{Extension
+|name        = RegexNamespaceContext
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/RegexNamespaceContext/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
- 
+
 == Purpose==
 Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext pages insertion.
 
