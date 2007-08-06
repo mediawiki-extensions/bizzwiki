@@ -20,6 +20,18 @@ Provides a means of adding page links to the 'sidebar' based on group membership
 ** Tested Compatibility:  MW 1.10
 ** Patches for MW 1.8.x and MW 1.9.x available
 
+=== Parameters ===
+<source lang='php'>
+//Define (if desired) the base namespace where the pages will be fetched:
+$bwSidebarNs = NS_ADMIN;  // must be defined prior, defaults to 'NS_MEDIAWIKI'
+ 
+//Define (if desired) the base page where the 'sidebar' pages will be fetched:
+$bwSidebarPage = 'Sidebars';
+
+// Define the priority list i.e. group membership search order.
+$bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
+</source>
+
 == INSTALLATION NOTES ==
 <pre>
  Add to LocalSettings.php:
