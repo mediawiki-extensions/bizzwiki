@@ -202,5 +202,5 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#clearactions     | Parser Function | SkinTools   }}
 {{row|#removeactions    | Parser Function | SkinTools   }}
 
-{{row|#userlanguage     | Parser Function | UserTools   }}
+{{row|#usergetoption    | Parser Function | UserTools   }}
 |}
