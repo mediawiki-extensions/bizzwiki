@@ -146,7 +146,13 @@ class RegexNamespaceContext
 	 */
 	public function hParserAfterTidy( &$parser, &$text ) 
 	{
-		static $inProgress = false;
+		// just do the page asked for in the transaction.
+		// This hook also gets called when MediaWiki parses other strings
+		// making up the 'skin', so make sure only to go through this loop once!
+		static $isDone = false;
+		if ($isDone == true )
+			return true;
+		$isDone= true;
 		
 		global $action;
 		if ($action != 'view') return true;
@@ -154,10 +160,6 @@ class RegexNamespaceContext
 		// stay away from NS_FILESYSTEM namespace!
 		$ns = $parser->mTitle->getNamespace();
 		if (NS_FILESYSTEM == $ns) return true;		
-
-		// deal with possible re-entrancy.
-		if ($inProgress) return true;
-		$inProgress = true;
 
 		$title = $parser->mTitle;
 	
@@ -171,8 +173,7 @@ class RegexNamespaceContext
 		$text .= '<!-- $oParams: '.bwVarDump($this->oParams).' -->';
 		$text .= '<!-- $cp: '.$this->cp.' -->';
 		*/
-		
-		$inProgress = false;
+
 		return true;
 	}
 	/**
@@ -204,11 +205,21 @@ class RegexNamespaceContext
 		global $wgParser;
 		$parser = clone $wgParser;
 		
-		$po = $parser->parse( $hText, $a /* title object */, new ParserOptions() );
-		$h = $po->getText();
-		
-		$po = $parser->parse( $fText, $a /* title object */, new ParserOptions() );
-		$f = $po->getText();
+		if (!empty( $hText ))
+		{
+			$po = $parser->parse( $hText, $a /* title object */, new ParserOptions() );
+			$h = $po->getText();
+		}
+		else
+			$h = null;
+
+		if (!empty( $fText ))
+		{
+			$po = $parser->parse( $fText, $a /* title object */, new ParserOptions() );
+			$f = $po->getText();
+		}
+		else 
+			$f = null;
 	}
 	private function processContext( &$obj )
 	{
