@@ -113,14 +113,14 @@ class StubManager
 	public static function createStub2( $params )
 	{
 		if (!is_array( $params ))
-			{ wfDebug(__METHOD__.' $params not an array.'); return; }
+			{ echo __METHOD__.' $params not an array.'; return; }
 
 		// need to make sure we've got the mandatory parameters covered.		
 		if (!isset( $params['class'] ))
-			{ wfDebug(__METHOD__.' missing "class" parameter.'); return; }		
+			{ echo __METHOD__.' missing "class" parameter.'; return; }		
 
-		if (!isset( $params['filename'] ))
-			{ wfDebug(__METHOD__.' missing "filename" parameter.'); return; }		
+		if (!isset( $params['classfilename'] ))
+			{ echo __METHOD__.' missing "classfilename" parameter.'; return; }		
 
 		// pick up all the parameters that StubManager knows about directly;
 		// the others will be passed to the 'Stub' class.
@@ -132,7 +132,8 @@ class StubManager
 			}
 			else
 				$liste[$paramKey] = null;				
-				
+		
+	
 		// create a stub object.
 		$cListe['object'] = new Stub( $liste['class'], 
 								$liste['hooks'], 
@@ -144,8 +145,10 @@ class StubManager
 								);
  
 		// merge with the other parameters.
-		$dListe = array_merge( $params, $cListe );
+		$dListe = array_merge( $liste, $cListe );
 
+		#var_dump( $dListe );
+		
 		self::$stubList[] = $dListe;
 		
 		// need to wait for the proper timing
@@ -153,7 +156,7 @@ class StubManager
 		self::setupInit();
 
 		global $wgAutoloadClasses;
-		$wgAutoloadClasses[$liste['class']] = $liste['filename']; 
+		$wgAutoloadClasses[$liste['class']] = $liste['classfilename']; 
 	}
 	
 	/*

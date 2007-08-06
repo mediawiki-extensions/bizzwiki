@@ -631,6 +631,19 @@ StubManager::createStub(	'UserLoginLogoutLog',
 							true
 						 );
 
+StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
+									'classfilename'	=> $bwExtPath.'/ParserExt/SkinTools/SkinTools.php',
+									'hooks'			=> array( 'SkinTemplateTabs' ),
+									'mgs'			=> array( 'clearactions', 'removeactions' ),
+								)
+						);
+
+StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
+									'classfilename'	=> $bwExtPath.'/ParserExt/UserTools/UserTools.php',
+									'mgs'			=> array( 'userlanguage', 'usergetoption' ),
+								)
+						);
+
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
 

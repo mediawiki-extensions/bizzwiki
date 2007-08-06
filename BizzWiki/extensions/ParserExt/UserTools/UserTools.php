@@ -3,7 +3,7 @@
 {{Extension
 |name        = UserTools
 |status      = beta
-|type        = hook
+|type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -22,7 +22,6 @@
 
 
 == Features ==
-* New right 'userdetails'
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -65,7 +64,16 @@ class UserTools
 	 */
 	public function mg_userlanguage( &$parser )
 	{ 
-
+		global $wgUser;
+		return $wgUser->getOption( 'language' );
+	}
+	/**
+	
+	 */
+	public function mg_usergetoption( &$parser, $whichOption )
+	{
+		global $wgUser;
+		return $wgUser->getOption( $whichOption, '' );
 	}
 	
 } // end class
