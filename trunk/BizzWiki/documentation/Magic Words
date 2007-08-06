@@ -198,4 +198,9 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#epropset         | Parser Function | ScriptingTools }}
 
 {{row|__NOCOMMIT__      | Proprietary Word| FileManager }}
+
+{{row|#clearactions     | Parser Function | SkinTools   }}
+{{row|#removeactions    | Parser Function | SkinTools   }}
+
+{{row|#userlanguage     | Parser Function | UserTools   }}
 |}

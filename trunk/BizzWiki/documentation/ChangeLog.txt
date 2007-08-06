@@ -225,4 +225,5 @@ REL1_10_11: (released ...)
 - Adjusted 'InterWikiLinkManager' for namespace triggering
 - Adjusted 'FileSystemSyntaxColoring' for namespace triggering
 - Adjusted 'SecureHTML' for removing dependancy on ExtensionClass. Made 'stub'-enabled
-- 
+- Added 'SkinTools' extension
+- Added 'UserTools' extension
