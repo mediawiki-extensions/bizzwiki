@@ -105,6 +105,7 @@ class StubManager
 								'tags',
 								'mgs',
 								'mws',
+								'nss'
 								);
 	
 	/**
@@ -302,7 +303,7 @@ class StubManager
 	static function getRevisionId( $svnId=null )
 	{	
 		// fixed annoying warning about undefined offset.
-		if ( $svnId === null || $svnId == '$Id$')
+		if ( $svnId === null || $svnId == ('$'.'Id'.'$' /* fool SVN */) )
 			return null;
 			
 		// e.g. $Id$
