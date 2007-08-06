@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))<wikitext>
+/*<wikitext>(($disable$))
 {{Extension
 |name        = ParserPhase2
 |status      = stable
@@ -27,7 +27,7 @@ variables upon page view whilst still preserving the valuable job performed by t
 Additionally, the extension enables the execution of 'parser functions' and 'magic words' *after* the
 page's 'tidy' process is executed. This functionality is referred to as 'parser after tidy'. 
 This capability allows for the inclusion of text that would otherwise upset MediaWiki's parser 
-e.g. execution of a parser functions that replaces text in an <html> tagged section.
+e.g. execution of a parser functions that replaces text in an 'html' tagged section.
 
 Finally, the extension enables the execution of 'parser functions' and 'magic words' *before* the
 page's 'strip' process is executed i.e. before the MediaWiki begins parsing the page. 
@@ -105,13 +105,14 @@ StubManager::createStub(	'ParserPhase2Class',
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
-</wikitext>*/
-global $wgExtensionCredits;
+</wikitext>
+*/
+
 $wgExtensionCredits[ParserPhase2Class::thisType][] = array( 
 	'name'        => ParserPhase2Class::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
-	'description' => 'Enables performing a `second pass` parsing over an already cached page for replacing dynamic variables',
+	'description' => "Enables performing a 'second pass' parsing over an already cached page for replacing dynamic variables",
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
@@ -134,7 +135,7 @@ class ParserPhase2Class
 
 	/**
 		The parser functions enclosed in ((@ ... @)) are executed
-		before the MediaWiki starts parsing the wikitext.
+		before the MediaWiki starts parsing the wiki-text.
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
@@ -152,7 +153,7 @@ class ParserPhase2Class
 		This function picks up the patterns ((% ... %)) and executes
 		the corresponding parser function/magic word *AFTER* the 'tidy' processed
 		is finished. This way, it is possible to include calls to function that would
-		generate otherwise unallowed wikitext for the parser.
+		generate otherwise unallowed wiki-text for the parser.
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
@@ -334,5 +335,3 @@ class ParserPhase2Class
 	}
 
 } // end class
-
-?>

@@ -162,7 +162,7 @@ class FileSystemSyntaxColoring
 	}
 	private function removeWikitext()
 	{
-		$this->text = preg_replace( "/\<wikitext(.*)wikitext\>/siU", "wikitext", $this->text);	
+		$this->text = preg_replace( "/\<wikitext\>(.*)\<\/wikitext\>/siU", "wikitext", $this->text);	
 	}
 	
 	private function highlight( &$text, $lang='php', $lines=0 ) 
