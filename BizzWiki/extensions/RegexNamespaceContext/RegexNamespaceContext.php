@@ -75,7 +75,8 @@ require('extensions/RegexNamespaceContext/RegexNamespaceContext.php');
 </source>
 
 == History ==
-- Used another parser instance instead of the global wgParser one: better integration with other extensions
+* Used another parser instance instead of the global wgParser one: better integration with other extensions
+* Fixed major bug: needed to 'clone' the wgParser in order to keep all the hooks/parser functions etc.
 
 == Code ==
 </wikitext>*/
@@ -140,7 +141,7 @@ class RegexNamespaceContext
 
 		// stay away from NS_FILESYSTEM namespace!
 		$ns = $parser->mTitle->getNamespace();
-		if ($ns==NS_FILESYSTEM) return true;		
+		if (NS_FILESYSTEM == $ns) return true;		
 
 		// deal with possible re-entrancy.
 		if ($inProgress) return true;
@@ -152,6 +153,12 @@ class RegexNamespaceContext
 		$headerText = ( $header === null ) ? (self::headerNone) : (self::headerOpen.$header.self::headerClose);
 		$footerText = ( $footer === null ) ? (self::footerNone) : (self::footerOpen.$footer.self::footerClose);		
 		$text = $headerText.$text.$footerText;
+
+		/* DEBUG STUFF
+		$text .= '<!-- headerpagename: '.$this->headerPageName.' footerpagename:'.$this->footerPageName.' preloadpagename: '.$this->preloadPageName.' -->';
+		$text .= '<!-- $oParams: '.bwVarDump($this->oParams).' -->';
+		$text .= '<!-- $cp: '.$this->cp.' -->';
+		*/
 		
 		$inProgress = false;
 		return true;
@@ -253,7 +260,9 @@ class RegexNamespaceContext
 		wfRunHooks('PageVarSet', array( 'ContextVars', &$params) );
 
 		// grab a new parser in order not to disrupt the current transaction.
-		$parser = new Parser;
+		// We need to keep all the hooks/parser functions though!
+		global $wgParser;
+		$parser = clone $wgParser;
 		$parser->parse( $this->cp, $this->cpTitle, new ParserOptions );
 		
 		// Grab the result from the 'Page' variables
