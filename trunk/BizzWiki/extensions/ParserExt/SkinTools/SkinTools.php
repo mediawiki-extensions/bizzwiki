@@ -100,7 +100,6 @@ class SkinTools
 
 	public function mg_addaction( &$parser, $action, $actionText, $actionSubPage = null, $actionOverride = null )
 	{
-		$params = StubManager::processArgList( func_get_args(), true );		
 		if (empty( $action ) || empty( $actionText))
 			return 'SkinTools: invalid parameters';
 
