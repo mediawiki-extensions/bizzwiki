@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<wikitext>(($disable$))
 {{Extension
 |name        = UserTools
 |status      = beta
@@ -135,14 +135,19 @@ class UserTools
 
 		if (is_numeric( $user ))
 		{
-			$user = User::newFromId( $user );
-			if ($user->getID() == 0)
-				$user = User::newFromName( $user, true /* validate */);
+			$userObj = User::newFromId( $user );
+			if (!is_object( $userObj ))
+				return null;
+			if ($userObj->getID() == 0)
+				$userObj = User::newFromName( $user, true /* validate */);
 		}
 		else
-			$user = User::newFromName( $user, true /* validate */);
+			$userObj = User::newFromName( $user, true /* validate */);
+
+		if (!is_object( $userObj ))
+			return null;
 		
-		return $this->getOption( $user, $whichOption, $default );
+		return $this->getOption( $userObj, $whichOption, $default );
 	}
 
 	/**

@@ -183,8 +183,20 @@ class RegexNamespaceContext
 	{
 		$this->processContext( $a );
 		
-		$h = $this->getPageContent( $this->headerPageName );
-		$f = $this->getPageContent( $this->footerPageName );
+		$hText = $this->getPageContent( $this->headerPageName );
+		$fText = $this->getPageContent( $this->footerPageName );
+		
+		// we need to parse the header and footer pages
+		// in the context of the current page.
+		// We need to do this with THE fully configured parser.
+		global $wgParser;
+		$parser = clone $wgParser;
+		
+		$po = $parser->parse( $hText, $a /* title object */, new ParserOptions() );
+		$h = $po->getText();
+		
+		$po = $parser->parse( $fText, $a /* title object */, new ParserOptions() );
+		$f = $po->getText();
 	}
 	private function processContext( &$obj )
 	{
