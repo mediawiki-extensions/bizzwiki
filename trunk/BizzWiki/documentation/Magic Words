@@ -201,6 +201,7 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 
 {{row|#clearactions     | Parser Function | SkinTools   }}
 {{row|#removeactions    | Parser Function | SkinTools   }}
+{{row|#addaction        | Parser Function | SkinTools   }}
 
 {{row|#usergetoption    | Parser Function | UserTools   }}
 |}

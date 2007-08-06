@@ -634,13 +634,13 @@ StubManager::createStub(	'UserLoginLogoutLog',
 StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
 									'classfilename'	=> $bwExtPath.'/ParserExt/SkinTools/SkinTools.php',
 									'hooks'			=> array( 'SkinTemplateTabs' ),
-									'mgs'			=> array( 'clearactions', 'removeactions' ),
+									'mgs'			=> array( 'clearactions', 'removeactions', 'addaction' ),
 								)
 						);
 
 StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
 									'classfilename'	=> $bwExtPath.'/ParserExt/UserTools/UserTools.php',
-									'mgs'			=> array( 'usergetoption' ),
+									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
 								)
 						);
 
