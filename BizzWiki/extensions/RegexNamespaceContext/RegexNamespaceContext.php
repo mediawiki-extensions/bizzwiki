@@ -83,12 +83,18 @@ require('extensions/StubManager.php');
 require('extensions/PageFunctions.php');
 require('extensions/ParserCacheControl.php');
 require('extensions/RegexTools.php');
-require('extensions/RegexNamespaceContext/RegexNamespaceContext.php');
+StubManager::createStub(	'RegexNamespaceContext', 
+							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
+							null,							
+							array( 'EditFormPreloadText', 'ParserAfterTidy', 'BeforePageDisplay' ),
+							false
+						 );
 </source>
 
 == History ==
 * Used another parser instance instead of the global wgParser one: better integration with other extensions
 * Fixed major bug: needed to 'clone' the wgParser in order to keep all the hooks/parser functions etc.
+* Fixed 'skin' related bug: 'ParserAfterTidy' gets called during MediaWiki skin's string processing
 
 == Code ==
 </wikitext>*/
@@ -142,8 +148,15 @@ class RegexNamespaceContext
 		$textbox .= $this->getPreloadText( $title );	
 		return true;
 	}
+	/**
+		Capture of the event to stop header/footer processing.
+	 */
 	public function hBeforePageDisplay( &$op )
 	{
+		// if we are about to display the page, 
+		// it is the signal to stop processing 'after tidy';
+		// MediaWiki uses the parser to handle some text of the
+		// skin and we do not want to be adding header/footer there.
 		$this->disable = true;	
 	}
 	/**
@@ -159,7 +172,6 @@ class RegexNamespaceContext
 			
 		// just do the page asked for in the transaction.
 		// This hook also gets called when MediaWiki parses other strings
-		// making up the 'skin', so make sure only to go through this loop once!
 		static $isDone = false;
 		if ($isDone == true )
 			return true;
@@ -215,22 +227,18 @@ class RegexNamespaceContext
 		// We need to do this with THE fully configured parser.
 		global $wgParser;
 		$parser = clone $wgParser;
-		
+
+		$h = null;		
+		$f = null;		
 		if (!empty( $hText ))
 		{
 			$po = $parser->parse( $hText, $a /* title object */, new ParserOptions() );
 			$h = $po->getText();
-		}
-		else
-			$h = null;
-
 		if (!empty( $fText ))
 		{
 			$po = $parser->parse( $fText, $a /* title object */, new ParserOptions() );
 			$f = $po->getText();
 		}
-		else 
-			$f = null;
 	}
 	private function processContext( &$obj )
 	{
@@ -306,28 +314,27 @@ class RegexNamespaceContext
 		wfRunHooks('PageVarSet', array( 'ContextVars', &$params) );
 
 		// grab a new parser in order not to disrupt the current transaction.
-		// We need to keep all the hooks/parser functions though!
+		// We need to keep all the hooks/parser functions though; 
+		// so clone the global one.
 		global $wgParser;
 		$parser = clone $wgParser;
 		$parser->parse( $this->cp, $this->cpTitle, new ParserOptions );
 		
 		// Grab the result from the 'Page' variables
 		wfRunHooks('PageVarGet', array( 'ContextVars', &$oParams) );
-		
+
+		$this->headerPageName	= null;		
+		$this->footerPageName	= null;			
+		$this->preloadPageName	= null;
+					
 		if (isset($oParams['headerPageName']))
 			$this->headerPageName	= $oParams['headerPageName'];
-		else
-			$this->headerPageName	= null;		
 
 		if (isset($oParams['footerPageName']))
 			$this->footerPageName	= $oParams['footerPageName'];
-		else
-			$this->footerPageName	= null;			
 
 		if (isset($oParams['preloadPageName']))
 			$this->preloadPageName	= $oParams['preloadPageName'];
-		else
-			$this->preloadPageName	= null;
 
 		wfRunHooks('ContextPageParsingComplete', array( &$this, 'ContextVars' ) );		
 	}	 
@@ -357,4 +364,3 @@ class RegexNamespaceContext
 		return true;			
 	} 	
 } // end declaration.
-?>
