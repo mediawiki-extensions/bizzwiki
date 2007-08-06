@@ -30,7 +30,15 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-require('extensions/RegexTools/RegexTools.php');
+StubManager::createStub(	'RegexToolsClass', 
+							$IP.'/extensions/ParserExt/RegexTools/RegexTools.php',
+							null,						// no i18n file
+							null,						// no hooks
+							false, 						// no need for logging support
+							null,						// tags
+							array('regx_vars', 'regx'), // parser Functions
+							null
+						 );
 </source>
 
 == History ==
@@ -38,8 +46,6 @@ require('extensions/RegexTools/RegexTools.php');
 == Code ==
 </wikitext>*/
 
-
-global $wgExtensionCredits;
 $wgExtensionCredits[RegexToolsClass::thisType][] = array( 
 	'name'        => RegexToolsClass::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),

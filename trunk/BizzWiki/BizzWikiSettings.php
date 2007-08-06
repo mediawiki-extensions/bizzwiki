@@ -765,4 +765,9 @@ if (defined('BIZZWIKIDEMO'))
 	
 }
 
+function bwVarDump( $var ) 
+{
+	return str_replace("\n","<br />\n", var_export( $var, true ) . "\n");
+}
+
 ?>
