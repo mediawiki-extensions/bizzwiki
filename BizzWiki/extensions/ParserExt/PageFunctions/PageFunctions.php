@@ -197,7 +197,7 @@ class PageFunctionsClass
 	public function mg_varcapset( &$parser )
 	{
 		$params = StubManager::processArgList( func_get_args(), true );
-		$this->pageVars[ $params[0] ] = $params[1];
+		@$this->pageVars[ $params[0] ] = $params[1];
 		return $params[1];
 	}	 
 	/**
@@ -209,7 +209,7 @@ class PageFunctionsClass
 	public function mg_varaset( &$parser )
 	{
 		$params = StubManager::processArgList( func_get_args(), true );
-		$this->pageVars[ $params[0] ][ $params[1] ] = $params[2];		
+		@$this->pageVars[ $params[0] ][ $params[1] ] = $params[2];		
 	
 	}
 	/**
