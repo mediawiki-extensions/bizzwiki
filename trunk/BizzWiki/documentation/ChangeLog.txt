@@ -226,5 +226,5 @@ REL1_10_11: (released ...)
 - Adjusted 'FileSystemSyntaxColoring' for namespace triggering
 - Adjusted 'SecureHTML' for removing dependancy on ExtensionClass. Made 'stub'-enabled
 - Added 'SkinTools' extension
-- Added 'UserTools' extension
-- New right 'userdetails'
+- Added 'UserTools' extension ( new right 'userdetails' )
+- 

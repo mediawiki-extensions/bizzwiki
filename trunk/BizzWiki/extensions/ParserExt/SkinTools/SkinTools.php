@@ -21,6 +21,9 @@
 == Purpose==
 Provides skin level functions.
 
+== Usage Note ==
+This extension is really meant to be used with [[Extension:ParserPhase2]].
+
 == Features ==
 * Clear all actions from the page: (($#clearactions$))
 * Remove a list of actions from the page: (($#removeactions|action1|action ...$))
@@ -28,13 +31,15 @@ Provides skin level functions.
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
+* [[Extension:ParserPhase2|ParserPhase2 extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
 * Download 'StubManager' extension (make sure to have the latest version)
+* Download and install [[Extension:ParserPhase2]]
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/StubManager.php');
+require_once('extensions/StubManager.php');
 StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
 									'classfilename'	=> $IP.'/extensions/ParserExt/SkinTools/SkinTools.php',
 									'hooks'			=> array( 'SkinTemplateTabs' ),
