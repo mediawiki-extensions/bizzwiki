@@ -1,5 +1,6 @@
 <?php
-/*<wikitext>(($disable$))
+//((@disable@)) (($disable$)) ((%disable%))
+/*<wikitext>
 {{Extension
 |name        = ParserPhase2
 |status      = stable
@@ -20,7 +21,7 @@
  
 == Purpose==
 This extension enables performing a 'second pass' through a 'parser cached' page replacing for 
-'dynamic' variables. In a word, once a page is normally processed (i.e. 'first pass') Mediawiki 'fixes'
+'dynamic' variabl. In a word, once a page is normally processed (i.e. 'first pass') Mediawiki 'fixes'
 all templates & variables in a 'parser cached' page. This extension enables substituting selected 
 variables upon page view whilst still preserving the valuable job performed by the parser/parser cache.
 
@@ -76,7 +77,7 @@ To install outside the BizzWiki platform:
 require('/extensions/StubManager.php');
 
 StubManager::createStub(	'ParserPhase2Class', 
-							'extensions/ParserPhase2/ParserPhase2.php',
+							$IP.'/extensions/ParserPhase2/ParserPhase2.php',
 							null,
 							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
 							false,	// no need for logging support
@@ -105,8 +106,7 @@ StubManager::createStub(	'ParserPhase2Class',
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
-</wikitext>
-*/
+</wikitext>*/
 
 $wgExtensionCredits[ParserPhase2Class::thisType][] = array( 
 	'name'        => ParserPhase2Class::thisName, 
@@ -131,7 +131,17 @@ class ParserPhase2Class
 	//  ((@ ... @))
 	const pattern3  = '/\(\(\@(.*)\@\)\)/siU';
 	
-	function __construct( ) {}
+	// variables
+	var $disable;
+	const disablePattern1a = '(($disable$))';
+	const disablePattern1b = '((disable))';	
+	const disablePattern2  = '((%disable%))';	
+	const disablePattern3  = '((@disable@))';
+	
+	function __construct( ) 
+	{
+		$this->disable = false;
+	}
 
 	/**
 		The parser functions enclosed in ((@ ... @)) are executed
@@ -139,6 +149,9 @@ class ParserPhase2Class
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
+		if ($this->disable)
+			return true;
+
 		$m = $this->getList3( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
@@ -157,6 +170,9 @@ class ParserPhase2Class
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
+		if ($this->disable)
+			return true;
+			
 		$m = $this->getList2( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
@@ -171,6 +187,9 @@ class ParserPhase2Class
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
+		if ($this->disable)
+			return true;
+		
 		$m = $this->getList1( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
@@ -210,7 +229,7 @@ class ParserPhase2Class
 
 			// if we are asked to disable, stop processing.
 			if ('disable'==strtolower($action))
-				break;
+			{ $this->disable = true; break; }
 
 			global $wgParser, $wgTitle, $wgContLang;
 
@@ -264,8 +283,8 @@ class ParserPhase2Class
 			}
 
 		} // end foreach
-
-		$this->replaceList( $text, $liste, $rl );
+		if (!$this->disable)
+			$this->replaceList( $text, $liste, $rl );
 
 		return $found;
 	}
@@ -333,5 +352,4 @@ class ParserPhase2Class
 			foreach( $source[0] as $index => $marker )
 				$text = str_replace( $marker, $target[$index], $text );	
 	}
-
 } // end class

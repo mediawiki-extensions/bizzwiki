@@ -1,13 +1,23 @@
 <?php
 /*<wikitext>
-{| border=1
-| <b>File</b> || FileSystemSyntaxColoring.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+{{Extension
+|name        = FileSystemSyntaxColoring
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/FileSystemSyntaxColoring/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+
 == Purpose==
 This extension 'colors' a page in the NS_FILESYSTEM namespace based on its syntax.
 
@@ -27,7 +37,7 @@ To install independantly from BizzWiki:
 <geshi lang=php>
 require('extensions/StubManager.php');
 StubManager::createStub(	'FileSystemSyntaxColoring', 
-							'extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
+							$IP.'/extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
 							null,
 							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
 							false,	// no need for logging support
@@ -46,6 +56,7 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 * Removed dependency on ExtensionClass
 * Added stubbing capability through 'StubManager'
 * Added namespace trigger
+* Added additional checks to speed-up detection of NS_FILESYSTEM namespace
 
 == Code ==
 </wikitext>*/
@@ -89,6 +100,9 @@ class FileSystemSyntaxColoring
 		// we are only interested in page views.
 		global $action;
 		if ($action != 'view') return true;
+
+		// first round of checks
+		if (!$this->isFileSystem( $article )) return true; // continue hook-chain
 		
 		// grab the content for later inspection.
 		$this->text = $article->mContent;
@@ -140,14 +154,23 @@ class FileSystemSyntaxColoring
 		return true;	
 	}
 	
-	private function isFileSystem( &$parser )
+	private function isFileSystem( &$obj )
 	{
 		// is the namespace defined at all??
 		if (!defined('NS_FILESYSTEM')) return false;
 		
-		// is the current article in the right namespace??
-		$ns = $parser->mTitle->getNamespace();
+		$ns = null;
 		
+		if (is_a( $obj, 'Parser' ))
+			$ns = $obj->mTitle->getNamespace();
+		
+		if (is_a( $obj, 'Article' ))
+			$ns = $obj->mTitle->getNamespace();
+
+		if (is_a( $obj, 'Title' ))
+			$ns = $obj->getNamespace();
+		
+		// is the current article in the right namespace??		
 		return ($ns == NS_FILESYSTEM ? true:false );
 	}
 
@@ -162,7 +185,7 @@ class FileSystemSyntaxColoring
 	}
 	private function removeWikitext()
 	{
-		$this->text = preg_replace( "/\<wikitext\>(.*)\<\/wikitext\>/siU", "wikitext", $this->text);	
+		$this->text = preg_replace( "/<wikitext\>(.*)(?:\<.?wikitext)>/siU", "wikitext", $this->text);	
 	}
 	
 	private function highlight( &$text, $lang='php', $lines=0 ) 
@@ -194,4 +217,3 @@ class FileSystemSyntaxColoring
 	private function getLanguage( $ext ) { return self::$map[ $ext ]; }
 	
 } // end class definition.
-?>
