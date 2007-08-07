@@ -25,6 +25,7 @@ Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext 
 * Can load 'preload edit form' text based on a per-namespace regex 'context'
 * Can add 'headers' and 'footers' text pages based on a per-namespace regex 'context'
 * Creates a hook 'ContextPageParsingComplete'
+* Special Word '__DISABLECONTEXT__' 
 
 == Usage ==
 On a per-namespace basis (only the ones required), edit the page 'Context' and place+customize the following:
@@ -95,6 +96,7 @@ StubManager::createStub(	'RegexNamespaceContext',
 * Used another parser instance instead of the global wgParser one: better integration with other extensions
 * Fixed major bug: needed to 'clone' the wgParser in order to keep all the hooks/parser functions etc.
 * Fixed 'skin' related bug: 'ParserAfterTidy' gets called during MediaWiki skin's string processing
+* Added special word '__DISABLECONTEXT__' 
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -203,10 +205,9 @@ class RegexNamespaceContext
 		$text .= '<!-- headerpagename: '.$this->headerPageName.' footerpagename:'.$this->footerPageName.' preloadpagename: '.$this->preloadPageName.' -->';
 		$text .= '<!-- $oParams: '.bwVarDump($this->oParams).' -->';
 		$text .= '<!-- $cp: '.$this->cp.' -->';
-
-		*/
 		$text .= '<!-- thisPageName:'.$this->thisPageName.'-->';
-		
+		*/
+				
 		return true;
 	}
 	/**
@@ -330,6 +331,9 @@ class RegexNamespaceContext
 		global $wgParser;
 		$parser = clone $wgParser;
 		$parser->parse( $this->cp, $this->cpTitle, new ParserOptions );
+		
+		//This does not work.
+		#$parser->preprocess( $this->cp, $this->cpTitle, new ParserOptions );		
 		
 		// Grab the result from the 'Page' variables
 		wfRunHooks('PageVarGet', array( 'ContextVars', &$oParams) );
