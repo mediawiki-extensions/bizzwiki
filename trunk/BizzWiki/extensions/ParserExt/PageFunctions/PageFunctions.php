@@ -165,7 +165,6 @@ class PageFunctionsClass
 	public function hPageVarGet( &$varname, &$value )
 	{
 		$value = @$this->pageVars[ $varname ];		
-		var_dump( $this->pageVars );		
 		return true; // continue hook-chain.
 	}
 	/**
