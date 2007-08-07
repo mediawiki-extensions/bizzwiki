@@ -181,7 +181,9 @@ class FileSystemSyntaxColoring
 		$result = preg_match( $p, $text, $m );
 		if ( ($result===FALSE) or ($result===0)) return '';
 
-		return $m[1];
+		$t = str_replace("-->\n", '', $m[1]);
+
+		return $t;
 	}
 	private function removeWikitext()
 	{
