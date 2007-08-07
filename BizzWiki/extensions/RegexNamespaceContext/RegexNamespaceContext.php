@@ -3,7 +3,7 @@
 {{Extension
 |name        = RegexNamespaceContext
 |status      = beta
-|type        = other
+|type        = hook
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -84,7 +84,7 @@ require('extensions/PageFunctions.php');
 require('extensions/ParserCacheControl.php');
 require('extensions/RegexTools.php');
 StubManager::createStub(	'RegexNamespaceContext', 
-							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
+							$IP.'/extensions/RegexNamespaceContext/RegexNamespaceContext.php',
 							null,							
 							array( 'EditFormPreloadText', 'ParserAfterTidy', 'BeforePageDisplay' ),
 							false
@@ -95,6 +95,9 @@ StubManager::createStub(	'RegexNamespaceContext',
 * Used another parser instance instead of the global wgParser one: better integration with other extensions
 * Fixed major bug: needed to 'clone' the wgParser in order to keep all the hooks/parser functions etc.
 * Fixed 'skin' related bug: 'ParserAfterTidy' gets called during MediaWiki skin's string processing
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
 </wikitext>*/
@@ -177,6 +180,11 @@ class RegexNamespaceContext
 			return true;
 		$isDone= true;
 		
+		// bail out if we have detected a 'PermissionError' condition.
+		wfRunHooks('PageVarGet', array( 'PermissionError', &$result ) );		
+		if ($result===true)
+			return true;
+		
 		global $action;
 		if ($action != 'view') return true;
 
@@ -234,6 +242,7 @@ class RegexNamespaceContext
 		{
 			$po = $parser->parse( $hText, $a /* title object */, new ParserOptions() );
 			$h = $po->getText();
+		}
 		if (!empty( $fText ))
 		{
 			$po = $parser->parse( $fText, $a /* title object */, new ParserOptions() );

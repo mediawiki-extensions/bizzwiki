@@ -52,6 +52,9 @@ StubManager::createStub(	'PermissionFunctions',
 						 );
 </source>
 
+== History ==
+* Added setting of contextual variable upon permission error
+
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
@@ -89,7 +92,12 @@ class PermissionFunctions
 		$ns = $wgTitle->getNamespace();
 		
 		if (!$wgUser->isAllowed( $requiredRight, $ns ) )
+		{
 			$wgOut->permissionRequired( $requiredRight );
+			
+			// set a 'context' variable to help other extensions.
+			wfRunHooks('PageVarSet', array( 'PermissionError', true ) );			
+		}
 	}
 
 	public static function getpermissionline( $group, $namespace )
@@ -114,5 +122,3 @@ class PermissionFunctions
 		return hnpClass::userCanInternal( $user, $ns, $pt, $action );
 	}
 } // end class.
-
-?>
