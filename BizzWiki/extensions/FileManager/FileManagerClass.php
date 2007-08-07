@@ -1,7 +1,7 @@
 <?php
 /*
  * FileManagerClass.php
- * 
+ *
  * MediaWiki extension
  * @author: Jean-Lou Dupont (http://www.bluecortex.com)
  * $Id$
@@ -27,7 +27,7 @@ class FileManagerClass extends ExtensionClass
 	public static function &singleton()
 	{ return parent::singleton( );	}
 	
-	function FileManagerClass( $mgwords = null, $passingStyle = self::mw_style, $depth = 1 )
+	function FileManagerClass()
 	{
 		parent::__construct( );
 
@@ -125,7 +125,7 @@ class FileManagerClass extends ExtensionClass
 	public function hArticleFromTitle( &$title, &$article )
 	// This hook is used to:
 	// - Verify if a file is available in the filesystem
-	// - Verify if a file is available in the database system
+	// - Verify if a file is available in the database mystem
 	{
 		global $IP;
 		
@@ -188,10 +188,10 @@ class FileManagerClass extends ExtensionClass
 		// Paranoia: Is the user allowed committing??
 		// We shouldn't even get here if the 'edit' permission gets
 		// verified adequately.
-		if (! $title->userCan(self::actionCommit) ) return true;		
+		if (! $title->userCan(self::actionCommit) ) return true;
 
 		$text = self::getFileContentsFromTitle( $title );
-	
+
 		return true; // be nice.
 	}
 	static function getFileContentsFromTitle( &$title )
@@ -206,13 +206,13 @@ class FileManagerClass extends ExtensionClass
 	// make sure we disable client side caching for NS_FILESYSTEM namespace.
 	{
 		global $wgTitle;
-		
+
 		// Are we in the right namespace at all??
 		$ns = $wgTitle->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
 
 		$op->enableClientCache(false);
-		
+
 		return true;
 	}
 	/**
@@ -223,12 +223,12 @@ class FileManagerClass extends ExtensionClass
 		// make sure we are in the right namespace.
 		$ns = $st->mTitle->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
-		
+
 		// second, make sure the user has the 'reload' right.
 		global $wgUser;
 		if ( !$wgUser->isAllowed('reload') )
 			return true;
-		
+
 		$content_actions['reload'] = array(
 			'text' => 'reload',
 			'href' => $st->mTitle->getLocalUrl( 'action=reload' )
@@ -239,18 +239,18 @@ class FileManagerClass extends ExtensionClass
 	
 	/**
 		This hook handles 'action=reload' query.
-	 */	
+	 */
 	public function hUnknownAction( $action, $article )
 	{
 		// make sure we are in the right namespace.
 		$ns = $article->mTitle->getNamespace();
 		if ($ns != NS_FILESYSTEM) return true; // continue hook chain.
-		
+
 		// second, make sure the user has the 'reload' right.
 		global $wgUser;
 		if ( !$wgUser->isAllowed('reload') )
 			return true;
-			
+
 		$text = self::getFileContentsFromTitle( $article->mTitle );
 		
 		$article->updateArticle( $text, '', false, false );
