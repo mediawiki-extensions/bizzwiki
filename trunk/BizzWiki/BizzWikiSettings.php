@@ -229,6 +229,7 @@ $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/block",		
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/emaillog",  	"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usetchglog",	"!browse")] = true;
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/watchlog",	"!browse")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/usrloglog",	"!browse")] = true;	// UserLoginLogoutLog
 
 	// replication related.
 $wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Log/ftchrclog",	"!browse")] = true;	// partner RC
@@ -738,11 +739,15 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"viewsource")] = true; 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"raw")] = true; 	
 
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",	"read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",	"read")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",	"browse")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",	"browse")] = true;  
-	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/*","browse")] = true;
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~/details",	"!read")] = true; 
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",			"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",			"viewsource")] = true;  	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",			"read")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER,		"~",			"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",			"browse")] = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/~",		"browse")] = true;
+
+ 
 
 	$bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 									NS_PROJECT, NS_PROJECT_TALK,

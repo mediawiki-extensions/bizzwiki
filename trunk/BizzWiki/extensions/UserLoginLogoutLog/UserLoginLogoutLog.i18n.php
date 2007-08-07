@@ -24,11 +24,11 @@ $msgUserLoginLogoutLog['en'] = array(
 	'usrloglog'.'logpage'			=> 'User Log-in/Log-out Log',
 	'usrloglog'.'logpagetext'		=> "This is a log of user log-in/log-out events",
 	'usrloglog'.'-loginok-entry'	=> 'Log-in successful',
-	'usrloglog'.'-loginok-text'		=> " [[User:$1]] ",
+	'usrloglog'.'-loginok-text'		=> "[[User:$1]]",
 	'usrloglog'.'-loginerr-entry'	=> 'Log-in unsuccessful',
 	'usrloglog'.'-loginerr-text'	=> " $1 message: $2 ",
 	'usrloglog'.'-logoutok-entry'	=> 'Log-out successful',
-	'usrloglog'.'-logoutok-text'	=> " [[User:$1]] ",
+	'usrloglog'.'-logoutok-text'	=> "[[User:$1]]",
 	
 	#'' => '',
 );

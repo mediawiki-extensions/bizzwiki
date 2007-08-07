@@ -132,18 +132,27 @@ class SkinTools
 					$title = $st->mTitle;
 				
 				if (!empty($actionDetails['actionOverride']))
-					$action = $actionDetails['actionOverride'];
+					$contentTab = $actionDetails['actionOverride'];
 				else
-					$action = $actionDetails['action'];
+					$contentTab = $actionDetails['action'];
 				
 				// skip if the user isn't allowed the action.
+				$tAction = ($actionDetails['action'] =='view') ? 'read': $actionDetails['action'];
+				$tAction = ($actionDetails['action'] =='')     ? 'read': $actionDetails['action'];				
+				
 				global $wgUser;
-				if ( !$wgUser->isAllowed($action) )
+				if ( !$wgUser->isAllowed($tAction) )
 					continue;
 					
-				$content_actions[ $action ] = array(
+				if (defined('BIZZWIKI'))
+					if ( !$wgUser->isAllowed($tAction, $title->getNamespace(), $title->getDBkey() ))
+						continue;
+				
+				$query = ( $actionDetails['action'] == 'read' ) ? '':'action='.$actionDetails['action'];
+				
+				$content_actions[ $contentTab ] = array(
 					'text' => $actionDetails['actionText'],
-					'href' => $title->getLocalUrl( 'action='.$actionDetails['action'] )
+					'href' => $title->getLocalUrl( $query )
 				);
 			}
 		return true;

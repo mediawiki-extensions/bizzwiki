@@ -230,4 +230,9 @@ REL1_10_11: (released ...)
 - Fixed major bug in 'RegexNamespaceContext'
 - FileSystemSyntaxColoring: some optimizations for speed
 - ParserPhase2: better handling of 'disable' commands
--
+- Several minor enhancements to:
+-- RegexTools
+-- RegexNamespaceContext
+-- FileManager
+-- FileSystemSyntaxColoring
+-- ParserPhase2
