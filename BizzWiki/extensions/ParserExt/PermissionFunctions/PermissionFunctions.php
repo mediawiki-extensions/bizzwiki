@@ -44,7 +44,7 @@ require('extensions/StubManager.php');
 StubManager::createStub(	'PermissionFunctions', 
 							$IP.'/extensions/ParserExt/PermissionFunctions/PermissionFunctions.php',
 							null,							
-							null,
+							array('EndParserPhase2'),
 							false, // no need for logging support
 							null,	// tags
 							array( 'checkpermission' ),  //of parser function magic words,
@@ -54,6 +54,7 @@ StubManager::createStub(	'PermissionFunctions',
 
 == History ==
 * Added setting of contextual variable upon permission error
+* Added clearing of page's text upon permission error
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -75,8 +76,13 @@ class PermissionFunctions
 	// constants.
 	const thisName = 'PermissionFunctions';
 	const thisType = 'other';
+	
+	var $permissionErrorFound;
 		
-	function __construct( ) {}
+	function __construct( ) 
+	{
+		$this->permissionErrorFound = false;
+	}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Functions which are meant to be accessed through 'ParserPhase2' functionality
@@ -93,13 +99,22 @@ class PermissionFunctions
 		
 		if (!$wgUser->isAllowed( $requiredRight, $ns ) )
 		{
-			$wgOut->permissionRequired( $requiredRight );
-			
+			$this->permissionErrorFound = true;			
 			// set a 'context' variable to help other extensions.
-			wfRunHooks('PageVarSet', array( 'PermissionError', true ) );			
+			wfRunHooks('PageVarSet', array( 'PermissionError', &$this->permissionErrorFound ) );			
+			$wgOut->clearHTML();
+			$wgOut->permissionRequired( $requiredRight );
 		}
 	}
-
+	/**
+	 */
+	public function hEndParserPhase2( &$op, &$text )
+	{
+		if ($this->permissionErrorFound)
+			$text = null;
+		return true;
+	}
+	
 	public static function getpermissionline( $group, $namespace )
 	// This function is meant to be used in conjuction with 'Hierarchical Namespace Permission' extension.
 	// E.g. (($#foreachx|bwPermissionFunctions|getpermissionline| ... $))

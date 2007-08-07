@@ -180,11 +180,6 @@ class RegexNamespaceContext
 			return true;
 		$isDone= true;
 		
-		// bail out if we have detected a 'PermissionError' condition.
-		wfRunHooks('PageVarGet', array( 'PermissionError', &$result ) );		
-		if ($result===true)
-			return true;
-		
 		global $action;
 		if ($action != 'view') return true;
 

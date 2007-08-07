@@ -449,7 +449,7 @@ require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
 StubManager::createStub(	'PermissionFunctions', 
 							$bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions.php',
 							null,							
-							null,
+							array('EndParserPhase2'),
 							false, // no need for logging support
 							null,	// tags
 							array( 'checkpermission' ),  //of parser function magic words,
