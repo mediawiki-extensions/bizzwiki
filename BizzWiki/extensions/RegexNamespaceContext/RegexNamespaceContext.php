@@ -198,8 +198,10 @@ class RegexNamespaceContext
 		$text .= '<!-- headerpagename: '.$this->headerPageName.' footerpagename:'.$this->footerPageName.' preloadpagename: '.$this->preloadPageName.' -->';
 		$text .= '<!-- $oParams: '.bwVarDump($this->oParams).' -->';
 		$text .= '<!-- $cp: '.$this->cp.' -->';
-		*/
 
+		*/
+		$text .= '<!-- thisPageName:'.$this->thisPageName.'-->';
+		
 		return true;
 	}
 	/**

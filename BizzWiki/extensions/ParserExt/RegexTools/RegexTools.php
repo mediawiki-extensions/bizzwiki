@@ -1,11 +1,22 @@
 <?php
 /*<wikitext>
-{{extension:
-|RegexTools.php
-|$Id$
-|Jean-Lou Dupont
+{{Extension
+|name        = RegexTools
+|status      = stable
+|type        = parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/RegexTools/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
- 
 == Purpose==
 Provides 'magic words' performing regular expression pattern ( aka 'regex' )matching.
 
@@ -95,6 +106,8 @@ class RegexToolsClass
 	{
 		$pms= '/'.$p.'/siU';
 
+		#echo ' $pms:'.$pms.' $input:'.$input."\n";
+
 		$m = preg_match( $pms, $input );
 		if (($m !== false) && ($m>0))
 			return true;
@@ -102,4 +115,3 @@ class RegexToolsClass
 		return false;
 	}
 } // end class declaration.
-?>

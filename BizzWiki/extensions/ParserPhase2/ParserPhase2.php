@@ -350,6 +350,6 @@ class ParserPhase2Class
 	{
 		if (!empty( $source[0] ))
 			foreach( $source[0] as $index => $marker )
-				$text = str_replace( $marker, $target[$index], $text );	
+				$text = str_replace( $marker, $target[$index]/*.'<!--'.$marker.'-->'*/, $text );	
 	}
 } // end class
