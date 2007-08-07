@@ -102,13 +102,15 @@ class FileManagerClass extends ExtensionClass
 		
 		// we can attempt commit then.
 		$titre = $article->mTitle->getText();
+		$shortTitle = self::getShortTitle( $titre );
+		
 		$r = file_put_contents( $IP.'/'.$titre, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
 		$action  = ($r === FALSE ? 'commitfail':'commitok' );
 		$nsname  = Namespace::getCanonicalName( $ns );	
-		$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre );
+		$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre, $shortTitle );
 		
 		// we need to limit the text to 'commitscr' because of the database schema.
 		$log = new LogPage( 'commitfil' );
@@ -255,6 +257,11 @@ class FileManagerClass extends ExtensionClass
 		
 		return false;
 	}
-	
+	private static function getShortTitle( $title )
+	{
+		$v = explode('/', $title );
+		$shortText = $v[ count($v)-1 ];
+		
+		return $shortText;	
+	}
 } // END CLASS DEFINITION
-?>
