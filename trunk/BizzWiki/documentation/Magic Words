@@ -204,4 +204,6 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 {{row|#addaction        | Parser Function | SkinTools   }}
 
 {{row|#usergetoption    | Parser Function | UserTools   }}
+
+{{row|#__DISABLECONTEXT__ | Proprietary Word | RegexNamespaceContext }}
 |}

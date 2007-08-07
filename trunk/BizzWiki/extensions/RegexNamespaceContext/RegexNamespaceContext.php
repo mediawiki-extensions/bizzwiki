@@ -172,6 +172,11 @@ class RegexNamespaceContext
 	{
 		if ($this->disable)
 			return true;
+		
+		// are we asked to disable?
+		$text = str_replace('__DISABLECONTEXT__', '', $text, $count);
+		if ( $count>0 )
+			return true;
 			
 		// just do the page asked for in the transaction.
 		// This hook also gets called when MediaWiki parses other strings
@@ -329,19 +334,24 @@ class RegexNamespaceContext
 		// Grab the result from the 'Page' variables
 		wfRunHooks('PageVarGet', array( 'ContextVars', &$oParams) );
 
-		$this->headerPageName	= null;		
-		$this->footerPageName	= null;			
-		$this->preloadPageName	= null;
-					
-		if (isset($oParams['headerPageName']))
-			$this->headerPageName	= $oParams['headerPageName'];
-
-		if (isset($oParams['footerPageName']))
-			$this->footerPageName	= $oParams['footerPageName'];
-
-		if (isset($oParams['preloadPageName']))
-			$this->preloadPageName	= $oParams['preloadPageName'];
-
+		// if we are asked by another extension to disable
+		// context processing, then obey (!)
+		if (!isset($oParams['disable']))
+		{
+			$this->headerPageName	= null;		
+			$this->footerPageName	= null;			
+			$this->preloadPageName	= null;
+						
+			if (isset($oParams['headerPageName']))
+				$this->headerPageName	= $oParams['headerPageName'];
+	
+			if (isset($oParams['footerPageName']))
+				$this->footerPageName	= $oParams['footerPageName'];
+	
+			if (isset($oParams['preloadPageName']))
+				$this->preloadPageName	= $oParams['preloadPageName'];
+		}
+		
 		wfRunHooks('ContextPageParsingComplete', array( &$this, 'ContextVars' ) );		
 	}	 
 	/**
