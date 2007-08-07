@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = SidebarEx
 |status      = stable
@@ -82,7 +82,7 @@ Edit the page 'username/Sidebar'.
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>-->*/
 // <source lang=php>
 class SidebarExClass extends ExtensionClass
 {

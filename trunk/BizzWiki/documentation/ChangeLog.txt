@@ -236,3 +236,5 @@ REL1_10_11: (released ...)
 -- FileManager
 -- FileSystemSyntaxColoring
 -- ParserPhase2
+- SidebarEx: added per-user sidebar functionality
+- 
