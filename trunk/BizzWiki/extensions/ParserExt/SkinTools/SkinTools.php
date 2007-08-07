@@ -135,6 +135,11 @@ class SkinTools
 					$action = $actionDetails['actionOverride'];
 				else
 					$action = $actionDetails['action'];
+				
+				// skip if the user isn't allowed the action.
+				global $wgUser;
+				if ( !$wgUser->isAllowed($action) )
+					continue;
 					
 				$content_actions[ $action ] = array(
 					'text' => $actionDetails['actionText'],
