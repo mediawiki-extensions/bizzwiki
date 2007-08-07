@@ -1,19 +1,33 @@
 <?php
 /*<wikitext>
-SidebarEx.php by Jean-Lou Dupont
-
-== Version ==
-$Id$
+{{Extension
+|name        = SidebarEx
+|status      = stable
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/SidebarEx/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
 
 == Purpose ==
-Provides a means of adding page links to the 'sidebar' based on group membership.
+Provides a means of adding page links to the 'sidebar' based on group membership & per-user basis.
 
 == Features ==
-* 0) Can be used independantly of BizzWiki environment
-* 1) all defined groups are supported (standard MW and ones defined in installation)
-* 2) sidebar page name corresponds to 'group' name
-* 3) No patches to standard MW installation for MW version >= 1.10
-* 4) Group name prioritization
+* Can be used independantly of BizzWiki environment
+* all defined groups are supported (standard MW and ones defined in installation)
+* sidebar page name corresponds to 'group' name
+* No patches to standard MW installation for MW version >= 1.10
+* Group name prioritization
+* Per-User sidebars using 'username/Sidebar' page
  
 == DEPENDANCY ==
 * ExtensionClass extension (>v1.5)
@@ -33,6 +47,7 @@ $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
 </source>
 
 == INSTALLATION NOTES ==
+=== Group membership based sidebars ===
 <pre>
  Add to LocalSettings.php:
  
@@ -55,13 +70,20 @@ $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
   require("extensions/ExtensionClass.php");
   require("extensions/SidebarEx/SidebarEx.php");
 </pre>
- 
+=== Per-User sidebars ===
+Edit the page 'username/Sidebar'.
+
 == History ==
 * Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
-* Moved singleton invocation
+* Moved singleton invocation to address some PHP warning
+* Added 'per-user' sidebars
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
+== Code ==
 </wikitext>*/
-
+// <source lang=php>
 class SidebarExClass extends ExtensionClass
 {
 	// constants.
@@ -109,6 +131,37 @@ class SidebarExClass extends ExtensionClass
 
 	public function hSkinTemplateOutputPageBeforeExec( &$skin, &$tpl )
 	{
+		$gbar = $this->doGroupSidebar();
+		$ubar = $this->doUserSidebar();
+		
+		// get current sidebar text
+		$cbar = $tpl->data['sidebar'];
+
+		// add our own here
+		$tpl->set( 'sidebar', array_merge($cbar, $gbar, $ubar) );		
+		
+		return true;
+	}
+	private function doUserSidebar()
+	{
+		global $wgUser;
+		
+		$userName = $wgUser->getName();
+
+		$title = Title::makeTitle( NS_USER, $userName.'/Sidebar' );
+		$a     = new Article( $title );
+		
+		// does 'username/Sidebar' page exist?
+		if (($a==null) || ($a->getID()==0))		
+			return array();
+			
+		$text = $a->getContent();
+		$bar  = $this->processSidebarText( $text );
+
+		return $bar;		
+	}
+	private function doGroupSidebar()
+	{
 		global $wgUser;
 		
 		// get group membership array
@@ -125,31 +178,22 @@ class SidebarExClass extends ExtensionClass
 			if (in_array( $group, $gr )) { $page = $group; break; }
 			 
 		// did we find satisfaction?
-		if (empty( $page )) return true;
+		if (empty( $page )) 
+			return array();
 		
 		// form the path to the article:
 		// Namespace:base page/group name
-		$ns = Namespace::getCanonicalName( $this->Ns );
-		$a = $this->getArticle( $ns.':'.$this->Page.'/'.$page );
-
+		$title = Title::makeTitle( $this->Ns, $this->Page.'/'.$page );
+		$a     = new Article( $title );		
+		
 		// is the corresponding page found?
 		if (($a==null) || ($a->getID()==0))
-		{
-			$this->foundPage = false;
-			return true;
-		}
-		else $this->foundPage = true;
+			return array();
 		
 		$text = $a->getContent();
 		$bar  = $this->processSidebarText( $text );
-		
-		// get current sidebar text
-		$cbar = $tpl->data['sidebar'];
 
-		// add our own here
-		$tpl->set( 'sidebar', array_merge($cbar, $bar) );		
-		
-		return true;
+		return $bar;		
 	}
 	private function processSidebarText( &$textSideBar )
 	// copied from SkinTemplate MW 1.8.x SVN
@@ -220,5 +264,4 @@ if ( !class_exists('ExtensionClass') )
 	echo 'SidebarEx extension: ExtensionClass missing.';	
 else
 	SidebarExClass::singleton();
-
-?>
+// </source>
