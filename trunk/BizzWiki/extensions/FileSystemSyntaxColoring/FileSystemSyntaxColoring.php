@@ -57,6 +57,8 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 * Added stubbing capability through 'StubManager'
 * Added namespace trigger
 * Added additional checks to speed-up detection of NS_FILESYSTEM namespace
+* Added the pattern '<!--@@ wikitext @@-->' to hide wikitext when 'copy and paste' operation is used
+to save document in a non-BizzWiki wiki.
 
 == Code ==
 </wikitext>*/
@@ -180,7 +182,21 @@ class FileSystemSyntaxColoring
 		$result = preg_match( $p, $text, $m );
 		if ( ($result===FALSE) or ($result===0)) return '';
 
-		$t = str_replace("-->\n", '', $m[1]);
+		$texte = &$m[1]; // shortcut.
+
+		// Another fix: extract a wikitext section which is otherwise
+		// hidden when a 'copy and paste' is done to another site.
+		// Pattern:  <!--@@ wikitext @@-->
+		$pattern = "/\<!\-\-\@\@(.*)\@\@\-\-\>/siU";
+		$r = preg_match( $pattern, $texte, $match);
+		if (($r!==false) && ($r!==0))
+			$texte = preg_replace( $pattern, $match[1], $texte );
+		
+		// helper: when 'copy and paste' to Mediawiki.org,
+		// I needed to adapt the file template which now
+		// would look bad on BizzWiki.org. The following replace
+		// 'fixes' that.
+		$t = str_replace("-->\n", '', $texte );
 
 		return $t;
 	}
