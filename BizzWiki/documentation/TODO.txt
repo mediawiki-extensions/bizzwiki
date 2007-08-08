@@ -1,5 +1,8 @@
 $Id$
 
+== StubManager ==
+* Use 'createStub2' method instead.
+
 == PREVIEW ==
 * Verify this interface does not impact security measures
 

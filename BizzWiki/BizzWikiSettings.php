@@ -434,7 +434,7 @@ StubManager::createStub(	'AutoLanguage',
 							array('ArticleFromTitle'),
 							false
 						 );
-
+// can be added through 'createStub2' method.
 #AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
 #AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
 #AutoLanguageClass::$exemptNamespaces[] = NS_FILESYSTEM;
