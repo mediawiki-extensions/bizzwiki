@@ -75,6 +75,12 @@ require('extensions/VirtualPage/VirtualPage.php');
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer</b>|Up to date$))
+
 == Code ==
 <!--</wikitext>//--><source lang=php>*/
 
