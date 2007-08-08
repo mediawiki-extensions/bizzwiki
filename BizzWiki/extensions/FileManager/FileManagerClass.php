@@ -299,7 +299,7 @@ class FileManagerClass extends ExtensionClass
 	/**
 		Meant to be used in conjunction with the proprietary word '@@mtime@@'
 	 */
-	public function mg_extractmtime( &$parser, &$mtime )
+	public function mg_extractmtime( &$parser, &$mtime, $show = false )
 	{
 		$this->currentExtractMtime = null;
 		
@@ -308,12 +308,15 @@ class FileManagerClass extends ExtensionClass
 		if (isset( $m[1] ))
 			$this->currentExtractMtime = $m[1];
 		
-		return $this->currentExtractMtime;
+		if ($show)
+			return $this->currentExtractMtime;
+			
+		return null;
 	}
 	/**
 		Meant to be used in conjunction with the proprietary word '@@file@@'	
 	 */
-	public function mg_extractfile( &$parser, &$file )
+	public function mg_extractfile( &$parser, &$file, $show = false )
 	{
 		$this->currentExtractFile = null;
 		
@@ -322,7 +325,10 @@ class FileManagerClass extends ExtensionClass
 		if (isset( $m[1] ))
 			$this->currentExtractFile = $m[1];
 		
-		return $this->currentExtractFile;
+		if ($show)
+			return $this->currentExtractFile;
+			
+		return null;
 	}
 	/**
 		Returns 'newerText' if the file is newer than the 'mtime' timestamp suggests
