@@ -21,7 +21,7 @@
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
-Status: (($#comparemtime|<b>File system copy is newer - {{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} </b>|Up to date$))
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 
 == Purpose==
 Provides regex based virtual page serving functionality based on a virtual directory.
