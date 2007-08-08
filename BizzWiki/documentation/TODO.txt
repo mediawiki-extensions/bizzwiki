@@ -107,3 +107,9 @@ $Id$
 
 === API ===
 * Log_Id field will be fixed when WikiMedia processes the field correctly -- won't need a patch anymore
+
+== Security hole on password protected wikis ==
+Hi, I just found out that even if you disable viewing pages for non logged in users one can still acess 
+the uploaded media files when entering the direct URL. 
+Is there a way to give only access to logged in users to download media files? 
+--[[User:83.228.136.57|83.228.136.57]] 19:04, 7 August 2007 (UTC)

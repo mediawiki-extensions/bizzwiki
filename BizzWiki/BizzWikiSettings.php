@@ -427,6 +427,7 @@ StubManager::createStub(	'FormProcClass',
 							null	// no namespace triggering							
 						 );
 
+
 StubManager::createStub(	'AutoLanguage', 
 							$bwExtPath.'/AutoLanguage/AutoLanguage.php',
 							null,							
@@ -643,6 +644,8 @@ StubManager::createStub2(	array(	'class' 		=> 'UserTools',
 									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
 								)
 						);
+
+require('extensions/VirtualPage/VirtualPageSwitch.php');
 
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');

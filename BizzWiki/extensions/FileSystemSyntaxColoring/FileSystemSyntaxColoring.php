@@ -61,7 +61,6 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 == Code ==
 </wikitext>*/
 
-global $wgExtensionCredits;
 $wgExtensionCredits[FileSystemSyntaxColoring::thisType][] = array( 
 	'name'    		=> FileSystemSyntaxColoring::thisName, 
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
