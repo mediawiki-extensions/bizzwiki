@@ -237,4 +237,4 @@ REL1_10_11: (released ...)
 -- FileSystemSyntaxColoring
 -- ParserPhase2
 - SidebarEx: added per-user sidebar functionality
-- 
+- Added 'VirtualPage' extension
