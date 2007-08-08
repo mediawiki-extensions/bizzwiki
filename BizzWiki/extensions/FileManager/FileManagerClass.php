@@ -20,9 +20,20 @@ class FileManagerClass extends ExtensionClass
 
 	const mNoCommit    = '__NOCOMMIT__';
 
+	static $pWords = array(
+							'/\@\@file(.*)\@\@/siU'		=> 'pw_file',
+							'/\@\@mtime(.*)\@\@/siU'	=> 'pw_mtime',
+							'/\@\@clearcache\@\@/siU'	=> 'pw_clearcache',
+							);
+
 	// error code constants
 	const msg_nons = 1;
 	const msg_folder_not_writable = 2;
+	
+	// variables
+	var $currentFile;
+	var $currentExtractFile;
+	var $currentExtractMtime;
 
 	public static function &singleton()
 	{ return parent::singleton( );	}
@@ -104,7 +115,9 @@ class FileManagerClass extends ExtensionClass
 		$titre = $article->mTitle->getText();
 		$shortTitle = self::getShortTitle( $titre );
 		
-		$r = file_put_contents( $IP.'/'.$titre, $text );
+		$this->currentFile = $IP.$titre;
+		
+		$r = file_put_contents( $this->currentFile, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
@@ -119,6 +132,9 @@ class FileManagerClass extends ExtensionClass
 		// disable auto summary
 		// (security issue ...)
 		$flags = ($flags & (~EDIT_AUTOSUMMARY));
+		
+		// Replace Proprietary Words
+		$this->doProprietaryWords( $text );
 		
 		return true; // continue hook-chain.
 	}
@@ -141,9 +157,6 @@ class FileManagerClass extends ExtensionClass
 		$titre = $wgRequest->getVal( 'title' );
 		$wgTitle = Title::newFromURL( $titre );
 
-		// restore state.
-		#$wgCapitalLinks = state;
-
 		// If article is present in the database, used it.
 		// Permissions are checked through normal flow.
 		$a = new Article( $wgTitle );
@@ -161,7 +174,7 @@ class FileManagerClass extends ExtensionClass
 		// From this point, we know the article does not
 		// exist in the database... let's check the filesystem.
 		$filename = $title->getText();
-		$result   = @fopen( $IP.'/'.$filename,'r' );
+		$result   = @fopen( $IP.$filename,'r' );
 		if ($result !== FALSE) { fclose($result); $result = TRUE; }
 
 		$id = $result ? 'filemanager-script-exists':'filemanager-script-notexists';
@@ -264,4 +277,89 @@ class FileManagerClass extends ExtensionClass
 		
 		return $shortText;	
 	}
+	
+	private function doProprietaryWords( &$text )
+	{
+		foreach( self::$pWords as $pattern => $method )
+		{
+			$r = preg_match( $pattern, $text );
+			
+			// check if we have at least one occurence of the proprietary word
+			if ( (  $r !== false) && ($r>0) )
+			{
+				// get the value associated with the word
+				$value = $this->$method();
+				// replace all occurences
+				$text = preg_replace( $pattern, $value, $text );
+			}
+			
+		}
+	}
+
+	/**
+		Meant to be used in conjunction with the proprietary word '@@mtime@@'
+	 */
+	public function mg_extractmtime( &$parser, &$mtime )
+	{
+		$this->currentExtractMtime = null;
+		
+		preg_match( '/\@\@mtime: (.*)\@\@/siU', $mtime, $m );
+		
+		if (isset( $m[1] ))
+			$this->currentExtractMtime = $m[1];
+		
+		return $this->currentExtractMtime;
+	}
+	/**
+		Meant to be used in conjunction with the proprietary word '@@file@@'	
+	 */
+	public function mg_extractfile( &$parser, &$file )
+	{
+		$this->currentExtractFile = null;
+		
+		preg_match( '/\@\@file: (.*)\@\@/siU', $file, $m );
+		
+		if (isset( $m[1] ))
+			$this->currentExtractFile = $m[1];
+		
+		return $this->currentExtractFile;
+	}
+	/**
+		Returns 'newerText' if the file is newer than the 'mtime' timestamp suggests
+		else returns 'olderText'.
+	 */
+	public function mg_comparemtime( &$parser, &$newerText, &$olderText )
+	{
+		$current_mtime = @filemtime( $this->currentExtractFile );
+		if ($current_mtime > $this->currentExtractMtime)
+			return $newerText;
+			
+		return $olderText;
+	}
+	/**
+		Returns the current modification timestamp of the
+		extracted current filename.
+	 */
+	public function mg_currentmtime( &$parser )
+	{
+		return @filemtime( $this->currentExtractFile );	
+	}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+	private function pw_file()
+	{
+		return '@@file: '.$this->currentFile.'@@';
+	}
+	private function pw_mtime()
+	{
+		return '@@mtime: '.@filemtime( $this->currentFile ).'@@';
+	}
+	private function pw_clearcache()
+	{
+		clearstatcache();
+		return '@@clearcache@@';	
+	}
+	
 } // END CLASS DEFINITION

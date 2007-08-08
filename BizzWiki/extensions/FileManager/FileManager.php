@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<wikitext> ((@disable@)) (($disable$))
 FileManager.php
 * 
 * MediaWiki extension
@@ -28,6 +28,14 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * disabled 'auto summary' upon page creation (clogs recentchanges, logs etc.)
 * added 'reload' functionality
 * Added some protection against !isset indexes in '$wgExtensionCredits'
+* Added 'proprietary words' functionality
+** @@file@@   replaces for the current filename
+** @@mtime@@  replaces for the current filename last modification timestamp
+** @@currentmtime@@ replaces for the current extracted filename last modification timestamp
+* Removed extraneous '/' in the path name
+* Added 'parser phase 2' magic words:
+** (($#extractfile|@@file@@$))   : extracts the filename returned through the proprietary word '@@file@@'
+** (($#extractmtime|@@mtime@@$)) : extracts 'mtime' returned through the proprietary word '@@mtime@@'
 
 == TODO ==
 * internationalization

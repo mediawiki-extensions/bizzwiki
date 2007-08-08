@@ -238,3 +238,5 @@ REL1_10_11: (released ...)
 -- ParserPhase2
 - SidebarEx: added per-user sidebar functionality
 - Added 'VirtualPage' extension
+- FileManager: added 'Proprietary Words' functionality
+- FileManager: added 'parser phase 2' magic words functionality
