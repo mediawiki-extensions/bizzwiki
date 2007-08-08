@@ -282,13 +282,17 @@ class FileManagerClass extends ExtensionClass
 	{
 		foreach( self::$pWords as $pattern => $method )
 		{
-			$r = preg_match( $pattern, $text );
+			$match = null;			
 			
+			$r = preg_match( $pattern, $text, $m );
+			if (isset( $m[1] ))
+				$match = $m[1];
+				
 			// check if we have at least one occurence of the proprietary word
 			if ( (  $r !== false) && ($r>0) )
 			{
 				// get the value associated with the word
-				$value = $this->$method();
+				$value = $this->$method( $match );
 				// replace all occurences
 				$text = preg_replace( $pattern, $value, $text );
 			}
@@ -350,7 +354,8 @@ class FileManagerClass extends ExtensionClass
 	{
 		return @filemtime( $this->currentExtractFile );	
 	}
-	
+
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -367,5 +372,5 @@ class FileManagerClass extends ExtensionClass
 		clearstatcache();
 		return '@@clearcache@@';	
 	}
-	
+
 } // END CLASS DEFINITION
