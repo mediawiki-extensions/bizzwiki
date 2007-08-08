@@ -36,9 +36,6 @@ $Id$
 * 'notitle' magic word
 * Job for the 'FileManager': reload from filesystem all file from installation.
 
-== FileManager ==
-* Reload from filesystem functionality (instead of deleting & reloading)
-
 == SpecialPagesManager ==
 * Customized layout functionality
 

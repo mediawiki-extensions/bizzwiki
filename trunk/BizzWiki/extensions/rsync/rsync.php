@@ -22,6 +22,22 @@
 
 
 == Features ==
+* Page
+** Creation
+** Update
+** Delete
+** Move
+* User
+** Account creation
+** Account options update
+* File
+** Upload
+** Re-upload
+** Delete
+** Move (???)
+
+== Theory Of Operation ==
+Page change events are trapped and the resulting new/updated pages are written to a specified filesystem directory.
 
 
 == Dependancy ==
@@ -42,7 +58,7 @@ require('extensions/rsync/rsync.php');
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-<!--</wikitext>//--><source lang=php>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[rsync::thisType][] = array( 
 	'name'    => rsync::thisName,
