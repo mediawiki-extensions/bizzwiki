@@ -39,8 +39,8 @@ Create a page titled 'Virtual Directory' for each namespace where this extension
 === Format of the Virtual Directory ===
 * One 'regex' expression per '\n' (i.e. newline) terminated line.
 * Each line must contain 1 regex pattern + 1 link
-** Regex pattern format: <code>/..regex expression here../</code>
-** Link format: <code>[[namespace:page]]</code>
+** Regex pattern format: <nowiki><regex>/..regex expression here../</regex></nowiki>
+** Link format: <nowiki>[[namespace:page]]</nowiki>
 The 'link' corresponds to the page 'template' which will be served upon a successful regex match.
 
 == Dependancy ==
@@ -63,8 +63,7 @@ require('extensions/VirtualPage/VirtualPage.php');
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-<!--</wikitext>-->*/
-//<source lang=php>
+<!--</wikitext>//--><source lang=php>*/
 
 $wgExtensionCredits[VirtualPage::thisType][] = array( 
 	'name'    		=> VirtualPage::thisName, 
