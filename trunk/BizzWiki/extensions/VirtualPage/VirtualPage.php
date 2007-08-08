@@ -31,6 +31,7 @@ standard MediaWiki one.
 == Features ==
 * No patches
 * Fast - stub functionality for usual queries
+* Virtual Directory page can be in wikitext format
 
 == Usage ==
 === Basics ===
@@ -42,6 +43,18 @@ Create a page titled 'Virtual Directory' for each namespace where this extension
 ** Regex pattern format: <nowiki><regex>/..regex expression here../</regex></nowiki>
 ** Link format: <nowiki>[[namespace:page]]</nowiki>
 The 'link' corresponds to the page 'template' which will be served upon a successful regex match.
+
+== Example ==
+* Create a page called 'Virtual Directory' in the main namespace and place the following:
+<pre>
+{| border=1
+| Pattern 1 || <regex>/Log(.*)/</regex>  || <nowiki>[[Log:LogTemplate]]</nowiki>
+|-
+| Pattern 2 || <regex>/Blog(.*)/</regex> || <nowiki>[[Blog:BlogTemplate]]</nowiki>
+|}
+</pre>
+* All the non-existing pages following 'Pattern1' will get served using 'Log:LogTemplate'
+* All the non-existing pages following 'Pattern2' will get served using 'Blog:BlogTemplate'
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
