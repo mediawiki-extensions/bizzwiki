@@ -22,16 +22,7 @@ require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
 require('extensions/StubManager.php');
 
-StubManager::createStub(	'ParserPhase2Class', 
-							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
-							null,
-							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
-
+require( $bwExtPath.'/ParserPhase2/ParserPhase2_stub.php' );
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
@@ -505,15 +496,7 @@ StubManager::createStub(	'RawPageTools',
 						 );
 
 
-StubManager::createStub(	'AddScriptCssClass', 
-							$bwExtPath.'/addScriptCss/AddScriptCss.php',
-							null,							
-							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
-							false, // no need for logging support
-							array( 'addtohead', 'addscript' ),	// tags
-							array( 'addscript' ), 				//of parser function magic words,
-							null
-						 );
+require( $bwExtPath.'/addScriptCss/AddScriptCss_stub.php' );
 
 // Parser Functions
 StubManager::createStub(	'ForeachFunctionClass', 

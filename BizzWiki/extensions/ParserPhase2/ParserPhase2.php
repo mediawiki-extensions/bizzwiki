@@ -108,18 +108,18 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[ParserPhase2Class::thisType][] = array( 
-	'name'        => ParserPhase2Class::thisName, 
+$wgExtensionCredits[ParserPhase2::thisType][] = array( 
+	'name'        => ParserPhase2::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => "Enables performing a 'second pass' parsing over an already cached page for replacing dynamic variables",
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class ParserPhase2Class
+class ParserPhase2
 {
 	// constants.
-	const thisName = 'ParserPhase2Class';
+	const thisName = 'ParserPhase2';
 	const thisType = 'other';
 	
 	// (($ ... $))
