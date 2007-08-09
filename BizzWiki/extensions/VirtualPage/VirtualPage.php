@@ -18,6 +18,7 @@
 |example     =
 }}
 <!--@@
+{{#autoredirect: Extension|{{SUBPAGENAME}} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
