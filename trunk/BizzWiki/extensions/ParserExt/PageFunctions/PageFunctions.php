@@ -77,7 +77,8 @@ StubManager::createStub(	'PageFunctionsClass',
 									'varset', 'varget',
 									'varaset', 'varaget',
 									'varcapset',
-									'cshow'
+									'cshow',
+									'noext'
 									 ),  				//of parser function magic words,
 							array( 'noclientcaching' )	// magic words
 						 );
@@ -91,6 +92,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 * Added hook 'PageVarGet'
 * Added hook 'PageVarSet'
 * Added 'noclientcaching' magic word
+* Added 'noext' magic word
 
 </wikitext>*/
 
@@ -246,6 +248,13 @@ class PageFunctionsClass
 	{
 		global $wgOut;
 		$wgOut->enableClientCache(false);
+	}
+
+	public function mg_noext( &$parser, $pagename = null)
+	{
+		if (empty( $pagename ))	
+			return null;
+		return substr( $pagename, 0, strpos( $pagename, '.' ) );	
 	}
 
 } // end class	

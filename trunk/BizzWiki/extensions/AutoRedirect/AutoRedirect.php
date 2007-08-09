@@ -18,7 +18,7 @@
 |example     =
 }}
 <!--@@
-{{#autoredirect: {{NAMESPACE}}|{{PAGENAME}} }}
+{{#autoredirect: {{NAMESPACE}}|{{BASEPAGENAME}} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
@@ -101,7 +101,10 @@ class AutoRedirect
 		// does not exist currently. Great.
 		$link = $this->createRedirectPage( $parser, $article, $alternateText );	
 		
-		return $link;
+		if (!empty( $alternateText ))
+			return $link;
+			
+		return null;
 	}
 	
 	private function createRedirectPage( &$parser, &$article, &$alternateText )
@@ -111,14 +114,17 @@ class AutoRedirect
 		
 		$nsName = Namespace::getCanonicalName( $ns );
 		
-		$pageText = wfMsgForContent( 'autoredirect-page-text', $nsName, $page );
-		$summary  = wfMsgForContent( 'autoredirect-summary-text', $nsName, $page );
-		$article->insertNewArticle( $pageText, $summary, false, false );
-	
-		if (!empty( $alternateText ))
-			return wfMsgForContent('autoredirect-link-text', $nsName, $page, $alternateText);
+		if (empty( $alternateText ))
+			$text = wfMsgForContent('autoredirect-this-page');
+		else
+			$text = $alternateText;
 			
-		return null;
+		$link = wfMsgForContent('autoredirect-link-text', $nsName, $page, $text);
+		$pageText = wfMsgForContent( 'autoredirect-page-text', $nsName, $page );
+		$summary  = wfMsgForContent( 'autoredirect-summary-text', $nsName, $page, $text );
+		$article->insertNewArticle( $pageText, $summary, false, false );
+
+		return $link;	
 	}
 	
 } // end class

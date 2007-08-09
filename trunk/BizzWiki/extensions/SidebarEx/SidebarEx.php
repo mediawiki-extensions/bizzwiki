@@ -18,6 +18,15 @@
 |example     =
 }}
 
+<!--@@
+{{#autoredirect: Extension|{{SUBPAGENAME}} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose ==
 Provides a means of adding page links to the 'sidebar' based on group membership & per-user basis.
 
