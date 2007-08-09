@@ -55,6 +55,7 @@ require($IP.'/includes/Namespace.php');
 	define('NS_INTERWIKI',  104);
 	define('NS_API',		106);	
 	define('NS_DIRECTORY',	108);		// extension DirectoryManager
+	define('NS_EXTENSION',  110);		// for easy integration with MediaWiki.org
 	
 	// Add the new namespaces to the global variables
 	$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
@@ -62,6 +63,7 @@ require($IP.'/includes/Namespace.php');
 	$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
 	$wgExtraNamespaces[NS_API]		  = 'Api';
 	$wgExtraNamespaces[NS_DIRECTORY]  = 'Directory';	
+	$wgExtraNamespaces[NS_EXTENSION]  = 'Extension';		
 
 ## }}
 
@@ -83,6 +85,7 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_FILESYSTEM,
 									NS_INTERWIKI,	// not used at the moment.
 									NS_DIRECTORY,
+									NS_EXTENSION,
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
