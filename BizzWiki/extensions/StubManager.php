@@ -515,10 +515,12 @@ class Stub
 			return;
 	
 		// get rid of the hook prefix if the user forgot about it.
+/*		
 		foreach( $hooks as &$hook )
 			if ( strncmp( self::$hook_prefix , $hook, strlen(self::$hook_prefix) ) == 0)
 				$hook = substr( $hook, strlen(self::$hook_prefix) );
-			
+*/
+		
 		global $wgHooks;
 		foreach( $hooks as $hook )
 			$wgHooks[ $hook ][] = array( &$this, self::$hook_prefix.$hook );
@@ -610,11 +612,14 @@ class Stub
 		// Check triggers
 		// Can really only act on the namespace we can
 		// derive from the global wgTitle unfortunately.
+
 		global $wgTitle;
 		if (is_object( $wgTitle ))
 			if ( $this->nss !== null )	// if none provided, act as normal
 				if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
 					return true;
+
+#		echo ' classe:'.$this->classe.' method:'.$method."\n";
 		
 		if ( $this->obj === null )
 			$obj = $this->obj = new $this->classe( $this->params );  // un-stub

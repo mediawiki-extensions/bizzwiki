@@ -53,6 +53,8 @@ StubManager::createStub2(	array(	'class' 		=> 'VirtualPage',
 									'hooks'			=> array( 'VirtualPage' )
 								)
 						);
+$bwVirtualPageExcludeNamespaces = array();
+
 if (defined( 'NS_FILESYSTEM' ))
 	$bwVirtualPageExcludeNamespaces[] = NS_FILESYSTEM;
 if (defined( 'NS_DIRECTORY' ))
