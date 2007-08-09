@@ -1,17 +1,37 @@
 <?php
-/*<wikitext> ((@disable@)) (($disable$))
-FileManager.php
-* 
-* MediaWiki extension
-* @author: Jean-Lou Dupont (http://www.bluecortex.com)
-* $Id$
-* 
+/*<wikitext> <!--((@disable@))-->
+{{Extension
+|name        = FileManager
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/FileManager/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{SUBPAGENAME}} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose ==
 This Mediawiki extension enables a user with the 'commitfile' right to edit files in the Mediawiki installation directory.  
 
 == Features ==
 * Can be used independantly of BizzWiki environment 
-* New right:      'readfile', 'commitfile'
+* New rights: 'readfile', 'commitfile'
 * Logging
 * New Namespace 'NS_FILESYSTEM'
 * Support for titles beginning with small caps; need the title to be prefixed with '/'
@@ -19,7 +39,7 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * No auto summary upon page creation
 
 == DEPENDANCY ==
-* Extension 'ExtensionClass' (>=v1.92) 
+* [[Extension:ExtensionClass]] (>=v1.92) 
 
 == History ==
 * fixed for 'wgCapitalLinks' 
@@ -42,8 +62,17 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * add 'edit from filesystem' functionality: capability to 'reload' a file from the filesystem
 * enhance 'logging' through $type etc.
 
+== Installation ==
+* Download all the files from the SVN link
+* Place in a directory e.g. 'extensions/FileManager'
+* Modify <code>LocalSettings.php</code>
+<source lang=php>
+require_once('extensions/ExtensionClass.php');
+require('extensions/FileManager/FileManager.php');
+</source>
+
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 // Verify if 'ExtensionClass' is present.
 if ( !class_exists('ExtensionClass') )
@@ -54,4 +83,5 @@ else
 	require( "FileManagerClass.php" );
 	FileManagerClass::singleton();
 }
-?>
+
+//</source>
