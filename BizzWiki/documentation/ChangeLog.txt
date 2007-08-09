@@ -241,4 +241,6 @@ REL1_10_11: (released ...)
 - FileManager: added 'Proprietary Words' functionality
 - FileManager: added 'parser phase 2' magic words functionality
 - FileSystemSyntaxColoring: added '<!--@@ wikitext @@-->' pattern to hide wikitext
+- PageFunctions: added '#noext' magic word
+- Added 'AutoRedirect' extension
 - 
