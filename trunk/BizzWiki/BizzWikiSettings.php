@@ -369,22 +369,8 @@ require( $bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog_stub.php' );
 require( $bwExtPath.'/WatchLog/WatchLog_stub.php' );
 require( $bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext_stub.php' );
 require( $bwExtPath.'/RawPageTools/RawPageTools_stub.php' );
-
-StubManager::createStub(	'NewUserEmailNotification', 
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.php',
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
-							array('AddNewAccount'),
-							false
-						 );
-
-StubManager::createStub(	'UserLoginLogoutLog', 
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.php',
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
-							array(	'UserLoginForm', 'UserLoginComplete', 
-									'UserLogout', 'UserLogoutComplete',
-									'SpecialVersionExtensionTypes' ),
-							true
-						 );
+require( $bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification_stub.php' );
+require( $bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog_stub.php' );
 
 // Parser Functions
 StubManager::createStub(	'ForeachFunctionClass', 
