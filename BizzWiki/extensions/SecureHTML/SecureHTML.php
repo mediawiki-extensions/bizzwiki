@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = SecureHTML
 |status      = stable
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 This extension enables the usage of 'html' tags (functionality which is controlled through the '$wgRawHtml' global variable) within protected pages.
 The extension also offers the functionality to add content securily to the document's head section.
@@ -63,20 +70,20 @@ protected in order to use 'html' tags
 * Fix for allowing more customization of 'exempt' namespaces even when using StubManager
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
-$wgExtensionCredits[SecureHTMLclass::thisType][] = array( 
-	'name'        => SecureHTMLclass::thisName, 
+$wgExtensionCredits[SecureHTML::thisType][] = array( 
+	'name'        => SecureHTML::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Enables secure HTML code on protected pages',
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class SecureHTMLclass
+class SecureHTML
 {
 	// constants.
-	const thisName = 'SecureHTMLclass';
+	const thisName = 'SecureHTML';
 	const thisType = 'other';
 	  
 	static $enableExemptNamespaces = true;
@@ -136,4 +143,3 @@ class SecureHTMLclass
 	}
 
 } // END CLASS DEFINITION
-?>

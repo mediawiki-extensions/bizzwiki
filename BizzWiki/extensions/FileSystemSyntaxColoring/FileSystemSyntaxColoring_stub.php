@@ -1,7 +1,7 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = AddScriptCss
+|name        = FileSystemSyntaxColoring
 |status      = beta
 |type        = other
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/AddScriptCss/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/FileSystemSyntaxColoring/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -18,7 +18,7 @@
 |example     =
 }}
 <!--@@
-{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+{{#autoredirect: Extension|{{#noext:{{ {{SUBPAGENAME}} }} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
@@ -41,13 +41,14 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
-StubManager::createStub(	'AddScriptCss', 
-							$bwExtPath.'/addScriptCss/AddScriptCss.php',
-							null,							
-							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
-							false, 								// no need for logging support
-							array( 'addtohead', 'addscript' ),	// tags
-							array( 'addscript' ), 				//of parser function magic words,
-							null
+StubManager::createStub(	'FileSystemSyntaxColoring', 
+							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
+							null,
+							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
+							false,	// no need for logging support
+							null,	// tags
+							null,	// no parser functions
+							null,	// no magic words
+							array( NS_FILESYSTEM )
 						 );
 //</source>

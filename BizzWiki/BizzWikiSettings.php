@@ -90,35 +90,9 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 */
 require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
 
-StubManager::createStub(	'RawRight', 
-							$bwExtPath.'/RawRight/RawRight.php',
-							null,
-							array( 'SpecialVersionExtensionTypes','RawPageViewBeforeOutput' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
-
-StubManager::createStub(	'ViewsourceRight', 
-							$bwExtPath.'/ViewsourceRight/ViewsourceRight.php',
-							null,
-							array( 'SpecialVersionExtensionTypes','AlternateEdit', 'SkinTemplateTabs' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
-
-StubManager::createStub(	'WatchRight', 
-							$bwExtPath.'/WatchRight/WatchRight.php',
-							null,
-							array( 'WatchArticle','UnwatchArticle','SkinTemplateTabs' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require( $bwExtPath.'/RawRight/RawRight_stub.php');
+require( $bwExtPath.'/ViewsourceRight/ViewsourceRight_stub.php');
+require( $bwExtPath.'/WatchRight/WatchRight_stub.php');
 
 require('extensions/MakeSysop/SpecialMakesysop.php');
 require('extensions/DeSysop/SpecialDesysop.php');
@@ -329,59 +303,23 @@ $wgLoginLanguageSelector = false;
 require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
-StubManager::createStub(	'FileSystemSyntaxColoring', 
-							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
-							null,
-							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null,	// no magic words
-							array( NS_FILESYSTEM )
-						 );
+require( $bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php' );
 
 
 // New User Logging
 require('extensions/NewUserLog/Newuserlog.php');
 
 // Show Redirect Page Text extension
-StubManager::createStub(	'ShowRedirectPageText', 
-							$bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText.php',
-							null,
-							array( 'ArticleViewHeader', 'OutputPageParserOutput' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require( $bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText_stub.php' );
 
 // Interwiki table management
-StubManager::createStub(	'InterWikiLinkManagerClass', 
-							$bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager.php',
-							null,
-							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
-							false,	// no need for logging support
-							null,	// tags
-							array('iwl'),	// no parser functions
-							null,	// no magic words
-							array( NS_INTERWIKI )
-						 );
-
+require( $bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager_stub.php' );
 
 // Sidebar extended
 require('extensions/SidebarEx/SidebarEx.php');
 
 // Generic Syntax Highlighter
-StubManager::createStub(	'geshiClass', 
-							$bwExtPath.'/GeSHi/geshi.php',
-							null,
-							array( 'SyntaxHighlight' ),
-							false,	// no need for logging support
-							array( 'geshi', 'source', 'php','js', 'css' ),	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
-
+require( $bwExtPath.'/GeSHi/geshi_stub.php' );
 
 // Enhanced Special Pages
 require('extensions/SpecialPagesManager/SpecialPagesManager.php');
@@ -389,29 +327,11 @@ require('extensions/SpecialPagesManager/SpecialPagesManager.php');
  // TODO
 
 // Form/Page related tools
-StubManager::createStub(	'SecureHTMLclass', 
-							$bwExtPath.'/SecureHTML/SecureHTML.php',
-							null,
-							array( 'ArticleSave', 'ArticleViewHeader' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null,	// no magic words
-							null	// no namespace triggering
-						 );
+require( $bwExtPath.'/SecureHTML/SecureHTML_stub.php' );
 # SecureHTMLclass::enableExemptNamespaces = false; # turn off
 # SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
-StubManager::createStub(	'SecurePropertiesClass', 
-							$bwExtPath.'/SecureProperties/SecureProperties.php',
-							null,	// no i18n
-							null, 	// no hooks
-							false,	// no need for logging support
-							null,	// tags
-							array( 'pg', 'ps', 'pf', 'gg', 'gs' ),
-							null,	// no magic words
-							null	// no namespace triggering
-						 );
+require( $bwExtPath.'/SecureProperties/SecureProperties_stub.php' );
 
 StubManager::createStub(	'FormProcClass', 
 							$bwExtPath.'/FormProc/FormProc.php',
