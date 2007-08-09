@@ -73,15 +73,15 @@ StubManager::createStub(	'AddScriptCssClass',
 == Code ==
 </wikitext>*/
 		
-$wgExtensionCredits[AddScriptCssClass::thisType][] = array( 
-	'name'        => AddScriptCssClass::thisName, 
+$wgExtensionCredits[AddScriptCss::thisType][] = array( 
+	'name'        => AddScriptCss::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
 	'url' 		=> StubManager::getFullUrl(__FILE__),
 );
 
-class AddScriptCssClass// extends ExtensionClass
+class AddScriptCss// extends ExtensionClass
 {
 	// constants.
 	const thisName = 'AddScriptCss';
@@ -397,6 +397,3 @@ phase 2- when the page is rendered, extract the meta information
 	}
 
 } // END CLASS DEFINITION
-
-new AddScriptCssClass;
-?>
