@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/XYZ/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/DirectoryManager/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -18,6 +18,7 @@
 |example     =
 }}
 <!--@@
+{{#autoredirect: Extension|{{SUBPAGENAME}} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
@@ -25,10 +26,13 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose==
-
+Provides a namespace 'Directory' for browsing the filesystem of a MediaWiki installation.
 
 == Features ==
-
+* Directory tree structure roots on MediaWiki installation
+* Security: enforcement of the 'read' right
+* Integrates with [[Extension:FileManager]]
+* Highly customizable through 'hooks'
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -54,7 +58,8 @@ $wgExtensionCredits[DirectoryManager::thisType][] = array(
 	'name'    => DirectoryManager::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
-	'description' => " ", 
+	'description' => "Provides a namespace 'Directory' for browsing the filesystem of a MediaWiki installation.", 
+	'url' 		=> StubManager::getFullUrl(__FILE__),	
 );
 
 class DirectoryManager
@@ -97,10 +102,28 @@ class DirectoryManager
 	
 	public function hArticleFromTitle( &$title, &$article )
 	{
+		global $wgOut;
+		global $wgUser;
+		global $IP;
+				
 		// we are only interested in one particular namespace
 		$ns = $title->getNamespace();
 		if (NS_DIRECTORY!=$ns)
 			return true;
+		
+		$titre = $title->getText();
+		
+		if (!$wgUser->isAllowed( 'read', $ns, $titre ))
+		{
+			$skin = $wgUser->getSkin();
+			$wgOut->setPageTitle( wfMsg( 'directorymanager'.'title' ) );
+			$wgOut->setSubtitle( wfMsg( 'directorymanager'.'view', $skin->makeKnownLinkObj( $title ) ) );
+			$wgOut->addWikiText( wfMsg( 'badaccess' ) );
+			
+			return false; // stop normal processing flow.
+		}
+
+		$this->dir = $IP.'/'.$title->getText();
 		
 		$article = new Article( $title );
 		
@@ -108,7 +131,13 @@ class DirectoryManager
 		if ( $article->getID() != 0 )
 			return true;
 
-		$this->doDirectoryPageDisplay( $title, $article );
+		$this->dirTs = self::getDirectoryTimestamp( $this->dir );
+
+		// Give other extensions a chance to:
+		// - Cache
+		// - Abort
+		if (wfRunHooks( 'DirectoryManagerBegin', array( &$title, &$article, self::$dirBase, $this->dir, $this->dirTs ) ))
+			$this->doDirectoryPageDisplay( $title, $article );
 		
 		return true;
 	}
@@ -128,20 +157,34 @@ class DirectoryManager
 	}
 	private function doDirectoryPageDisplay( &$title, &$article )
 	{
-		$this->template = $this->getTemplate();
+		$this->template = null;
 		
-		global $IP;
-		$this->dir = $IP.'/'.$title->getText();
+		// let extensions the change to modify the template
+		wfRunHooks( 'DirectoryManagerBeginPageDisplay', array( &$this, &$files, &$this->dir, &$this->template ) );		
+		if ($this->template === null)
+			$this->template = $this->getTemplate();
 		
 		$this->files = $this->getDirectoryInformation( $this->dir, self::$dirBase );
 
+		// let extensions the chance to modify the files list.
+		// Modify the 'template' parameter to add/remove wikitext
+		wfRunHooks( 'DirectoryManagerBeforeCreatePage', array( &$files, $this->template ) );
+
 		$this->page = $this->createDirectoryPage( $this->dir, self::$dirBase, $this->template, $this->files );
 		
-		$po = $this->savePage( $this->page, $title, $article );
+		// let extensions the chance to modify the page before it is parsed.
+		wfRunHooks( 'DirectoryManagerBeforeParsePage', array( &$page ) );		
 		
+		$po = $this->parsePage( $this->page, $title, $article );
+		
+		// let extensions the chance to do last minute changes
+		// before the page is actually displayed.
+		wfRunHooks( 'DirectoryManagerBeforeDisplayPage', array( &$po ) );		
+				
 		$this->displayPage( $po );
 	}
 	/**
+		The default template 
 	 */
 	private function getTemplate()
 	{
@@ -222,7 +265,7 @@ class DirectoryManager
 	}
 	/**
 	 */
-	private function savePage( &$text, &$title, &$article )	 
+	private function parsePage( &$text, &$title, &$article )	 
 	{
 		global $wgParser;
 		global $wgUser;
@@ -232,10 +275,6 @@ class DirectoryManager
 		$options->setTidy(true);
 		$poutput = $wgParser->parse( $text, $title, $options );
 
-		# Save it to the parser cache
-		$parserCache =& ParserCache::singleton();
-		$parserCache->save( $poutput, $article, $wgUser );
-		
 		return $poutput;
 	}
 
@@ -330,7 +369,12 @@ class DirectoryManager
 		return substr( $d, strlen($base)+1 );
 	}
 
+	public static function getDirectoryTimestamp( &$dir )
+	{
+		return @filemtime( $dir );	
+	}
 } // end class
 
 require( 'DirectoryManager.i18n.php' );
+
 //</source>
