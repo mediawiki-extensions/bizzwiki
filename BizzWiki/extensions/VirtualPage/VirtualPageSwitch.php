@@ -53,12 +53,21 @@ StubManager::createStub2(	array(	'class' 		=> 'VirtualPage',
 									'hooks'			=> array( 'VirtualPage' )
 								)
 						);
+if (defined( 'NS_FILESYSTEM' ))
+	$bwVirtualPageExcludeNamespaces[] = NS_FILESYSTEM;
+if (defined( 'NS_DIRECTORY' ))
+	$bwVirtualPageExcludeNamespaces[] = NS_DIRECTORY;
 
 function bwVirtualPageSwitchInit( &$title, &$article )
 {
 	// let mediawiki handle those.
 	$ns = $title->getNamespace();
 	if (NS_MEDIA==$ns || NS_CATEGORY==$ns || NS_IMAGE==$ns)
+		return true;
+	
+	// let mediawiki handle those also.
+	global $bwVirtualPageExcludeNamespaces;
+	if (in_array( $ns, $bwVirtualPageExcludeNamespaces ))
 		return true;
 	
 	$article = new Article( $title );

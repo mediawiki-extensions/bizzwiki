@@ -62,13 +62,44 @@ class DirectoryManager
 	const thisType = 'other';
 	const thisName = 'DirectoryManager';
 	
-	public __construct() {}
+	static $msg;
+	static $dirBase;
+	
+	// Constants
+	const filePatternTag = "/<filepattern(?:.*)\>(.*)(?:\<.?filepattern)>/siU";
+	const dirPatternTag  = "/<dirpattern(?:.*)\>(.*)(?:\<.?dirpattern)>/siU";	
+	const linePatternTag = "/<linepattern(?:.*)\>(.*)(?:\<.?linepattern)>/siU";		
+	
+	// Template related
+	var $filePattern;
+	var $dirPattern;
+	var $linePattern;
+	
+	// Variables
+	var $dir;
+	var $files;
+	var $template;
+	var $page;
+	
+	public function __construct() 
+	{
+		global $IP;
+		self::$dirBase = $IP;
+
+		$this->filePattern = null;
+		$this->dirPattern = null;
+		$this->linePattern = null;
+		
+		global $wgMessageCache;
+		foreach( self::$msg as $key => $value )
+			$wgMessageCache->addMessages( self::$msg[$key], $key );		
+	}
 	
 	public function hArticleFromTitle( &$title, &$article )
 	{
 		// we are only interested in one particular namespace
 		$ns = $title->getNamespace();
-		if (NS_DIRECTORY==$ns)
+		if (NS_DIRECTORY!=$ns)
 			return true;
 		
 		$article = new Article( $title );
@@ -76,7 +107,191 @@ class DirectoryManager
 		// let mediawiki handle the articles that already exist
 		if ( $article->getID() != 0 )
 			return true;
+
+		$this->template = $this->getTemplate();
 		
+		global $IP;
+		$this->dir = $IP.'/'.$title->getText();
+		
+		$this->files = $this->getDirectoryInformation( $this->dir );
+
+		$this->page = $this->createDirectoryPage( $this->dir, self::$dirBase, $this->template, $this->files );
+		
+		$po = $this->savePage( $this->page, $title, $article );
+		
+		$this->displayPage( $po );
+		
+		return true;
 	}
+	/**
+	 */
+	private function getTemplate()
+	{
+		$template = wfMsgForContent( 'directorymanager'.'-template' );	
+		
+		$this->filePattern = self::extractPattern( self::filePatternTag, $template );
+		$this->dirPattern  = self::extractPattern( self::dirPatternTag, $template );		
+		$this->linePattern = self::extractPattern( self::linePatternTag, $template );
+		
+		return $template;			
+	}
+	private static function extractPattern( $pattern, &$text, $remove = true )
+	{
+		$r = preg_match( $pattern, $text, $m );
+
+		if ($remove)
+			$text = preg_replace( $pattern, '', $text );
+			
+		if ($r===1)
+			return $m[1];
+		
+		return null;
+	}
+	private static function replaceParams( &$text )
+	{
+		$args = func_get_args();
+		array_shift( $args );
+		
+		for ($i=1; $i<10; $i++)
+		{
+			// loop whilst we have parameters to replace
+			if (!isset( $args[$i-1] ) )
+				break;
+			$text = str_replace( '$'.$i, $args[$i-1], $text );
+		}
+	}
+	
+	/**
+		Outputs WikiText
+	 */
+	private function createDirectoryPage( &$dir, &$base, &$template, &$files )	
+	{
+		// start by adding the template content
+		// to the beginning of the page.
+		// The 'patterns' should have been removed by now.
+		$page = $template;
+		
+		foreach( $files as $file )
+		{
+			if ( $file['name'] =='.' )
+				continue;
+				
+			if ( $file['name'] == '..' )
+				$file['name'] = self::getDotDotFile( $dir, $base );
+				
+			// we might have reached the root...
+			if (empty($file['name']))
+				continue;
+				
+			switch( $file['type'] )
+			{
+				case 'dir':
+					$sline = $this->dirPattern;				
+					break;
+					
+				case 'file':
+					$sline = $this->filePattern;					
+					break;
+			}
+			self::replaceParams( $sline, $file['name'] );
+			$line = $this->linePattern;
+			self::replaceParams( $line, $sline );
+			
+			$page .= $line;
+		}
+
+		return $page;
+	}
+	/**
+	 */
+	private function savePage( &$text, &$title, &$article )	 
+	{
+		global $wgParser;
+		global $wgUser;
+		
+		# Parse the text
+		$options = new ParserOptions;
+		$options->setTidy(true);
+		$poutput = $wgParser->parse( $text, $title, $options );
+
+		# Save it to the parser cache
+		$parserCache =& ParserCache::singleton();
+		$parserCache->save( $poutput, $article, $wgUser );
+		
+		return $poutput;
+	}
+
+	private function displayPage( &$parserOutput )
+	{
+		global $wgOut;
+		
+		$wgOut->addParserOutput( $parserOutput );
+	}
+	/**
+		e.g.
+		array (
+				0 =>
+				array (
+				'name' => '.',
+				'type' => 'dir',
+				'mtime' => 1186483435,
+				),
+				1 =>
+				array (
+				'name' => '..',
+				'type' => 'dir',
+				'mtime' => false,			# NOTE HERE
+				),
+				2 =>
+				array (
+				'name' => '.htaccess',
+				'type' => 'file',
+				'mtime' => 1181832196,
+				),
+				3 =>
+				array (
+				'name' => 'AdminSettings.php',
+				'type' => 'file',
+				'mtime' => 1178738087,
+				),
+			...
+	 */
+	 
+	public static function getDirectoryInformation( &$dir )
+	{
+		$files = @scandir( $dir );
+		
+		foreach( $files as &$file )
+		{
+			$info = @filetype( $dir.'/'.$file );
+
+			if ( '.' == $file )	$info = 'dir';
+			if ( '..' == $file )$info = 'dir';
+
+			$filename = $file;
+			$mtime = @filemtime( $dir.'/'.$file );
+			
+			$file = array( 'name' => $filename, 'type' => $info , 'mtime' => $mtime );
+		}
+	
+		return $files;
+	}
+	/**
+		Returns the filename (directory name really) correspondig to '..'
+	 */
+	public static function getDotDotFile( &$dir, &$base )
+	{
+		$pos = strrpos( $dir, '/' );
+		if ($pos === false)
+			return null;
+		$p = substr( $dir, 0, $pos );	
+		
+		// now remove the base.
+		$s = substr( $p, strlen($base)+1 );
+		return $s;
+	}
+
 } // end class
+
+require( 'DirectoryManager.i18n.php' );
 //</source>

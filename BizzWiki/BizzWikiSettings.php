@@ -654,6 +654,7 @@ StubManager::createStub2(	array(	'class' 		=> 'UserTools',
 
 require('extensions/VirtualPage/VirtualPageSwitch.php');
 require('extensions/AutoRedirect/AutoRedirect_stub.php');
+require('extensions/DirectoryManager/DirectoryManager_stub.php');
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
 
