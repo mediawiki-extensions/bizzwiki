@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = FormProc
 |status      = stable
@@ -17,6 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 
 == Purpose==
 This extension offers the ability to process posted pages/forms through the 'action=formsubmit' action. 
@@ -73,7 +81,7 @@ StubManager::createStub(	'FormProcClass',
 * [[Extension:BizzWiki|BizzWiki platform]]
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 /*
 	// create stub object.
@@ -82,18 +90,18 @@ StubManager::createStub(	'FormProcClass',
 	$bwFormHelper = new StubObject( 'bwFormHelper', 'FormHelper' );
 */
 
-$wgExtensionCredits[FormProcClass::thisType][] = array( 
-	'name'        => FormProcClass::thisName, 
+$wgExtensionCredits[FormProc::thisType][] = array( 
+	'name'        => FormProc::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Handles "action=formsubmit" post requests through page based PHP code',
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class FormProcClass
+class FormProc
 {
 	// constants.
-	const thisName = 'FormProcClass';
+	const thisName = 'FormProc';
 	const thisType = 'other';
 		  
 	function __construct( ) {}
@@ -148,4 +156,3 @@ class FormProcClass
 	}
 
 } // END CLASS DEFINITION
-?>
