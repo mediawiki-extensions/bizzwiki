@@ -363,44 +363,28 @@ require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 	// Stubs
 	//  Used for rare events handling.
 
-
-StubManager::createStub(	'EmailLog', 
-							$bwExtPath.'/EmailLog/EmailLog.php',
-							$bwExtPath.'/EmailLog/EmailLog.i18n.php',							
-							array('EmailUserComplete'),
-							true
-						 );
-StubManager::createStub(	'UserSettingsChangedLog', 
-							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.php',
-							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
-							array('UserSettingsChanged'),
-							true
-						 );
-
-StubManager::createStub(	'WatchLog', 
-							$bwExtPath.'/WatchLog/WatchLog.php',
-							$bwExtPath.'/WatchLog/WatchLog.i18n.php',							
-							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
-							true
-						 );
-
-StubManager::createStub(	'RegexNamespaceContext', 
-							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
-							null,							
-							array( 'EditFormPreloadText', 'ParserAfterTidy', 'BeforePageDisplay' ),
-							false
-						 );
-
-
-StubManager::createStub(	'RawPageTools', 
-							$bwExtPath.'/RawPageTools/RawPageTools.php',
-							null,							
-							array( 'RawPageViewBeforeOutput' ),
-							false
-						 );
-
-
 require( $bwExtPath.'/addScriptCss/AddScriptCss_stub.php' );
+require( $bwExtPath.'/EmailLog/EmailLog_stub.php' );
+require( $bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog_stub.php' );
+require( $bwExtPath.'/WatchLog/WatchLog_stub.php' );
+require( $bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext_stub.php' );
+require( $bwExtPath.'/RawPageTools/RawPageTools_stub.php' );
+
+StubManager::createStub(	'NewUserEmailNotification', 
+							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.php',
+							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
+							array('AddNewAccount'),
+							false
+						 );
+
+StubManager::createStub(	'UserLoginLogoutLog', 
+							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.php',
+							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
+							array(	'UserLoginForm', 'UserLoginComplete', 
+									'UserLogout', 'UserLogoutComplete',
+									'SpecialVersionExtensionTypes' ),
+							true
+						 );
 
 // Parser Functions
 StubManager::createStub(	'ForeachFunctionClass', 
@@ -510,21 +494,6 @@ StubManager::createStub(	'PageAfterAndBefore',
 							null
 						 );
 
-StubManager::createStub(	'NewUserEmailNotification', 
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.php',
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
-							array('AddNewAccount'),
-							false
-						 );
-
-StubManager::createStub(	'UserLoginLogoutLog', 
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.php',
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
-							array(	'UserLoginForm', 'UserLoginComplete', 
-									'UserLogout', 'UserLogoutComplete',
-									'SpecialVersionExtensionTypes' ),
-							true
-						 );
 
 StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
 									'classfilename'	=> $bwExtPath.'/ParserExt/SkinTools/SkinTools.php',
@@ -539,7 +508,7 @@ StubManager::createStub2(	array(	'class' 		=> 'UserTools',
 								)
 						);
 
-require('extensions/VirtualPage/VirtualPageSwitch.php');
+require('extensions/VirtualPage/VirtualPage_stub.php');
 require('extensions/AutoRedirect/AutoRedirect_stub.php');
 require('extensions/DirectoryManager/DirectoryManager_stub.php');
 /* TODO
