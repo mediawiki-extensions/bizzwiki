@@ -17,7 +17,16 @@
 |rights      =
 |example     =
 }}
- 
+
+<!--@@
+{{#autoredirect: {{NAMESPACE}}|{{PAGENAME}} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose==
 This extension is meant to address 'rare events' handling through class object 'stubs'. For infrequent events 
 (of course this is relative!), use this extension to instantiate a 'stub object' for the required hooks.

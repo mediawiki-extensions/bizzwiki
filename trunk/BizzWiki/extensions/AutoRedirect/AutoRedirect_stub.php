@@ -1,7 +1,7 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = AutoRedirect
+|name        = AutoRedirect_stub
 |status      = beta
 |type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -24,28 +24,9 @@ This section is only valid when viewing the page in a BizzWiki environment.
 
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
-== Purpose==
 
-
-== Features ==
-
-
-== Dependancy ==
-* [[Extension:StubManager|StubManager extension]]
-
-== Installation ==
-To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
-<source lang=php>
-require('extensions/StubManager.php');
-require('extensions/AutoRedirect/AutoRedirect_stub.php');
-</source>
-
-== History ==
-
-== See Also ==
-This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+== Notes ==
+See details about this extension on [[Extension:AutoRedirect]].
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/

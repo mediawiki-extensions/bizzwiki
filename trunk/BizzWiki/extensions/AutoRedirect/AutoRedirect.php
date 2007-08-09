@@ -1,9 +1,9 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = XYZ
+|name        = AutoRedirect
 |status      = beta
-|type        = other
+|type        = parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -18,6 +18,7 @@
 |example     =
 }}
 <!--@@
+{{#autoredirect: {{NAMESPACE}}|{{PAGENAME}} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
@@ -27,11 +28,11 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Purpose==
 Provides a magic word to automatically create a redirect page to the current page.
 
-== Features ==
-
 == Usage ==
-<code>{{#autoredirect:namespace|page name}}</code> creates a the specified page as a redirect
-to the current page i.e. the one containing the magic word.
+<code>{{#autoredirect:namespace|page name [|alternateText] }}</code> creates a the specified page as a redirect
+to the current page i.e. the one containing the magic word. When the parameter 'alternateText' is present,
+it is used as indicator to create a link on the current with alternate text 'alternateText';
+E.g. [[current page|alternateText]]
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -42,7 +43,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-require('extensions/AutoRedirect/AutoRedirect.php');
+require('extensions/AutoRedirect/AutoRedirect_stub.php');
 </source>
 
 == History ==
@@ -65,27 +66,28 @@ class AutoRedirect
 	const thisType = 'other';
 	const thisName = 'AutoRedirect';
 	
-	static $msg;
+	public static $msg = array();
 	
-	public __construct() 
+	public function __construct() 
 	{
 		global $wgMessageCache;
 		foreach( self::$msg as $key => $value )
 			$wgMessageCache->addMessages( self::$msg[$key], $key );		
 	}
 	
-	public function mg_autoredirect( &$parser, &$ns, &$page, &$alternateText = null )
+	public function mg_autoredirect( &$parser, &$ns = null, &$page = null, &$alternateText = null )
 	{
 		// if ns contains a numeric
 		if (is_numeric( $ns ))
 		{
-			if (empty(Namespace::getCanonicalName( $ns )))
-				return wfMsg('AutoRedirect-invalid-namespace');
+			$name = Namespace::getCanonicalName( $ns );
+			if (empty( $name ))
+				return wfMsgForContent('autotedirect-invalid-namespace-numeric');
 		}		
 		else
 		{
-			if ( ($n = Namespace::getCanonicalIndex( $ns )) === null)	
-				return wfMsg('AutoRedirect-invalid-namespace');				
+			if ( ($n = Namespace::getCanonicalIndex( strtolower($ns) )) === NULL)	
+				return wfMsgForContent('autoredirect-invalid-namespace-string');				
 			$ns = $n;
 		}
 	
@@ -107,16 +109,19 @@ class AutoRedirect
 		$ns   = $parser->mTitle->getNamespace();
 		$page = $parser->mTitle->getText();
 		
-		$pageText = wfMsgForContent( 'AutoRedirect-page-text', $ns, $page );
-		$summary  = wfMsgForContent( 'AutoRedirect-summary-text', $ns, $page );
+		$nsName = Namespace::getCanonicalName( $ns );
+		
+		$pageText = wfMsgForContent( 'autoredirect-page-text', $nsName, $page );
+		$summary  = wfMsgForContent( 'autoredirect-summary-text', $nsName, $page );
 		$article->insertNewArticle( $pageText, $summary, false, false );
 	
 		if (!empty( $alternateText ))
-			return wfMsgForContent('AutoRedirect-link-text', $ns, $page, $alternateText)
+			return wfMsgForContent('autoredirect-link-text', $nsName, $page, $alternateText);
 			
 		return null;
 	}
 	
 } // end class
+
 require('AutoRedirect.i18n.php');
 //</source>
