@@ -332,25 +332,9 @@ require( $bwExtPath.'/SecureHTML/SecureHTML_stub.php' );
 # SecureHTMLclass::exemptNamespaces[] = NS_XYZ;    # to add namespaces to exemption list
 
 require( $bwExtPath.'/SecureProperties/SecureProperties_stub.php' );
+require( $bwExtPath.'/FormProc/FormProc_stub.php');
+require( $bwExtPath.'/AutoLanguage/AutoLanguage_stub.php' );
 
-StubManager::createStub(	'FormProcClass', 
-							$bwExtPath.'/FormProc/FormProc.php',
-							null,
-							array( 'UnknownAction' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null,	// no magic words
-							null	// no namespace triggering							
-						 );
-
-
-StubManager::createStub(	'AutoLanguage', 
-							$bwExtPath.'/AutoLanguage/AutoLanguage.php',
-							null,							
-							array('ArticleFromTitle'),
-							false
-						 );
 // can be added through 'createStub2' method.
 #AutoLanguageClass::$exemptNamespaces[] = NS_BIZZWIKI;
 #AutoLanguageClass::$exemptNamespaces[] = NS_INTERWIKI;
