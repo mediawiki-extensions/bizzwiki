@@ -108,20 +108,38 @@ class DirectoryManager
 		if ( $article->getID() != 0 )
 			return true;
 
+		$this->doDirectoryPageDisplay( $title, $article );
+		
+		return true;
+	}
+	/**
+		Block edition.
+	 */
+	public function hCustomEditor( $article, $user )
+	{
+		// we are only interested in one particular namespace
+		$ns = $article->mTitle->getNamespace();
+		if (NS_DIRECTORY!=$ns)
+			return true;
+
+		// there is nothing to edit in this namespace!
+			
+		return false;	
+	}
+	private function doDirectoryPageDisplay( &$title, &$article )
+	{
 		$this->template = $this->getTemplate();
 		
 		global $IP;
 		$this->dir = $IP.'/'.$title->getText();
 		
-		$this->files = $this->getDirectoryInformation( $this->dir );
+		$this->files = $this->getDirectoryInformation( $this->dir, self::$dirBase );
 
 		$this->page = $this->createDirectoryPage( $this->dir, self::$dirBase, $this->template, $this->files );
 		
 		$po = $this->savePage( $this->page, $title, $article );
 		
 		$this->displayPage( $po );
-		
-		return true;
 	}
 	/**
 	 */
@@ -257,9 +275,14 @@ class DirectoryManager
 			...
 	 */
 	 
-	public static function getDirectoryInformation( &$dir )
+	public static function getDirectoryInformation( &$dir, &$base )
 	{
 		$files = @scandir( $dir );
+		$upDir = self::getDotDotFile( $dir, $base );
+		$thisDir = self::getRelativePath( $dir, $base );
+		
+		#echo ' upDir:'.$upDir."<br/>\n";
+		#echo ' thisDir:'.$thisDir."<br/>\n";		
 		
 		foreach( $files as &$file )
 		{
@@ -270,7 +293,10 @@ class DirectoryManager
 
 			$filename = $file;
 			$mtime = @filemtime( $dir.'/'.$file );
-			
+		
+			if ( $file != '.' && $file != '..' && $thisDir != '/' )
+				$filename = $thisDir.'/'.$filename;
+
 			$file = array( 'name' => $filename, 'type' => $info , 'mtime' => $mtime );
 		}
 	
@@ -281,14 +307,27 @@ class DirectoryManager
 	 */
 	public static function getDotDotFile( &$dir, &$base )
 	{
-		$pos = strrpos( $dir, '/' );
-		if ($pos === false)
-			return null;
-		$p = substr( $dir, 0, $pos );	
+		$d = str_replace( "\\", '/', $dir );
+
+		$pathInfo = pathinfo( $d );
 		
+		$p = $pathInfo['dirname'];		
+
 		// now remove the base.
-		$s = substr( $p, strlen($base)+1 );
+		$s = self::getRelativePath( $p, $base );
+
+		// make sure we haven't reached the root.
+		if (empty($s))
+			return '/';
+			
 		return $s;
+	}
+
+	public static function getRelativePath( &$dir, &$base )
+	{
+		$d = str_replace( "\\", '/', $dir );
+
+		return substr( $d, strlen($base)+1 );
 	}
 
 } // end class
