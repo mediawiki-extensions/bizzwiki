@@ -18,7 +18,7 @@
 |example     =
 }}
 <!--@@
-{{#autoredirect: {{NAMESPACE}}|{{BASEPAGENAME}} }}
+{{#autoredirect: {{NAMESPACE}}|{{#noext:{{SUBPAGENAME}} }} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
@@ -47,6 +47,9 @@ require('extensions/AutoRedirect/AutoRedirect_stub.php');
 </source>
 
 == History ==
+
+== Todo ==
+* Prevent showing the newly create redirect page - stay on the current page.
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].

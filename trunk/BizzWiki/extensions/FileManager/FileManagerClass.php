@@ -116,15 +116,28 @@ class FileManagerClass extends ExtensionClass
 		$shortTitle = self::getShortTitle( $titre );
 		
 		$this->currentFile = $IP.$titre;
+
+		$nsname  = Namespace::getCanonicalName( $ns );	
+
+		// next, check if the 'filename' is valid.
+		// If not, file a log entry.
+		if (!self::checkFilename( $titre ))
+		{
+			$action = 'commitfail2';
+			$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre, $shortTitle );			
+			$log = new LogPage( 'commitfil' );
+			$log->addEntry( $action, $user->getUserPage(), $message );
+		
+			return true;			
+		}		
 		
 		$r = file_put_contents( $this->currentFile, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
 		$action  = ($r === FALSE ? 'commitfail':'commitok' );
-		$nsname  = Namespace::getCanonicalName( $ns );	
 		$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre, $shortTitle );
-		
+				
 		// we need to limit the text to 'commitscr' because of the database schema.
 		$log = new LogPage( 'commitfil' );
 		$log->addEntry( $action, $user->getUserPage(), $message );
@@ -174,6 +187,9 @@ class FileManagerClass extends ExtensionClass
 		// From this point, we know the article does not
 		// exist in the database... let's check the filesystem.
 		$filename = $title->getText();
+		
+		#$sfilename = self::sanitizeFilename( $filename );
+		
 		$result   = @fopen( $IP.$filename,'r' );
 		if ($result !== FALSE) { fclose($result); $result = TRUE; }
 
@@ -277,7 +293,31 @@ class FileManagerClass extends ExtensionClass
 		
 		return $shortText;	
 	}
+	/**
+		Replaces '/../' for pattern from filename
+	 */
+	private static function sanitizeFilename( &$filename, &$pattern = '/./' )
+	{
+		$iresult = str_replace('/../', $pattern, $filename );
+		$result  = str_replace('\..\\', $pattern, $iresult  );
+		
+		return $result;
+	}
+	private static function checkFilename( &$filename )
+	{
+		if (strpos( $filename, '/../' )!==false)
+			return false;
+			
+		if (strpos( $filename, '\..\\' )!==false)
+			return false;
+
+		return true;	
+	}
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
+	/**
+		Proprietary Words functionality
+	 */	
 	private function doProprietaryWords( &$text )
 	{
 		foreach( self::$pWords as $pattern => $method )

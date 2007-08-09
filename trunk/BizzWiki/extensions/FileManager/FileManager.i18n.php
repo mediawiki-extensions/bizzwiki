@@ -14,6 +14,7 @@ $wgFileManagerLogMessages['en'] = array(
 	'commitfil'.'logentry'              => '',
 	'commitfil'.'-commitok-entry'    => 'File successfully committed',
 	'commitfil'.'-commitfail-entry'  => 'File commit <b>failed</b>',
+	'commitfil'.'-commitfail2-entry' => 'File commit <b>failed</b> - invalid filename',	
 	'commitfil'.'-commit-text'       => "[[$1:$2|$3]]",
 	'filemanager-script-exists'       => 'File <b>$1</b> exists',
 	'filemanager-script-notexists'    => 'File <b>$1</b> does not exist',	
