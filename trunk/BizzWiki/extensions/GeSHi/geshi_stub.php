@@ -1,7 +1,7 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = AddScriptCss
+|name        = geshi
 |status      = beta
 |type        = other
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/AddScriptCss/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/Geshi/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -41,13 +41,13 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
-StubManager::createStub(	'AddScriptCss', 
-							$bwExtPath.'/addScriptCss/AddScriptCss.php',
-							null,							
-							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
-							false, 								// no need for logging support
-							array( 'addtohead', 'addscript' ),	// tags
-							array( 'addscript' ), 				//of parser function magic words,
-							null
+StubManager::createStub(	'geshiClass', 
+							$bwExtPath.'/GeSHi/geshi.php',
+							null,
+							array( 'SyntaxHighlight' ),
+							false,	// no need for logging support
+							array( 'geshi', 'source', 'php','js', 'css' ),	// tags
+							null,	// no parser functions
+							null	// no magic words
 						 );
 //</source>

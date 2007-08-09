@@ -1,13 +1,30 @@
 <?php
-/*<wikitext>
-{| border=1
-| <b>File</b> || AddScriptCss.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
+/*<!--<wikitext>-->
+{{Extension
+|name        = AddScriptCss
+|status      = stable
+|type        = parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/AddScriptCss/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose== 
 Inserts <script> & <link> (i.e. CSS) scripts at the bottom of the page's head or within the page's body. 
 Securily insert arbitrary code to the page's head using <addtohead>.
@@ -71,7 +88,7 @@ StubManager::createStub(	'AddScriptCssClass',
 * - internationalize
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 		
 $wgExtensionCredits[AddScriptCss::thisType][] = array( 
 	'name'        => AddScriptCss::thisName, 

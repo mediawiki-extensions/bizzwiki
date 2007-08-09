@@ -76,18 +76,18 @@ StubManager::createStub(	'SecurePropertiesClass',
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[ SecurePropertiesClass::thisType ][] = array( 
-	'name'        => SecurePropertiesClass::thisName, 
+$wgExtensionCredits[ SecureProperties::thisType ][] = array( 
+	'name'        => SecureProperties::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Enables global object property get/set on protected pages',
 	'url' 		=> StubManager::getFullUrl(__FILE__),
 );
 
-class SecurePropertiesClass
+class SecureProperties
 {
 	// constants.
-	const thisName = 'SecurePropertiesClass';
+	const thisName = 'SecureProperties';
 	const thisType = 'other';
 		
 	const actionGet = 0;
@@ -205,4 +205,3 @@ class SecurePropertiesClass
 	}
 
 } // end class
-?>

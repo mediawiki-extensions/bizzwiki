@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = InterWikiLinkManager
 |status      = stable
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose ==   
 This Mediawiki extension enables a user with the appropriate rights to manage the InterWiki Links of the database.
 
@@ -76,17 +83,17 @@ This extension is part of the BizzWiki package [[Extension:BizzWiki]].
 [[category:interwiki extensions]]
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
-$wgExtensionCredits[InterWikiLinkManagerClass::thisType][] = array( 
-	'name'        => InterWikiLinkManagerClass::thisName, 
+$wgExtensionCredits[InterWikiLinkManager::thisType][] = array( 
+	'name'        => InterWikiLinkManager::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Manages the InterWiki links table. Namespace for extension is ',
 	'url' 		=> StubManager::getFullUrl(__FILE__)		
 );
 
-class InterWikiLinkManagerClass
+class InterWikiLinkManager
 {
 	// constants.
 	const thisName = 'InterWikiLinkManager';
@@ -354,4 +361,3 @@ class InterWikiLinkManagerClass
 	}
 
 } // END CLASS DEFINITION
-?>
