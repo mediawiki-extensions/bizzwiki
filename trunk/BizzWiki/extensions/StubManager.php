@@ -71,6 +71,8 @@ require('extensions/StubManager.php');
 ** 'MW' (i.e. parser Magic Words)
 * fixed annoying warning about undefined offset.
 * added namespace(s) trigger
+* Added functionality to remove 'forgotten' hook_prefix in stub definition
+** E.g. instead of listing 'ArticleSaveComplete', the list contained 'hArticleSaveComplete'
 
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
@@ -502,6 +504,11 @@ class Stub
 	{
 		if (empty( $hooks ))
 			return;
+	
+		// get rid of the hook prefix if the user forgot about it.
+		foreach( $hooks as &$hook )
+			if ( strncmp( self::$hook_prefix , $hook, strlen(self::$hook_prefix) ) == 0)
+				$hook = substr( $hook, strlen(self::$hook_prefix) );
 			
 		global $wgHooks;
 		foreach( $hooks as $hook )

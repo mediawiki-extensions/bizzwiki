@@ -60,6 +60,9 @@ StubManager::createStub(	'FileSystemSyntaxColoring',
 * Added the pattern '<!--@@ wikitext @@-->' to hide wikitext when 'copy and paste' operation is used
 to save document in a non-BizzWiki wiki.
 
+== Todo ==
+* Handle multiple <!--@@ wikitext @@--> sections
+
 == Code ==
 </wikitext>*/
 

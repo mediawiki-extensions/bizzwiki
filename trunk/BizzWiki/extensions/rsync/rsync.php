@@ -17,7 +17,13 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 
 
@@ -101,13 +107,35 @@ class rsync
 	 */
 	public function hSpecialMovepageAfterMove( &$sp, &$oldTitle, &$newTitle )
 	{
+		// send a 'delete' 
 		
+		// send a 'update' 
 	}
 	
 	/**
 		TBD
 	 */
 	public function hAddNewAccount( &$user )
+	{
+		
+	}
+	
+	/**
+		File Upload
+	 */
+	public function hUploadComplete( &$img )
+	{
+		// make a copy of the uploaded file to the rsync directory.
+		
+		// what about the meta data of the file???	
+	}
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+	
+	private function doArticleUpdate()
+	{
+		
+	}
+	private function doArticleDelete()
 	{
 		
 	}

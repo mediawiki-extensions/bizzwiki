@@ -54,12 +54,14 @@ require($IP.'/includes/Namespace.php');
 	define('NS_FILESYSTEM', 102);
 	define('NS_INTERWIKI',  104);
 	define('NS_API',		106);	
+	define('NS_DIRECTORY',	108);		// extension DirectoryManager
 	
 	// Add the new namespaces to the global variables
 	$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
 	$wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
 	$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
-	$wgExtraNamespaces[NS_API]		  = 'Api';	
+	$wgExtraNamespaces[NS_API]		  = 'Api';
+	$wgExtraNamespaces[NS_DIRECTORY]  = 'Directory';	
 
 ## }}
 
@@ -80,6 +82,7 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_BIZZWIKI,
 									NS_FILESYSTEM,
 									NS_INTERWIKI,	// not used at the moment.
+									NS_DIRECTORY,
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
@@ -646,7 +649,7 @@ StubManager::createStub2(	array(	'class' 		=> 'UserTools',
 						);
 
 require('extensions/VirtualPage/VirtualPageSwitch.php');
-
+require('extensions/AutoRedirect/AutoRedirect_stub.php');
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
 
@@ -736,6 +739,11 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"browse")] = true; 
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"viewsource")] = true; 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"~",	"raw")] = true; 	
+
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_DIRECTORY,"~",	"read")]   = true;  
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_DIRECTORY,"~",	"browse")] = true; 
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_DIRECTORY,"~",	"viewsource")] = true; 	
+	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_DIRECTORY,"~",	"raw")] = true; 	
 
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"read")]   = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_BIZZWIKI,	"~",	"browse")] = true; 
