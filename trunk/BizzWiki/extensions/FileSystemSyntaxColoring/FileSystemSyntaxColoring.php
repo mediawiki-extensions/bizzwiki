@@ -175,7 +175,7 @@ class FileSystemSyntaxColoring
 			$ns = $obj->getNamespace();
 		
 		// is the current article in the right namespace??		
-		return ($ns == NS_FILESYSTEM ? true:false );
+		return (NS_FILESYSTEM == $ns)? true:false;
 	}
 
 	private function getWikitext( &$text )

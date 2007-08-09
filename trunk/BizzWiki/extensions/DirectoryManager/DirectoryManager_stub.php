@@ -52,7 +52,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 StubManager::createStub2(	array(	'class' 		=> 'DirectoryManager', 
 									'classfilename'	=> $bwExtPath.'/DirectoryManager/DirectoryManager.php',
-									'hooks'			=> array(	'hArticleFromTitle',
+									'hooks'			=> array(	'ArticleFromTitle',
 															), //end hooks
 									#'nss'			=>	array('NS_DIRECTORY'),
 								)
