@@ -1,7 +1,7 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = rsync
+|name        = DirectoryManager
 |status      = beta
 |type        = other
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -25,7 +25,22 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose==
-This is the 'stub' file for the [[Extension:rsync]] extension.
+
+
+== Features ==
+
+
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
+
+== Installation ==
+To install independantly from BizzWiki:
+* Download 'StubManager' extension
+* Apply the following changes to 'LocalSettings.php'
+<source lang=php>
+require('extensions/StubManager.php');
+require('extensions/XYZ/XYZ.php');
+</source>
 
 == History ==
 
@@ -35,15 +50,15 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-StubManager::createStub2(	array(	'class' 		=> 'rsync', 
-									'classfilename'	=> $bwExtPath.'/rsync/rsync.php',
-									'hooks'			=> array(	'hArticleSaveComplete',
-																'hArticleDeleteComplete',
-																'hSpecialMovepageAfterMove',
-																'hAddNewAccount',
-																'hUploadComplete',
-															),
+StubManager::createStub2(	array(	'class' 		=> 'DirectoryManager', 
+									'classfilename'	=> $bwExtPath.'/DirectoryManager/DirectoryManager.php',
+									'hooks'			=> array(	'',
+																'',
+																'',
+																'',
+																'',
+															), //end hooks
+									'nss'			=>	array('NS_DIRECTORY'),
 								)
 						);
-
 //</source>
