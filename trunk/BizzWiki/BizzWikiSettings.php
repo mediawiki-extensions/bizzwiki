@@ -427,6 +427,7 @@ StubManager::createStub(	'TaskScheduler',
 // with an 'action=ping' command.
 #require('extensions/ClockTick/ClockTick.php');
 
+require($bwExtPath.'/rsync/rsync_stub.php');
 
 
 ## To enable image uploads, make sure the 'images' directory

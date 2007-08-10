@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/XYZ/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/rsync/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -37,11 +37,12 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 StubManager::createStub2(	array(	'class' 		=> 'rsync', 
 									'classfilename'	=> $bwExtPath.'/rsync/rsync.php',
-									'hooks'			=> array(	'hArticleSaveComplete',
-																'hArticleDeleteComplete',
-																'hSpecialMovepageAfterMove',
-																'hAddNewAccount',
-																'hUploadComplete',
+									'hooks'			=> array(	'RecentChange_save',
+																'ArticleSaveComplete',
+																#'hArticleDeleteComplete',
+																#'hSpecialMovepageAfterMove',
+																#'hAddNewAccount',
+																#'hUploadComplete',
 															),
 								)
 						);
