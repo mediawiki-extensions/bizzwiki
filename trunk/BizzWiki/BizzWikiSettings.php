@@ -300,7 +300,8 @@ $wgNonincludableNamespaces[] = NS_INTERWIKI;
 $wgLoginLanguageSelector = false;
 
 // readfile & commitfile rights
-require('extensions/FileManager/FileManager.php');
+require( $bwExtPath.'/FileManager/FileManager_stub.php');
+#require('extensions/FileManager/FileManager.php');
 
 // syntax highlighting for the NS_FILESYSTEM namespace.
 require( $bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php' );
