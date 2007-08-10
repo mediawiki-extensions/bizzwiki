@@ -49,6 +49,7 @@ StubManager::createStub2(
 						'hooks'			=> array( 'ArticleSave','ArticleFromTitle','EditFormPreloadText', 
 												'OutputPageBeforeHTML', 'SkinTemplateTabs', 'UnknownAction',
 												'SpecialVersionExtensionTypes' ),
-						'nss'			=> array( NS_FILESYSTEM )
+						'nss'			=> array( NS_FILESYSTEM ),
+						'mgs'			=> array( 'extractmtime', 'extractfile', 'comparemtime', 'currentmtime' ),
 						) );
 //</source>
