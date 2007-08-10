@@ -97,15 +97,15 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 </wikitext>*/
 
 global $wgExtensionCredits;
-$wgExtensionCredits[PageFunctionsClass::thisType][] = array( 
-	'name'        => PageFunctionsClass::thisName, 
+$wgExtensionCredits[PageFunctions::thisType][] = array( 
+	'name'        => PageFunctions::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Provides page scope functions',
 	'url' 		=> StubManager::getFullUrl(__FILE__),						
 );
 
-class PageFunctionsClass
+class PageFunctions
 {
 	const thisName = 'PageFunctions';
 	const thisType = 'other';

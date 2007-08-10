@@ -41,7 +41,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-StubManager::createStub(	'RegexToolsClass', 
+StubManager::createStub(	'RegexTools', 
 							$IP.'/extensions/ParserExt/RegexTools/RegexTools.php',
 							null,						// no i18n file
 							null,						// no hooks
@@ -57,18 +57,18 @@ StubManager::createStub(	'RegexToolsClass',
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[RegexToolsClass::thisType][] = array( 
-	'name'        => RegexToolsClass::thisName, 
+$wgExtensionCredits[RegexTools::thisType][] = array( 
+	'name'        => RegexTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => "Provides 'magic words' performing regular expression pattern ( aka 'regex' ) matching.",
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class RegexToolsClass
+class RegexTools
 {
 	// constants.
-	const thisName = 'RegexToolsClass';
+	const thisName = 'RegexTools';
 	const thisType = 'other';
 	  
 	function __construct( ) {}

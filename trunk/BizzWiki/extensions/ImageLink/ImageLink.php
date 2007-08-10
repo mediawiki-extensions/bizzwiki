@@ -23,7 +23,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-StubManager::createStub(	'ImageLinkClass', 
+StubManager::createStub(	'ImageLink', 
 							'extensions/ImageLink/ImageLink.php',
 							null,					// i18n file			
 							array('ParserAfterTidy'),	// hooks
@@ -45,18 +45,18 @@ Tested Compatibility: MW 1.8.2, 1.9.3, 1.10
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[ImageLinkClass::thisType][] = array( 
-	'name'        	=> ImageLinkClass::thisName, 
+$wgExtensionCredits[ImageLink::thisType][] = array( 
+	'name'        	=> ImageLink::thisName, 
 	'version'     	=> StubManager::getRevisionId( '$Id$' ),
 	'author'      	=> 'Jean-Lou Dupont', 
 	'description' 	=> 'Provides a clickable image link',
 	'url' 			=> StubManager::getFullUrl(__FILE__),			
 );
 
-class ImageLinkClass
+class ImageLink
 {
 	// constants.
-	const thisName = 'ImageLinkClass';
+	const thisName = 'ImageLink';
 	const thisType = 'other';
 	
 	var $links;
@@ -124,4 +124,3 @@ class ImageLinkClass
 		return true;
 	}
 } // end class definition.
-?>

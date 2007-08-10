@@ -245,3 +245,5 @@ REL1_10_11: (released ...)
 - Added 'AutoRedirect' extension
 - Added 'DirectoryManager' extension
 - Simplified installation procedure for all 'stubbed' extensions
+- Fix 'FileManager': didn't show up log records correctly
+- 

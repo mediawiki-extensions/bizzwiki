@@ -373,126 +373,19 @@ require( $bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification_stub.php
 require( $bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog_stub.php' );
 
 // Parser Functions
-StubManager::createStub(	'ForeachFunctionClass', 
-							$bwExtPath.'/ParserExt/ForeachFunction/ForeachFunction.php',
-							null,							
-							null,
-							false, // no need for logging support
-							null,	// tags
-							array( 'foreachx','foreachy','forx' ),  //of parser function magic words,
-							null
-						 );
-
-
-StubManager::createStub(	'MiscParserFunctions', 
-							$bwExtPath.'/ParserExt/MiscParserFunctions/MiscParserFunctions.php',
-							null,							
-							null,
-							false, // no need for logging support
-							null,	// tags
-							array( 'trim','nowikitext','gettagsection' ),  //of parser function magic words,
-							null
-						 );
-
-StubManager::createStub(	'PageFunctionsClass', 
-							$bwExtPath.'/ParserExt/PageFunctions/PageFunctions.php',
-							null,
-							array( 'PageVarGet', 'PageVarSet' ),
-							false, // no need for logging support
-							null,	// tags
-							array( 'pagetitle','pagesubtitle','pageexists',
-									'varset', 'varget',
-									'varaset', 'varaget',
-									'varcapset',
-									'cshow',
-									'noext'
-									 ),  				//of parser function magic words,
-							array( 'noclientcaching' )	// magic words
-						 );
-
-StubManager::createStub(	'ParserToolsClass', 
-							$bwExtPath.'/ParserExt/ParserTools/ParserTools.php',
-							null,							
-							null,
-							false, 						// no need for logging support
-							array('noparsercaching'),	// tags
-							null,
-							null
-						 );
-
-StubManager::createStub(	'RegexToolsClass', 
-							$bwExtPath.'/ParserExt/RegexTools/RegexTools.php',
-							null,							
-							null,
-							false, 						// no need for logging support
-							null,						// tags
-							array('regx_vars', 'regx'), // parser Functions
-							null
-						 );
-
-StubManager::createStub(	'DocProcClass', 
-							$bwExtPath.'/DocProc/DocProc.php',
-							null,							
-							null,
-							false, 					// no need for logging support
-							array('docproc'),		// tags
-							null, 					// parser Functions
-							null
-						 );
-
-StubManager::createStub(	'ScriptingToolsClass', 
-							$bwExtPath.'/ScriptingTools/ScriptingTools.php',
-							null,					// i18n file			
-							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							array('epropset','epropset2'),	// parser Functions
-							null
-						 );
-
-StubManager::createStub(	'RecentChangesManager', 
-							$bwExtPath.'/RecentChangesManager/RecentChangesManager.php',
-							null,					// i18n file			
-							array('ArticleEditUpdatesDeleteFromRecentchanges'),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							null,					// parser Functions
-							null
-						 );
-
-StubManager::createStub(	'ImageLinkClass', 
-							$bwExtPath.'/ImageLink/ImageLink.php',
-							null,					// i18n file			
-							array('ParserAfterTidy'),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							array('imagelink'),	// parser Functions
-							null
-						 );
-
-StubManager::createStub(	'PageAfterAndBefore', 
-							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
-							null,					// i18n file			
-							null,					// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							array('pagebefore', 'pageafter', 'firstpage', 'lastpage' ),	// parser Functions
-							null
-						 );
-
-
-StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
-									'classfilename'	=> $bwExtPath.'/ParserExt/SkinTools/SkinTools.php',
-									'hooks'			=> array( 'SkinTemplateTabs' ),
-									'mgs'			=> array( 'clearactions', 'removeactions', 'addaction' ),
-								)
-						);
-
-StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
-									'classfilename'	=> $bwExtPath.'/ParserExt/UserTools/UserTools.php',
-									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
-								)
-						);
+require( $bwExtPath.'/ParserExt/ForeachFunction/ForeachFunction_stub.php' );
+require( $bwExtPath.'/ParserExt/MiscParserFunctions/MiscParserFunctions_stub.php' );
+require( $bwExtPath.'/ParserExt/PageFunctions/PageFunctions_stub.php' );
+require( $bwExtPath.'/ParserExt/ParserTools/ParserTools_stub.php' );
+require( $bwExtPath.'/ParserExt/RegexTools/RegexTools_stub.php');
+require( $bwExtPath.'/DocProc/DocProc_stub.php' );
+require( $bwExtPath.'/ScriptingTools/ScriptingTools_stub.php' );
+require( $bwExtPath.'/RecentChangesManager/RecentChangesManager_stub.php' );
+require( $bwExtPath.'/ImageLink/ImageLink_stub.php');
+require( $bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore_stub.php');
+require( $bwExtPath.'/ParserExt/SkinTools/SkinTools_stub.php' );
+require( $bwExtPath.'/ParserExt/UserTools/UserTools_stub.php' );
+require( $bwExtPath.'/ParserExt/UserTools/UserTools_stub.php' );
 
 require('extensions/VirtualPage/VirtualPage_stub.php');
 require('extensions/AutoRedirect/AutoRedirect_stub.php');

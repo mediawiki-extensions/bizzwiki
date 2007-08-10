@@ -33,7 +33,6 @@ require('extensions/MiscParserFunctions/MiscParserFunctions.php');
 == Code ==
 </wikitext>*/
 
-global $wgExtensionCredits;
 $wgExtensionCredits[MiscParserFunctions::thisType][] = array( 
 	'name'        => MiscParserFunctions::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -137,4 +136,3 @@ class MiscParserFunctions
 
 
 } // end class
-?>
