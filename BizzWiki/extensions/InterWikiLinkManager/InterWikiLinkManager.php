@@ -217,7 +217,8 @@ class InterWikiLinkManager
 	
 		$text .= $this->getFooter();					// FOOTER
 	
-		return true; // be nice.
+		// stop hook chain.
+		return false;
 	}
 	
 	private function getIWLtable()

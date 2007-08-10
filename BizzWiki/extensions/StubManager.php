@@ -79,9 +79,8 @@ require('extensions/StubManager.php');
 ** 'mg' (i.e. parser functions)
 ** 'MW' (i.e. parser Magic Words)
 * fixed annoying warning about undefined offset.
-* added namespace(s) trigger
-* Added functionality to remove 'forgotten' hook_prefix in stub definition
-** E.g. instead of listing 'ArticleSaveComplete', the list contained 'hArticleSaveComplete'
+* added namespace triggering functionality
+** Only load an extension when the extension's target namespace(s) are in focus.
 
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
@@ -604,6 +603,24 @@ class Stub
 		}
 		return true;
 	}
+	/**
+		If the extension registered for 'namespace triggering',
+		then check if we are asked to execute a hook that
+		falls in the namespace list that the extension provided.
+	 */
+	private function checkNss( &$method, &$args )
+	{
+		global $wgTitle;
+		if (is_object( $wgTitle ))
+			if ( !empty($this->nss) )	// if none provided, act as normal
+				if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
+					return false; // stop processing
+					
+		#echo ' classe:'.$this->classe.' method:'.$method."\n";
+		
+		// means continue processing.
+		return true;
+	}
 	
 	// intercept all methods called
 	// instantiate the necessary object... only once.
@@ -613,14 +630,12 @@ class Stub
 		// Can really only act on the namespace we can
 		// derive from the global wgTitle unfortunately.
 
-		global $wgTitle;
-		if (is_object( $wgTitle ))
-			if ( $this->nss !== null )	// if none provided, act as normal
-				if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
-					return true;
-
-#		echo ' classe:'.$this->classe.' method:'.$method."\n";
-		
+		// Sometimes, wgTitle isn't set in the right timing.
+		// Let's inspect the arguments for a 'title' object.
+		// EditFormPreloadText( &$text, &$title ) 
+		if (!$this->checkNss( $method, $args ))
+			return true;
+			
 		if ( $this->obj === null )
 			$obj = $this->obj = new $this->classe( $this->params );  // un-stub
 		else

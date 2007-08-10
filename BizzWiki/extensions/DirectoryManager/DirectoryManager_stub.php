@@ -55,7 +55,7 @@ StubManager::createStub2(	array(	'class' 		=> 'DirectoryManager',
 									'hooks'			=> array(	'ArticleFromTitle',
 																'CustomEditor',
 															), //end hooks
-									#'nss'			=>	array('NS_DIRECTORY'),
+									'nss'			=>	array(NS_DIRECTORY),
 								)
 						);
 //</source>
