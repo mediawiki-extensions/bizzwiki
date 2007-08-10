@@ -17,6 +17,9 @@
 |rights      =
 |example     =
 }}
+== WARNING ==
+This extension is work in progress.
+
 <!--@@
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
@@ -25,7 +28,8 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose==
-
+Provides a file based export of all the page changes. The directory containing the files can be used
+along with 'rsync' to provide backup & restore functionality.
 
 == Features ==
 * Page
@@ -45,6 +49,8 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Theory Of Operation ==
 Page change events are trapped and the resulting new/updated pages are written to a specified filesystem directory.
 
+== Usage Notes ==
+Make sure that the dump directory is writable.
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -70,7 +76,7 @@ $wgExtensionCredits[rsync::thisType][] = array(
 	'name'    => rsync::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
-	'description' => " ", 
+	'description' => "Provides page changes in an export file format.", 
 );
 
 class rsync
@@ -78,7 +84,9 @@ class rsync
 	const thisType = 'other';
 	const thisName = 'rsync';
 	
-	static $directory = '_backup';
+	const defaultDir = '_backup';
+	
+	var $directory; 
 
 	var $rc_timestamp;
 	var $rc_id;
@@ -103,10 +111,13 @@ class rsync
 		// we might have more than one operation
 		// per transaction i.e. case of 'move' action.
 		$this->opList = array();
+
+		// assume the default directory location
+		$this->directory = self::defaultDir;
 		
 		// format the directory path.
 		global $IP;
-		$this->dir = $IP.'/'.self::$directory;
+		$this->dir = $IP.'/'.$this->directory;
 	}
 	
 	/**
@@ -227,6 +238,11 @@ class rsync
 	}
 	
 } // end class
+
+
+/**		************************************************************
+		Follows is a class that defines an 'rsync' export operation.
+ */
 
 class rsync_operation
 {
