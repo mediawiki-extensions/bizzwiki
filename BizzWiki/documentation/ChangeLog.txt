@@ -248,4 +248,5 @@ REL1_10_11: (released ...)
 - Fix 'FileManager': didn't show up log records correctly
 - FileManager: removed dependency on ExtensionClass + made stub
 - InterWikiLinkManager: added cancellation of hook-chain on EditFormPreloadText
+- Massive update of almost all extension headers - normalization
 - 
