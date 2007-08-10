@@ -55,8 +55,8 @@ $Id$
 ** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
 
 == Stub Candidates ==
-* SideBarEx        -> NO
-* PageRestrictions -> NO
+* SideBarEx        -> NO   (uses hSkinTemplateOutputPageBeforeExec)
+* PageRestrictions -> NO   (uses ArticleViewHeader which is called VERY often)
 * FileManager      -> NO
 
 * TaskScheduler    -> TBD
