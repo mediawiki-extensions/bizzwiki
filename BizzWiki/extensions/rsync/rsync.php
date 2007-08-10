@@ -87,6 +87,7 @@ class rsync
 	const defaultDir = '_backup';
 	
 	var $directory; 
+	var $found;
 
 	var $rc_timestamp;
 	var $rc_id;
@@ -108,6 +109,8 @@ class rsync
 	 */
 	public function __construct() 
 	{
+		$this->found = false;
+		
 		// we might have more than one operation
 		// per transaction i.e. case of 'move' action.
 		$this->opList = array();
@@ -125,6 +128,9 @@ class rsync
 	 */	
 	public function hArticleSaveComplete( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
 	{
+		if (!$this->found)
+			return true;
+			
 		$title = $article->mTitle; // shortcut
 		
 		$ns =    $title->getNamespace();
@@ -133,8 +139,10 @@ class rsync
 		$action = self::action_edit;
 		
 		$this->addOperation( $action, $ns, $titre );
-		
+
 		$this->doOperations();	
+		
+		return true;
 	}
 	
 	/**
@@ -143,6 +151,7 @@ class rsync
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
 		
+		return true;
 	}
 	
 	/**
@@ -157,6 +166,8 @@ class rsync
 		// send a 'delete' 
 		
 		// send a 'update' 
+		
+		return true;		
 	}
 	
 	/**
@@ -164,7 +175,8 @@ class rsync
 	 */
 	public function hAddNewAccount( &$user )
 	{
-		
+	
+		return true;		
 	}
 	
 	/**
@@ -175,6 +187,8 @@ class rsync
 		// make a copy of the uploaded file to the rsync directory.
 		
 		// what about the meta data of the file???	
+		
+		return true;		
 	}
 	
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
@@ -197,8 +211,18 @@ class rsync
 	 */
 	public function hRecentChange_save( &$rc )
 	{
+		# echo __METHOD__.' rc_type:'.$rc->mAttribs['rc_type']."<br/>\n";
+		
+		if ( $rc->mAttribs['rc_type'] != RC_EDIT )
+			return true;
+			
+		$this->found = true;
+
 		$this->rc_timestamp = $rc->mAttribs['rc_timestamp'];
 		$this->rc_id        = $rc->mAttribs['rc_id'];		
+
+
+		return true;		
 	}
 	private function doOperations()
 	{
