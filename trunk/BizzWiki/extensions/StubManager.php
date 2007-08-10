@@ -677,4 +677,3 @@ class Stub
 
 } // end class Stub
 // </source>
-?>
