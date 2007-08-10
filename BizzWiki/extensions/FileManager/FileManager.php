@@ -54,8 +54,9 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 ** @@currentmtime@@ replaces for the current extracted filename last modification timestamp
 * Removed extraneous '/' in the path name
 * Added 'parser phase 2' magic words:
-** (($#extractfile|@@file@@$))   : extracts the filename returned through the proprietary word '@@file@@'
-** (($#extractmtime|@@mtime@@$)) : extracts 'mtime' returned through the proprietary word '@@mtime@@'
+** ( ($#extractfile|@@file@@$) )   : extracts the filename returned through the proprietary word '@@file@@'
+** ( ($#extractmtime|@@mtime@@$) ) : extracts 'mtime' returned through the proprietary word '@@mtime@@'
+* EditFormPreload: added check for title both 'underscored' and not 
 
 == TODO ==
 * internationalization
@@ -291,6 +292,12 @@ class FileManager
 		$filename = $title->getText();
 		$text = @file_get_contents( $IP.'/'.$filename );
 		
+		// if we get an error, try another form
+		if ($text === false)
+		{
+			$filename = $title->getDBkey();
+			$text = @file_get_contents( $IP.'/'.$filename );
+		}
 		return $text;
 	}
 	function hOutputPageBeforeHTML( &$op, &$text )

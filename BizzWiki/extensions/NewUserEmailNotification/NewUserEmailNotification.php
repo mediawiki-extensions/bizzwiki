@@ -44,6 +44,7 @@ StubManager::createStub(	'NewUserEmailNotification',
 </source>
 
 == History ==
+* Fixed incorrect path to 'UserMailer'
 
 == TODO ==
 * add more error checking
@@ -72,7 +73,7 @@ class NewUserEmailNotification
 		global $wgMessageCache;
 		global $IP;
 		
-		require_once( $IP.'includes/UserMailer.php' );
+		require_once( $IP.'/includes/UserMailer.php' );
 
 		$msg = $GLOBALS[ 'msg'.__CLASS__ ];
 		
