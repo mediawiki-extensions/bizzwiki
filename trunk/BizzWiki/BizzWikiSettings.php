@@ -305,7 +305,6 @@ require('extensions/FileManager/FileManager.php');
 // syntax highlighting for the NS_FILESYSTEM namespace.
 require( $bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php' );
 
-
 // New User Logging
 require('extensions/NewUserLog/Newuserlog.php');
 
@@ -347,18 +346,9 @@ require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
 
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
 require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
+require( $bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions_stub.php');
 
-StubManager::createStub(	'PermissionFunctions', 
-							$bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions.php',
-							null,							
-							array('EndParserPhase2'),
-							false, // no need for logging support
-							null,	// tags
-							array( 'checkpermission' ),  //of parser function magic words,
-							null
-						 );
-
-require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
+require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php'); // NOT STUBBED
 
 	// Stubs
 	//  Used for rare events handling.
