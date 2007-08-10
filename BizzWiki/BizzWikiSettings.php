@@ -141,13 +141,13 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'upload', 'reupload', 'reupload-shared', // for now, those rights
 										'upload_by_url',						// are only relevant to NS_IMAGE
 										
-										'raw',        // BizzWiki specific
-										'viewsource', // BizzWiki specific
 										'browse',     // BizzWiki specific
 										'search',     // BizzWiki specific
-										'watch',		// BizzWiki specific
-										'unwatch',		// BizzWiki specific
-										'reload',		// BizzWiki specific
+										'raw',        // BizzWiki specific -- RawRight extension
+										'viewsource', // BizzWiki specific -- ViewsourceRight extension
+										'watch',	  // BizzWiki specific -- WatchRight extension
+										'unwatch',	  // BizzWiki specific -- WatchRight extension
+										'reload',	  // BizzWiki specific -- FileManager extension
 									);
 									
 // Critical permission system initialization -- DO NOT TOUCH
