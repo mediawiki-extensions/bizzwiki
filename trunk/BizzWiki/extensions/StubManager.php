@@ -116,7 +116,8 @@ class StubManager
 								'tags',
 								'mgs',
 								'mws',
-								'nss'
+								'nss',
+								'enss'
 								);
 	
 	/**
@@ -153,6 +154,7 @@ class StubManager
 								$liste['mgs'], 
 								$liste['mws'], 
 								$liste['nss'],
+								$liste['enss'],
 								$params			// pass along the remaining parameters
 								);
  
@@ -476,6 +478,7 @@ class Stub
 	var $mgs;
 	var $mws;
 	var $nss;
+	var $enss;
 
 	public function __construct( &$class, 
 								&$hooks, 
@@ -483,6 +486,7 @@ class Stub
 								&$mgs = null, 
 								&$mws = null, 
 								$nss = null,
+								$enss = null,
 								$params = null )
 	{
 		$this->setupHooks( $hooks );
@@ -608,14 +612,22 @@ class Stub
 		If the extension registered for 'namespace triggering',
 		then check if we are asked to execute a hook that
 		falls in the namespace list that the extension provided.
+		
+		Exclude namespace first		
 	 */
 	private function checkNss( &$method, &$args )
 	{
 		global $wgTitle;
-		if (is_object( $wgTitle ))
-			if ( !empty($this->nss) )	// if none provided, act as normal
-				if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
-					return false; // stop processing
+		if (!is_object( $wgTitle ))
+			return true;
+
+		if ( !empty( $this->enss ))
+			if ( in_array( $wgTitle->getNamespace(), $this->enss ) )
+				return false; // stop processing
+		
+		if ( !empty($this->nss) )	// if none provided, act as normal
+			if ( !in_array( $wgTitle->getNamespace(), $this->nss ) )
+				return false; // stop processing
 					
 		#echo ' classe:'.$this->classe.' method:'.$method."\n";
 		
@@ -628,15 +640,11 @@ class Stub
 	function __call( $method, $args )
 	{
 		// Check triggers
-		// Can really only act on the namespace we can
-		// derive from the global wgTitle unfortunately.
-
-		// Sometimes, wgTitle isn't set in the right timing.
-		// Let's inspect the arguments for a 'title' object.
-		// EditFormPreloadText( &$text, &$title ) 
 		if (!$this->checkNss( $method, $args ))
 			return true;
 			
+#		echo ' classe:'.$this->classe.' method:'.$method."<br/> \n";
+		
 		if ( $this->obj === null )
 			$obj = $this->obj = new $this->classe( $this->params );  // un-stub
 		else

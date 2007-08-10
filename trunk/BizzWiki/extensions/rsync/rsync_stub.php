@@ -44,6 +44,7 @@ StubManager::createStub2(	array(	'class' 		=> 'rsync',
 																#'hAddNewAccount',
 																#'hUploadComplete',
 															),
+									'enss'			=> array( NS_FILESYSTEM, NS_DIRECTORY )
 								)
 						);
 
