@@ -39,7 +39,7 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * No auto summary upon page creation
 
 == DEPENDANCY ==
-* [[Extension:ExtensionClass]] (>=v1.92) 
+* [[Extension:StubManager]]
 
 == History ==
 * fixed for 'wgCapitalLinks' 
@@ -63,12 +63,12 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 * enhance 'logging' through $type etc.
 
 == Installation ==
+* Install [[Extension:StubManager]] extension
 * Download all the files from the SVN link
 * Place in a directory e.g. 'extensions/FileManager'
-* Modify <code>LocalSettings.php</code>
+* Place the following after 'StubManager' in <code>LocalSettings.php</code>
 <source lang=php>
-require_once('extensions/ExtensionClass.php');
-require('extensions/FileManager/FileManager.php');
+require('extensions/FileManager/FileManager_stub.php');
 </source>
 
 == Code ==
@@ -81,6 +81,8 @@ $wgExtensionCredits['other'][] = array(
 	'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is ',
 	'url' 		=> StubManager::getFullUrl(__FILE__),
 );
+
+require( 'FileManager.i18n.php' );
 
 class FileManager
 {
@@ -108,9 +110,6 @@ class FileManager
 	var $currentExtractFile;
 	var $currentExtractMtime;
 
-	public static function &singleton()
-	{ return parent::singleton( );	}
-	
 	function __construct()
 	{
 		# Add a new log type
@@ -132,7 +131,6 @@ class FileManager
 		// Keep this 'true' until I get around to doing
 		// the 'commit' functionality.
 		$this->docommit = true;
-
 	}
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
@@ -284,7 +282,8 @@ class FileManager
 
 		$text = self::getFileContentsFromTitle( $title );
 
-		return true; // be nice.
+		// stop hook chain.
+		return false; 
 	}
 	static function getFileContentsFromTitle( &$title )
 	{

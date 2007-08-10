@@ -44,9 +44,11 @@ if (!isset( $bwExtPath ))
 StubManager::createStub2(
 				array(	'class' 		=> 'FileManager', 
 						'classfilename' => $bwExtPath.'/FileManager/FileManager.php',
+						'i18nfilename'	=> $bwExtPath.'/FileManager/FileManager.i18n.php',
+						'logging'		=> true,
 						'hooks'			=> array( 'ArticleSave','ArticleFromTitle','EditFormPreloadText', 
 												'OutputPageBeforeHTML', 'SkinTemplateTabs', 'UnknownAction',
 												'SpecialVersionExtensionTypes' ),
-						'nss'			=> array( 'NS_FILESYSTEM' )
+						'nss'			=> array( NS_FILESYSTEM )
 						) );
 //</source>

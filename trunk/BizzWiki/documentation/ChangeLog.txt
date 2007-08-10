@@ -246,4 +246,6 @@ REL1_10_11: (released ...)
 - Added 'DirectoryManager' extension
 - Simplified installation procedure for all 'stubbed' extensions
 - Fix 'FileManager': didn't show up log records correctly
+- FileManager: removed dependency on ExtensionClass + made stub
+- InterWikiLinkManager: added cancellation of hook-chain on EditFormPreloadText
 - 

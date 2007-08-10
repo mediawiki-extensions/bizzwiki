@@ -4,7 +4,6 @@ This page provides a list of all the hooks supported by [[Extension:BizzWiki]]
 * SyntaxHighlight
 
 == DirectoryManager ==
-
 * DirectoryManagerBegin
 * DirectoryManagerBeforePageCacheCheck
 * DirectoryManagerBeginPageDisplay
