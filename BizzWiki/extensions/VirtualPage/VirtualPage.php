@@ -92,7 +92,6 @@ $wgExtensionCredits[VirtualPage::thisType][] = array(
 	'description'	=>  'Provides configurable per-namespace virtual pages',
 	'url' 			=> StubManager::getFullUrl(__FILE__),			
 );
-
 class VirtualArticle extends Article
 {
 	var $virtualTitle;

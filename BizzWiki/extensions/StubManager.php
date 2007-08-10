@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))((@disable@))<wikitext>
+/*<wikitext>
 {{Extension
 |name        = StubManager
 |status      = stable
@@ -19,7 +19,7 @@
 }}
 
 <!--@@
-{{#autoredirect: {{NAMESPACE}}|{{#noext:{{PAGENAME}}}} }}
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}}}} }}
 == File Status ==
 This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>

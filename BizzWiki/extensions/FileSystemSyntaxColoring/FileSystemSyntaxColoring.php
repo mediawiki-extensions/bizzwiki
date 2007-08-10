@@ -130,6 +130,8 @@ class FileSystemSyntaxColoring
 		$ext = $this->getExtension( $titre );
 		
 		$this->lang = $this->getLanguage( $ext );
+		if ($this->lang === null)
+			$this->lang = 'php';
 		
 		$this->found = true;
 		$this->text = $text;
@@ -234,6 +236,12 @@ class FileSystemSyntaxColoring
 
 		return $ext;		
 	}
-	private function getLanguage( $ext ) { return self::$map[ $ext ]; }
+	private function getLanguage( $ext ) 
+	{ 
+		if (isset( self::$map[ $ext ]))
+			return self::$map[ $ext ]; 
+			
+		return null;
+	}
 	
 } // end class definition.
