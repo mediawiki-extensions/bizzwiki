@@ -249,4 +249,5 @@ REL1_10_11: (released ...)
 - FileManager: removed dependency on ExtensionClass + made stub
 - InterWikiLinkManager: added cancellation of hook-chain on EditFormPreloadText
 - Massive update of almost all extension headers - normalization
+- StubManager: support for 'exclude' namespace triggering
 - 
