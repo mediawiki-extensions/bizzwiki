@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = FileSystemSyntaxColoring
 |status      = beta
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 This extension 'colors' a page in the NS_FILESYSTEM namespace based on its syntax.
 
@@ -32,22 +39,12 @@ This extension 'colors' a page in the NS_FILESYSTEM namespace based on its synta
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download [[Extension:StubManager]] extension
-* Apply the following changes to 'LocalSettings.php'
-<geshi lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'FileSystemSyntaxColoring', 
-							$IP.'/extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
-							null,
-							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', 'ParserAfterTidy' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null,	// no magic words
-							array( NS_FILESYSTEM )
-						 );
-
-</geshi>
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
+<source lang=php>
+require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php');
+</source>
 
 == History ==
 * Added 'wiki text' section support
@@ -64,7 +61,7 @@ to save document in a non-BizzWiki wiki.
 * Handle multiple <!--@@ wikitext @@--> sections
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[FileSystemSyntaxColoring::thisType][] = array( 
 	'name'    		=> FileSystemSyntaxColoring::thisName, 
@@ -245,3 +242,5 @@ class FileSystemSyntaxColoring
 	}
 	
 } // end class definition.
+
+// </source>

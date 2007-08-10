@@ -1,38 +1,49 @@
 <?php
-/*<wikitext>
-{| border=1
-| <b>File</b> || EmailLog.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+/*<!--<wikitext>-->
+{{Extension
+|name        = EmailLog
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/EmailLog/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides logging of user-to-user emailing activities.
 
 == Dependancy ==
-* StubManager Extension
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download this extension's file(s) and place them in the extension's directory
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'EmailLog', 
-							$IP.'/extensions/EmailLog/EmailLog.php',
-							$IP.'/extensions/EmailLog/EmailLog.i18n.php',							
-							array('EmailUserComplete'),
-							true
-						 );
+require('extensions/EmailLog/EmailLog_stub.php');
 </source>
 
 == History ==
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[EmailLog::thisType][] = array( 
 	'name'    => EmailLog::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
@@ -77,4 +88,5 @@ class EmailLog
 		return true;
 	}	
 }
-?>
+
+//</source>

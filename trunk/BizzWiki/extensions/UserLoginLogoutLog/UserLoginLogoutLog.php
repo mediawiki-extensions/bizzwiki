@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = UserLoginLogoutLog
 |status      = beta
@@ -17,6 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 
 == Purpose==
 Provides logging of user login/logout activities.
@@ -27,27 +35,19 @@ Provides logging of user login/logout activities.
 * Handles 'login', 'logout' and 'login error' events
 ** Login Error events are logged probabilistically
 
-== Dependancy ==
-* [[Extension:StubManager]] Extension
-
 == Usage ==
 The user 'WikiAgent' should be created in order to handle 'login error' events.
 
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
+
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download this extension's file(s) and place them in the extension's directory
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'UserLoginLogoutLog', 
-							$IP.'/extensions/UserLoginLogoutLog/UserLoginLogoutLog.php',
-							$IP.'/extensions/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
-							array(	'UserLoginForm', 'UserLoginComplete', 
-									'UserLogout', 'UserLogoutComplete',
-									'SpecialVersionExtensionTypes' ),
-							true
-						 );
+require('extensions/UserLoginLogoutLog/UserLoginLogoutLog_stub.php');
 </source>
 
 == History ==
@@ -56,7 +56,7 @@ StubManager::createStub(	'UserLoginLogoutLog',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[UserLoginLogoutLog::thisType][] = array( 
 	'name'    		=> UserLoginLogoutLog::thisName,
 	'version' 		=> StubManager::getRevisionId('$Id$'),
@@ -245,4 +245,4 @@ class UserLoginLogoutLog
 	}
 
 } // end class declaration
-?>
+//</source>

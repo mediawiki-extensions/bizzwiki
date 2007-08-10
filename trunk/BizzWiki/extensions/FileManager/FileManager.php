@@ -1,5 +1,5 @@
 <?php
-/*<!--<wikitext>--> <!--((@disable@))-->
+/*<!--<wikitext>-->
 {{Extension
 |name        = FileManager
 |status      = beta

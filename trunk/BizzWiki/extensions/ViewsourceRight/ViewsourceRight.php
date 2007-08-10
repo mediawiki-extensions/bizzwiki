@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = ViewsourceRight
 |status      = stable
@@ -17,7 +17,15 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose ==
 This extension adds a 'viewsource' right. 
 Only the users with the 'viewsource' permission can 'view' an article's source wikitext.
@@ -26,22 +34,17 @@ Only the users with the 'viewsource' permission can 'view' an article's source w
 * Can be used independantly of BizzWiki environment 
 * No mediawiki installation source level changes
 
-== DEPENDANCIES ==
-* [[Extension:StubManager]]
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
 * Hierarchical Namespace Permissions extension
 
 == Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'ViewsourceRight', 
-							'extensions/ViewsourceRight/ViewsourceRight.php',
-							null,
-							array( 'UpdateExtensionCredits','AlternateEdit', 'SkinTemplateTabs' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require('extensions/XYZ/XYZ_stub.php');
 </source>
 
 == HISTORY ==
@@ -52,10 +55,9 @@ StubManager::createStub(	'ViewsourceRight',
 * Made 'stub'-enabled
 * Added some protection against !isset indexes in '$wgExtensionCredits'
 
-</wikitext>*/
+== Code==
+<!--</wikitext>--><source lang=php>*/
 
-	
-global $wgExtensionCredits;
 $wgExtensionCredits[ViewsourceRight::thisType][] = array( 
 	'name'    		=> ViewsourceRight::thisName, 
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
@@ -148,4 +150,4 @@ class ViewsourceRight
 		return true;
 	}
 } // end class definition.
-?>
+//</source>

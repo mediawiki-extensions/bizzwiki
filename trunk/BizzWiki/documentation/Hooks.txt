@@ -10,3 +10,6 @@ This page provides a list of all the hooks supported by [[Extension:BizzWiki]]
 * DirectoryManagerBeforeCreatePage
 * DirectoryManagerBeforeParsePage
 * DirectoryManagerBeforeDisplayPage
+
+== ParserPhase2 ==
+* EndParserPhase2

@@ -37,24 +37,15 @@ as if they could.
 ** The extension must be enabled to continue the support of the inserted content
 
 == Dependancy ==
-* [[Extension:StubManager]] extension
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require_once('extensions/StubManager.php');
-StubManager::createStub(	'SecureHTMLclass', 
-							$IP.'/extensions/SecureHTML/SecureHTML.php',
-							null,
-							array( 'ArticleSave', 'ArticleViewHeader' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null,	// no magic words
-							null	// no namespace triggering
-						 );
-
+require('extensions/SecureHTML/SecureHTML_stub.php');
 </source>
 
 == History ==
@@ -143,3 +134,4 @@ class SecureHTML
 	}
 
 } // END CLASS DEFINITION
+//</source>

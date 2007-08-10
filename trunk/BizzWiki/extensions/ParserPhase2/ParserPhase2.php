@@ -1,6 +1,6 @@
 <?php
 //((@disable@)) (($disable$)) ((%disable%))
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = ParserPhase2
 |status      = stable
@@ -64,27 +64,15 @@ See [[Extension:ParserPhase2/Flow Summary]] for more details.
 <code>((@magic word|...parameters...@))</code>
 
 == Dependancy ==
-* [[Extension:StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
-To install outside the BizzWiki platform:
-* Download [[Extension:StubManager]]
-** Place 'StubManager.php' file in '/extensions' directory
-* Download the extension files from the SVN repository
-** Place the files in '/extensions/ParserPhase2' directory
-* Perform the following changes to 'LocalSettings.php':
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('/extensions/StubManager.php');
-
-StubManager::createStub(	'ParserPhase2Class', 
-							$IP.'/extensions/ParserPhase2/ParserPhase2.php',
-							null,
-							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require('extensions/ParserPhase2/ParserPhase2_stub.php');
 </source>
 
 == History ==
@@ -106,7 +94,7 @@ StubManager::createStub(	'ParserPhase2Class',
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ParserPhase2::thisType][] = array( 
 	'name'        => ParserPhase2::thisName, 
@@ -353,3 +341,5 @@ class ParserPhase2
 				$text = str_replace( $marker, $target[$index]/*.'<!--'.$marker.'-->'*/, $text );	
 	}
 } // end class
+
+//</source>

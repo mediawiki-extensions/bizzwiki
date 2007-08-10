@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = WatchRight
 |status      = beta
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides watch/unwatch rights enforcement.
 
@@ -25,23 +32,15 @@ Provides watch/unwatch rights enforcement.
 
 
 == Dependancy ==
-* [[Extension:StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download [[Extension:StubManager]]
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'WatchRight', 
-							'extensions/WatchRight/WatchRight.php',
-							null,
-							array( 'WatchArticle','UnwatchArticle','SkinTemplateTabs' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require('extensions/WatchRight/WatchRight_stub.php');
 </source>
 
 == History ==
@@ -50,9 +49,8 @@ StubManager::createStub(	'WatchRight',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
-global $wgExtensionCredits;
 $wgExtensionCredits[WatchRight::thisType][] = array( 
 	'name'    		=> WatchRight::thisName, 
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
@@ -103,4 +101,4 @@ class WatchRight
 		return true;
 	}
 } // end class definition.
-?>
+//</source>

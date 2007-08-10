@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = UserSettingsChangedLog
 |status      = beta
@@ -17,28 +17,30 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose==
 Provides logging of user settings changes.
 
 == Dependancy ==
-* StubManager Extension
+* [[Extension:StubManager|StubManager extension]]
 * Patched '/includes/User.php' file (get from BizzWiki SVN)
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download this extension's file(s) and place them in the extension's directory
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
 * Download patched '/includes/User.php' file from BizzWiki distribution and put in '$IP./includes' directory
-* Apply the following changes to 'LocalSettings.php'
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'UserSettingsChangedLog', 
-							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.php',
-							$IP.'/extensions/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
-							array('UserSettingsChanged'),
-							true
-						 );
+require('extensions/UserSettingsChangedLog/UserSettingsChangedLog_stub.php');
 </source>
 
 == History ==
@@ -47,7 +49,8 @@ StubManager::createStub(	'UserSettingsChangedLog',
 * Fixed to not add log entries upon account creation
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
+
 $wgExtensionCredits[UserSettingsChangedLog::thisType][] = array( 
 	'name'    		=> UserSettingsChangedLog::thisName,
 	'version' 		=> StubManager::getRevisionId('$Id$'),
@@ -107,4 +110,4 @@ class UserSettingsChangedLog
 		return true;		
 	}
 }
-?>
+//</source>

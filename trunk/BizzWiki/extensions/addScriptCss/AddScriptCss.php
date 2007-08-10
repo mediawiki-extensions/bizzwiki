@@ -70,18 +70,12 @@ When using 'pos=body', it is recommended to use the extension 'ParserCacheContro
 * Added support for a global setting '$bwScriptsDirectory'
 
 == Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-#$bwScriptsDirectory = '/scripts';  // optional
-StubManager::createStub(	'AddScriptCssClass', 
-							'extensions/AddScriptCss/AddScriptCss.php',
-							null,							
-							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
-							false, // no need for logging support
-							array( 'addtohead', 'addscript' ),	// tags
-							array( 'addscript' ), 				//of parser function magic words,
-							null
-						 );
+require('extensions/AddScriptCss/AddScriptCss_stub.php');
 </source>
 
 == TODO ==

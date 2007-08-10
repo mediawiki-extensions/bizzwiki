@@ -1,10 +1,30 @@
 <?php
-/*<wikitext>
-ShowRedirectPageText.php by Jean-Lou Dupont
+/*<!--<wikitext>-->
+{{Extension
+|name        = ShowRedirectPageText
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ShowRedirectPageText/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
-== Version ==
-$Id$
-
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose ==
 This extension enables the display of the text included in a 'redirect' page.
 The inclusion of wikitext in a redirect page is helpful in situations, for example, where redirects are used to manage a  'cluster' of Mediawiki serving machines.
@@ -13,21 +33,16 @@ The inclusion of wikitext in a redirect page is helpful in situations, for examp
 * No mediawiki installation source level changes
 * No impact on parser caching
 
-== DEPENDANCIES ==
-* [[Extension:StubManager]]
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'ShowRedirectPageText', 
-							'extensions/ShowRedirectPageText/ShowRedirectPageText.php',
-							null,
-							array( 'ArticleViewHeader', 'OutputPageParserOutput' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require('extensions/ShowRedirectPageText/ShowRedirectPageText_stub.php');
 </source>
 
 == HISTORY ==
@@ -38,7 +53,7 @@ StubManager::createStub(	'ShowRedirectPageText',
 == TODO ==
 * Clean up the '#redirect' wikitext before displaying
 
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ShowRedirectPageText::thisType][] = array( 
 	'name'        => ShowRedirectPageText::thisName, 
@@ -87,4 +102,4 @@ class ShowRedirectPageText
 	}
 	
 } // end class definition.
-?>
+//</source>

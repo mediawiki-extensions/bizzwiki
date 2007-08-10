@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = SecureProperties
 |status      = stable
@@ -17,7 +17,15 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose==
 Enables getting/setting global object properties securily (operations are only allowed on protected pages).
 
@@ -46,24 +54,15 @@ Current user id: {{#pg:wgUser|mId}}
 * Namespace exemption: configured namespaces are exempted from the 'protection' requirement
 
 == Dependancy ==
-* [[Extension:StubManager]] extension
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require_once('extensions/StubManager.php');
-StubManager::createStub(	'SecurePropertiesClass', 
-							$IP.'/extensions/SecureProperties/SecureProperties.php',
-							null,	// no i18n
-							null, 	// no hooks
-							false,	// no need for logging support
-							null,	// tags
-							array( 'pg', 'ps', 'pf', 'gg', 'gs' ),
-							null,	// no magic words
-							null	// no namespace triggering
-						 );
+require('extensions/SecureProperties/SecureProperties_stub.php');
 </source>
 
 == History ==
@@ -74,7 +73,7 @@ StubManager::createStub(	'SecurePropertiesClass',
 * Fix for 'exempt' namespaces option even considering StubManager
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ SecureProperties::thisType ][] = array( 
 	'name'        => SecureProperties::thisName, 
@@ -205,3 +204,4 @@ class SecureProperties
 	}
 
 } // end class
+//</source>

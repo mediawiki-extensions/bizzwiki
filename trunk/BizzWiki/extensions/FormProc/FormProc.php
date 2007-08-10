@@ -55,21 +55,11 @@ The processing code resides in the database. The code can be 'syntax highlighted
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-require('extensions/RunPHP_class.php');
-StubManager::createStub(	'FormProcClass', 
-							$IP.'/extensions/FormProc/FormProc.php',
-							null,
-							array( 'UnknownAction' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
-
+require('extensions/FormProc/FormProc_stub.php');
 </source>
 
 == History ==
@@ -156,3 +146,5 @@ class FormProc
 	}
 
 } // END CLASS DEFINITION
+
+//</source>

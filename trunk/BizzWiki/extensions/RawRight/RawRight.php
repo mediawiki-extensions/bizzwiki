@@ -1,7 +1,30 @@
 <?php
-/*<wikitext>
- RawRight.php by Jean-Lou Dupont
+/*<!--<wikitext>-->
+{{Extension
+|name        = RawRight
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/RawRight/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose ==
 This extension adds a 'raw' right. Only the users with the 'raw' permission can 'raw view' an article's source wikitext.
 
@@ -11,22 +34,17 @@ This extension adds a 'raw' right. Only the users with the 'raw' permission can 
 * Integrates with Hierarchical Namespace Permissions extension to provide 'raw' right.
 
 == DEPENDANCIES ==
-* [[Extension:StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 * Hierarchical Namespace Permissions extension
 * MW > 1.10 (or patched earlier version)
 
 == Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'RawRight', 
-							'extensions/RawRight/RawRight.php',
-							null,
-							array( 'SpecialVersionExtensionTypes','RawPageViewBeforeOutput' ),
-							false,	// no need for logging support
-							null,	// tags
-							null,	// no parser functions
-							null	// no magic words
-						 );
+require('extensions/RawRight/RawRight_stub.php');
 </source>
 
 == HISTORY ==
@@ -36,10 +54,8 @@ StubManager::createStub(	'RawRight',
 
 == TODO ==
 * Internationalization: add messages to cache i18n file
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
-	
-global $wgExtensionCredits;
 $wgExtensionCredits[RawRight::thisType][] = array( 
 	'name'    		=> RawRight::thisName, 
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
@@ -100,4 +116,4 @@ class RawRight
 		return true; // continue hook-chain.
 	}
 } // end class definition.
-?>
+//</source>

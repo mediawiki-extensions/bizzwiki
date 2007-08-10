@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = RecentChangesManager
 |status      = stable
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Prevents RecentChanges table entries from being deleted.
 
@@ -25,22 +32,15 @@ Prevents RecentChanges table entries from being deleted.
 
 
 == Dependancy ==
-* [[Extension:StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'RecentChangesManager', 
-							'extensions/RecentChangesManager/RecentChangesManager.php',
-							null,					// i18n file			
-							array('ArticleEditUpdatesDeleteFromRecentchanges'),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							null,					// parser Functions
-							null
-						 );
+require('extensions/RecentChangesManager/RecentChangesManager_stub.php');
 </source>
 
 == History ==
@@ -48,7 +48,7 @@ StubManager::createStub(	'RecentChangesManager',
 * Added 'stubbing' capability through StubManager
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[RecentChangesManager::thisType][] = array( 
 	'name'    		=> RecentChangesManager::thisName, 
@@ -73,4 +73,4 @@ class RecentChangesManager
 	}
 
 } // end class definition.
-?>
+//</source>

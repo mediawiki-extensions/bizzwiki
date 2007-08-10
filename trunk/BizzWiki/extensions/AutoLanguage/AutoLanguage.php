@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = AutoLanguage
 |status      = stable
@@ -17,6 +17,15 @@
 |rights      =
 |example     =
 }} 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose==
 This extension provides viewing pages in the language specified by the user's preferences automatically.
 
@@ -36,16 +45,11 @@ This extension provides viewing pages in the language specified by the user's pr
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'AutoLanguage', 
-							'extensions/AutoLanguage/AutoLanguage.php',
-							null,							
-							array('ArticleFromTitle'),
-							false
-						 );
+require('extensions/AutoLanguage/AutoLanguage_stub.php');
 </source>
 
 == Notes ==
@@ -55,7 +59,7 @@ This extension is heavily based on the 'Polyglot' extension found on Mediawiki.o
 * Removed dependency on ExtensionClass
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[AutoLanguage::thisType][] = array( 
 	'name'        => AutoLanguage::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -141,3 +145,5 @@ class AutoLanguage
 	}
 
 } // end class
+
+//</source>

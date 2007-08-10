@@ -1,6 +1,5 @@
 <?php
-/*
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = PageAfterAndBefore
 |status      = stable
@@ -35,31 +34,19 @@ Where:
 * 'category'      denotes the category name used for filtering titles
 * 'filtercurrent' if the current title == last/first page, filter if 'yes'
 
-== DEPENDANCY ==
-* [[Extension:StubManager]] extension
-
 == Tested Compatibility ==
 MW 1.8.2, 1.9.3, 1.10
 
-== Installation ==
-To install outside the BizzWiki platform:
-* Download [[Extension:StubManager]]
-** Place 'StubManager.php' file in '/extensions' directory
-* Download [[Extension:PageAfterAndBefore]] extension
-** Place 'PageAfterAndBefore.php' in '/extensions/PageAfterAndBefore' directory
-* Perform the following changes to 'LocalSettings.php':
-<source lang=php>
-require('/extensions/StubManager.php');
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
 
-StubManager::createStub(	'PageAfterAndBefore', 
-							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
-							null,					// i18n file			
-							null,					// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							array('pagebefore', 'pageafter', 'firstpage', 'lastpage' ),	// parser Functions
-							null
-						 );
+== Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
+<source lang=php>
+require('extensions/PageAfterAndBefore/PageAfterAndBefore_stub.php');
 </source>
 
 == HISTORY ==
@@ -72,7 +59,7 @@ StubManager::createStub(	'PageAfterAndBefore',
 * Added Stubbing capability
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[PageAfterAndBefore::thisType][] = array( 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
@@ -219,4 +206,4 @@ class PageAfterAndBefore
 	}
 
 } // end class	
-?>
+//</source>

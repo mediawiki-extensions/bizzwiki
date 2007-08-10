@@ -68,14 +68,12 @@ The 'link' corresponds to the page 'template' which will be served upon a succes
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download the two files of this extension (VirtualPageSwitch.php & VirtualPage.php)
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-require('extensions/VirtualPage/VirtualPage.php');
+require('extensions/VirtualPage/VirtualPage_stub.php');
 </source>
-* Make sure to have 'VirtualPage.php' and 'VirtualPageSwitch.php' in the same directory.
 
 == History ==
 

@@ -1,10 +1,30 @@
 <?php
-/*<wikitext>
-{{extension:
-|RawPageTools.php
-|$Id$
-|Jean-Lou Dupont
+/*<!--<wikitext>-->
+{{Extension
+|name        = RawPageTools
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/RawPageTools/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
  
 == Purpose==
 Removes 'js' and 'css' tag sections from a queried 'raw page'. This allows for documenting the page in normal page views using
@@ -38,28 +58,21 @@ A request could be sent for the page using 'action=raw&ctype=text/javascript' an
 returned from the said page.
 
 == Dependancy ==
-* [[Extension:StubManager|StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-
-StubManager::createStub(	'RawPageTools', 
-							$IP.'/extensions/RawPageTools/RawPageTools.php',
-							null,							
-							array( 'RawPageViewBeforeOutput' ),
-							false
-						 );
-
+require('extensions/RawPageTools/RawPageTools_stub.php');
 </source>
 
 == History ==
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[RawPageTools::thisType][] = array( 
 	'name'    => RawPageTools::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
@@ -116,4 +129,4 @@ class RawPageTools
 		return array_search( $rp->mContentType, self::$map );			
 	}
 }
-?>
+//</source>

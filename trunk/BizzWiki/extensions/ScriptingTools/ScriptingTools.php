@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = ScriptingTools
 |status      = stable
@@ -43,36 +43,22 @@ just in the wikitext page itself.
 == Notes ==
 * Make sure that the scripts directory is writable by the PHP process
 
-== DEPENDANCIES ==
-* [[Extension:StubManager]] extension
-* For the 'scripting bridge' functionality, the following constitute dependencies:
-** [[Extension:PageFunctions]] extension
-** [[Extension:ParserPhase2]] extension
-*** Relies on the hook 'EndParserPhase2' to feed the script snippets collected through this extension
-*** ParserPhase2 extension is *not* required for the 'Minify and Store' functionality
+== Dependancies ==
+* [[Extension:StubManager|StubManager extension]]
+* [[Extension:PageFunctions]]
+* [[Extension:ParserPhase2]]
+** Relies on the hook 'EndParserPhase2' to feed the script snippets collected through this extension
+** ParserPhase2 extension is *not* required for the 'Minify and Store' functionality
 
 == Installation ==
-To install outside the BizzWiki platform:
-* Download [[Extension:StubManager]]
-** Place 'StubManager.php' file in '/extensions' directory
-* Download [[Extension:PageFunctions]] extension (if required)
-** Place 'PageFunctions.php' in '/extensions/PageFunctions' directory
-** Follow the instructions from the extension's description page [[Extension:PageFunctions]]
-* Download the extension files from the SVN repository
-** Place the files in '/extensions/ScriptingTools' directory
-* Perform the following changes to 'LocalSettings.php':
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Download & Install [[Extension:PageFunctions]] extension
+* Download & Install [[Extension:ParserPhase2]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('/extensions/StubManager.php');
-
-StubManager::createStub(	'ScriptingTools', 
-							$IP.'/extensions/ScriptingTools/ScriptingTools.php',
-							null,					// i18n file			
-							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							null,					// parser Functions
-							null
-						 );
+require('extensions/ScriptingTools/ScriptingTools_stub.php');
 </source>
 
 == HISTORY ==
@@ -81,7 +67,7 @@ StubManager::createStub(	'ScriptingTools',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ScriptingTools::thisType][] = array( 
 	'name'        => ScriptingTools::thisName, 
@@ -315,3 +301,4 @@ class ScriptingTools
 	}
 	
 }  // end class declaration
+//</source>
