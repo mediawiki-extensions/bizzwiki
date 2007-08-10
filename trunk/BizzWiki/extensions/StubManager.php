@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = StubManager
 |status      = stable
@@ -45,7 +45,7 @@ This extension is meant for 'extension writers'.
 
 == Usage ==
 To create a stub, use: 
-<pre>
+<source lang=php>
 StubManager::createStub(  'class name', 
                           'full path filename of class file',
                           'full path filename of i18n file',						  
@@ -56,7 +56,7 @@ StubManager::createStub(  'class name',
                           array of parser magic words,
 						  array of namespaces that trigger the extension
                         );
-</pre>
+</source>
 in <code>LocalSettings.php</code> after the require line <code>require( ...'StubManager.php' );</code> 
 
 == Examples ==
