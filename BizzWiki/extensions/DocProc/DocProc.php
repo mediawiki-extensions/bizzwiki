@@ -41,16 +41,15 @@ require('extensions/DocProc/DocProc.php');
 == Code ==
 </wikitext>*/
 
-global $wgExtensionCredits;
-$wgExtensionCredits[DocProcClass::thisType][] = array( 
-	'name'        => DocProcClass::thisName, 
+$wgExtensionCredits[DocProc::thisType][] = array( 
+	'name'        => DocProc::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => "Documents wikitext with 'markup/magic words' whilst still processing as per normal.",
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class DocProcClass
+class DocProc
 {
 	// constants.
 	const thisName = 'DocProc';
@@ -74,5 +73,3 @@ class DocProcClass
 		return '<'.$docTag.'>'.htmlspecialchars($text).'</'.$docTag.'>'.$pt;
 	}
 } // end class
-
-?>

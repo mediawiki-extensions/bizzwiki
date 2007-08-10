@@ -61,7 +61,7 @@ class FileManagerClass extends ExtensionClass
 
 		# Add a new log type
 		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]                           = 'commitscript';
+		$wgLogTypes[]                           = 'commitfil';
 		$wgLogNames  ['commitfil']              = 'commitfil'.'logpage';
 		$wgLogHeaders['commitfil']              = 'commitfil'.'logpagetext';
 		$wgLogActions['commitfil/commitfil']    = 'commitfil'.'logentry';
@@ -115,12 +115,13 @@ class FileManagerClass extends ExtensionClass
 		$titre = $article->mTitle->getText();
 		$shortTitle = self::getShortTitle( $titre );
 		
-		$this->currentFile = $IP.$titre;
+		$this->currentFile = $IP.'/'.$titre;
 
 		$nsname  = Namespace::getCanonicalName( $ns );	
 
 		// next, check if the 'filename' is valid.
 		// If not, file a log entry.
+		/*
 		if (!self::checkFilename( $titre ))
 		{
 			$action = 'commitfail2';
@@ -130,12 +131,12 @@ class FileManagerClass extends ExtensionClass
 		
 			return true;			
 		}		
-		
+		*/
 		$r = file_put_contents( $this->currentFile, $text );
 		
 		// write a log entry with the action result.
 		// -----------------------------------------
-		$action  = ($r === FALSE ? 'commitfail':'commitok' );
+		$action  = ($r === FALSE) ? 'commitfail':'commitok';
 		$message = wfMsgForContent( 'commitfil-commit-text', $nsname, $titre, $shortTitle );
 				
 		// we need to limit the text to 'commitscr' because of the database schema.

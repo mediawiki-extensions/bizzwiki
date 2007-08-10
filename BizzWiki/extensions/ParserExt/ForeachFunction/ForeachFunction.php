@@ -73,18 +73,18 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[ForeachFunctionClass::thisType][] = array( 
-	'name'        => ForeachFunctionClass::thisName, 
+$wgExtensionCredits[ForeachFunction::thisType][] = array( 
+	'name'        => ForeachFunction::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Looping functions for global objects using parser functions',
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class ForeachFunctionClass
+class ForeachFunction
 {
 	// constants.
-	const thisName = 'ForeachFunctionClass';
+	const thisName = 'ForeachFunction';
 	const thisType = 'other';
 
 	// Namespace exemption functionality
@@ -217,4 +217,3 @@ class ForeachFunctionClass
 	}
 
 } // end class.
-?>

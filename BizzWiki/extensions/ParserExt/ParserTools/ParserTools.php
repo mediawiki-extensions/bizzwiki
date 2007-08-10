@@ -29,16 +29,15 @@ require('extensions/ParserTools/ParserTools.php');
 == Code ==
 </wikitext>*/
 
-global $wgExtensionCredits;
-$wgExtensionCredits[ParserToolsClass::thisType][] = array( 
-	'name'        => ParserToolsClass::thisName, 
+$wgExtensionCredits[ParserTools::thisType][] = array( 
+	'name'        => ParserTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag',
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class ParserToolsClass
+class ParserTools
 {
 	// constants.
 	const thisName = 'ParserTools';
@@ -50,4 +49,3 @@ class ParserToolsClass
 	{ $parser->disableCache(); }
 
 } // end class
-?>

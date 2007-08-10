@@ -64,7 +64,7 @@ To install outside the BizzWiki platform:
 <source lang=php>
 require('/extensions/StubManager.php');
 
-StubManager::createStub(	'ScriptingToolsClass', 
+StubManager::createStub(	'ScriptingTools', 
 							$IP.'/extensions/ScriptingTools/ScriptingTools.php',
 							null,					// i18n file			
 							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
@@ -83,15 +83,15 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 </wikitext>*/
 
-$wgExtensionCredits[ScriptingToolsClass::thisType][] = array( 
-	'name'        => ScriptingToolsClass::thisName, 
+$wgExtensionCredits[ScriptingTools::thisType][] = array( 
+	'name'        => ScriptingTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Provides an interface between MediaWiki scripting tools',
 	'url' 		=> StubManager::getFullUrl(__FILE__),						
 );
 
-class ScriptingToolsClass
+class ScriptingTools
 {
 	const thisName = 'ScriptingTools';
 	const thisType = 'other';
