@@ -25,21 +25,21 @@ wikitext enclosed inside a 'code' section.
 The envisaged target application for this extension is to document wikitext that produces no direct user visible results.
 
 == Dependancy ==
-* [[Extension:ExtensionClass|ExtensionClass]]
+* [[Extension:StubManager|StubManager]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-require('extensions/DocProc/DocProc.php');
+require('extensions/DocProc/DocProc_stub.php');
 </source>
 
 == History ==
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[DocProc::thisType][] = array( 
 	'name'        => DocProc::thisName, 
@@ -73,3 +73,5 @@ class DocProc
 		return '<'.$docTag.'>'.htmlspecialchars($text).'</'.$docTag.'>'.$pt;
 	}
 } // end class
+
+// </source>

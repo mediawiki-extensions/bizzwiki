@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = NewUserEmailNotification
 |status      = beta
@@ -26,21 +26,15 @@ Provides email notification of new user account creation.
 * Uses '$wgEmergencyContact' as 'to' contact address
 
 == Dependancy ==
-* [[Extension:StubManager]] Extension
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download this extension's file(s) and place them in the extension's directory
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'NewUserEmailNotification', 
-							$IP.'/extensions/NewUserEmailNotification/NewUserEmailNotification.php',
-							$IP.'/extensions/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
-							array('AddNewAccount'),
-							false
-						 );
+require('extensions/NewUserEmailNotification/NewUserEmailNotification_stub.php');
 </source>
 
 == History ==
@@ -53,7 +47,7 @@ StubManager::createStub(	'NewUserEmailNotification',
 This extension is part of [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[NewUserEmailNotification::thisType][] = array( 
 	'name'    		=> NewUserEmailNotification::thisName,
 	'version' 		=> StubManager::getRevisionId('$Id$'),
@@ -113,4 +107,4 @@ class NewUserEmailNotification
 	}
 
 } // end class definition.
-?>
+//</source>

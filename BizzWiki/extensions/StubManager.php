@@ -67,6 +67,7 @@ None.
 
 == Installation ==
 To install independantly from BizzWiki:
+* Download the extension file 'StubManager.php' and place in the '/extensions' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');

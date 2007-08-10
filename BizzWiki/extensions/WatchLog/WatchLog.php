@@ -1,38 +1,52 @@
 <?php
-/*<wikitext>
-{| border=1
-| <b>File</b> || WatchLog.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+/*<!--<wikitext>-->
+{{Extension
+|name        = WatchLog
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/WatchLog/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides logging of users' page watch/unwatch activities.
 
 == Dependancy ==
-* StubManager Extension
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Download this extension's file(s) and place them in the extension's directory
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'WatchLog', 
-							$IP.'/extensions/WatchLog/WatchLog.php',
-							$IP.'/extensions/WatchLog/WatchLog.i18n.php',							
-							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
-							true
-						 );
+require('extensions/WatchLog/WatchLog_stub.php');
 </source>
 
 == History ==
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[WatchLog::thisType][] = array( 
 	'name'    => WatchLog::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
@@ -81,4 +95,4 @@ class WatchLog
 		return true;
 	}
 }
-?>
+//</source>

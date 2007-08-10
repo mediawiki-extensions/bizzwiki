@@ -35,9 +35,6 @@ This Mediawiki extension enables a user with the appropriate rights to manage th
 ** Summary field contains logging info - visible in 'RecentChanges'
 * New Namespace 'NS_INTERWIKI'
 
-== DEPENDANCY ==
-* [[Extension:StubManager]]
-
 == USAGE NOTES ==
 * Use "Interwiki:Main Page" to manage the interwiki links
 * Use the magic word <code>{{#iwl: prefix | URI | local flag | transclusion flag }}</code>
@@ -46,24 +43,16 @@ This Mediawiki extension enables a user with the appropriate rights to manage th
 == Example ==
 An example of 'Interwiki:Main Page' using the magic word '#iwl' [[Extension:InterWikiLinkManager/Example|here]].
 
-== INSTALLATION ==
-To install outside of the [[Extension:BizzWiki]] platform:
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
+
+== Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-define('NS_INTERWIKI', 100);             // just an example
-require_once($IP.'/includes/Namespace.php');  
-$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
-$wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
-require('extensions/StubManager.php');
-StubManager::createStub(	'InterWikiLinkManagerClass', 
-							$IP.'/extensions/InterWikiLinkManager/InterWikiLinkManager.php',
-							null,
-							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
-							false,			// no need for logging support
-							null,			// tags
-							array('iwl'),	// no parser functions
-							null,			// no magic words
-							array( NS_INTERWIKI ) // namespace trigger							
-						 );
+require('extensions/InterWikiLinkManager/InterWikiLinkManager_stub.php');
 </source>
 
 == History ==
@@ -362,3 +351,4 @@ class InterWikiLinkManager
 	}
 
 } // END CLASS DEFINITION
+//</source>

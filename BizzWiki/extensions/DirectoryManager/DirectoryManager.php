@@ -39,10 +39,10 @@ Provides a namespace 'Directory' for browsing the filesystem of a MediaWiki inst
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
 require('extensions/DirectoryManager/DirectoryManager_stub.php');
 </source>
 

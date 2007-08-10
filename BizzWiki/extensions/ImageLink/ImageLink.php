@@ -1,11 +1,31 @@
 <?php
-/*<wikitext>
-{{extension:
-|ImageLink.php
-|$Id$
-|Jean-Lou Dupont
+/*<!--<wikitext>-->
+{{Extension
+|name        = ImageLink
+|status      = stable
+|type        = parser
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ImageLink/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+
 == Purpose==
 Provides a clickable image link using an image stored in the Image namespace and an article title (which may or may not existin the database).
 
@@ -15,24 +35,15 @@ Provides a clickable image link using an image stored in the Image namespace and
 * <nowiki>{{#imagelink:New Clock.gif|Admin:Show Time|alternate text | width | height | border }}</nowiki>
 
 == Dependancy ==
-* [[Extension:StubManager]]
+* [[Extension:StubManager|StubManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'ImageLink', 
-							'extensions/ImageLink/ImageLink.php',
-							null,					// i18n file			
-							array('ParserAfterTidy'),	// hooks
-							false, 					// no need for logging support
-							null,					// tags
-							array('imagelink'),	// parser Functions
-							null
-						 );
-
+require('extensions/ImageLink/ImageLink_stub.php');
 </source>
 
 == Compatibility ==
@@ -43,7 +54,7 @@ Tested Compatibility: MW 1.8.2, 1.9.3, 1.10
 * Added 'stubbing' capability though StubManager
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ImageLink::thisType][] = array( 
 	'name'        	=> ImageLink::thisName, 
@@ -124,3 +135,4 @@ class ImageLink
 		return true;
 	}
 } // end class definition.
+//</source>

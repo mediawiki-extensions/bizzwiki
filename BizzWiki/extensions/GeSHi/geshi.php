@@ -1,10 +1,32 @@
 <?php
-/*<wikitext>
-== geshi extension ==
-The purpose of this extension is to provide a 'generic syntax highlighting' function to Mediawiki.
+/*<!--<wikitext>-->
+{{Extension
+|name        = geshi
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/Geshi/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
-== Revision Id ==
-$Id$
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+== Purpose ==
+The purpose of this extension is to provide a 'generic syntax highlighting' function to Mediawiki.
 
 == Features ==
 Use <nowiki><geshi lang=LANG lines=LINES source=SOURCE></geshi></nowiki> where:
@@ -25,8 +47,23 @@ Use <nowiki><geshi lang=LANG lines=LINES source=SOURCE></geshi></nowiki> where:
 * Added 'js' tag for highlighting 'Javascript'
 * Added 'css' tag for highlighting 'CSS'
 
+== Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
+
+== Installation ==
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
+<source lang=php>
+require('extensions/geshi/geshi_stub.php');
+</source>
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[geshiClass::thisType][] = array( 
 	'name'        	=> geshiClass::thisName, 
@@ -153,5 +190,4 @@ class geshiClass
 	}
 	
 } // END CLASS DEFINITION
-
-?>
+//</source>

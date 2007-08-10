@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = RegexNamespaceContext
 |status      = beta
@@ -17,6 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 
 == Purpose==
 Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext pages insertion.
@@ -78,18 +86,14 @@ To install independantly from BizzWiki:
 * Download [[Extension:ParserCacheControl]] extension & put in 'extensions' directory
 * Download [[Extension:PageFunctions]] extension & put in 'extensions' directory
 * Download [[Extension:RegexTools]] extension & put in 'extensions' directory
+* Download [[Extension:RegexNamespaceContext]] extension & put in 'extensions' directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
 require('extensions/PageFunctions.php');
 require('extensions/ParserCacheControl.php');
 require('extensions/RegexTools.php');
-StubManager::createStub(	'RegexNamespaceContext', 
-							$IP.'/extensions/RegexNamespaceContext/RegexNamespaceContext.php',
-							null,							
-							array( 'EditFormPreloadText', 'ParserAfterTidy', 'BeforePageDisplay' ),
-							false
-						 );
+require('extensions/RegexNamespaceContext_stub.php');
 </source>
 
 == History ==
@@ -102,7 +106,7 @@ StubManager::createStub(	'RegexNamespaceContext',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[RegexNamespaceContext::thisType][] = array( 
 	'name'    => RegexNamespaceContext::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
@@ -384,3 +388,4 @@ class RegexNamespaceContext
 		return true;			
 	} 	
 } // end declaration.
+//</source>
