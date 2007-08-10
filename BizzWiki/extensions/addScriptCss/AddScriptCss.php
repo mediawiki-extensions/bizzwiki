@@ -54,9 +54,6 @@ If no 'type' field is present, then the extension assumes 'js'.
 
 If no 'pos' field is present, then the extension assumes 'body'
 
-== DEPENDANCY ==
-ExtensionClass ( v>=306 )  
- 
 == USAGE NOTES ==
 When using 'pos=body', it is recommended to use the extension 'ParserCacheControl' in order to better integrate this extension with the standard MW parser cache.
  
