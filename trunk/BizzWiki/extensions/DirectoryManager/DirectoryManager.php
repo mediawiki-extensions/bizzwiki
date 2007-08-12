@@ -37,6 +37,14 @@ Provides a namespace 'Directory' for browsing the filesystem of a MediaWiki inst
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 
+== Usage Notes ==
+It is recommended to use:
+<source lang=php>
+$wgCapitalLinks = false;
+</source>
+in <code>LocalSettings.php</code>; default MediaWiki behavior is to capitalize title names which
+does not help with filesystem behavior on certain operating systems.
+
 == Installation ==
 To install independantly from BizzWiki:
 * Download & Install [[Extension:StubManager]] extension
