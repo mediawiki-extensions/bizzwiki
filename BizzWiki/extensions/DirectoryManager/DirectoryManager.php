@@ -47,6 +47,8 @@ require('extensions/DirectoryManager/DirectoryManager_stub.php');
 </source>
 
 == History ==
+* Fix for empty $files list
+* Fix for capital letter annoyance
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -91,6 +93,9 @@ class DirectoryManager
 		global $IP;
 		self::$dirBase = $IP;
 
+		global $wgCapitalLinks;
+		$wgCapitalLinks = false;
+
 		$this->filePattern = null;
 		$this->dirPattern = null;
 		$this->linePattern = null;
@@ -111,6 +116,9 @@ class DirectoryManager
 		if (NS_DIRECTORY!=$ns)
 			return true;
 		
+		global $wgCapitalLinks;
+		$wgCapitalLinks = false;
+		
 		$titre = $title->getText();
 		
 		if (!$wgUser->isAllowed( 'read', $ns, $titre ))
@@ -123,7 +131,19 @@ class DirectoryManager
 			return false; // stop normal processing flow.
 		}
 
-		$this->dir = $IP.'/'.$title->getText();
+		$titleText = $title->getText();
+		$dirName   = $IP.'/'.$titleText;
+
+		if (is_dir( $dirName ))
+			$this->dir = $dirName;
+		else
+			$this->dir = $IP.'/'.strtolower( substr( $titleText,0,1 )).substr( $titleText, 1 );
+		
+		#global $wgRequest;
+		#$reqdir = $wgRequest->getText( 'title' );
+		
+		#echo ' this->dir: '.$this->dir."<br/>\n";
+		#echo ' request title: '.$this->dir."<br/>\n";		
 		
 		$article = new Article( $title );
 		
@@ -151,8 +171,10 @@ class DirectoryManager
 		if (NS_DIRECTORY!=$ns)
 			return true;
 
-		// there is nothing to edit in this namespace!
-			
+		global $wgCapitalLinks;
+		$wgCapitalLinks = false;
+
+		// there is nothing to edit in this namespace!			
 		return false;	
 	}
 	private function doDirectoryPageDisplay( &$title, &$article )
@@ -232,34 +254,35 @@ class DirectoryManager
 		// The 'patterns' should have been removed by now.
 		$page = $template;
 		
-		foreach( $files as $file )
-		{
-			if ( $file['name'] =='.' )
-				continue;
-				
-			if ( $file['name'] == '..' )
-				$file['name'] = self::getDotDotFile( $dir, $base );
-				
-			// we might have reached the root...
-			if (empty($file['name']))
-				continue;
-				
-			switch( $file['type'] )
+		if (!empty( $files ))
+			foreach( $files as $file )
 			{
-				case 'dir':
-					$sline = $this->dirPattern;				
-					break;
+				if ( $file['name'] =='.' )
+					continue;
 					
-				case 'file':
-					$sline = $this->filePattern;					
-					break;
+				if ( $file['name'] == '..' )
+					$file['name'] = self::getDotDotFile( $dir, $base );
+					
+				// we might have reached the root...
+				if (empty($file['name']))
+					continue;
+					
+				switch( $file['type'] )
+				{
+					case 'dir':
+						$sline = $this->dirPattern;				
+						break;
+						
+					case 'file':
+						$sline = $this->filePattern;					
+						break;
+				}
+				self::replaceParams( $sline, $file['name'] );
+				$line = $this->linePattern;
+				self::replaceParams( $line, $sline );
+				
+				$page .= $line;
 			}
-			self::replaceParams( $sline, $file['name'] );
-			$line = $this->linePattern;
-			self::replaceParams( $line, $sline );
-			
-			$page .= $line;
-		}
 
 		return $page;
 	}
@@ -317,11 +340,15 @@ class DirectoryManager
 	public static function getDirectoryInformation( &$dir, &$base )
 	{
 		$files = @scandir( $dir );
+			
 		$upDir = self::getDotDotFile( $dir, $base );
 		$thisDir = self::getRelativePath( $dir, $base );
 		
 		#echo ' upDir:'.$upDir."<br/>\n";
 		#echo ' thisDir:'.$thisDir."<br/>\n";		
+
+		if (empty( $files ))
+			return null;
 		
 		foreach( $files as &$file )
 		{
