@@ -14,6 +14,7 @@
 	1) Namespace level permission policing ('browse' right)
 	2) Adjusted for queries where 'page_namespace' is not included. 
 	   Now support queries in the 'user' table.
+	3) Adjusted to support the 'NS_IMAGE' and 'NS_CATEGORY' namespaces betters
 	
 */
 /**
@@ -233,6 +234,10 @@ abstract class IndexPager implements Pager {
 						$ns = NS_USER;
 					elseif ( is_object( $this->mPageHistory->mTitle ) )
 						$ns = $this->mPageHistory->mTitle->getNamespace(); 
+					elseif ( isset( $row->img_name ))
+						$ns = NS_IMAGE;
+					elseif ( isset( $row->cl_to ))
+						$ns = NS_CATEGORY;
 					else
 						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;

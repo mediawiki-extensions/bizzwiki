@@ -34,6 +34,10 @@ $wgCachePages        = true;
 $wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension 
 					// to achieve the same goal
 
+// Capital Letter Links
+// are annoying for NS_FILESYSTEM & NS_DIRECTORY namespaces
+$wgCapitalLinks = false;
+
 // Need to include standard 'Namespace.php'
 require($IP.'/includes/Namespace.php');
 

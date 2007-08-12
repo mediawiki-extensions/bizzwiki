@@ -135,7 +135,7 @@ class FileManager
 		$this->docommit = true;
 		
 		// MediaWiki messes up with artitle title names i.e. capitalization
-		$this->requestTitle = $wgRequest->getText( 'title' );
+		#$this->requestTitle = $wgRequest->getText( 'title' );
 	}
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.
