@@ -41,6 +41,14 @@ This Mediawiki extension enables a user with the 'commitfile' right to edit file
 == DEPENDANCY ==
 * [[Extension:StubManager]]
 
+== Usage Notes ==
+It is recommended to use:
+<source lang=php>
+$wgCapitalLinks = false;
+</source>
+in <code>LocalSettings.php</code>; default MediaWiki behavior is to capitalize title names which
+does not help with filesystem behavior on certain operating systems.
+
 == History ==
 * fixed for 'wgCapitalLinks' 
 * fixed for suppressing PHP error messages on file_get_contents
