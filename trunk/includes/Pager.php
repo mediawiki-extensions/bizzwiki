@@ -252,8 +252,15 @@ abstract class IndexPager implements Pager {
 						$ns = NS_USER;
 					elseif ( is_object( $this->mPageHistory->mTitle ) )
 						$ns = $this->mPageHistory->mTitle->getNamespace(); 
+					elseif ( isset( $row->img_name ))
+						$ns = NS_IMAGE;
+					elseif ( isset( $row->cl_to ))
+						$ns = NS_CATEGORY;
 					else
+					{
 						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
+						var_dump( $row );
+					}
 					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
 					// BizzWiki end }}
 					$s .= $this->formatRow( $row );

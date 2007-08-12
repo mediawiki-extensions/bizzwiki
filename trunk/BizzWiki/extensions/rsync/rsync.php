@@ -190,7 +190,13 @@ class rsync
 		
 		return true;		
 	}
+	/**
 	
+	 */
+	public function hTitleMoveComplete( &$title, &$nt, &$wgUser, $pageid, $redirid )
+	{
+		
+	}
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	
 	/**

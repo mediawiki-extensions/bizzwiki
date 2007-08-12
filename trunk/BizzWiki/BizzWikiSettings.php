@@ -215,7 +215,7 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_PROJECT, NS_PROJECT_TALK,
 								NS_CATEGORY, NS_CATEGORY_TALK,
 								NS_HELP, NS_HELP_TALK,
-								NS_SPECIAL,
+								NS_SPECIAL,  // comment out this namespace to restrict access to special pages.
 								NS_INTERWIKI // BizzWiki specific
 								); 
 
@@ -229,6 +229,8 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","raw")] = true;   
 	#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey($bwx,"~","viewsource")] = true;
 }
+// to enable anonymous access to the login/create account special page.
+#$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Userlogin","read")] = true;
 
 	// 'Users' inherit all rights from '*' (anonymous)
 	// ############################################### 
