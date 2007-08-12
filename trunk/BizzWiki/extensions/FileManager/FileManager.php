@@ -110,6 +110,7 @@ class FileManager
 	var $currentFile;
 	var $currentExtractFile;
 	var $currentExtractMtime;
+	var $requestTitle;
 
 	function __construct()
 	{
@@ -132,6 +133,9 @@ class FileManager
 		// Keep this 'true' until I get around to doing
 		// the 'commit' functionality.
 		$this->docommit = true;
+		
+		// MediaWiki messes up with artitle title names i.e. capitalization
+		$this->requestTitle = $wgRequest->getText( 'title' );
 	}
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	// setup of this hook occurs in 'ExtensionClass' base class.

@@ -26,7 +26,7 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose ==   
-This Mediawiki extension enables a user with the appropriate rights to manage the InterWiki Links of the database.
+This MediaWiki extension enables a user with the appropriate rights to manage the InterWiki Links of the database.
 
 == Features ==
 * Can be used independantly of BizzWiki environment 
@@ -60,6 +60,7 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager_stub.php');
 * Added 'stubbing' capability
 * Fixed missing 'h' in hook 'SpecialVersionExtensionTypes' handler method
 * Added namespace trigger
+* Easier installation
 
 == TODO ==
 * Add more validation
