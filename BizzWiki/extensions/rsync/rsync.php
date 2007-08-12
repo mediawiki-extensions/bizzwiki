@@ -47,7 +47,29 @@ along with 'rsync' to provide backup & restore functionality.
 ** Move (???)
 
 == Theory Of Operation ==
-Page change events are trapped and the resulting new/updated pages are written to a specified filesystem directory.
+Page change events are trapped and the resulting new/updated pages are written to a 
+specified filesystem directory. Trapping is done through the 'RecentChange_save' hook.
+
+=== New page ===
+File generated: <code>RC-id-new.xml</code>
+
+=== Edit page ===
+File generated: <code>RC-id-edit.xml</code>
+
+=== Delete page ===
+File generated: <code>RC-id-delete.xml</code>
+
+=== Move page ===
+File generated: <code>RC-id-move.xml</code>
+
+=== Filename ===
+Format: <code> RC-id-type.xml</code>
+* id: unique identifier generated in the context of the 'RecentChanges' table
+* type: 'new', 'edit' or 'log'
+** new --> new page
+** edit --> edit on a page
+** delete --> page deletion
+** log --> log entry
 
 == Usage Notes ==
 Make sure that the dump directory is writable.
