@@ -36,6 +36,10 @@ as if they could.
 * Parser cache friendliness: content inserted in the script's head persists in the parser cache
 ** The extension must be enabled to continue the support of the inserted content
 
+== Usage ==
+* Use the standard <nowiki><html></nowiki> tags (see [[Manual:$wgRawHtml]]) within a protected page. One can either protect the page before or after the inclusion of the said tag(s).
+* Use <code><addtohead> some html code to insert in the document's head </addtohead></code>
+
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 
@@ -59,6 +63,9 @@ protected in order to use 'html' tags
 
 == Todo ==
 * Fix for allowing more customization of 'exempt' namespaces even when using StubManager
+
+== See also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/
@@ -87,15 +94,20 @@ class SecureHTML
 		if (defined('NS_BIZZWIKI'))   self::$exemptNamespaces[] = NS_BIZZWIKI;
 		if (defined('NS_FILESYSTEM')) self::$exemptNamespaces[] = NS_FILESYSTEM;
 	}
-
+	/**
+		This hook is required for adapting to 'parser cache' article saving
+	 */
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
-	// This hook is required for adapting to 'parser cache' article saving
+	{ return $this->process( $article ); }
+	/**
+		 This hook is required when 'parser caching' functionality is not used.	
+	 */
+	public function hArticleViewHeader( &$article )
 	{ return $this->process( $article ); }
 
-	public function hArticleViewHeader( &$article )
-	// This hook is required when 'parser caching' functionality is not used.
-	{ return $this->process( $article ); }
-	
+	/**
+		Attempt article processing with 'raw html tags'.
+	 */	
 	private function process( &$article )
 	{
 		if (!$this->canProcess( $article ) ) return true;
@@ -107,6 +119,9 @@ class SecureHTML
 		
 		return true; // continue hook-chain.
 	}
+	/**
+		Verify's article protection status.
+	 */
 	private function canProcess( &$obj )
 	{
 		if (!is_object( $obj ))
@@ -114,8 +129,6 @@ class SecureHTML
 			
 		if (is_a( $obj, 'Article'))
 			$title = $obj->mTitle;
-		elseif (is_a( $obj, 'Title'))
-			$title = $obj;
 		else
 			return false;
 		

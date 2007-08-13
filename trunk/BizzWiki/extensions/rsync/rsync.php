@@ -71,6 +71,15 @@ Format: <code> RC-id-type.xml</code>
 ** delete --> page deletion
 ** log --> log entry
 
+== Implementation ==
+=== Move Page ===
+A move transaction is the page with the new title enclosed in an xml file WITH
+a new section 'old_title'.
+
+=== Page Restrictions ===
+Needed to superclass 'WikiExporter' and 'XmlDumpWriter' classes.
+
+
 == Usage Notes ==
 Make sure that the dump directory is writable.
 
