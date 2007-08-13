@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>(($disable$))
+/*(($disable$))<!--<wikitext>-->
 {{Extension
 |name        = UserTools
 |status      = beta
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides a secure magic word 'usergetoption' to retrieve user options.
 
@@ -37,15 +44,11 @@ This extension is really meant to be used with [[Extension:ParserPhase2]].
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
-									'classfilename'	=> $IP.'/extensions/ParserExt/UserTools/UserTools.php',
-									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
-								)
-						);
+require('extensions/UserTools/UserTools_stub.php');
 </source>
 
 == History ==
@@ -56,8 +59,7 @@ StubManager::createStub2(	array(	'class' 		=> 'UserTools',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
-
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[UserTools::thisType][] = array( 
 	'name'        => UserTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -182,3 +184,4 @@ class UserTools
 	}
 	
 } // end class
+//</source>

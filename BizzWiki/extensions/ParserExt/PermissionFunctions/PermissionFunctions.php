@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))<wikitext>
+/*(($disable$))<!--<wikitext>-->
 {{Extension
 |name        = PermissionFunctions
 |status      = beta
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides a collection of permission management functionality.
 
@@ -37,19 +44,11 @@ E.g. check to see if the current user has the 'edit' right
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'PermissionFunctions', 
-							$IP.'/extensions/ParserExt/PermissionFunctions/PermissionFunctions.php',
-							null,							
-							array('EndParserPhase2'),
-							false, // no need for logging support
-							null,	// tags
-							array( 'checkpermission' ),  //of parser function magic words,
-							null
-						 );
+require('extensions/PermissionFunctions/PermissionFunctions.php');
 </source>
 
 == History ==
@@ -62,7 +61,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == History ==
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[PermissionFunctions::thisType][] = array( 
 	'name'        => PermissionFunctions::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -137,3 +136,4 @@ class PermissionFunctions
 		return hnpClass::userCanInternal( $user, $ns, $pt, $action );
 	}
 } // end class.
+//</source>

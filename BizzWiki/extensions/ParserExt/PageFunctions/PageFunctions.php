@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))<wikitext>
+/*(($disable$))<!--<wikitext>-->
 {{Extension
 |name        = PageFunctions
 |status      = beta
@@ -17,6 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 
 == Purpose ==
 Provides a 'magic word' interface to retrieve useful page level information.           
@@ -62,26 +70,13 @@ Of course, the same magic words can be used in the context of 'ParserCache2' i.e
 * [[Extension:ParserPhase2]] extension (optional)
 
 == Installation ==
-To install outside of the BizzWiki platform, perform the following
-changes to 'LocalSettings.php':
-
+To install independantly from BizzWiki:
+* Download & Install [[Extension:StubManager]] extension
+* Download & Install [[Extension:ParserPhase2]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require_once($IP.'/extensions/StubManager.php');
-StubManager::createStub(	'PageFunctionsClass', 
-							$IP.'/extensions/ParserExt/PageFunctions/PageFunctions.php',
-							null,
-							array( 'PageVarGet', 'PageVarSet' ),
-							false, // no need for logging support
-							null,	// tags
-							array( 'pagetitle','pagesubtitle','pageexists',
-									'varset', 'varget',
-									'varaset', 'varaget',
-									'varcapset',
-									'cshow',
-									'noext'
-									 ),  				//of parser function magic words,
-							array( 'noclientcaching' )	// magic words
-						 );
+require('extensions/PageFunctions/PageFunctions.php');
 </source>
 
 == See also ==
@@ -94,9 +89,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 * Added 'noclientcaching' magic word
 * Added 'noext' magic word
 
-</wikitext>*/
-
-global $wgExtensionCredits;
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[PageFunctions::thisType][] = array( 
 	'name'        => PageFunctions::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -258,3 +251,4 @@ class PageFunctions
 	}
 
 } // end class	
+//</source>
