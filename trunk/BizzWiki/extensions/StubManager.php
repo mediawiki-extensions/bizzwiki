@@ -297,7 +297,7 @@ class StubManager
 		
 		if (!empty( self::$stubList ))
 			foreach( self::$stubList as $index => $obj )
-				$result .= $obj['class'].' ';
+				$result .= '[[Extension:'.$obj['class']."]]<br/>\n";
 				
 		$result=trim($result);
 		
