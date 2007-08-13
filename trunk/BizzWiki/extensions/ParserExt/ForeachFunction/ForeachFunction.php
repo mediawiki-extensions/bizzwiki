@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = ForeachFunction
 |status      = beta
@@ -50,28 +50,20 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
+* Download & install [[Extension:StubManager]] extension
+* Download & install [[Extension:ParserPhase2]] extension
+* Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'ForeachFunctionClass', 
-							$IP.'/extensions/ParserExt/ForeachFunction/ForeachFunction.php',
-							null,							
-							null,
-							false, // no need for logging support
-							null,	// tags
-							array( 'foreachx','foreachy','forx' ),  //of parser function magic words,
-							null
-						 );
+require('extensions/ForeachFunction/ForeachFunction_stub.php');
 </source>
-
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == History ==
 
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[ForeachFunction::thisType][] = array( 
 	'name'        => ForeachFunction::thisName, 
@@ -217,3 +209,4 @@ class ForeachFunction
 	}
 
 } // end class.
+//</source>

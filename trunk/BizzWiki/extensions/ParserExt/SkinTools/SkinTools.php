@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>(($disable$))
+/*(($disable$))<!--<wikitext>-->
 {{Extension
 |name        = SkinTools
 |status      = beta
@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides skin level functions.
 
@@ -36,18 +43,12 @@ This extension is really meant to be used with [[Extension:ParserPhase2]].
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension (make sure to have the latest version)
-* Download and install [[Extension:ParserPhase2]]
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Download & Install [[Extension:ParserPhase2]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require_once('extensions/StubManager.php');
-StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
-									'classfilename'	=> $IP.'/extensions/ParserExt/SkinTools/SkinTools.php',
-									'hooks'			=> array( 'SkinTemplateTabs' ),
-									'mgs'			=> array( 'clearactions', 'removeactions', 'addaction' ),
-								)
-						);
-
+require('extensions/SkinTools/SkinTools_stub.php');
 </source>
 
 == History ==
@@ -56,9 +57,7 @@ StubManager::createStub2(	array(	'class' 		=> 'SkinTools',
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
-</wikitext>*/
-
-global $wgExtensionCredits;
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[SkinTools::thisType][] = array( 
 	'name'        => SkinTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -159,3 +158,4 @@ class SkinTools
 	}
 	
 } // end class
+//</source>

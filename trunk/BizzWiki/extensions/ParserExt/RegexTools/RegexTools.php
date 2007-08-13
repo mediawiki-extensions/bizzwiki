@@ -1,5 +1,5 @@
 <?php
-/*<wikitext>
+/*<!--<wikitext>-->
 {{Extension
 |name        = RegexTools
 |status      = stable
@@ -17,6 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides 'magic words' performing regular expression pattern ( aka 'regex' )matching.
 
@@ -37,26 +45,20 @@ Provides 'magic words' performing regular expression pattern ( aka 'regex' )matc
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-StubManager::createStub(	'RegexTools', 
-							$IP.'/extensions/ParserExt/RegexTools/RegexTools.php',
-							null,						// no i18n file
-							null,						// no hooks
-							false, 						// no need for logging support
-							null,						// tags
-							array('regx_vars', 'regx'), // parser Functions
-							null
-						 );
+require('extensions/RegexTools/RegexTools_stub.php');
 </source>
 
 == History ==
 
-== Code ==
-</wikitext>*/
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
+== Code ==
+<!--</wikitext>--><source lang=php>*/
 $wgExtensionCredits[RegexTools::thisType][] = array( 
 	'name'        => RegexTools::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
@@ -115,3 +117,4 @@ class RegexTools
 		return false;
 	}
 } // end class declaration.
+//</source>

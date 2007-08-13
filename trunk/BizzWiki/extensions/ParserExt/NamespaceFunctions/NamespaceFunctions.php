@@ -1,13 +1,30 @@
 <?php
-/*<wikitext>
-{| border=1
-| <b>File</b> || NamespaceFunctions.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+/*<!--<wikitext>-->
+{{Extension
+|name        = NamespaceFunctions
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/NamespaceFunctions/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Collection of namespace management functionality.
 
@@ -29,21 +46,24 @@ require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php');
 
 == History ==
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
-</wikitext>*/
-global $wgExtensionCredits;
-$wgExtensionCredits[NamespaceFunctionsClass::thisType][] = array( 
-	'name'        => NamespaceFunctionsClass::thisName, 
+<!--</wikitext>--><source lang=php>*/
+
+$wgExtensionCredits[NamespaceFunctions::thisType][] = array( 
+	'name'        => NamespaceFunctions::thisName, 
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => '',
 	'url' 		=> StubManager::getFullUrl(__FILE__),			
 );
 
-class NamespaceFunctionsClass
+class NamespaceFunctions
 {
 	// constants.
-	const thisName = 'NamespaceFunctionsClass';
+	const thisName = 'NamespaceFunctions';
 	const thisType = 'other';
 		
 	function __construct( ) {	}
@@ -115,5 +135,4 @@ class NamespaceFunctionsClass
 
 
 } // end class.
-
-?>
+//</source>

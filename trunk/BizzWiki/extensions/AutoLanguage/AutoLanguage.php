@@ -3,7 +3,7 @@
 {{Extension
 |name        = AutoLanguage
 |status      = stable
-|type        = other
+|type        = hook
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -57,6 +57,9 @@ This extension is heavily based on the 'Polyglot' extension found on Mediawiki.o
 
 == History ==
 * Removed dependency on ExtensionClass
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/

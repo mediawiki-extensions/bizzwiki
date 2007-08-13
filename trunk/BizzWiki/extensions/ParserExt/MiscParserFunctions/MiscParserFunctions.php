@@ -1,11 +1,30 @@
 <?php
-/*<wikitext>
-{{extension:
-|MiscParserFunctions.php
-|$Id$
-|Jean-Lou Dupont
+/*<!--<wikitext>-->
+{{Extension
+|name        = MiscParserFunctions
+|status      = beta
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ParserExt/MiscParserFunctions/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
 }}
- 
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Provides miscellaneous parser functions (e.g. #trim, #nowikitext).
 
@@ -20,18 +39,21 @@ Provides miscellaneous parser functions (e.g. #trim, #nowikitext).
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download 'StubManager' extension
-* Apply the following changes to 'LocalSettings.php'
+* Download & Install [[Extension:StubManager]] extension
+* Dowload all this extension's files and place in the desired directory
+* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/StubManager.php');
-require('extensions/MiscParserFunctions/MiscParserFunctions.php');
+require('extensions/XYZ/XYZ_stub.php');
 </source>
 
 == History ==
 * Adapted to StubManager's stubbing facility
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 $wgExtensionCredits[MiscParserFunctions::thisType][] = array( 
 	'name'        => MiscParserFunctions::thisName, 
@@ -136,3 +158,4 @@ class MiscParserFunctions
 
 
 } // end class
+//</source>
