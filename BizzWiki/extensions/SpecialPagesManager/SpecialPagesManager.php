@@ -17,7 +17,14 @@
 |rights      =
 |example     =
 }}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Gives the ability to a sysop to enhance a Mediawiki installation with custom 'special pages'
 managed directly from the database (instead of PHP files).
@@ -68,4 +75,3 @@ StubManager::createStub(	'SpecialPagesManagerClass',
 							null,	// no parser functions
 							null	// no magic words
 						 );
-?>
