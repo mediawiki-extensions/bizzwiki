@@ -37,6 +37,7 @@ along with 'rsync' to provide backup & restore functionality.
 ** Update
 ** Delete
 ** Move
+** Protection
 * User
 ** Account creation
 ** Account options update
@@ -78,7 +79,7 @@ a new section 'old_title'.
 
 === Page Restrictions ===
 Needed to superclass 'WikiExporter' and 'XmlDumpWriter' classes.
-
+* Added 'restrictions' section to the XML dump
 
 == Usage Notes ==
 Make sure that the dump directory is writable.
@@ -284,7 +285,7 @@ class rsync
 		#die();
 
 		$db = wfGetDB( DB_SLAVE );
-		$exporter = new WikiExporter( $db, $op->history );
+		$exporter = new WikiExporterEx( $db, $op->history );
 		
 		$exporter->setOutputSink( $dump );
 
@@ -293,6 +294,8 @@ class rsync
 		$title = Title::makeTitle( $op->ns, $op->title );
 		if( is_null( $title ) ) return;
 
+		$exporter->setPageTitle( $title );
+		
 		$exporter->pageByTitle( $title );
 		
 		$exporter->closeStream();
@@ -354,5 +357,42 @@ class rsync_operation
 	}
 	
 } // end class
+
+/**
+	Class definition can be found in includes/Export.php
+ */
+class XmlDumpWriterEx extends XmlDumpWriter
+{
+	var $pageTitle;
+	
+	function openPage( $row )
+	{
+		$out = parent::openPage( $row );
+
+		if (is_a( $this->pageTitle, 'Title' ))
+		{
+			$this->pageTitle->loadRestrictions();
+			if (!empty( $this->pageTitle->mRestrictions ))
+				$out .= '    ' . wfElement( 'restrictions', array(),
+					strval( $this->pageTitle->mRestrictions ) ) . "\n";
+		}			
+		return $out;
+	}
+	
+} // end class
+
+class WikiExporterEx extends WikiExporter
+{
+	public function __construct( &$db, $history = WikiExporter::CURRENT,
+			$buffer = WikiExporter::BUFFER, $text = WikiExporter::TEXT )	
+	{
+		parent::__construct( $db, $history, $buffer, $text );	
+		$this->writer = new XmlDumpWriterEx();
+	}			
+	public function setPageTitle( &$title )	
+	{
+		$this->writer->pageTitle = $title;	
+	}
+}
 
 //</source>

@@ -13,7 +13,7 @@ DirectoryManager::$msg['en'] = array(
 'directorymanager'.'view'	=> 'View directory <i>$1</i>',
 'directorymanager'.'-template'=> 
 '	<filepattern>[[Filesystem:$1]]</filepattern>
-	<dirpattern>[[Directory:$1]]</dirpattern>
+	<dirpattern>{{#directory:$1|$1}}</dirpattern>
 	<linepattern>$1<br/></linepattern>
 
 	<b>Directory Listing</b>

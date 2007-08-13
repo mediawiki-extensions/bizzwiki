@@ -57,6 +57,8 @@ require('extensions/DirectoryManager/DirectoryManager_stub.php');
 == History ==
 * Fix for empty $files list
 * Fix for capital letter annoyance
+* Added '#directory' magic word
+* Added 'green' anchors for directories
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -126,6 +128,9 @@ class DirectoryManager
 		
 		global $wgCapitalLinks;
 		$wgCapitalLinks = false;
+		
+		global $wgRawHtml;
+		$wgRawHtml = true;
 		
 		$titre = $title->getText();
 		
@@ -218,7 +223,7 @@ class DirectoryManager
 	 */
 	private function getTemplate()
 	{
-		$template = wfMsgForContent( 'directorymanager'.'-template' );	
+		$template = wfMsgNoTrans/*ForContent*/( 'directorymanager'.'-template' );	
 		
 		$this->filePattern = self::extractPattern( self::filePatternTag, $template );
 		$this->dirPattern  = self::extractPattern( self::dirPatternTag, $template );		
@@ -408,6 +413,23 @@ class DirectoryManager
 	{
 		return @filemtime( $dir );	
 	}
+	/**
+		Handler for '#directory' magic word
+	 */
+	public function mg_directory( &$parser, $path = null, $text = null )	
+	{
+		if (empty( $path ))	
+			return null;
+			
+		$title = Title::makeTitle( NS_DIRECTORY, $path );
+		if (is_null( $title ))
+			return null;
+		
+		$uri = $title->getLocalUrl();
+		
+		return sprintf('<html><a style="color:green" href="%s">%s</a></html>', $uri, $text);
+	}
+	
 } // end class
 
 require( 'DirectoryManager.i18n.php' );

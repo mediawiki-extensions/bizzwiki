@@ -39,7 +39,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php'
 <source lang=php>
 require('extensions/StubManager.php');
-require('extensions/XYZ/XYZ.php');
+require('extensions/DirectoryManager/DirectoryManager_stub.php');
 </source>
 
 == History ==
@@ -56,6 +56,7 @@ StubManager::createStub2(	array(	'class' 		=> 'DirectoryManager',
 																'CustomEditor',
 															), //end hooks
 									'nss'			=>	array(NS_DIRECTORY),
+									'mgs'			=>	array( 'directory' ),
 								)
 						);
 //</source>
