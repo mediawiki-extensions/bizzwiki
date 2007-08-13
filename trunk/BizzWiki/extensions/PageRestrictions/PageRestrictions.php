@@ -1,13 +1,30 @@
 <?php
-/*<wikitext>
-{| border=1
-| <b>File</b> || PageRestrictions.php
-|-
-| <b>Revision</b> || $Id$
-|-
-| <b>Author</b> || Jean-Lou Dupont
-|}<br/><br/>
- 
+/*<!--<wikitext>-->
+{{Extension
+|name        = PageRestrictions
+|status      = stable
+|type        = other
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with a earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/PageRestrictions/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
 == Purpose==
 Adds page level restrictions. The setting of these restrictions is granted to a user with the 'protect' right.
 
@@ -27,8 +44,11 @@ occurs centrally in 'HierarchicalNamespacePermissions' extension.
 
 == History ==
 
+= See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
-</wikitext>*/
+<!--</wikitext>--><source lang=php>*/
 
 class PageRestrictionsClass extends ExtensionClass
 {
@@ -124,4 +144,4 @@ else
 	PageRestrictionsClass::singleton();
 	require('PageRestrictions.i18n.php');	
 }
-?>
+//</source>

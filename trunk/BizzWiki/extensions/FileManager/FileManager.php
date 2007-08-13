@@ -72,6 +72,7 @@ does not help with filesystem behavior on certain operating systems.
 * enhance 'logging' through $type etc.
 
 == Installation ==
+* Create the namespace 'NS_FILESYSTEM'
 * Install [[Extension:StubManager]] extension
 * Download all the files from the SVN link
 * Place in a directory e.g. 'extensions/FileManager'

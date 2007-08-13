@@ -229,6 +229,13 @@ class rsync
 	{
 		
 	}
+	/**
+	
+	 */
+	public function hArticleProtectComplete( &$article, &$user, &$limit, &$reason )
+	{
+		
+	}
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	
 	/**

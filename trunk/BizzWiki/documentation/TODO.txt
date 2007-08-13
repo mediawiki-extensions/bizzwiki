@@ -13,7 +13,6 @@ $Id$
 * Special:Import --> more granular right i.e. namespace level ??
 * View User details: probably special page required for that
 * "Delete User" extension
-* User Log-in/out logs
 * 'Block User' functionality: make sure the user is disallowed any 'edit' access
 
 == SuperGroups ==
@@ -113,3 +112,7 @@ Hi, I just found out that even if you disable viewing pages for non logged in us
 the uploaded media files when entering the direct URL. 
 Is there a way to give only access to logged in users to download media files? 
 --[[User:83.228.136.57|83.228.136.57]] 19:04, 7 August 2007 (UTC)
+
+== Rights Management ==
+=== Granting ===
+* Only when user X has himself right R that can he delegate/remove right R to user Y (?)
