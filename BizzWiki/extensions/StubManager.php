@@ -87,7 +87,7 @@ require('extensions/StubManager.php');
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
 <!--</wikitext>-->*/
-// <source lang=php>
+//<source lang=php>
 $wgExtensionCredits[StubManager::thisType][] = array( 
 	'name'    => StubManager::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
