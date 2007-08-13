@@ -47,6 +47,7 @@ does not help with filesystem behavior on certain operating systems.
 
 == Installation ==
 To install independantly from BizzWiki:
+* Create the namespace 'NS_DIRECTORY'
 * Download & Install [[Extension:StubManager]] extension
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:

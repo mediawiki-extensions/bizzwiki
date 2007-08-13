@@ -1,216 +1,216 @@
 Here is a list of the currently supported parser related 'tags', 'magic words' and 'parser functions' (list version $Id$).
 {| border=1
-{{row|code              | tag             | Parser }}
-{{row|html              | tag             | Parser }}
-{{row|pre               | tag             | Parser }}
-{{row|math              | tag             | Parser }}
-{{row|hiero             | tag             | Parser }}
-{{row|__ TOC __           | magic word      | Parser }}
-{{row|__ FORCETOC __      | magic word      | Parser }}
-{{row|__ TOC __           | magic word      | Parser }}
-{{row|__ NOEDITSECTION __ | magic word      | Parser }}
-{{row|__ NEWSECTIONLINK __| magic word      | Parser }}
-{{row|__ NOCONTENTCONVERT __| magic word    | Parser }}
-{{row|__ NOCC __          | magic word      | Parser }}
-{{row|__ NOGALLERY __     | magic word      | Parser }}
-{{row|__ NOTITLECONVERT __| magic word      | Parser }}
-{{row|__ NOTC __          | magic word      | Parser }}
-{{row|__ END __           | magic word      | Parser }}
-{{row|__ START __         | magic word      | Parser }}
-{{row|int               | parser function | Parser }}
-{{row|ns                | parser function | Parser }}
-{{row|urlencode         | parser function | Parser }}
-{{row|lcfirst           | parser function | Parser }}
-{{row|ucfirst           | parser function | Parser }}
-{{row|lc                | parser function | Parser }}
-{{row|uc                | parser function | Parser }}
-{{row|localurl          | parser function | Parser }}
-{{row|localurle         | parser function | Parser }}
-{{row|fullurl           | parser function | Parser }}
-{{row|fullurle          | parser function | Parser }}
-{{row|formatnum         | parser function | Parser }}
-{{row|grammar           | parser function | Parser }}
-{{row|plural            | parser function | Parser }}
-{{row|numberofpages     | parser function | Parser }}
-{{row|numberofusers     | parser function | Parser }}
-{{row|numberofarticles  | parser function | Parser }}
-{{row|numberoffiles     | parser function | Parser }}
-{{row|numberofadmins    | parser function | Parser }}
-{{row|numberofedits     | parser function | Parser }}
-{{row|language          | parser function | Parser }}
-{{row|padleft           | parser function | Parser }}
-{{row|padright          | parser function | Parser }}
-{{row|anchorencode      | parser function | Parser }}
-{{row|special           | parser function | Parser }}
-{{row|defaultsort       | parser function | Parser }}
-{{row|displaytitle      | parser function | Parser }}
-{{row|pagesinnamespace  | parser function | Parser }}
+{{Row|code              | tag             | Parser }}
+{{Row|html              | tag             | Parser }}
+{{Row|pre               | tag             | Parser }}
+{{Row|math              | tag             | Parser }}
+{{Row|hiero             | tag             | Parser }}
+{{Row|__ TOC __           | magic word      | Parser }}
+{{Row|__ FORCETOC __      | magic word      | Parser }}
+{{Row|__ TOC __           | magic word      | Parser }}
+{{Row|__ NOEDITSECTION __ | magic word      | Parser }}
+{{Row|__ NEWSECTIONLINK __| magic word      | Parser }}
+{{Row|__ NOCONTENTCONVERT __| magic word    | Parser }}
+{{Row|__ NOCC __          | magic word      | Parser }}
+{{Row|__ NOGALLERY __     | magic word      | Parser }}
+{{Row|__ NOTITLECONVERT __| magic word      | Parser }}
+{{Row|__ NOTC __          | magic word      | Parser }}
+{{Row|__ END __           | magic word      | Parser }}
+{{Row|__ START __         | magic word      | Parser }}
+{{Row|int               | parser function | Parser }}
+{{Row|ns                | parser function | Parser }}
+{{Row|urlencode         | parser function | Parser }}
+{{Row|lcfirst           | parser function | Parser }}
+{{Row|ucfirst           | parser function | Parser }}
+{{Row|lc                | parser function | Parser }}
+{{Row|uc                | parser function | Parser }}
+{{Row|localurl          | parser function | Parser }}
+{{Row|localurle         | parser function | Parser }}
+{{Row|fullurl           | parser function | Parser }}
+{{Row|fullurle          | parser function | Parser }}
+{{Row|formatnum         | parser function | Parser }}
+{{Row|grammar           | parser function | Parser }}
+{{Row|plural            | parser function | Parser }}
+{{Row|numberofpages     | parser function | Parser }}
+{{Row|numberofusers     | parser function | Parser }}
+{{Row|numberofarticles  | parser function | Parser }}
+{{Row|numberoffiles     | parser function | Parser }}
+{{Row|numberofadmins    | parser function | Parser }}
+{{Row|numberofedits     | parser function | Parser }}
+{{Row|language          | parser function | Parser }}
+{{Row|padleft           | parser function | Parser }}
+{{Row|padright          | parser function | Parser }}
+{{Row|anchorencode      | parser function | Parser }}
+{{Row|special           | parser function | Parser }}
+{{Row|defaultsort       | parser function | Parser }}
+{{Row|displaytitle      | parser function | Parser }}
+{{Row|pagesinnamespace  | parser function | Parser }}
 
-{{row|currentmonth      | magic word      | Parser }}
-{{row|currentmonthname  | magic word      | Parser }}
-{{row|currentmonthnamegen| magic word     | Parser }}
-{{row|currentmonthabbrev| magic word      | Parser }}
-{{row|currentday        | magic word      | Parser }}
-{{row|currentday2       | magic word      | Parser }}
-{{row|localmonth        | magic word      | Parser }}
-{{row|localmonthname    | magic word      | Parser }}
-{{row|localmonthnamegen | magic word      | Parser }}
-{{row|localmonthabbrev  | magic word      | Parser }}
-{{row|localday          | magic word      | Parser }}
-{{row|localday2         | magic word      | Parser }}
-{{row|pagename          | magic word      | Parser }}
-{{row|pagenamee         | magic word      | Parser }}
-{{row|fullpagename      | magic word      | Parser }}
-{{row|fullpagenamee     | magic word      | Parser }}
-{{row|subpagename       | magic word      | Parser }}
-{{row|subpagenamee      | magic word      | Parser }}
-{{row|basepagename      | magic word      | Parser }}
-{{row|basepagenamee     | magic word      | Parser }}
-{{row|talkpagename      | magic word      | Parser }}
-{{row|talkpagenamee     | magic word      | Parser }}
-{{row|subjectpagename   | magic word      | Parser }}
-{{row|subjectpagenamee  | magic word      | Parser }}
-{{row|revisionid        | magic word      | Parser }}
-{{row|revisionday       | magic word      | Parser }}
-{{row|revisionday2      | magic word      | Parser }}
-{{row|revisionmonth     | magic word      | Parser }}
-{{row|revisionyear      | magic word      | Parser }}
-{{row|revisiontimestamp | magic word      | Parser }}
-{{row|namespace         | magic word      | Parser }}
-{{row|namespacee        | magic word      | Parser }}
-{{row|talkspace         | magic word      | Parser }}
-{{row|talkspacee        | magic word      | Parser }}
-{{row|subjectspace      | magic word      | Parser }}
-{{row|subjectspacee     | magic word      | Parser }}
-{{row|currentdayname    | magic word      | Parser }}
-{{row|currentyear       | magic word      | Parser }}
-{{row|currenttime       | magic word      | Parser }}
-{{row|currenthour       | magic word      | Parser }}
-{{row|currentweek       | magic word      | Parser }}
-{{row|currentdow        | magic word      | Parser }}
-{{row|localdayname      | magic word      | Parser }}
-{{row|localyear         | magic word      | Parser }}
-{{row|localtime         | magic word      | Parser }}
-{{row|localhour         | magic word      | Parser }}
-{{row|localweek         | magic word      | Parser }}
-{{row|localdow          | magic word      | Parser }}
-{{row|numberofarticles  | magic word      | Parser }}
-{{row|numberoffiles     | magic word      | Parser }}
-{{row|numberofusers     | magic word      | Parser }}
-{{row|numberofpages     | magic word      | Parser }}
-{{row|numberofadmins    | magic word      | Parser }}
-{{row|numberofedits     | magic word      | Parser }}
-{{row|currenttimestamp  | magic word      | Parser }}
-{{row|localtimestamp    | magic word      | Parser }}
-{{row|currentversion    | magic word      | Parser }}
-{{row|sitename          | magic word      | Parser }}
-{{row|server            | magic word      | Parser }}
-{{row|servername        | magic word      | Parser }}
-{{row|scriptpath        | magic word      | Parser }}
-{{row|directionmark     | magic word      | Parser }}
-{{row|contentlanguage   | magic word      | Parser }}
-{{row|# REDIRECT        | magic word      | Parser }}
+{{Row|currentmonth      | magic word      | Parser }}
+{{Row|currentmonthname  | magic word      | Parser }}
+{{Row|currentmonthnamegen| magic word     | Parser }}
+{{Row|currentmonthabbrev| magic word      | Parser }}
+{{Row|currentday        | magic word      | Parser }}
+{{Row|currentday2       | magic word      | Parser }}
+{{Row|localmonth        | magic word      | Parser }}
+{{Row|localmonthname    | magic word      | Parser }}
+{{Row|localmonthnamegen | magic word      | Parser }}
+{{Row|localmonthabbrev  | magic word      | Parser }}
+{{Row|localday          | magic word      | Parser }}
+{{Row|localday2         | magic word      | Parser }}
+{{Row|pagename          | magic word      | Parser }}
+{{Row|pagenamee         | magic word      | Parser }}
+{{Row|fullpagename      | magic word      | Parser }}
+{{Row|fullpagenamee     | magic word      | Parser }}
+{{Row|subpagename       | magic word      | Parser }}
+{{Row|subpagenamee      | magic word      | Parser }}
+{{Row|basepagename      | magic word      | Parser }}
+{{Row|basepagenamee     | magic word      | Parser }}
+{{Row|talkpagename      | magic word      | Parser }}
+{{Row|talkpagenamee     | magic word      | Parser }}
+{{Row|subjectpagename   | magic word      | Parser }}
+{{Row|subjectpagenamee  | magic word      | Parser }}
+{{Row|revisionid        | magic word      | Parser }}
+{{Row|revisionday       | magic word      | Parser }}
+{{Row|revisionday2      | magic word      | Parser }}
+{{Row|revisionmonth     | magic word      | Parser }}
+{{Row|revisionyear      | magic word      | Parser }}
+{{Row|revisiontimestamp | magic word      | Parser }}
+{{Row|namespace         | magic word      | Parser }}
+{{Row|namespacee        | magic word      | Parser }}
+{{Row|talkspace         | magic word      | Parser }}
+{{Row|talkspacee        | magic word      | Parser }}
+{{Row|subjectspace      | magic word      | Parser }}
+{{Row|subjectspacee     | magic word      | Parser }}
+{{Row|currentdayname    | magic word      | Parser }}
+{{Row|currentyear       | magic word      | Parser }}
+{{Row|currenttime       | magic word      | Parser }}
+{{Row|currenthour       | magic word      | Parser }}
+{{Row|currentweek       | magic word      | Parser }}
+{{Row|currentdow        | magic word      | Parser }}
+{{Row|localdayname      | magic word      | Parser }}
+{{Row|localyear         | magic word      | Parser }}
+{{Row|localtime         | magic word      | Parser }}
+{{Row|localhour         | magic word      | Parser }}
+{{Row|localweek         | magic word      | Parser }}
+{{Row|localdow          | magic word      | Parser }}
+{{Row|numberofarticles  | magic word      | Parser }}
+{{Row|numberoffiles     | magic word      | Parser }}
+{{Row|numberofusers     | magic word      | Parser }}
+{{Row|numberofpages     | magic word      | Parser }}
+{{Row|numberofadmins    | magic word      | Parser }}
+{{Row|numberofedits     | magic word      | Parser }}
+{{Row|currenttimestamp  | magic word      | Parser }}
+{{Row|localtimestamp    | magic word      | Parser }}
+{{Row|currentversion    | magic word      | Parser }}
+{{Row|sitename          | magic word      | Parser }}
+{{Row|server            | magic word      | Parser }}
+{{Row|servername        | magic word      | Parser }}
+{{Row|scriptpath        | magic word      | Parser }}
+{{Row|directionmark     | magic word      | Parser }}
+{{Row|contentlanguage   | magic word      | Parser }}
+{{Row|# REDIRECT        | magic word      | Parser }}
 
-{{row|msg               | Parser Function | StringFunctions }}
-{{row|msgnw             | Parser Function | StringFunctions }}
-{{row|raw               | Parser Function | StringFunctions }}
-{{row|subst             | Parser Function | StringFunctions }}
+{{Row|msg               | Parser Function | StringFunctions }}
+{{Row|msgnw             | Parser Function | StringFunctions }}
+{{Row|raw               | Parser Function | StringFunctions }}
+{{Row|subst             | Parser Function | StringFunctions }}
 
-{{row|len               | Parser Function | StringFunctions }}
-{{row|pos               | Parser Function | StringFunctions }}
-{{row|rpos              | Parser Function | StringFunctions }}
-{{row|sub               | Parser Function | StringFunctions }}
-{{row|pad               | Parser Function | StringFunctions }}
-{{row|replace           | Parser Function | StringFunctions }}
-{{row|explode           | Parser Function | StringFunctions }}
-{{row|urlencode         | Parser Function | StringFunctions }}
-{{row|urldecode         | Parser Function | StringFunctions }}
+{{Row|len               | Parser Function | StringFunctions }}
+{{Row|pos               | Parser Function | StringFunctions }}
+{{Row|rpos              | Parser Function | StringFunctions }}
+{{Row|sub               | Parser Function | StringFunctions }}
+{{Row|pad               | Parser Function | StringFunctions }}
+{{Row|replace           | Parser Function | StringFunctions }}
+{{Row|explode           | Parser Function | StringFunctions }}
+{{Row|urlencode         | Parser Function | StringFunctions }}
+{{Row|urldecode         | Parser Function | StringFunctions }}
 
-{{row|expr              | Parser Function | ParserFunctions }}
-{{row|if                | Parser Function | ParserFunctions }}
-{{row|ifeq              | Parser Function | ParserFunctions }}
-{{row|ifexpr            | Parser Function | ParserFunctions }}
-{{row|switch            | Parser Function | ParserFunctions }}
-{{row|ifexist           | Parser Function | ParserFunctions }}
-{{row|time              | Parser Function | ParserFunctions }}
-{{row|rel2abs           | Parser Function | ParserFunctions }}
-{{row|titleparts        | Parser Function | ParserFunctions }}
+{{Row|expr              | Parser Function | ParserFunctions }}
+{{Row|if                | Parser Function | ParserFunctions }}
+{{Row|ifeq              | Parser Function | ParserFunctions }}
+{{Row|ifexpr            | Parser Function | ParserFunctions }}
+{{Row|switch            | Parser Function | ParserFunctions }}
+{{Row|ifexist           | Parser Function | ParserFunctions }}
+{{Row|time              | Parser Function | ParserFunctions }}
+{{Row|rel2abs           | Parser Function | ParserFunctions }}
+{{Row|titleparts        | Parser Function | ParserFunctions }}
 
-{{row|#pagetitle        | Parser Function | PageFunctions }}
-{{row|#pagesubtitle     | Parser Function | PageFunctions }}
-{{row|#pageexists       | Parser Function | PageFunctions }}
-{{row|#varset           | Parser Function | PageFunctions }}
-{{row|#varget           | Parser Function | PageFunctions }}
-{{row|#varaset          | Parser Function | PageFunctions }}
-{{row|#varaget          | Parser Function | PageFunctions }}
-{{row|#varcapset        | Parser Function | PageFunctions }}
-{{row|#cshow            | Parser Function | PageFunctions }}
-{{row|#noexet           | Parser Function | PageFunctions }}
-{{row|NOCLIENTCACHING   | Magic Word      | PageFunctions}}
+{{Row|dpl               | Parser Function | DynamicPageList}}
 
-{{row|#foreachx         | Parser Function | ForeachFunction}}
-{{row|#foreachy         | Parser Function | ForeachFunction}}
-{{row|#forx             | Parser Function | ForeachFunction}}
+{{Row|#pagetitle        | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#pagesubtitle     | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#pageexists       | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#varset           | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#varget           | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#varaset          | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#varaget          | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#varcapset        | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#cshow            | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|#noexet           | Parser Function | [[Extension:PageFunctions]] }}
+{{Row|NOCLIENTCACHING   | Magic Word      | [[Extension:PageFunctions]] }}
 
-{{row|noparsercaching   | Tag             | ParserTools}}
+{{Row|#foreachx         | Parser Function | [[Extension:ForeachFunction]] }}
+{{Row|#foreachy         | Parser Function | [[Extension:ForeachFunction]] }}
+{{Row|#forx             | Parser Function | [[Extension:ForeachFunction]] }}
 
-{{row|#checkpermission  | Parser Function | PermissionFunctions}}
+{{Row|noparsercaching   | Tag             | [[Extension:ParserTools]] }}
 
-{{row|#regx             | Parser Function | RegexTools}}
-{{row|#regx_vars        | Parser Function | RegexTools}}
+{{Row|#checkpermission  | Parser Function | [[Extension:PermissionFunctions]] }}
 
-{{row|addscript         | Tag             | AddScriptCss}}
-{{row|#addscript        | Parser Function | AddScriptCss}}
-{{row|#addtohead        | Tag             | AddScriptCss}}
+{{Row|#regx             | Parser Function | [[Extension:RegexTools]] }}
+{{Row|#regx_vars        | Parser Function | [[Extension:RegexTools]] }}
 
-{{row|dpl               | Parser Function | DynamicPageList}}
+{{Row|addscript         | Tag             | [[Extension:AddScriptCss]] }}
+{{Row|#addscript        | Parser Function | [[Extension:AddScriptCss]] }}
+{{Row|#addtohead        | Tag             | [[Extension:AddScriptCss]] }}
 
-{{row|docproc           | Tag             | DocProc}}
+{{Row|docproc           | Tag             | [[Extension:DocProc]] }}
 
-{{row|geshi             | Tag             | geshi}}
-{{row|source            | Tag             | geshi}}
-{{row|php               | Tag             | geshi}}
-{{row|js                | Tag             | geshi}}
+{{Row|geshi             | Tag             | [[Extension:geshi]] }}
+{{Row|source            | Tag             | [[Extension:geshi]] }}
+{{Row|php               | Tag             | [[Extension:geshi]] }}
+{{Row|js                | Tag             | [[Extension:geshi]] }}
 
-{{row|#iwl              | Parser Function | InterwikiLinkManager}}
+{{Row|#iwl              | Parser Function | [[Extension:InterwikiLinkManager]] }}
 
-{{row|#html             | Parser Function | SecureHTML }}
+{{Row|#html             | Parser Function | [[Extension:SecureHTML]]  }}
 
-{{row|disable           | Parser Function | ParserPhase2 }}
+{{Row|disable           | Parser Function | [[Extension:ParserPhase2]]  }}
 
-{{row|#pg               | Parser Function | SecureProperties}}
-{{row|#ps               | Parser Function | SecureProperties}}
-{{row|#pf               | Parser Function | SecureProperties}}
-{{row|#gg               | Parser Function | SecureProperties}}
-{{row|#gs               | Parser Function | SecureProperties}}
+{{Row|#pg               | Parser Function | [[Extension:SecureProperties]] }}
+{{Row|#ps               | Parser Function | [[Extension:SecureProperties]] }}
+{{Row|#pf               | Parser Function | [[Extension:SecureProperties]] }}
+{{Row|#gg               | Parser Function | [[Extension:SecureProperties]] }}
+{{Row|#gs               | Parser Function | [[Extension:SecureProperties]] }}
 
-{{row|#trim             | Parser Function | MiscParserFunctions }}
-{{row|#nowikitext       | Parser Function | MiscParserFunctions }}
-{{row|#gettagsection    | Parser Function | MiscParserFunctions }}
+{{Row|#trim             | Parser Function | [[Extension:MiscParserFunctions]] }}
+{{Row|#nowikitext       | Parser Function | [[Extension:MiscParserFunctions]] }}
+{{Row|#gettagsection    | Parser Function | [[Extension:MiscParserFunctions]] }}
 
-{{row|#imagelink        | Parser Function | ImageLink }}
+{{Row|#imagelink        | Parser Function | [[Extension:ImageLink]] }}
 
-{{row|#pagebefore       | Parser Function | PageAfterAndBefore }}
-{{row|#pageafter        | Parser Function | PageAfterAndBefore }}
-{{row|#firstpage        | Parser Function | PageAfterAndBefore }}
-{{row|#lastpage         | Parser Function | PageAfterAndBefore }}
+{{Row|#pagebefore       | Parser Function | [[Extension:PageAfterAndBefore]] }}
+{{Row|#pageafter        | Parser Function | [[Extension:PageAfterAndBefore]] }}
+{{Row|#firstpage        | Parser Function | [[Extension:PageAfterAndBefore]] }}
+{{Row|#lastpage         | Parser Function | [[Extension:PageAfterAndBefore]] }}
 
-{{row|__jsminandstore__ | Proprietary Word| ScriptingTools }}
-{{row|#epropset         | Parser Function | ScriptingTools }}
+{{Row|__ jsminandstore __ | Proprietary Word| [[Extension:ScriptingTools]] }}
+{{Row|#epropset         | Parser Function | [[Extension:ScriptingTools]] }}
 
-{{row|__NOCOMMIT__      | Proprietary Word| FileManager }}
-{{row|@@file@@      	| Proprietary Word| FileManager }}
-{{row|@@mtime@@      	| Proprietary Word| FileManager }}
-{{row|@@clearcache@@ 	| Proprietary Word| FileManager }}
-{{row|#extractfile     	| Parser Function | FileManager }}
-{{row|#extractmtime    	| Parser Function | FileManager }}
-{{row|#currentmtime    	| Parser Function | FileManager }}
+{{Row|__ NOCOMMIT __      | Proprietary Word| [[Extension:FileManager]] }}
+{{Row|@@file@@      	| Proprietary Word| [[Extension:FileManager]] }}
+{{Row|@@mtime@@      	| Proprietary Word| [[Extension:FileManager]] }}
+{{Row|@@clearcache@@ 	| Proprietary Word| [[Extension:FileManager]] }}
+{{Row|#extractfile     	| Parser Function | [[Extension:FileManager]] }}
+{{Row|#extractmtime    	| Parser Function | [[Extension:FileManager]] }}
+{{Row|#currentmtime    	| Parser Function | [[Extension:FileManager]] }}
 
-{{row|#clearactions     | Parser Function | SkinTools   }}
-{{row|#removeactions    | Parser Function | SkinTools   }}
-{{row|#addaction        | Parser Function | SkinTools   }}
+{{Row|#clearactions     | Parser Function | [[Extension:SkinTools]]   }}
+{{Row|#removeactions    | Parser Function | [[Extension:SkinTools]]   }}
+{{Row|#addaction        | Parser Function | [[Extension:SkinTools]]   }}
 
-{{row|#usergetoption    | Parser Function | UserTools   }}
+{{Row|#usergetoption    | Parser Function | [[Extension:UserTools]]   }}
 
-{{row|#__DISABLECONTEXT__ | Proprietary Word | RegexNamespaceContext }}
+{{Row|#__ DISABLECONTEXT __ | Proprietary Word | [[Extension:RegexNamespaceContext]] }}
 |}
