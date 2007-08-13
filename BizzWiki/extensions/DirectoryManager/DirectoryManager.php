@@ -158,7 +158,7 @@ class DirectoryManager
 		#echo ' this->dir: '.$this->dir."<br/>\n";
 		#echo ' request title: '.$this->dir."<br/>\n";		
 		
-		$article = new Article( $title );
+		$article = new DirectoryArticle( $title );
 		
 		// let mediawiki handle the articles that already exist
 		if ( $article->getID() != 0 )
@@ -432,6 +432,13 @@ class DirectoryManager
 	
 } // end class
 
+class DirectoryArticle extends Article
+{
+	public function view()
+	{
+		
+	}	
+}
 require( 'DirectoryManager.i18n.php' );
 
 //</source>
