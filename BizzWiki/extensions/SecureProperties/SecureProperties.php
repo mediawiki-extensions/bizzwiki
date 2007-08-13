@@ -72,6 +72,9 @@ require('extensions/SecureProperties/SecureProperties_stub.php');
 == Todo ==
 * Fix for 'exempt' namespaces option even considering StubManager
 
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 

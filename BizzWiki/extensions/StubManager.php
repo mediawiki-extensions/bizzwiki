@@ -86,12 +86,7 @@ require('extensions/StubManager.php');
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 
-== Code ==
-Get it here [[Extension:StubManager/code]]. Please check SVN link provided above for the latest version.
-
-== Live Code ==
-[[Extension:StubManager/code]]
-</wikitext>*/
+<!--</wikitext>-->*/
 // <source lang=php>
 $wgExtensionCredits[StubManager::thisType][] = array( 
 	'name'    => StubManager::thisName,
