@@ -1,5 +1,4 @@
 <?php
-//((@disable@)) (($disable$)) ((%disable%))
 /*<!--<wikitext>-->
 {{Extension
 |name        = ParserPhase2
@@ -25,7 +24,7 @@ This section is only valid when viewing the page in a BizzWiki environment.
 <code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
 
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
-@@-->
+@@-->(($disable$)) ((@disable@)) ((%disable%))
 == Purpose==
 This extension enables performing a 'second pass' through a 'parser cached' page replacing for 
 'dynamic' variabl. In a word, once a page is normally processed (i.e. 'first pass') Mediawiki 'fixes'
@@ -50,6 +49,9 @@ This same process is performed for both 'parser phase 2' and 'parser after tidy'
 See [[Extension:ParserPhase2/Flow Summary]] for more details.
 
 == Features ==
+* Enable/disable keywords for 'sectional execution' support
+** By default, replacement is 'enabled' until a 'disable' magic word is encountered
+** Execution is stopped (i.e. no replacement occurs) until an 'enable' magic word is next encountered
 * Integrates with the standard Mediawiki Parser Cache
 * Provides a simple 'magic word' based interface to standard Mediawiki variables & parser functions
 * Handles two invocation forms for the 'parser phase 2' functionality:
@@ -93,6 +95,8 @@ require('extensions/ParserPhase2/ParserPhase2_stub.php');
 ** DO NOT MIX PATTERNS ON THE SAME PAGE i.e. no (($...$)) mixing up with ((...))
 * Added functionality to execute parser functions/magic words just after the 'tidy' process
 * Added functionality to execute parser functions/magic words just BEFORE the 'stip' process i.e. before the parser really begins.
+* Added 'enable' magic word
+* Added support for 'sectional execution' i.e. replacement between 'enable' and 'disable' magic words
 
 == TODO ==
 * possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)
@@ -127,7 +131,7 @@ class ParserPhase2
 	const pattern3  = '/\(\(\@(.*)\@\)\)/siU';
 	
 	// variables
-	var $disable;
+	#var $disable;
 	const disablePattern1a = '(($disable$))';
 	const disablePattern1b = '((disable))';	
 	const disablePattern2  = '((%disable%))';	
@@ -144,8 +148,8 @@ class ParserPhase2
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
-		if ($this->disable)
-			return true;
+	#	if ($this->disable)
+	#		return true;
 
 		$m = $this->getList3( $text );
 		if ( empty( $m ) ) return true; // nothing to do
@@ -165,8 +169,8 @@ class ParserPhase2
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
-		if ($this->disable)
-			return true;
+	#	if ($this->disable)
+	#		return true;
 			
 		$m = $this->getList2( $text );
 		if ( empty( $m ) ) return true; // nothing to do
@@ -182,9 +186,11 @@ class ParserPhase2
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
-		if ($this->disable)
-			return true;
+	#	if ($this->disable)
+	#		return true;
 		
+		// PHP sometimes messes up in preg_match_all returning an empty array
+		// we need to guard against this or else client side caching always get thrashed!
 		$m = $this->getList1( $text );
 		if ( empty( $m ) ) return true; // nothing to do
 
@@ -212,8 +218,6 @@ class ParserPhase2
 	 */
 	private function executeList( &$liste, &$text )
 	{
-		// PHP sometimes messes up in preg_match_all returning an empty array
-		// we need to guard against this or else client side caching always get thrashed!
 		$found = false; 
 		
 		foreach( $liste[1] as $index => $str)
@@ -222,9 +226,14 @@ class ParserPhase2
 			$params = explode('|', $str);
 			$action = array_shift( $params );
 
-			// if we are asked to disable, stop processing.
+			// if we are asked to disable
 			if ('disable'==strtolower($action))
-			{ $this->disable = true; break; }
+			{ $rl[$index]=''; $found = true; continue; }
+			#{ $this->disable = true; break; }
+
+			// if we are asked to enable
+			if ('enable'==strtolower($action))
+			{ $rl[$index]=''; $found = true; continue; }
 
 			global $wgParser, $wgTitle, $wgContLang;
 
@@ -278,7 +287,7 @@ class ParserPhase2
 			}
 
 		} // end foreach
-		if (!$this->disable)
+		#if (!$this->disable)
 			$this->replaceList( $text, $liste, $rl );
 
 		return $found;
@@ -343,9 +352,21 @@ class ParserPhase2
 	 */
 	private function replaceList( &$text, &$source, &$target )
 	{
+		$disable = false;
+		
 		if (!empty( $source[0] ))
 			foreach( $source[0] as $index => $marker )
+			{
+
+				if ('(($enable$))'==$marker || '((@enable@))'==$marker || '((%enable%))'==$marker)
+					$disable = false;
+				elseif ($disable)
+					continue;
+
+				if ('(($disable$))'==$marker || '((@disable@))'==$marker || '((%disable%))'==$marker)
+					$disable = true;
 				$text = str_replace( $marker, $target[$index]/*.'<!--'.$marker.'-->'*/, $text );	
+			}
 	}
 } // end class
 
