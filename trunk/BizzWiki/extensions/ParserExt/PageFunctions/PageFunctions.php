@@ -1,5 +1,5 @@
 <?php
-/*(($disable$))<!--<wikitext>-->
+/*<!--<wikitext>-->
 {{Extension
 |name        = PageFunctions
 |status      = beta
@@ -53,6 +53,7 @@ Provides a 'magic word' interface to retrieve useful page level information.
 * <nowiki>{{#cshow:group|text}}</nowiki>
 ** Where 'group' is the user's group membership check to perform
 
+(($disable$))
 Of course, the same magic words can be used in the context of 'ParserCache2' i.e.
 * <nowiki>(($#pagetitle: new title name$))</nowiki>
 * <nowiki>(($#pagesubtitle: text to be added to the page's subtitle $))</nowiki>
