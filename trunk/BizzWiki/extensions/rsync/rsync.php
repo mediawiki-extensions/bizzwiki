@@ -73,12 +73,23 @@ Format: <code> RC-id-type.xml</code>
 ** log --> log entry
 
 == Implementation ==
+=== New Page ===
+* Do complete export
+
+=== Edit Page ===
+* Do complete export
+
 === Move Page ===
 A move transaction is the page with the new title enclosed in an xml file WITH
-a new section 'old_title'.
+a new section 'source_title'.
+* Complete export with 'source_title' section
+
+=== Delete Page ===
+* Export but don't 'writeRevision'
 
 === Page Restrictions ===
 Needed to superclass 'WikiExporter' and 'XmlDumpWriter' classes.
+* Export but don't 'writeRevision'
 * Added 'restrictions' section to the XML dump
 
 == Usage Notes ==
@@ -225,7 +236,7 @@ class rsync
 	/**
 	
 	 */
-	public function hTitleMoveComplete( &$title, &$nt, &$wgUser, $pageid, $redirid )
+	public function hTitleMoveComplete( &$title, &$nt, &$wgUser, &$pageid, &$redirid )
 	{
 		
 	}
@@ -371,6 +382,8 @@ class rsync_operation
 class XmlDumpWriterEx extends XmlDumpWriter
 {
 	var $pageTitle;
+	var $sourceTitle;
+	var $includeRevision;
 	
 	function openPage( $row )
 	{
@@ -380,12 +393,36 @@ class XmlDumpWriterEx extends XmlDumpWriter
 		{
 			$this->pageTitle->loadRestrictions();
 			if (!empty( $this->pageTitle->mRestrictions ))
-				$out .= '    ' . wfElement( 'restrictions', array(),
-					strval( $this->pageTitle->mRestrictions ) ) . "\n";
-		}			
+				$out .= $this->getRestrictionsSection( $this->pageTitle->mRestrictions );
+		}
+		
+		if (is_a( $this->sourceTitle, 'Title'))
+			$out .= $this->getSourceTitleSection();
+			
 		return $out;
 	}
-	
+	function getRestrictionsSection( &$restrictions )
+	{
+		$result = "<restrictions>\n";
+		foreach( $restrictions as $restrictionType => &$levels )
+			foreach( $levels as $level)
+				$result .= "    <restriction type='".$restrictionType."' level='".$level."' />\n";
+
+		$result .= "</restrictions>/n";
+		
+		return $result;
+	}
+	function getSourceTitleSection()
+	{
+		return "<source_title>".Namespace::getCanonicalName( $this->sourceTitle->getNamespace() ).
+				":".$this->sourceTitle->getText()."</source_title>\n";	
+	}
+	function writeRevision( &$row )
+	{
+		if (!$this->includeRevision)
+			return null;
+		return parent::writeRevision( $row );
+	}
 } // end class
 
 class WikiExporterEx extends WikiExporter
@@ -395,11 +432,20 @@ class WikiExporterEx extends WikiExporter
 	{
 		parent::__construct( $db, $history, $buffer, $text );	
 		$this->writer = new XmlDumpWriterEx();
+		$this->writer->includeRevision = true;
 	}			
 	public function setPageTitle( &$title )	
 	{
 		$this->writer->pageTitle = $title;	
 	}
-}
+	public function setSourceTitle( &$title )
+	{
+		$this->writer->sourceTitle = $title;	
+	}
+	public function includeRevision( &$enable )
+	{
+		$this->write->includeRevision = $enable;
+	}
+} // end class
 
 //</source>
