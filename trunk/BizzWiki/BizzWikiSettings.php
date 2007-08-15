@@ -152,6 +152,7 @@ $bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'de
 										'watch',	  // BizzWiki specific -- WatchRight extension
 										'unwatch',	  // BizzWiki specific -- WatchRight extension
 										'reload',	  // BizzWiki specific -- FileManager extension
+										'coding',		// BizzWiki specific -- SecurePHP extension
 									);
 									
 // Critical permission system initialization -- DO NOT TOUCH
@@ -387,6 +388,8 @@ require( $bwExtPath.'/ParserExt/UserTools/UserTools_stub.php' );
 require('extensions/VirtualPage/VirtualPage_stub.php');
 require('extensions/AutoRedirect/AutoRedirect_stub.php');
 require('extensions/DirectoryManager/DirectoryManager_stub.php');
+
+require('extensions/SecurePHP/SecurePHP_stub.php');
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
 
