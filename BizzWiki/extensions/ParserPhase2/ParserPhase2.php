@@ -27,7 +27,7 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 @@-->(($disable$)) ((@disable@)) ((%disable%))
 == Purpose==
 This extension enables performing a 'second pass' through a 'parser cached' page replacing for 
-'dynamic' variabl. In a word, once a page is normally processed (i.e. 'first pass') Mediawiki 'fixes'
+'dynamic' variables. In a word, once a page is normally processed (i.e. 'first pass') Mediawiki 'fixes'
 all templates & variables in a 'parser cached' page. This extension enables substituting selected 
 variables upon page view whilst still preserving the valuable job performed by the parser/parser cache.
 
