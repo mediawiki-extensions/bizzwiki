@@ -132,68 +132,77 @@ class rsync
 	var $directory; 
 	var $found;
 
-	var $rc_timestamp;
-	var $rc_id;
-	
-	// Operations
-	var $opList;
-	
-	// Constants
-	const action_none       = 0;
-	const action_create     = 1; // TBD
-	const action_edit       = 2;
-	const action_delete     = 3;
-	const action_move       = 4; // TBD
-	const action_createfile = 5;
-	const action_deletefile = 6;
-	const action_editfile   = 7;
-	
+	//
+	var $rc;
+	var $op; // current operation
+		
 	/**
 	 */
 	public function __construct() 
 	{
 		$this->found = false;
 		
-		// we might have more than one operation
-		// per transaction i.e. case of 'move' action.
-		$this->opList = array();
-
+		$this->op = null;
+		
 		// assume the default directory location
 		$this->directory = self::defaultDir;
 		
 		// format the directory path.
 		global $IP;
 		$this->dir = $IP.'/'.$this->directory;
+		
+		rsync_operation::$dir = $this->dir;
 	}
 	
 	/**
 		Handles article creation & update
 	 */	
-	public function hArticleSaveComplete( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
+	public function hArticleSaveComplete( &$article, &$user, &$text, &$summary, $minor, 
+											$dontcare1, $dontcare2, &$flags )
 	{
 		if (!$this->found)
 			return true;
 			
-		$title = $article->mTitle; // shortcut
-		
-		$ns =    $title->getNamespace();
-		$titre = $title->getDBkey();
-		
-		$action = self::action_edit;
-		
-		$this->addOperation( $action, $ns, $titre );
-
-		$this->doOperations();	
+		$this->op = new rsync_operation(rsync_operation::action_edit,
+										$article,
+										WikiExporter::CURRENT,
+										true,	// include last revision text
+										$this->rc->mAttribs['rc_id'],
+										$this->rc->mAttribs['rc_timestamp']											
+									 );
+									 
+		rsync_operations::add( $this->op );
+		rsync_operations::execute();
 		
 		return true;
 	}
-	
+
+	/**
+		WARNING: If ArticleDelete hook fails, we might have some stranded resources...
+	 */
+	public function hArticleDelete( &$article, &$user, $reason )
+	{
+		$this->op = new rsync_operation(rsync_operation::action_delete,
+										$article,
+										WikiExporter::CURRENT,
+										false,	// don't include last revision text
+										null,	// we don't know the id just yet
+										null	// nor the timestamp
+								 		);
+		rsync_operations::add( $this->op );
+		rsync_operations::execute();
+		
+		return true;
+	}
 	/**
 		Handles article delete.
 	 */
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
+		$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
+							$this->rc->mAttribs['rc_timestamp'] );
 		
+		rsync_operations::executeDeferred();		
 		return true;
 	}
 	
@@ -250,66 +259,185 @@ class rsync
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	
 	/**
-		This function packages a 'commit operation' based on the
-		current transaction.
-		
-		The Mediawiki 'WikiExporter' class is used to perform
-		most of the work.
-	 */
-	private function addOperation( &$action, &$ns, &$title, &$history = WikiExporter::CURRENT )
-	{
-		$this->opList[] = new rsync_operation( $action, $ns, $title, $history );	
-	}
-	
-	/**
-		Just grab the essential parameters we need to 
-		complete the transaction.
+		Just grab the essential parameters we need to complete the transaction.
 	 */
 	public function hRecentChange_save( &$rc )
 	{
-		# echo __METHOD__.' rc_type:'.$rc->mAttribs['rc_type']."<br/>\n";
-		
-		if ( $rc->mAttribs['rc_type'] != RC_EDIT )
-			return true;
+		$this->rc = $rc;
 			
 		$this->found = true;
 
-		$this->rc_timestamp = $rc->mAttribs['rc_timestamp'];
-		$this->rc_id        = $rc->mAttribs['rc_id'];		
-
-
 		return true;		
 	}
-	private function doOperations()
+
+} // end class
+
+class rsync_operations
+{
+	static $liste;
+	static $dListe;
+	static $id = null;
+	static $timestamp = null;
+	
+	public static function add( &$op ) { self::$liste[] = $op;	}
+	public static function addDeferred( &$op ) { self::$dListe[] = $op; }
+	
+	public static function execute()
 	{
-		// first update the operations list
-		// with essential parameters we 'just grabbed'
-		// The call to this function also generates the unique filename.
-		rsync_operation::updateList( $this->opList, $this->rc_id, $this->rc_timestamp );
+		if (!empty( self::$liste ))	
+			foreach( self::$liste as &$op )
+			{
+				$d = $op->getDeferralState();
+				$op->execute();
+				
+				if ($d)	
+					self::addDeferred( $op );
+			}
+	}
+
+	public static function executeDeferred()
+	{
+		if (!empty( self::$dListe ))	
+			foreach( self::$dListe as &$op )
+				$op->executeDeferred();
+	}
 		
-		if (!empty( $this->opList ))
-			foreach( $this->opList as $op )
-				$this->export( $op );
+} // end class
+
+/**		************************************************************
+		Follows is a class that defines an 'rsync' export operation.
+ */
+
+class rsync_operation
+{
+	//
+	static $dir;
+	
+	// Constants
+	const action_none       = 0;
+	const action_create     = 1; // TBD
+	const action_edit       = 2;
+	const action_delete     = 3;
+	const action_move       = 4; // TBD
+	const action_createfile = 5;
+	const action_deletefile = 6;
+	const action_editfile   = 7;
+	const action_rename		= 8; // required by delete operation
+
+	// Commit Operation parameters
+	var $includeRevision;
+	var $deferralRequired;
+	
+	var $id;
+	var $timestamp;
+	
+	var $action;
+	var $ns;
+	var $titre;
+
+	var $isFilenameTemp;	
+	var $filename;
+	var $history;		// current or full
+	
+	var $text;
+	
+	public function __construct( $action, &$article, $history, $includeRevision, $id, $ts )
+	{
+		$this->action = $action;
+		$this->ns = $article->mTitle->getNamespace();
+		$this->titre = $article->mTitle->getText();
+		$this->history = $history;
+		$this->includeRevision = $includeRevision;
+		$this->deferralRequired = $this->getDeferralState( );
+
+		$this->id = $id;
+		$this->timestamp = $ts;
+
+		// will get filled later.		
+		$this->filename = null;		// gets filled during 'updateList'
+		$this->isFilenameTemp = null;
+	}
+	public function setIdTs( $id, $ts ) { $this->id = $id; $this->timestamp = $ts; }
+	
+	/**
+		Delete action requires deferral
+	 */
+	public function getDeferralState( )
+	{
+		if ($this->action == self::action_delete)	
+			return true;
+			
+		return false;
+	}
+		
+	/**
+		Page-rcid-action-namespace.xml
+	 */
+	protected function generateFilename( )
+	{
+		if ($this->id === null)
+		{
+			$this->isFilenameTemp = true;
+			$this->filename = tempnam( self::$dir, 'rsync_' );
+			return;
+		}
+			
+		$this->filename = self::$dir."/Page-".$this->id.'-'.$this->action.'-'.$this->ns.'.xml';
+	}
+	
+	public function execute()
+	{
+		$this->generateFilename();
+
+/*		
+		switch( $this->action )	
+		{
+			case self::action_edit:
+			
+			case self::action_delete:
+				
+		}
+*/
+		$this->export();		
+	}
+	/**
+		Deferred execution consists in renaming the 
+		temporary export file.
+	 */
+	public function executeDeferred()
+	{
+		$tempName = $this->filename;
+		
+		// generate a permanent filename
+		$this->generateFilename();
+		
+		self::rename( $tempName /*source*/, $this->filename /*target*/ );
+	}
+
+	protected function rename( &$source, &$target )
+	{
+		$r = rename( $source, $target );
+		if ($r === false)
+			throw new MWException();
 	}
 	/**
 		This function uses MediaWiki's 'WikiExporter' class.
 	 */
-	private function export( &$op )
+	private function export( )
 	{
-		$dump = new DumpFileOutput( $this->dir.'/'.$op->filename );
+		echo __METHOD__;
 
-		#echo __METHOD__."\n";
-		#echo 'filename:'.$this->dir.'/'.$op->filename."\n";
-		#die();
+		$dump = new DumpFileOutput( $this->filename );
 
 		$db = wfGetDB( DB_SLAVE );
-		$exporter = new WikiExporterEx( $db, $op->history );
+		$exporter = new WikiExporterEx( $db, $this->history );
 		
 		$exporter->setOutputSink( $dump );
+		$exporter->includeRevision( $this->includeRevision );
 
 		$exporter->openStream();
 		
-		$title = Title::makeTitle( $op->ns, $op->title );
+		$title = Title::makeTitle( $this->ns, $this->titre );
 		if( is_null( $title ) ) return;
 
 		$exporter->setPageTitle( $title );
@@ -322,59 +450,18 @@ class rsync
 } // end class
 
 
-/**		************************************************************
-		Follows is a class that defines an 'rsync' export operation.
- */
 
-class rsync_operation
-{
-	// Commit Operation parameters
-	var $id;
-	var $action;
-	var $ns;
-	var $title;
-	var $timestamp;
-	
-	var $filename;
-	var $history;		// current or full
-	
-	var $text;
-	
-	public function __construct( &$action, &$ns, &$title, &$history )
-	{
-		$this->action = $action;
-		$this->ns = $ns;
-		$this->title = $title;
-		$this->history = $history;
 
-		// will get filled later.
-		$this->id = null;
-		$this->timestamp = null;
-		
-		$this->text = null;			// TBD
-		$this->filename = null;		// gets filled during 'updateList'
-	}	
-	
-	public static function updateList( &$liste, &$id, &$ts )
-	{
-		if (!empty( $liste ))	
-			foreach( $liste as $item )
-			{
-				$item->id = $id;
-				$item->timestamp = $ts;
-				$item->filename = self::generateFilename( $item );
-			}
-	}
-	
-	/**
-		rc_id-action-ns-title.xml
-	 */
-	private static function generateFilename( &$op )
-	{
-		return "Page-".$op->id.'-'.$op->action.'-'.$op->ns.'-'.$op->title.'.xml';
-	}
-	
-} // end class
+
+
+
+
+
+
+
+
+
+
 
 /**
 	Class definition can be found in includes/Export.php
@@ -408,7 +495,7 @@ class XmlDumpWriterEx extends XmlDumpWriter
 			foreach( $levels as $level)
 				$result .= "    <restriction type='".$restrictionType."' level='".$level."' />\n";
 
-		$result .= "</restrictions>/n";
+		$result .= "</restrictions>\n";
 		
 		return $result;
 	}
@@ -438,10 +525,16 @@ class WikiExporterEx extends WikiExporter
 	{
 		$this->writer->pageTitle = $title;	
 	}
+	/**
+		The source title is used in 'move' operations.
+	 */
 	public function setSourceTitle( &$title )
 	{
 		$this->writer->sourceTitle = $title;	
 	}
+	/**
+		It is helpful not to include the full revision text sometimes.
+	 */
 	public function includeRevision( &$enable )
 	{
 		$this->write->includeRevision = $enable;
