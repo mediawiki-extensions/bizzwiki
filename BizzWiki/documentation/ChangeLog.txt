@@ -251,4 +251,5 @@ REL1_10_11: (released ...)
 - Massive update of almost all extension headers - normalization
 - StubManager: support for 'exclude' namespace triggering
 - CapitalLinks are 'false' by default (helps with FileManager & DirectoryManager extensions)
-- 
+- Added 'SecurePHP' extension
+-
