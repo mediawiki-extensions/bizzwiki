@@ -252,4 +252,4 @@ REL1_10_11: (released ...)
 - StubManager: support for 'exclude' namespace triggering
 - CapitalLinks are 'false' by default (helps with FileManager & DirectoryManager extensions)
 - Added 'SecurePHP' extension
--
+- Added 'GoogleCode' extension
