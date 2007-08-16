@@ -136,15 +136,20 @@ class GoogleCode
 	 */
 	public function getCode( &$uri, &$document )
 	{
-		$ch = curl_init();    									// initialize curl handle
+		 // initialize curl handle
+		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL, $uri);					// set url to post to
-		curl_setopt($ch, CURLOPT_FAILONERROR, 1);				// Fail on errors
-		#curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);   		// allow redirects
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); 			// return into a variable
-		curl_setopt($ch, CURLOPT_PORT, $this->p_port); 			//Set the port number
-		curl_setopt($ch, CURLOPT_TIMEOUT, $this->p_timeout);	// times out after 15s
-		#curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+		// set url to post to
+		curl_setopt($ch, CURLOPT_URL, $uri);
+		
+		// Fail on errors		
+		curl_setopt($ch, CURLOPT_FAILONERROR, 1);
+		// return into a variable		
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); 	
+		//Set the port number				
+		curl_setopt($ch, CURLOPT_PORT, $this->p_port);
+		// times out after 15s		
+		curl_setopt($ch, CURLOPT_TIMEOUT, $this->p_timeout);
 		
 		$document = curl_exec($ch);
 		
@@ -163,7 +168,7 @@ class GoogleCode
 		global $wgParser;
 		$parser = clone $wgParser;
 	
-		$doc = "<source lang='".$lang."'>".$document.'</source>';
+		$doc = "<"."source lang='".$lang."'>".$document.'</'.'source>';
 		
 		$po = $parser->parse( $doc, new Title() /* title object */, new ParserOptions() );
 		
