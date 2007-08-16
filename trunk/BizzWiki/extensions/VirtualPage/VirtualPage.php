@@ -253,8 +253,13 @@ class VirtualPage
 		$tmplArticle = new VirtualArticle( $tmplTitle );
 				
 		// did we find satisfaction?
+		// No? then exit without leaving a trace of
+		// what we tried to achieve.
 		if ( $tmplArticle->getID() == 0 )
+		{
+			$article = null;
 			return true;
+		}
 			
 		// yes we did find a template article!
 		$article = $tmplArticle;

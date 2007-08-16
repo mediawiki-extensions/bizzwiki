@@ -178,7 +178,8 @@ class rsync
 	}
 
 	/**
-		WARNING: If ArticleDelete hook fails, we might have some stranded resources...
+		WARNING: If ArticleDelete hook fails, we might have some stranded resources
+		e.g. temporary file
 	 */
 	public function hArticleDelete( &$article, &$user, $reason )
 	{
@@ -199,6 +200,8 @@ class rsync
 	 */
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
+		echo __METHOD__."<br/>\n";
+				
 		$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
 							$this->rc->mAttribs['rc_timestamp'] );
 		
@@ -215,9 +218,24 @@ class rsync
 	 */
 	public function hSpecialMovepageAfterMove( &$sp, &$oldTitle, &$newTitle )
 	{
-		// send a 'delete' 
+		echo __METHOD__."<br/>\n";
+				
+		if (!$this->found)
+			return true;
+			
+		$this->op = new rsync_operation(rsync_operation::action_move,
+										$newTitle,
+										WikiExporter::CURRENT,
+										true,	// include last revision text
+										$this->rc->mAttribs['rc_id'],
+										$this->rc->mAttribs['rc_timestamp']											
+									 );
+									 
+		rsync_operations::add( $this->op );
+		$this->op->setSourceTitle( $oldTitle );
 		
-		// send a 'update' 
+		rsync_operations::execute();
+
 		
 		return true;		
 	}
@@ -263,6 +281,8 @@ class rsync
 	 */
 	public function hRecentChange_save( &$rc )
 	{
+		echo __METHOD__."<br/>\n";
+				
 		$this->rc = $rc;
 			
 		$this->found = true;
@@ -313,17 +333,19 @@ class rsync_operation
 	//
 	static $dir;
 	
-	// Constants
+		// Constants
 	const action_none       = 0;
 	const action_create     = 1; // TBD
+	
+		// page related
 	const action_edit       = 2;
 	const action_delete     = 3;
-	const action_move       = 4; // TBD
+	const action_move       = 4; 
+		// file related
 	const action_createfile = 5;
 	const action_deletefile = 6;
 	const action_editfile   = 7;
-	const action_rename		= 8; // required by delete operation
-
+	
 	// Commit Operation parameters
 	var $includeRevision;
 	var $deferralRequired;
@@ -335,17 +357,25 @@ class rsync_operation
 	var $ns;
 	var $titre;
 
+	var $sourceTitle;	// for move action
+
 	var $isFilenameTemp;	
 	var $filename;
 	var $history;		// current or full
 	
 	var $text;
 	
-	public function __construct( $action, &$article, $history, $includeRevision, $id, $ts )
+	public function __construct( $action, &$object, $history, $includeRevision, $id, $ts )
 	{
+		if ( $object instanceof Article )
+			$title = $object->mTitle;
+		else
+			$title = $object;
+
+		$this->ns = $title->getNamespace();
+		$this->titre = $title->getText();
+
 		$this->action = $action;
-		$this->ns = $article->mTitle->getNamespace();
-		$this->titre = $article->mTitle->getText();
 		$this->history = $history;
 		$this->includeRevision = $includeRevision;
 		$this->deferralRequired = $this->getDeferralState( );
@@ -356,8 +386,11 @@ class rsync_operation
 		// will get filled later.		
 		$this->filename = null;		// gets filled during 'updateList'
 		$this->isFilenameTemp = null;
+		
+		$this->sourceTitle = null;
 	}
 	public function setIdTs( $id, $ts ) { $this->id = $id; $this->timestamp = $ts; }
+	public function setSourceTitle( &$t ) { $this->sourceTitle = $t; }
 	
 	/**
 		Delete action requires deferral
@@ -425,12 +458,14 @@ class rsync_operation
 	 */
 	private function export( )
 	{
-		echo __METHOD__;
-
 		$dump = new DumpFileOutput( $this->filename );
 
 		$db = wfGetDB( DB_SLAVE );
 		$exporter = new WikiExporterEx( $db, $this->history );
+		
+		// used for 'move' operation
+		if (!empty( $this->sourceTitle ))
+			$exporter->setSourceTitle( $this->sourceTitle );
 		
 		$exporter->setOutputSink( $dump );
 		$exporter->includeRevision( $this->includeRevision );
