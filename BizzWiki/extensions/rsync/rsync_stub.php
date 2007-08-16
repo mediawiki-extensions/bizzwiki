@@ -42,9 +42,11 @@ StubManager::createStub2(	array(	'class' 		=> 'rsync',
 																'ArticleDeleteComplete',
 																'ArticleDelete',
 																'SpecialMovepageAfterMove',
+																'ArticleProtectComplete',
 																#'hAddNewAccount',
 																#'hUploadComplete',
 															),
+									// exclude the following namespaces
 									'enss'			=> array( NS_FILESYSTEM, NS_DIRECTORY )
 								)
 						);

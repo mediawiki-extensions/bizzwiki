@@ -135,6 +135,7 @@ class rsync
 	//
 	var $rc;
 	var $op; // current operation
+	var $executeDeferredInRcHook;
 		
 	/**
 	 */
@@ -152,10 +153,15 @@ class rsync
 		$this->dir = $IP.'/'.$this->directory;
 		
 		rsync_operation::$dir = $this->dir;
+		
+		$this->executeDeferredInRcHook = false;
 	}
 	
 	/**
 		Handles article creation & update
+		
+		Creation and Update operations can not be discerned;
+		they are handled both as 'edit'.
 	 */	
 	public function hArticleSaveComplete( &$article, &$user, &$text, &$summary, $minor, 
 											$dontcare1, $dontcare2, &$flags )
@@ -200,8 +206,6 @@ class rsync
 	 */
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
-		echo __METHOD__."<br/>\n";
-				
 		$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
 							$this->rc->mAttribs['rc_timestamp'] );
 		
@@ -218,8 +222,6 @@ class rsync
 	 */
 	public function hSpecialMovepageAfterMove( &$sp, &$oldTitle, &$newTitle )
 	{
-		echo __METHOD__."<br/>\n";
-				
 		if (!$this->found)
 			return true;
 			
@@ -241,15 +243,6 @@ class rsync
 	}
 	
 	/**
-		TBD
-	 */
-	public function hAddNewAccount( &$user )
-	{
-	
-		return true;		
-	}
-	
-	/**
 		File Upload
 	 */
 	public function hUploadComplete( &$img )
@@ -260,19 +253,36 @@ class rsync
 		
 		return true;		
 	}
-	/**
 	
+	/**
+		TBD
 	 */
-	public function hTitleMoveComplete( &$title, &$nt, &$wgUser, &$pageid, &$redirid )
+	public function hAddNewAccount( &$user )
 	{
-		
-	}
-	/**
 	
+		return true;		
+	}
+	
+	/**
+		Just send the 'page' details which contain the 'restrictions'
+		aka 'protection' information.	
 	 */
 	public function hArticleProtectComplete( &$article, &$user, &$limit, &$reason )
 	{
+		$this->op = new rsync_operation(rsync_operation::action_protect,
+										$article,
+										WikiExporter::CURRENT,
+										false,	// do not include last revision text
+										null,
+										null										
+									 );
+									 
+		rsync_operations::add( $this->op );
+		rsync_operations::execute();
 		
+		$this->executeDeferredInRcHook = true;		
+		
+		return true;
 	}
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	
@@ -281,11 +291,17 @@ class rsync
 	 */
 	public function hRecentChange_save( &$rc )
 	{
-		echo __METHOD__."<br/>\n";
-				
 		$this->rc = $rc;
 			
 		$this->found = true;
+
+		if ($this->executeDeferredInRcHook)
+		{
+			$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
+								$this->rc->mAttribs['rc_timestamp'] );
+			
+			rsync_operations::executeDeferred();			
+		}
 
 		return true;		
 	}
@@ -340,11 +356,13 @@ class rsync_operation
 		// page related
 	const action_edit       = 2;
 	const action_delete     = 3;
-	const action_move       = 4; 
+	const action_move       = 4;
+	const action_protect    = 5;
+		
 		// file related
-	const action_createfile = 5;
-	const action_deletefile = 6;
-	const action_editfile   = 7;
+	const action_createfile = 6;
+	const action_deletefile = 7;
+	const action_editfile   = 8;
 	
 	// Commit Operation parameters
 	var $includeRevision;
@@ -398,6 +416,9 @@ class rsync_operation
 	public function getDeferralState( )
 	{
 		if ($this->action == self::action_delete)	
+			return true;
+
+		if ($this->action == self::action_protect)	
 			return true;
 			
 		return false;
@@ -511,11 +532,14 @@ class XmlDumpWriterEx extends XmlDumpWriter
 	{
 		$out = parent::openPage( $row );
 
-		if (is_a( $this->pageTitle, 'Title' ))
+		if ($this->pageTitle instanceof Title)
 		{
 			$this->pageTitle->loadRestrictions();
 			if (!empty( $this->pageTitle->mRestrictions ))
-				$out .= $this->getRestrictionsSection( $this->pageTitle->mRestrictions );
+				$out .= $this->getRestrictionsSection(	$this->pageTitle->mRestrictions, 
+														$this->pageTitle->mRestrictionsExpiry,
+														$this->pageTitle->mCascadeRestriction
+														 );
 		}
 		
 		if (is_a( $this->sourceTitle, 'Title'))
@@ -523,12 +547,13 @@ class XmlDumpWriterEx extends XmlDumpWriter
 			
 		return $out;
 	}
-	function getRestrictionsSection( &$restrictions )
+	function getRestrictionsSection( &$restrictions, $expiry, $cascading )
 	{
 		$result = "<restrictions>\n";
 		foreach( $restrictions as $restrictionType => &$levels )
 			foreach( $levels as $level)
-				$result .= "    <restriction type='".$restrictionType."' level='".$level."' />\n";
+				$result .= "    <restriction type='".$restrictionType."' level='".$level.
+							"' expiry='".$expiry."' cascading='".$cascading."' />\n";
 
 		$result .= "</restrictions>\n";
 		
@@ -572,7 +597,7 @@ class WikiExporterEx extends WikiExporter
 	 */
 	public function includeRevision( &$enable )
 	{
-		$this->write->includeRevision = $enable;
+		$this->writer->includeRevision = $enable;
 	}
 } // end class
 
