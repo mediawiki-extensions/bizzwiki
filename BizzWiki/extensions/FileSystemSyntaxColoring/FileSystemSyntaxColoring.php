@@ -131,7 +131,7 @@ class FileSystemSyntaxColoring
 			$this->lang = 'php';
 		
 		$this->found = true;
-		$this->text = $text;
+		$this->text = trim( $text );
 		
 		// Check for a <wikitext> section
 		$text = $this->getWikitext( $text );
@@ -152,7 +152,7 @@ class FileSystemSyntaxColoring
 		$stext = $this->highlight( $this->text, $this->lang );
 		
 		// merge with possible <wikitext> section
-		$text .= $stext;
+		$text .= trim( $stext );
 		
 		return true;	
 	}
@@ -204,7 +204,7 @@ class FileSystemSyntaxColoring
 	}
 	private function removeWikitext()
 	{
-		$this->text = preg_replace( "/<wikitext\>(.*)(?:\<.?wikitext)>/siU", "wikitext", $this->text);	
+		$this->text = preg_replace( "/<wikitext\>(.*)(?:\<.?wikitext)>/siU", "", $this->text);	
 	}
 	
 	private function highlight( &$text, $lang='php', $lines=0 ) 

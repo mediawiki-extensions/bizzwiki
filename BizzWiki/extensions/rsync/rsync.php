@@ -33,19 +33,19 @@ along with 'rsync' to provide backup & restore functionality.
 
 == Features ==
 * Page
-** Creation
-** Update
-** Delete
-** Move
-** Protection
-* User
-** Account creation
-** Account options update
+** Creation   (done)
+** Update     (done)
+** Delete     (done)
+** Move       (done)
+** Protection (done)
 * File
 ** Upload
 ** Re-upload
 ** Delete
-** Move (???)
+** Move       (not allowed - hence, nothing to implement)
+* User
+** Account creation
+** Account options update
 
 == Theory Of Operation ==
 Page change events are trapped and the resulting new/updated pages are written to a 
@@ -240,6 +240,14 @@ class rsync
 
 		
 		return true;		
+	}
+	
+	/**
+	
+	 */
+	public function hFileUpload( &$img )
+	{
+		
 	}
 	
 	/**
