@@ -94,7 +94,10 @@ class VirtualArticle extends Article
 {
 	var $virtualTitle;
 	var $mDbkeyform;		// variable to undo THE ugly hack.
-		
+	
+	public function __construct( &$title )
+	{ return parent::__construct( $title ); }
+	
 	/**
 		The situation is the following:
 		- $this contains the 'template page' content
@@ -239,7 +242,7 @@ class VirtualPage
 		// no match? return silently
 		if ($target === null)
 			return true;
-			
+
 		// We have a match!  Let's try to load the
 		// template article.
 		$nsT  = $target['linkNs'];
@@ -247,20 +250,20 @@ class VirtualPage
 		if (empty($nsT)) 
 			$ns = NS_MAIN;
 		else
-			$ns	= Namespace::getCanonicalIndex( $nsT );
+			$ns	= Namespace::getCanonicalIndex( strtolower($nsT) );
 		
 		$tmplTitle   = Title::makeTitle( $ns, $page );
 		$tmplArticle = new VirtualArticle( $tmplTitle );
-				
+		
 		// did we find satisfaction?
 		// No? then exit without leaving a trace of
 		// what we tried to achieve.
-		if ( $tmplArticle->getID() == 0 )
+		if ( !$tmplArticle->exists() )
 		{
 			$article = null;
 			return true;
 		}
-			
+	
 		// yes we did find a template article!
 		$article = $tmplArticle;
 		$article->virtualTitle   = $title;
