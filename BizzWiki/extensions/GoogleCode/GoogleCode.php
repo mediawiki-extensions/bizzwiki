@@ -3,7 +3,7 @@
 {{Extension
 |name        = GoogleCode
 |status      = beta
-|type        = other
+|type        = Parser
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
