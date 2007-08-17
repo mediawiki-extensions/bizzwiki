@@ -59,7 +59,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 class ExtensionDirectory
 {
-	static $directory = '/extensions';
+	static $directory = '/extensions/';
 	
 	static function exists()
 	{
@@ -70,6 +70,12 @@ class ExtensionDirectory
 		clearstatcache();
 		return is_dir( $dir );
 	}
+	static function getPath( &$file = null )
+	{
+		global $IP;
+		return $IP.self::$directory.$file;
+	}
+	
 } // end 'ExtensionDirectory' class declaration
 
 //</source>

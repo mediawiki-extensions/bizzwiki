@@ -59,18 +59,27 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 class Extension
 {
+	var $name;
 	
 	public function __construct( &$name )
 	{
-		
+		$this->name = $name;	
 	}
+	/**
+		Verifies in the filesystem if the key files
+		are present.
+	 */
 	public function exists()
 	{
 		
 	}
+	/**
+	
+	 */
 	public function writeFile( &$filename, &$code )
 	{
-		
+		$f = ExtensionDirectory::getPath( $filename );
+		return file_put_contents( $f, $code );
 	}
 	
 } // end 'Extension' class definition
