@@ -212,5 +212,8 @@ Here is a list of the currently supported parser related 'tags', 'magic words' a
 
 {{Row|#usergetoption    | Parser Function | [[Extension:UserTools]]   }}
 
-{{Row|#__ DISABLECONTEXT __ | Proprietary Word | [[Extension:RegexNamespaceContext]] }}
+{{Row|__ DISABLECONTEXT __ | Proprietary Word | [[Extension:RegexNamespaceContext]] }}
+
+{{Row|gcode             | Tag             | [[Extension:GoogleCode]] }}
+{{Row|#gcode            | Parser Function | [[Extension:GoogleCode]] }}
 |}
