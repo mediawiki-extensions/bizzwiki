@@ -42,6 +42,14 @@ abstract class ExtensionRepository
 	var $project;
 	var $directory;
 	var $baseURI;
+	var $uri;	// fully formatted uri
+	var $fileList;	
+	
+	// Error codes
+	const codeOK = 0;
+	const codeFetchURIfailed = 1;
+	const codeDirectoryEmpty = 2;
+	const codeInvalidDirectoryList = 3;
 	
 	public function __construct( $baseURI, &$project, &$directory )
 	{
@@ -78,16 +86,19 @@ abstract class ExtensionRepository
 		$project = htmlspecialchars( $this->project );
 
 		$uri = $this->baseURI;
-		$this->uri = str_replace( '$1', $project, $uri );
+		$this->uri = str_replace( '$1', $project, $uri ).$this->directory;
 	}
 	
 	abstract public function exists();
 
 	// Recursive function which preserves whole (relative) path information
-	abstract public function getFileList();
+	abstract public function getFileList( $dir );
+
+	// Verifies if the specified uri corresponds to a directory
+	abstract public function isDir( &$uri );
 
 	// Requires the full relative path
-	abstract public function getFileCode();
+	abstract public function getFileCode( &$file, &$code );
 
 } // end 'ExtensionRepository' class definition
 //</source>
