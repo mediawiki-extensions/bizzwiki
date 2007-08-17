@@ -65,10 +65,9 @@ $wgExtensionCredits[ExtensionManager::thisType][] = array(
 	'url' 		=> StubManager::getFullUrl(__FILE__),	
 );
 
-
 require('ExtensionManager.i18n.php');
-require('Extension.php');
 require('ExtensionDirectory.php');
+require('Extension.php');
 require('ExtensionRepository.php');
 
 class ExtensionManager
@@ -84,6 +83,9 @@ class ExtensionManager
 
 	// Variables
 	var $currentRepo;
+	var $currentRepoName;	
+	var $currentDir;
+	var $currentExtension;
 	
 	public function __construct() 
 	{
@@ -139,8 +141,23 @@ class ExtensionManager
 		$result = $this->validateParameters( $repo, $dir );
 		if (!empty( $result ))
 			return $result;
-			
-		$this->verifyExistence( $repo, $dir );
+		
+		// the parameters check out.
+		$this->currentRepoName = $repo;
+		$this->currentDir      = $dir;
+		
+		if ($this->verifyExistence( $repo, $dir ))
+			return $this->doExtensionExists();
+	
+		return $this->doExtensionDoesNotExist();	
+	}
+	
+	protected function doExtensionsExists()
+	{
+		
+	}
+	protected function doExtensionDoesNotExist()
+	{
 		
 	}
 	/**
@@ -148,8 +165,15 @@ class ExtensionManager
 	 */
 	protected function verifyExistence( $repo, $dir )
 	{
-		
+		global $wgTitle;
+		$this->currentExtension = new Extension( $wgTitle->getDBkey() );
+			
 	}
+	/**
+		Create the repository object.
+		This method only validates that an actual class supports
+		the requested repository.
+	 */
 	protected function validateParameters( &$repo, &$dir )
 	{
 		// First, let's try to load the class defining
@@ -158,9 +182,7 @@ class ExtensionManager
 		if (!is_object( $this->currentRepo ))
 			return wfMsg('extensionmanager').wfMsgForContent('extensionmanager'.'-error-loadingrepo', $repo );
 
-		// Repository looks OK;
-		// Now check ...
-			
+		return null;
 	}
 	
 } // end 'ExtensionManager' class definition

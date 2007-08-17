@@ -68,14 +68,6 @@ class GoogleCode extends ExtensionRepository
 		return ( $error === CURLE_OK ) ? true:false;
 	}
 
-	public static function getCode( &$project, &$file, &$code )
-	{
-		$uri = self::formatURI( $project, $file );	
-		
-		return self::getPage( $uri, $code );
-	}
-
-
 	/**
 		Uses the CURL library to fetch the code off Google's WEB site.
 	 */
