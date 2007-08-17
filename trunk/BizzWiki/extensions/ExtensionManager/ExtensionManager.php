@@ -65,22 +65,47 @@ $wgExtensionCredits[ExtensionManager::thisType][] = array(
 	'url' 		=> StubManager::getFullUrl(__FILE__),	
 );
 
-abstract class ExtensionRepository
-{
-	public function __construct()
-	{
-	}
-	
-}
 
 requires('ExtensionManager.i18n.php');
+
+class ExtensionDirectory
+{
+	static $directory = '/extensions';
+	
+	static function exists()
+	{
+		global $IP;
+		
+		$dir = $IP.self::$directory;
+		
+		clearstatcache();
+		return is_dir( $dir );
+	}
+} // end 'ExtensionDirectory' class declaration
+
+class Extension
+{
+	
+	public function __construct( &$name )
+	{
+		
+	}
+	public function exists()
+	{
+		
+	}
+	public function writeFile( &$filename, &$code )
+	{
+		
+	}
+	
+} // end 'Extension' class definition
 
 class ExtensionManager
 {
 	const thisType = 'other';
 	const thisName = 'ExtensionManager';
 
-	const repoClassesDir = '/Repositories';
 	const keyREPO = 'repo';
 	const keyDIR  = 'dir';
 	const keyNAME = 'name';
@@ -116,6 +141,9 @@ class ExtensionManager
 		if (!defined('NS_EXTENSION'))
 			$result .= wfMsg('extensionmanager-missing-namespace');
 		
+		if (!ExtensionDirectory::exists())
+			$result .= wfMsg('extensionmanager'.'-missing-extensiondirectory');
+					
 		// add other checks here.
 		
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
@@ -142,21 +170,55 @@ class ExtensionManager
 		if (!empty( $result ))
 			return $result;
 			
-			
+		$this->verifyExistence( $repo, $dir );
+		
 	}
-	
+	/**
+		Verify if the extension already exists on this system.
+	 */
+	protected function verifyExistence( $repo, $dir )
+	{
+		
+	}
 	protected function validateParameters( &$repo, &$dir )
 	{
 		// First, let's try to load the class defining
 		// the requested repository
-		if (!$this->loadRepoClass( $repo ) )
+		$this->currentRepo = ExtensionRepository::newFromClass( $repo, $dir );
+		if (!is_object( $this->currentRepo ))
 			return wfMsg('extensionmanager').wfMsgForContent('extensionmanager'.'-error-loadingrepo', $repo );
+
+		// Repository looks OK;
+		// Now check ...
 			
 	}
+
+
+	
+} // end 'ExtensionManager' class definition
+
+abstract class ExtensionRepository
+{
+	// relative to the installation i.e. $IP
+	const repoClassesDir = '/Repositories';
+	
+	var $project;
+	var $directory;
+	var $baseURI;
+	
+	public function __construct( $baseURI, &$project, &$directory )
+	{
+		$this->project = $project;
+		$this->directory = $directory;
+		$this->baseURI = $baseURI;
+		
+		$this->formatRepoURI();
+	}
+	
 	/**
-		Load the class definition of the required repository
+		Class Factory
 	 */
-	protected function loadRepoClass( &$name )
+	public static function newFromClass( &$name, &$repo, &$dir )
 	{
 		// is the class already loaded??
 		if ( class_exists( $name ) )
@@ -169,10 +231,27 @@ class ExtensionManager
 		
 		// check if we have succeeded (!)
 		if ( class_exists( $name ) )
-			return true;
+			return new $name( $dir );
 			
 		return null;
 	}
+
+	protected function formatRepoURI()
+	{
+		$project = htmlspecialchars( $this->project );
+
+		$uri = $this->baseURI;
+		$this->uri = str_replace( '$1', $project, $uri );
+	}
 	
-} // end class
+	abstract public function exists();
+
+	// Recursive function which preserves whole (relative) path information
+	abstract public function getFileList();
+
+	// Requires the full relative path
+	abstract public function getFileCode();
+
+} // end 'ExtensionRepository' class definition
+
 //</source>
