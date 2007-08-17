@@ -1,0 +1,15 @@
+This page provides a list of all the hooks supported by [[Extension:BizzWiki]]
+
+== Geshi ==
+* SyntaxHighlight
+
+== DirectoryManager ==
+* DirectoryManagerBegin
+* DirectoryManagerBeforePageCacheCheck
+* DirectoryManagerBeginPageDisplay
+* DirectoryManagerBeforeCreatePage
+* DirectoryManagerBeforeParsePage
+* DirectoryManagerBeforeDisplayPage
+
+== ParserPhase2 ==
+* EndParserPhase2

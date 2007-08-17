@@ -1,0 +1,118 @@
+$Id$
+
+== StubManager ==
+* Use 'createStub2' method instead.
+
+== PREVIEW ==
+* Verify this interface does not impact security measures
+
+== Job Queue ==
+* Show Job Queue special page
+
+== User ==
+* Special:Import --> more granular right i.e. namespace level ??
+* View User details: probably special page required for that
+* "Delete User" extension
+* 'Block User' functionality: make sure the user is disallowed any 'edit' access
+
+== SuperGroups ==
+0) Configuration in BizzWikiSettings.php
+1) TODO special page...
+2) Internationalization...
+3) Partitioning of NS_IMAGE namespace i.e. since the the problem is about files in the filesystem,
+   it comes down to partitioning the filesystem space for this namespace
+4) Delegation functionality: the capability for user X to delegate rights to user Y
+5) User space partitioning: keep user groups separated under all circumstances
+6) Table creation: integration with overall installation process
+   Special page for sg table creation??
+
+== Page History ==
+* remove 'view logs for this page' link when user rights prohibits (PageHistory.php)
+
+== MISC ==
+* Internationalise!
+* CHECK: 'UserSettingsChangedLog': log entries created outside of 'Special:Preferences' context ??
+* 'notitle' magic word
+* Job for the 'FileManager': reload from filesystem all file from installation.
+
+== SpecialPagesManager ==
+* Customized layout functionality
+
+== Special:Undelete ==
+* Fixme
+* DOES NOT RESTORE PROTECTION (i.e. page level restrictions) when undeleting!!  (TBD)
+
+== SpecialPagesManager ==
+* Logging functionality?
+
+== RecentChanges ==
+* Enable enhanced view with Javascript by default
+
+== Template ==
+=== Links updating ===
+* It would seem that 'parser cached' entries are not kept up-to-date when when templates are updated
+** E.g. if page P1 uses T1 and T1 changes then cached P1 will not be updated until it is edited again.
+
+== Stub Candidates ==
+* SideBarEx        -> NO   (uses hSkinTemplateOutputPageBeforeExec)
+* PageRestrictions -> NO   (uses ArticleViewHeader which is called VERY often)
+* FileManager      -> NO
+
+* TaskScheduler    -> TBD
+
+== Rights Management ==
+* Integrate 'ConfirmAccount' extension
+* "Grant Right" functionality
+** see Manual:$wgAddGroups
+** see Manual:$wgRemoveGroups
+
+== Replication functionality ==
+* MW Special Page for managing the Replicator
+* PHP scripts / Cron Jobs for Replicator
+* SECURE way of gettings the 'user' table (ALL the fields !)
+* Waiting for bug #10644 to be resolved
+* Waiting for 'LogEvents' API to be fixed
+
+== JOBS ==
+* FetchPartnerUser table:   when an entry 'user creation log' appears in log?
+* FetchPartnerPage
+* FetchPartnerRevision
+
+== Task Scheduler ==
+* Special Page to manage tasks
+
+== Article ==
+
+== Logs ==
+* Enhanced with Javascript: group similiar items
+
+== Security ==
+* HTTPS
+
+== Presentation Layer ==
+* Short URL
+* JS form elements validation helper class
+* JS file group packager
+* List of templates used on a page.
+
+== DynamicPageList2 ==
+* TODO Integration 'DynamicPageList2' extension
+** namespace level policing
+** settings adjustments
+
+== Things to watch out for ==
+=== UserSettingsChangedLog ===
+* Relies on a particular timing - skips the first call
+
+=== API ===
+* Log_Id field will be fixed when WikiMedia processes the field correctly -- won't need a patch anymore
+
+== Security hole on password protected wikis ==
+Hi, I just found out that even if you disable viewing pages for non logged in users one can still acess 
+the uploaded media files when entering the direct URL. 
+Is there a way to give only access to logged in users to download media files? 
+--[[User:83.228.136.57|83.228.136.57]] 19:04, 7 August 2007 (UTC)
+
+== Rights Management ==
+=== Granting ===
+* Only when user X has himself right R that can he delegate/remove right R to user Y (?)

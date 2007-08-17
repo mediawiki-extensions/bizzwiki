@@ -1,0 +1,243 @@
+$Id$
+
+== REL1_10_1 ==
+* Integration of 'Hierarchical Namespace Permissions' system
+* Integration of 'File Manager' extension
+* Integration of 'Syntax Coloring' to complement 'File Manager'
+* Integration of 'Raw' right (permission to retrieve a page in 'raw' format)
+* Integration of 'Viewsource' right (permission to view the source wikitext)
+* Integration of 'New User Log' functionality
+* Patch to 'ChangesList.php' for namespace level policy enforcement (patrol right)
+* Patch to 'Pager.php' for namespace level policy enforcement (added 'browse' right)
+* Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+* Patch to 'QueryPage.php' for namespace level policy enforcement (added 'browse' right)
+* Patch to 'SearchEngine.php' for namespace level policy enforcement (added 'search' right)
+* Patch to 'SpecialAllpages.php' for namespace level policy enforcement (added 'browse' right)
+* Patch to 'SpecialContributions.php' for handling the 'rollback' right correctly
+* Patch to 'SpecialLog.php': added 'readlog' right, namespace level policy enforcement 
+* Patch to 'SpecialNewpages.php' for handling the 'patrol' right correctly
+* Patch to 'SpecialPreferences.php' for:
+** Fixed searchable namespace listing
+** Fixed watchlist related toggles
+** Fixed searchable namespace preference saving
+* Patch to 'SpecialRandompage.php' for namespace level policy enforcement
+* Patch to 'SpecialRecentchanges.php' for namespace level policy enforcement
+* Patch to 'SpecialRecentchangeslinked.php'  for namespace level policy enforcement
+* Patch to 'SpecialStatistics.php'  for namespace level policy enforcement
+* Patch to 'User.php':
+** Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
+** Modified 'isAllowed' method.
+* Patch to 'Xml.php'  for namespace level policy enforcement (added 'browse' right)
+
+== REL1_10_2 ==
+* Patch to 'Special:Upload.php' to for handling NS_IMAGE namespace rights
+* Added 'Log/upload' permission related settings
+* Patch to 'Article.php' to disable parser caching upon article saving/updating (parser cache gets updated upon article viewing 'only')
+* Added 'Log/delete' permission related settings
+* Added 'ShowRedirectPageText' extension
+* Added 'InterWikiLinkManager' extension
+* Corrections & enhancements to 'ExtensionClass'
+* Corrections & enhancements to 'ViewsourceRight' extension
+* Added 'SidebarEx' extension
+ 
+== REL1_10_3 ==
+* Added proposed modification detailed in Bugzilla #7302 to enable custom jobs.
+* Changed 'SyntaxColoring' extension name to 'FileSystem Syntax Coloring' (more descriptive)
+* Added <wikitext> section support in 'FileSystem SyntaxColoring' extension (for NS_FILESYSTEM namespace)
+* Integrated 'GeSHi' syntax highlighter extension
+** Added 'SyntaxHighlight' hook
+* Fixed 'delete' and 'protect' namespace level policy in Special:Log
+* Added 'FormProc' extension
+* Added 'SpecialPagesManager' extension
+* Added 'SecureHTML' extension
+* Added 'SecureProperties' extension
+* Added 'AddScriptCss' extension
+* Added 'ParserTools' extension
+
+== REL1_10_4 ==
+* Added 'AutoLanguage' extension
+* Added 'ParserPhase2' extension
+* Added 'source' tag to geshi extension
+* Adjusted 'revision id' information provided through extension credits (Special:Version) on most extensions
+* Fixed 'SidebarEx' extension for 'garbage' appearing when 'Sidebar/$group' page does not exist
+* Added 'undelete' as namespace independant right for addressing 'Special:Undelete' use-cases
+* Fixed 'Pager.php' to support 'page_namespace' related queries as well as 'user' table related ones
+** Addresses 'Special:Listusers' special page issue
+* Enhanced 'SpecialPagesManager' extension with a standard MW special for updating the BizzWiki special pages by reading the filesystem '/SpecialPages' directory.
+
+== REL1_10_5 ==
+* FileManager: Added PHP error suppression for file_get_contents upon initial page creation
+* FormProc: added functionality enabling defining a class for form processing
+* Added BizzWiki release identifier in global define 'BIZZWIKI'
+* SecureHTML: added namespace exemption list functionality
+* SecureProperties: added namespace exemption list functionality
+* Corrected geshi, extensionclass, addscriptcss for PHP warnings (usage of deprecated PHP features)
+* Adjusted 'url' field in extensions' credits
+* ParserPhase2: Fixed client side caching logic due to a bug in PHP's preg_match_all function
+* ExtensionClass: added 'AutoMethods' for initializing a derived class's hooks, parser functions & magic words automatically
+* ExtensionClass: added support for adding 'head' and 'body' scripts links whilst preserving parser caching coherency.
+* Added 'CacheTools' extension
+* Added more documentation in BizzWikiSettings.php
+* Added BizzWiki logo design files
+
+== REL1_10_6 ==
+* Integrated 'ParserFunctions' extension
+* Integrated 'StringFunctions' extension
+* Added 'PageFunctions' extension
+* ParserPhase2: can now call any standard 'parser' functions & variables (i.e. through magic words)
+* Added 'ForeachFunctions' extension
+* Adjusted 'Log/rights' browse right for '*' group
+* Adjusted 'Log/move' browse right for '*' group
+* Adjusted 'Log/block' browse right for '*' group
+* FileManager: disabled client side caching upon accessing NS_FILESYSTEM
+* Added 'importupload' to managed rights
+
+== REL1_10_7 (released 11July2007) ==
+* SecureProperties: added global variable 'get' and 'set' operations
+* ParserPhase2: fixed an issue with $wgParser not setting mTitle property when needed
+* Added 'NS_INTERWIKI' accessible to '*'
+* Fixed page history for revision level policing
+* ForeachFunction: added security through only allowing 'protected' pages
+* ForeachFunction: added 'array of arrays' iteration capability
+* Added 'PermissionFunctions' extension
+* Added 'NamespaceFunctions' extension
+* Added 'StubManager' extension
+* Fixed small bug (non core, just when Special:Version is viewed in a particular case) in RawRight
+* Added 'EmailLog' extension
+* Added 'UserSettingsChanged' hook in User.php (used for logging functionality)
+* Adjusted 'Log/emaillog' browse right for '*' group
+* Added 'ReCaptcha' plug-in -- requires customization to the target site where BizzWiki is deployed.
+
+== REL1_10_8: (released 23July2007) ==
+* Adjusted ViewsourceRight: accomodate more PHP versions (no functional change)
+* Adjusted FileSystemSyntaxColoring : accomodate more PHP versions (no functional change)
+* Adjusted ShowRedirectPageText: accomodate more PHP versions (no functional change)
+* Adjusted SidebarEx: accomodate more PHP versions (no functional change)
+* Adjusted AddScriptCss: accomodate more PHP versions (no functional change)
+* Adjusted PageFunctions: accomodate more PHP versions (no functional change)
+* HierarchicalNamespacePermissions: added page level restrictions enforcement
+* Added 'PageRestrictions' extension: adds 'read' right enforcement at the page level etc.
+* Added 'disable' command in ParserPhase2 (addresses documentation case in NS_FILESYSTEM) (!)
+* Added 'WatchLog' extension
+* Added 'RecentChangesManager' extension
+* Adapter 'Job::factory' method to receive custom jobs as per MW1.11
+* Added 'skipcaptcha' right support
+* Integrated MW1.11 API
+* Added API to rights management process (new namespace NS_API)
+* Updated 'hnpClass' to account for API
+* Added 'FetchPartnerRC' extension (part of Replication functionality which is ongoing)
+* Added auto-detection of 'wfScript' function for MW1.11 API integration.
+* Added 'ClockTick' extension (added 'ClockTickEvent' hook)
+* Added 'clocktick.php' script
+* Added 'TaskScheduler' extension (requires 'ClockTick' extension / 'ClockTickEvent' generator such as 'clocktick.php' script)
+* Enhanced 'StubManager' to fully handle logging
+* REPLICATION FUNCTIONALITY: added 'FetchPartnerRC' extension
+* REPLICATION FUNCTIONALITY: added 'FetchPartnerLog' extension
+* StubManager: Minor fixes (removal of some PHP warnings)
+* hnpClass: Minor fixes (removal of some PHP warnings) (NO FUNCTIONAL CHANGES)
+* ForeachFunctions: Minor fixes (removal of some PHP warnings)
+* FileManager: disabled 'auto summary' features upon page creation
+* Added some documentation files
+* PageFunctions: added 'varaset', 'varaget' magic words
+* PageFunctions: added 'PageVarGet' and 'PageVarSet' hooks
+* Added 'RegexTools' extension
+* Added 'RegexNamespaceContext' extension
+* Integrated 'MakeSysop' extension
+* Integrated 'DeSysop' extension
+
+== REL1_10_9: (released 31/07/2007) ==
+* Added 'MiscParserFunctions' extension
+* Added 'ImageLink' extension
+* Added 'PageAfterAndBefore' extension
+* Added 'Magic Words' document for tracking all Magic Words, Tags and Parser Functions supported
+* Added 'NS_FILESYSTEM' to 'off-limits' for RegexNamespaceContext functionality.
+* FileManager: Corrected issue with 'auto-summary' fix (usage of wrong bitwise operator)
+* Geshi: added 'js' & 'css' tags for Javascript & CSS contents
+* Added parser function 'gettagsection' to MiscParserFunctions extension
+* Added 'RawPageTools' extension
+* Fixed 'RegexNamespaceContext' for it to be more friendly with other extensions (e.g. AddScriptCss)
+* Fixed 'ExtensionClass' for increased integration around 'ParserAfterTidy' hook
+* Enhanced 'StubManager' to cover all required stubbing cases (tags, magic words etc.)
+* Moved 'addtohead' tag functionality from SecureHTML to AddScriptCss
+* AddScriptCss: enhanced to be 'stub'-enabled
+* MiscParserFunctions: enhanced to be 'stub'-enabled
+* ForeachFunction: enhanced to be 'stub'-enabled
+* NamespaceFunctions: removed dependency on ExtensionClass, now is 'stub'-enabled
+* RegexTools: removed dependency on ExtensionClass, now is 'stub'-enabled
+* PageFunctions: removed dependency on ExtensionClass, now is 'stub'-enabled
+* ParserTools: removed dependency on ExtensionClass, now is 'stub'-enabled
+* DocProc: removed dependency on ExtensionClass, now is 'stub'-enabled
+* ParserPhase2: removed dependency on ExtensionClass, now is 'stub'-enabled
+* ParserPhase2: added 'EndParserPhase2' hook
+* ParserPhase2: added pattern ((magic word...)) to match more closely stock MediaWiki
+* ParserPhase2: added 'varcapset' parser function
+* Added 'ScriptingTools' extension
+* ParserPhase2: added pattern ((%magic word...%)): parser functions executed AFTER Tidy process
+* ParserPhase2: added pattern ((@magic word...@)): parser functions executed BEFORE Strip process
+* Adjusted 'StubManager' to remove some PHP warnings
+* Added 'svn:keywords 'Id' to all files
+* WatchRight extension: removed dependency on ExtensionClass, now is 'stub'-enabled
+* Added 'oversight' to the rights being managed  (see Special:Ipblocklist)
+* Article.php: modified 'doDeleteArticle' method so that it does not delete RecentChanges entries (for the replicator)
+* Adjusted 'ViewsourceRight' for 'stubbing'
+* Adjusted 'RawRight' for 'stubbing'
+* Merged functionality of CacheTools in PageFunctions
+* Adjusted 'geshi' for 'stubbing'
+* Adjusted 'FileSystemSyntaxColoring' for stubbing
+* Adjusted 'ImageLink' for stubbing
+* Adjusted 'ShowRedirectPageText' for stubbing
+* Adjusted 'RecentChangesManager' for stubbing
+* Adjusted 'SpecialPagesManager' for stubbing
+* Adjusted 'InterWikiLinkManager' for stubbing
+* Adjusted 'PageAfterAndBefore' for stubbing
+* Adjusted 'FormProc' for stubbing
+* Adjusted 'AutoLanguage' for stubbing
+
+== REL1_10_10: (released 02/08/2007) ==
+* Integrated MW API from SVN @ 24515
+* Fixed ApiQueryLogEvents for returning the correct 'log_id' value
+* UserSettingsChangedLog: changed log entry format to be more useful for the replicator
+* UserSettingsChangedLog: Fixed multiple entries in the log when the user changes a preference setting
+* UserSettingsChangedLog: Fixed to not add log entries upon account creation
+* Added 'reload' right (FileManager extension)
+* FileManager: added 'reload' capability
+* FIXED broken 'ForeachFunction': missing file
+
+== REL1_10_11: (released 16/08/2007) ==
+* Added [[Extension:NewUserEmailNotification]] extension
+* Added [[Extension:UserLoginLogoutLog]] extension
+* Adjusted 'PermissionFunctions' for stubbing
+* StubManager: added namespace triggering functionality
+* Adjusted 'InterWikiLinkManager' for namespace triggering
+* Adjusted 'FileSystemSyntaxColoring' for namespace triggering
+* Adjusted 'SecureHTML' for removing dependancy on ExtensionClass. Made 'stub'-enabled
+* Added [[Extension:SkinTools]] extension
+* Added [[Extension:UserTools]] extension ( new right 'userdetails' )
+* Fixed major bug in 'RegexNamespaceContext'
+* FileSystemSyntaxColoring: some optimizations for speed
+* ParserPhase2: better handling of 'disable' commands
+* Several minor enhancements to:
+** RegexTools
+** RegexNamespaceContext
+** FileManager
+** FileSystemSyntaxColoring
+** ParserPhase2
+* SidebarEx: added per-user sidebar functionality
+* Added 'VirtualPage' extension
+* FileManager: added 'Proprietary Words' functionality
+* FileManager: added 'parser phase 2' magic words functionality
+* FileSystemSyntaxColoring: added '<!--@@ wikitext @@-->' pattern to hide wikitext
+* PageFunctions: added '#noext' magic word
+* Added [[Extension:AutoRedirect]] extension
+* Added [[Extension:DirectoryManager]] extension
+* Simplified installation procedure for all 'stubbed' extensions
+* Fix 'FileManager': didn't show up log records correctly
+* FileManager: removed dependency on ExtensionClass + made stub
+* InterWikiLinkManager: added cancellation of hook-chain on EditFormPreloadText
+* Massive update of almost all extension headers - normalization
+* StubManager: support for 'exclude' namespace triggering
+* CapitalLinks are 'false' by default (helps with FileManager & DirectoryManager extensions)
+* Added [[Extension:SecurePHP]] extension
+* Added [[Extension:GoogleCode]] extension
+* Major simplification of 'FileSystemSyntaxColoring' extension
+* 'Wikified' the changelog file
