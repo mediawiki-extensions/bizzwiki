@@ -116,3 +116,9 @@ Is there a way to give only access to logged in users to download media files?
 == Rights Management ==
 === Granting ===
 * Only when user X has himself right R that can he delegate/remove right R to user Y (?)
+
+== Rename User ==
+* Incorporate RenameUser extension
+
+== Check User ==
+* Incorporate CheckUser extension

@@ -241,3 +241,6 @@ $Id$
 * Added [[Extension:GoogleCode]] extension
 * Major simplification of 'FileSystemSyntaxColoring' extension
 * 'Wikified' the changelog file
+== REL1_10_12: (released ...) ==
+* Fixed [[Extension:StubManager]] for bug with 'exclude' namespaces
+* 
