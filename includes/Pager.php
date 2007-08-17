@@ -232,7 +232,7 @@ abstract class IndexPager implements Pager {
 						$ns = $row->page_namespace;
 					elseif (isset( $row->user_name))
 						$ns = NS_USER;
-					elseif ( is_object( $this->mPageHistory->mTitle ) )
+					elseif ( @is_object( $this->mPageHistory->mTitle ) )
 						$ns = $this->mPageHistory->mTitle->getNamespace(); 
 					elseif ( isset( $row->img_name ))
 						$ns = NS_IMAGE;
@@ -255,7 +255,7 @@ abstract class IndexPager implements Pager {
 						$ns = $row->page_namespace;
 					elseif (isset( $row->user_name))
 						$ns = NS_USER;
-					elseif ( is_object( $this->mPageHistory->mTitle ) )
+					elseif ( @is_object( $this->mPageHistory->mTitle ) )
 						$ns = $this->mPageHistory->mTitle->getNamespace(); 
 					elseif ( isset( $row->img_name ))
 						$ns = NS_IMAGE;

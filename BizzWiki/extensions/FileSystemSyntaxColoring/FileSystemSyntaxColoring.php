@@ -92,7 +92,6 @@ class FileSystemSyntaxColoring
 	public function __construct() 
 	{
 		$this->text  = null;
-		$this->found = false;
 	}
 	
 	public function hArticleAfterFetchContent( &$article, &$content )
@@ -121,7 +120,7 @@ class FileSystemSyntaxColoring
 		if (strcmp( $this->text, $text)!=0 ) return true;
 		
 		// Check for a <wikitext> section
-		$text = $this->cleanCode( $text );
+		$this->cleanCode( $text );
 		
 		return true;		
 	}
@@ -131,10 +130,7 @@ class FileSystemSyntaxColoring
 		// is the namespace defined at all??
 		if (!defined('NS_FILESYSTEM')) return false;
 		
-		$ns = null;
-		
-		if ( $obj instanceof Parser )
-			$ns = $obj->mTitle->getNamespace();
+		$ns = $obj->mTitle->getNamespace();
 
 		// is the current article in the right namespace??		
 		return (NS_FILESYSTEM == $ns)? true:false;
@@ -147,15 +143,18 @@ class FileSystemSyntaxColoring
 			$r = preg_match_all( $pattern, $text, $m );
 			if ( ( $r === false ) || ( $r ===0 ) )
 				continue;
-				
+			
 			foreach( $m[0] as $index => $c_match )
 			{
-				$rep = str_replace('$1', $m[1][$index], $replacement );
-				$text = str_replace( $c_match, $rep, $text );
+				if ( isset( $m[1][$index] ) )				
+					$rep = str_replace('$1', $m[1][$index], $replacement );
+				else
+					$rep = $replacement;
+					
+				$clean_text = str_replace( $c_match, $rep, $text );
+				$text = $clean_text;
 			}
 		}
-
-		return $text;
 	}
 	
 } // end class definition.

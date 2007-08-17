@@ -438,9 +438,6 @@ StubManager::createStub(	'TaskScheduler',
 // with an 'action=ping' command.
 #require('extensions/ClockTick/ClockTick.php');
 
-require($bwExtPath.'/rsync/rsync_stub.php');
-
-
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
 $wgEnableUploads     = true;
@@ -470,6 +467,9 @@ if (!defined('wfScript'))
 if (defined('BIZZWIKIDEMO'))
 {
 	require('extensions/ReCaptcha/ReCaptcha.php');
+
+	// EXPERIMENTAL!!
+	require($bwExtPath.'/rsync/rsync_stub.php');	
 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!read")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"AdminSettings.php","!read")] = true;  
