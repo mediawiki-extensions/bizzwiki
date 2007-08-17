@@ -489,6 +489,7 @@ class Stub
 		$this->mgs  = $mgs;
 		$this->mws  = $mws;
 		$this->nss  = $nss;
+		$this->enss = $enss;		
 		$this->params  = $params;
 		
 		if ( !empty( $mgs) || !empty( $mws) )

@@ -243,24 +243,28 @@ class rsync
 	}
 	
 	/**
-	
+		File Upload	
 	 */
 	public function hFileUpload( &$img )
 	{
+		$this->op = new rsync_operation(rsync_operation::action_createfile,
+										$article,
+										WikiExporter::CURRENT,
+										false,	// do not include last revision text
+										null,
+										null										
+									 );
+		rsync_operations::add( $this->op );
+		rsync_operations::execute();
 		
-	}
-	
-	/**
-		File Upload
-	 */
-	public function hUploadComplete( &$img )
-	{
-		// make a copy of the uploaded file to the rsync directory.
-		
-		// what about the meta data of the file???	
+		$this->executeDeferredInRcHook = true;		
 		
 		return true;		
 	}
+	
+	/**
+	 */
+	#public function hUploadComplete( &$img ) {	return true;	}
 	
 	/**
 		TBD
@@ -370,7 +374,6 @@ class rsync_operation
 		// file related
 	const action_createfile = 6;
 	const action_deletefile = 7;
-	const action_editfile   = 8;
 	
 	// Commit Operation parameters
 	var $includeRevision;
