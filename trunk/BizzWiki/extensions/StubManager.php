@@ -82,6 +82,7 @@ require('extensions/StubManager.php');
 * fixed annoying warning about undefined offset.
 * added namespace triggering functionality
 ** Only load an extension when the extension's target namespace(s) are in focus.
+* Added support for non-BizzWiki environments
 
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
@@ -95,6 +96,9 @@ $wgExtensionCredits[StubManager::thisType][] = array(
 	'description'	=> 'Provides stubbing facility for extensions handling rare events. Extensions registered: ', 
 	'url'			=> StubManager::getFullUrl(__FILE__),				
 );
+
+if (!defined('BIZZWIKI'))
+	$bwExtPath = $IP.'/extensions';
 
 class StubManager
 {
