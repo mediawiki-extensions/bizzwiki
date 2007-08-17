@@ -53,7 +53,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 StubManager::createStub2(	array(	'class' 		=> 'GoogleCode', 
 									'classfilename'	=> $bwExtPath.'/GoogleCode/GoogleCode.php',
-									'tags'			=> array( 'gcode' )
+									'tags'			=> array( 'gcode' ),
+									'mgs'			=> array( 'gcode' )
 								)
 						);
 //</source>

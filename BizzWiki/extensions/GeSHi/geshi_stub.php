@@ -47,7 +47,7 @@ StubManager::createStub(	'geshiClass',
 							array( 'SyntaxHighlight' ),
 							false,	// no need for logging support
 							array( 'geshi', 'source', 'php','js', 'css' ),	// tags
-							null,	// no parser functions
+							array( 'source' ),	// parser functions
 							null	// no magic words
 						 );
 //</source>

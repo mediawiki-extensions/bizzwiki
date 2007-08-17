@@ -54,8 +54,9 @@ require('extensions/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php')
 * Added stubbing capability through 'StubManager'
 * Added namespace trigger
 * Added additional checks to speed-up detection of NS_FILESYSTEM namespace
-* Added the pattern '<!--@@ wikitext @@-->' to hide wikitext when 'copy and paste' operation is used
+* Added the pattern '< !--@@ wikitext @@-- >' to hide wikitext when 'copy and paste' operation is used 
 to save document in a non-BizzWiki wiki.
+* Major simplification - requires less hooks
 
 == Todo ==
 * Handle multiple <!--@@ wikitext @@--> sections
@@ -76,20 +77,18 @@ class FileSystemSyntaxColoring
 	const thisName = 'FileSystem Syntax Coloring';
 	const thisType = 'other';  // must use this type in order to display useful info in Special:Version
 		
-	var $found;
 	var $text;
-	var $lang;
 	
-	// add other mappings if required.
-	static $map = array( 
-							'php' => 'php',
-							'js'  => 'javascript',
-							'xml' => 'xml',
-							'css' => 'css',
-							'py'  => 'python',
-							#'' => '',
-						);
-
+	static $patterns = array(
+	'/\<\?php/siU'							=> '',
+	'/\/\*\<\!\-\-\<wikitext\>\-\-\>/siU'	=> '',
+	'/\/*\<\!\-\-\<(.?)wikitext\>\-\->/siU'	=> '',
+	'/\/\/\<(.?)source\>/siU' 				=> '<$1source>',
+	'/\<source(.*)\>\*\//siU'				=> '<source $1>',
+	'/\<\!\-\-\@\@/siU' 					=> '',
+	'/\@\@\-\-\>/siU' 						=> ''
+	);
+	
 	public function __construct() 
 	{
 		$this->text  = null;
@@ -121,40 +120,10 @@ class FileSystemSyntaxColoring
 		// we need to make sure we are dealing the with article per-se
 		if (strcmp( $this->text, $text)!=0 ) return true;
 		
-		// check file extension & map to language
-		$titre = $parser->mTitle->getText();
-		
-		$ext = $this->getExtension( $titre );
-		
-		$this->lang = $this->getLanguage( $ext );
-		if ($this->lang === null)
-			$this->lang = 'php';
-		
-		$this->found = true;
-		$this->text = trim( $text );
-		
 		// Check for a <wikitext> section
-		$text = $this->getWikitext( $text );
+		$text = $this->cleanCode( $text );
 		
 		return true;		
-	}
-	public function hParserAfterTidy( &$parser, &$text )
-	{
-		// the parser gets called two times in one transaction
-		// when editing/creating an article and when viewing the resulting page.
-		// Use ParserCacheControl extension or patched Article::editUpdates.
-
-		if (! $this->found ) return true;
-		$this->found = false;
-		
-		$this->removeWikitext();
-		
-		$stext = $this->highlight( $this->text, $this->lang );
-		
-		// merge with possible <wikitext> section
-		$text .= trim( $stext );
-		
-		return true;	
 	}
 	
 	private function isFileSystem( &$obj )
@@ -164,81 +133,29 @@ class FileSystemSyntaxColoring
 		
 		$ns = null;
 		
-		if (is_a( $obj, 'Parser' ))
-			$ns = $obj->mTitle->getNamespace();
-		
-		if (is_a( $obj, 'Article' ))
+		if ( $obj instanceof Parser )
 			$ns = $obj->mTitle->getNamespace();
 
-		if (is_a( $obj, 'Title' ))
-			$ns = $obj->getNamespace();
-		
 		// is the current article in the right namespace??		
 		return (NS_FILESYSTEM == $ns)? true:false;
 	}
 
-	private function getWikitext( &$text )
+	public function cleanCode( &$text )
 	{
-		$p = "/<wikitext\>(.*)(?:\<.?wikitext)>/siU";
-					
-		$result = preg_match( $p, $text, $m );
-		if ( ($result===FALSE) or ($result===0)) return '';
+		foreach( self::$patterns as $pattern => $replacement )	
+		{
+			$r = preg_match_all( $pattern, $text, $m );
+			if ( ( $r === false ) || ( $r ===0 ) )
+				continue;
+				
+			foreach( $m[0] as $index => $c_match )
+			{
+				$rep = str_replace('$1', $m[1][$index], $replacement );
+				$text = str_replace( $c_match, $rep, $text );
+			}
+		}
 
-		$texte = &$m[1]; // shortcut.
-
-		// Another fix: extract a wikitext section which is otherwise
-		// hidden when a 'copy and paste' is done to another site.
-		// Pattern:  <!--@@ wikitext @@-->
-		$pattern = "/\<!\-\-\@\@(.*)\@\@\-\-\>/siU";
-		$r = preg_match( $pattern, $texte, $match);
-		if (($r!==false) && ($r!==0))
-			$texte = preg_replace( $pattern, $match[1], $texte );
-		
-		// helper: when 'copy and paste' to Mediawiki.org,
-		// I needed to adapt the file template which now
-		// would look bad on BizzWiki.org. The following replace
-		// 'fixes' that.
-		$t = str_replace("-->\n", '', $texte );
-
-		return $t;
-	}
-	private function removeWikitext()
-	{
-		$this->text = preg_replace( "/<wikitext\>(.*)(?:\<.?wikitext)>/siU", "", $this->text);	
-	}
-	
-	private function highlight( &$text, $lang='php', $lines=0 ) 
-	{
-		if ( wfRunHooks('SyntaxHighlight', array( &$text, $lang, $lines, &$result ) ) )
-			return $result;
-		else
-			return $this->default_highlight( $text );
-	}
-	private function default_highlight( &$text )
-	{
-		ob_start();
-		highlight_string( $this->text );
-		$stext = ob_get_contents();
-		ob_end_clean();
-
-		return $stext;
-	}
-	private function getExtension( $titre )
-	{
-		$pos = strrpos($titre,'.');
-		if ( $pos === false ) 
-			$ext = '';	
-		else
-			$ext = substr( $titre, $pos+1 );
-
-		return $ext;		
-	}
-	private function getLanguage( $ext ) 
-	{ 
-		if (isset( self::$map[ $ext ]))
-			return self::$map[ $ext ]; 
-			
-		return null;
+		return $text;
 	}
 	
 } // end class definition.

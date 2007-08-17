@@ -42,9 +42,9 @@ if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
 StubManager::createStub(	'FileSystemSyntaxColoring', 
-							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring-v2.php',
+							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
 							null,
-							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip', /*'ParserAfterTidy'*/ ),
+							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip' ),
 							false,	// no need for logging support
 							null,	// tags
 							null,	// no parser functions

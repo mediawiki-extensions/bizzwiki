@@ -41,11 +41,14 @@ Use <nowiki><geshi lang=LANG lines=LINES source=SOURCE></geshi></nowiki> where:
 
 * Use <nowiki><php lines=LINES source=SOURCE></nowiki>
 * Use <nowiki><source lines=LINES source=SOURCE></nowiki>
+* Use <nowiki>{{#source: LANG|LINES| CODE }}</nowiki>
+** HTML tagging must be enabled
 
 == History ==
 * Added 'source' tag for aligning with some similar extensions.
 * Added 'js' tag for highlighting 'Javascript'
 * Added 'css' tag for highlighting 'CSS'
+* Added parser function '{{#source ...}}'
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -83,6 +86,15 @@ class geshiClass
 	
 	function __construct() {}
 
+	// PARSER FUNCTIONS
+	public function mg_source( &$parser, &$lang, &$lines, &$code )
+	{
+		$html = $this->executeMain( $code, $lang, $lines );		
+		return '<html>'.$html.'</html>';
+	}
+
+	// TAGS
+
 	public function tag_geshi( &$text, &$argv, &$parser )
 	{
 		$this->extractArgs( $argv, $lang, $lines, $source );
@@ -115,7 +127,7 @@ class geshiClass
 		if (isset( $argv['lines']) ) $lines = $argv['lines'];
 		if (isset( $argv['source'])) $source = $argv['source']; 
 	}
-	public function executeMain( &$text, $lang, $lines, $source )
+	public function executeMain( &$text, $lang, $lines, $source = null )
 	{
 		switch( $source )
 		{
@@ -130,8 +142,12 @@ class geshiClass
 				if ( !$result )  
 					return $text;
 				break;
-		}
 		
+			default:
+				// the text passed as argument.
+				break;
+		}
+
 		return $this->highlight( $text, $lang, $lines );			
 	}
 	private function highlight( &$text, $lang='php', $lines=false )
