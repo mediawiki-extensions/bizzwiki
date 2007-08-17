@@ -51,7 +51,9 @@ class GoogleCode extends ExtensionRepository
 	const port 		= 80;
 	const timeout	= 15;
 
-	public function __construct( &$project, &$directory )
+	// variables
+
+	public function __construct( $project, $directory )
 	{
 		// don't forget to call the parent!
 		return parent::__construct( self::baseURI, $project, $directory );	
@@ -66,13 +68,6 @@ class GoogleCode extends ExtensionRepository
 		return ( $error === CURLE_OK ) ? true:false;
 	}
 
-	// Recursive function which preserves whole (relative) path information
-	abstract public function getFileList();
-
-	// Requires the full relative path
-	abstract public function getFileCode();
-
-
 	public static function getCode( &$project, &$file, &$code )
 	{
 		$uri = self::formatURI( $project, $file );	
@@ -82,21 +77,9 @@ class GoogleCode extends ExtensionRepository
 
 
 	/**
-		Formats the URI securily.
-	 */
-	public static function formatURI( &$project, &$file )
-	{
-		$project = htmlspecialchars( $project );
-		$file    = htmlspecialchars( $file );
-		
-		$uri = self::baseURI.$file;
-		$uri = str_replace( '$1', $project, $uri );
-		return $uri;
-	}
-	/**
 		Uses the CURL library to fetch the code off Google's WEB site.
 	 */
-	public static function getPage( &$file, &$document )
+	public function getFileCode( &$file, &$document )
 	{
 		 // initialize curl handle
 		$ch = curl_init();
@@ -121,7 +104,120 @@ class GoogleCode extends ExtensionRepository
 		// CURLE_OK if everything OK.
 		return $error;
 	}
+
+	/**
+		Recursive function which preserves whole (relative) path information
 		
+		Example of a directory 'page':
+		==============================
+	 */
+	 /*		
+		<html><head><title>Revision 683: /trunk/BizzWiki/extensions/ExtensionManager</title></head>
+		<body>
+		 <h2>Revision 683: /trunk/BizzWiki/extensions/ExtensionManager</h2>
+		 <ul>
+		  <li><a href="../">..</a></li>
+		  <li><a href="Extension.php">Extension.php</a></li>
+		  <li><a href="ExtensionDirectory.php">ExtensionDirectory.php</a></li>
+		
+		  <li><a href="ExtensionManager.i18n.php">ExtensionManager.i18n.php</a></li>
+		  <li><a href="ExtensionManager.php">ExtensionManager.php</a></li>
+		  <li><a href="ExtensionManager_stub.php">ExtensionManager_stub.php</a></li>
+		  <li><a href="ExtensionRepository.php">ExtensionRepository.php</a></li>
+		  <li><a href="Repositories/">Repositories/</a></li>
+		 </ul>
+		
+		 <hr noshade><em><a href="http://code.google.com/">Google Code</a> powered by <a href="http://subversion.tigris.org/">Subversion</a> </em>
+		</body></html>		
+	*/
+	/**
+		This method uses the 'Simple XML' functionality of PHP5.
+		
+		1) get the page
+		2) extract 'ul' section or else Simple XML gets confused
+		3) wrap new 'document' in an arbitrary section
+		4) feed to Simple XML
+		5) extract information from the Simple XML object
+	 */
+
+	public function getDirectoryList( &$d )
+	{
+		$pattern = '/\<ul\>(.*)\<\/ul\>/siU';
+		
+		// try to fetch the page located on the base uri
+		$error = $this->getFileCode( $d, $document );
+		if ( $error !== CURLE_OK )
+			return self::codeFetchURIfailed;
+			
+		// extract the 'ul' section
+		$r = preg_match( $pattern, $document, $m );
+		if ( ($r===false) || ($r===0) )
+			return self::codeDirectoryEmpty;
+		
+		// format a document just like Simple XML likes them
+		$doc = '<list><ul>'.$m[1].'</ul></list>';	
+		
+		// do some heavy lifting.
+		try { $xml = new SimpleXMLElement( $doc ); } 
+		catch( Exception $e ) { return self::codeInvalidDirectoryList; }
+		
+		$liste = array();
+		
+		if ( ($d === '.') || ($d==='..') )
+			$dir = '';
+		else
+			$dir = $d;
+		
+		foreach( $xml->ul[0] as $e )
+		{
+			$f = (string) $e->a;
+			if ( ($f==='.') || ($f==='..'))
+				continue;
+			$liste[] = $dir.$f;
+		}	
+		// help PHP a bit.
+		unset( $xml );
+			
+		return $liste;
+	}
+
+	/**
+		The Google Code repository returns directory names using a trailing '/'
+	 */
+	public function isDir( &$uri )
+	{
+		$trail = substr( $uri, -1 );
+		return ( $trail === '/' ) ? true:false;
+	}
+
+	/**
+		Recursive function for getting an unordered list
+		of all the files of the specified directory $d
+	 */
+	public function getFileList( $d )
+	{
+		$liste = $this->getDirectoryList( $d );
+
+		$liste2 = array();
+
+		if (is_array( $liste ))
+			foreach( $liste as $index => &$e )
+			{
+				if ($this->isDir( $e ))
+				{
+					$l = $this->getFileList( $e );
+					unset( $liste[$index] );
+				}	
+				if (is_array( $l ))
+					$liste2 = array_merge( $liste2, $l );
+			}
+
+		if (is_array( $liste ))
+			return array_merge( $liste, $liste2 );		
+			
+		return $liste2;
+	}
+
 } // end class
 
 //</source>
