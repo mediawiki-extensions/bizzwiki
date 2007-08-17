@@ -1,4 +1,5 @@
 <?php
+//<source lang=php>
 /***************************************************************************
 	
 	BizzWikiSettings.php
@@ -12,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_11alpha');
+define('BIZZWIKI', '1_10_11');
 $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
@@ -527,3 +528,4 @@ function bwVarDump( $var )
 {
 	return str_replace("\n","<br />\n", var_export( $var, true ) . "\n");
 }
+//</source>
