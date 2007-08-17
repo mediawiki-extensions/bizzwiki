@@ -66,40 +66,10 @@ $wgExtensionCredits[ExtensionManager::thisType][] = array(
 );
 
 
-requires('ExtensionManager.i18n.php');
-
-class ExtensionDirectory
-{
-	static $directory = '/extensions';
-	
-	static function exists()
-	{
-		global $IP;
-		
-		$dir = $IP.self::$directory;
-		
-		clearstatcache();
-		return is_dir( $dir );
-	}
-} // end 'ExtensionDirectory' class declaration
-
-class Extension
-{
-	
-	public function __construct( &$name )
-	{
-		
-	}
-	public function exists()
-	{
-		
-	}
-	public function writeFile( &$filename, &$code )
-	{
-		
-	}
-	
-} // end 'Extension' class definition
+require('ExtensionManager.i18n.php');
+require('Extension.php');
+require('ExtensionDirectory.php');
+require('ExtensionRepository.php');
 
 class ExtensionManager
 {
@@ -192,66 +162,8 @@ class ExtensionManager
 		// Now check ...
 			
 	}
-
-
 	
 } // end 'ExtensionManager' class definition
 
-abstract class ExtensionRepository
-{
-	// relative to the installation i.e. $IP
-	const repoClassesDir = '/Repositories';
-	
-	var $project;
-	var $directory;
-	var $baseURI;
-	
-	public function __construct( $baseURI, &$project, &$directory )
-	{
-		$this->project = $project;
-		$this->directory = $directory;
-		$this->baseURI = $baseURI;
-		
-		$this->formatRepoURI();
-	}
-	
-	/**
-		Class Factory
-	 */
-	public static function newFromClass( &$name, &$repo, &$dir )
-	{
-		// is the class already loaded??
-		if ( class_exists( $name ) )
-			return true;
-
-		$filename = __FILE__.self::repoClassesDir.'/'.$name.'.php';
-		
-		// silently try to load the class describing the repository
-		@require( $filename );
-		
-		// check if we have succeeded (!)
-		if ( class_exists( $name ) )
-			return new $name( $dir );
-			
-		return null;
-	}
-
-	protected function formatRepoURI()
-	{
-		$project = htmlspecialchars( $this->project );
-
-		$uri = $this->baseURI;
-		$this->uri = str_replace( '$1', $project, $uri );
-	}
-	
-	abstract public function exists();
-
-	// Recursive function which preserves whole (relative) path information
-	abstract public function getFileList();
-
-	// Requires the full relative path
-	abstract public function getFileCode();
-
-} // end 'ExtensionRepository' class definition
 
 //</source>
