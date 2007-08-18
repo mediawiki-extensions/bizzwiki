@@ -23,7 +23,17 @@
 
 class ExtensionLog
 {
-	
+	public static function addEntry( &$action, $param1, $param2 )
+	{
+		global $wgUser;
+		
+		$message = wfMsgForContent( 'extensionmanager'.'-'.$action
+									.'-text', $param1, $param2 );
+		
+		$log = new LogPage( 'extensionmanager' );
+		$log->addEntry( $action, $wgUser->getUserPage(), $message );
+		
+	}	
 } // end class declaration.
 
 //</source>

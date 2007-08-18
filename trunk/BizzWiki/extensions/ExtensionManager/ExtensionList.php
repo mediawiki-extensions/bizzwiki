@@ -19,18 +19,36 @@ class ExtensionList
 {
 	static $filename = '_List.php';
 	static $fileContents = null;
-	
+
+	static $parsed = false;	
 	static $liste = array();
-	
-	protected static function getFilename()
-	{
-		return dirname(__FILE__).self::$filename;	
-	}
 	
 	public static function getList()
 	{ return self::$liste; }
 	
-	public static function add()
+	/**
+		This function would typically be called
+		at the beginning of the operation.
+	 */
+	public static function read()
+	{
+		self::readFromFilesystem();
+		self::parse();
+	}
+	/**
+		This function would typically be called
+		once the operation is finished.
+	 */
+	public static function commit()
+	{
+		self::lock();
+		$r = self::writeToFilesystem();
+		self::unlock();
+		
+		return $r;
+	}
+	
+	public static function add( &$name )
 	{
 		
 	}
@@ -52,18 +70,54 @@ class ExtensionList
 	public static function getState( &$name )
 	{}
 
-	static function readFromFilesystem()
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+	protected static function getFilename()
+	{
+		return dirname(__FILE__).self::$filename;	
+	}
+	protected static function readFromFilesystem()
 	{
 		self::$fileContents = file_get_contents( self::getFilename() );
+		self::$parsed = false;
 	}
-	static function writeToFilesystem()
+	protected static function lock()
+	{}
+	protected static function unlock()
+	{}
+	protected static function writeToFilesystem()
 	{
 		$header = wfMsg('extensionmanager'.'list-header');
 		
-	}
-	protected static function formatEntry()
-	{
+		$content = $header;
 		
+		if (!empty( self::$liste ))		
+			foreach( self::$liste as &$e )		
+				$content .= self::formatEntry( $e['name'], $e['stat'] );
+		
+		$count = file_put_contents( self::getFilename(), $content );
+		
+		// make sure the write operation was successful.
+		$result = ( $count === strlen( $content ) ) ? true:false;
+		
+		return $result;
+	}
+	/**
+		Format an entry for the list in the filesystem.		
+	*/
+	static $entryPattern =	"//{{ [[Extension:$1]]\n".
+							"$2\n".
+							"//}}\n";
+	protected static function formatEntry( &$name, &$stat )
+	{
+		$pattern = self::$entryPattern;
+		
+		$entry1 = str_replace( '$1', $name, $pattern );
+		$entry  = str_replace( '$2', $stat, $entry1 );
+		
+		return $entry;
 	}
 	/**
 		Parses the file list
@@ -79,7 +133,7 @@ class ExtensionList
 	// Subpattern #2: include...	
 	static $pattern = '/\/\/\{\{(?:.?)\[\[Extension\:(.*)\]\](.*)\/\/\{\}/siU';
 	
-	static function parse()
+	protected static function parse()
 	{
 		if (empty( self::$fileContents ))
 			return;
@@ -98,6 +152,7 @@ class ExtensionList
 									'stat' => $statement
 									);
 		}
+		self::$parsed = true;
 	}
 
 } // end class declaration
