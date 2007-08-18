@@ -57,40 +57,51 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-class Extension
+class ExtensionMagicWords
 {
-	var $name;
+	static $wordsDynamic = array(
+	'' => '',
+	'' => '',	
+	#	'' => '',
+	);
+
+	static $wordsStatic = array(
+	'/\$id/siU' => '',
+	#'' => '',	
+	#	'' => '',
+	);
+
+	public static function doReplaceStatic( &$text )	
+	{	self::doReplace( $text, self::$wordsStatic );	}	
 	
-	public function __construct( &$name )
+	public static function doReplaceDynamic( &$text )	
+	{	self::doReplace( $text, self::$wordsDynamic );	}	
+	
+	protected static function doReplace( &$text, &$liste )
 	{
-		$this->name = $name;	
+		foreach( $liste as $pattern => $method )
+		{
+			$r = preg_match_all( $pattern, $text, $matches );
+			if ( ($r===false) || ($r===0) )
+				continue;
+				
+			self::replaceMatches( $text, $matches, $pattern, $method );
+		}
 	}
-	/**
-		Verifies in the filesystem if the key files
-		are present.
-	 */
-	public function exists()
+	public static function replaceMatches( &$text, &$matches, &$pattern, &$method )
+	{
+		if (!empty( $matches ))
+			foreach( $matches[1] as $match )
+				
+	}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	protected static function word_( &$text )
 	{
 		
 	}
-	public function getInstalledVersion()
-	{
-		
-	}
-	public function getCurrentVersion()
-	{
-		
-	}
 	
-	/**
-	
-	 */
-	public function writeFile( &$filename, &$code )
-	{
-		$f = ExtensionDirectory::getPath( $filename );
-		return file_put_contents( $f, $code );
-	}
-	
-} // end 'Extension' class definition
+} // end class
 
 //</source>
