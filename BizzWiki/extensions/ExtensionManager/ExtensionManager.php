@@ -2,8 +2,8 @@
 /*<!--<wikitext>-->
 {{Extension
 |name        = ExtensionManager
-|status      = beta
-|type        = parser
+|status      = experimental
+|type        = pfunc
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -29,13 +29,33 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 Provides a means of easily installing 'extensions' to MediaWiki.
 
 == Features ==
-* Definition of 'repositories'
-
-== Theory of Operation ==
+* Extensible: definition of 'repositories' can be extended
+** <code>GoogleCode</code> is the default
+* Secure: only executes in the NS_EXTENSION namespace
+* Fast: only loads & executes when the user accesses the NS_EXTENSION namespace
+** Standard feature of [[Extension:StubManager]]
+* Manifest file
+* Logging
+** Installation success / fail etc.
+* Localization
+* Enable/Disable commands
+** Requires 'manage_extension' right
+* Update command
+** Requires 'manage_extension' right
+* Integrates with [[Extension:FileManager]]
 
 == Usage ==
-Use the parser function '#extension' in the NS_EXTENSION namespace.
-<nowiki>{{#extension: repo=REPOSITORY TYPE | dir=DIRECTORY [| name=NAME ] }}</nowiki>
+To add an extension simply use the '#extension' parser function in the NS_EXTENSION namespace.
+<nowiki>{{#extension: repo=REPOSITORY TYPE | project=PROJECT NAME | dir=DIRECTORY }}</nowiki>
+The name of the extension is the title name of the page where the '#extension' magic word is used.
+The parameter <code>repo</code> specifies repository type.
+The parameter <code>project</code> specifies the project.
+The parameter <code>dir</code> specifies the directory of the repository where the extension is located.
+
+== Installation notes ==
+* Parser Caching is recommended
+* Create a new namespace 'NS_EXTENSION'
+** Proper permission management should be put in place
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -43,7 +63,7 @@ Use the parser function '#extension' in the NS_EXTENSION namespace.
 == Installation ==
 To install independantly from BizzWiki:
 * Download & Install [[Extension:StubManager]] extension
-* Dowload all this extension's files and place in the desired directory
+* Dowload <b>all</b> this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
 require('extensions/ExtensionManager/ExtensionManager_stub.php');
@@ -61,7 +81,7 @@ $wgExtensionCredits[ExtensionManager::thisType][] = array(
 	'name'    	=> ExtensionManager::thisName,
 	'version' 	=> StubManager::getRevisionId('$Id$'),
 	'author'  	=> 'Jean-Lou Dupont',
-	'description' => "Provides installation and maintenance functions for MediaWiki extensions. ", 
+	'description' => "Provides installation and maintenance for MediaWiki extensions. ", 
 	'url' 		=> StubManager::getFullUrl(__FILE__),	
 );
 
@@ -70,6 +90,7 @@ require('ExtensionDirectory.php');
 require('Extension.php');
 require('ExtensionRepository.php');
 require('ExtensionMagicWords.php');
+require('ExtensionLog.php');
 
 class ExtensionManager
 {
@@ -78,22 +99,35 @@ class ExtensionManager
 
 	const keyREPO = 'repo';
 	const keyDIR  = 'dir';
-	const keyNAME = 'name';
+	const keyPRJ  = 'project';
 
 	static $msg = array();
 
 	// Variables
 	var $currentRepo;
 	var $currentRepoName;	
+	var $currentProject;
 	var $currentDir;
 	var $currentExtension;
 	
 	public function __construct() 
 	{
+		# Add a new log type
+		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
+		$wgLogTypes[]						= 'extlog';
+		$wgLogNames  ['extlog']				= 'extlog'.'logpage';
+		$wgLogHeaders['extlog']				= 'extlog'.'logpagetext';
+		$wgLogActions['extlog/installok']	= 'extlog'.'-installok-entry';
+		$wgLogActions['extlog/installfail']	= 'extlog'.'-installfail-entry';		
+
+		// Init the message cache.		
 		global $wgMessageCache;
-		foreach( self::$msg as $key => $value )
-			$wgMessageCache->addMessages( self::$msg[$key], $key );
-			
+		$msg = $GLOBALS[ 'msg'.__CLASS__ ];
+		
+		foreach( $msg as $key => $value )
+			$wgMessageCache->addMessages( $msg[$key], $key );		
+		
+		// Initialize variables.
 		$this->init();
 	}
 	/**
@@ -138,16 +172,18 @@ class ExtensionManager
 		// get the parameters
 		$repo = $argv[self::keyREPO];
 		$dir  = $argv[self::keyDIR];
+		$prj  = $argv[self::keyPRJ];		
 		
-		$result = $this->validateParameters( $repo, $dir );
+		$result = $this->validateParameters( $repo, $project, $dir );
 		if (!empty( $result ))
 			return $result;
 		
 		// the parameters check out.
 		$this->currentRepoName = $repo;
 		$this->currentDir      = $dir;
+		$this->currentProject  = $prj;		
 		
-		if ($this->verifyExistence( $repo, $dir ))
+		if ($this->verifyExistence( $repo, $project, $dir ))
 			return $this->doExtensionExists();
 	
 		return $this->doExtensionDoesNotExist();	
@@ -164,30 +200,33 @@ class ExtensionManager
 	/**
 		Verify if the extension already exists on this system.
 	 */
-	protected function verifyExistence( $repo, $dir )
+	protected function verifyExistence( $repo, $project, $dir )
 	{
 		global $wgTitle;
 		$this->currentExtension = new Extension( $wgTitle->getDBkey() );
 			
+		
 	}
 	/**
 		Create the repository object.
 		This method only validates that an actual class supports
 		the requested repository.
 	 */
-	protected function validateParameters( &$repo, &$dir )
+	protected function validateParameters( &$repo, &$project, &$dir )
 	{
 		// First, let's try to load the class defining
 		// the requested repository
-		$this->currentRepo = ExtensionRepository::newFromClass( $repo, $dir );
+		$this->currentRepo = ExtensionRepository::newFromClass( $repo, $project, $dir );
 		if (!is_object( $this->currentRepo ))
-			return wfMsg('extensionmanager').wfMsgForContent('extensionmanager'.'-error-loadingrepo', $repo );
+			return wfMsg('extensionmanager').wfMsgForContent('extensionmanager'.'-error-loadingrepo', $repo, $project );
 
+		// everything OK.
 		return null;
 	}
 
 	/**
-		Replace the 'proprietary words' generated by this extension
+		Replace the dynamic 'proprietary words' generated by this extension
+		i.e. those that get parsed on every page view.
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
@@ -195,6 +234,10 @@ class ExtensionManager
 		
 		return true;
 	}
+	/**
+		Replace the static 'proprietary words' generated by this extension
+		i.e. those that get parsed on every page edit.
+	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
 		ExtensionMagicWords::doReplaceStatic( $text );

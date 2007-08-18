@@ -66,7 +66,7 @@ class ExtensionMagicWords
 	);
 
 	static $wordsStatic = array(
-	'/\$id/siU' => '',
+	'/\$id(.*)\$/siU' => '',
 	#'' => '',	
 	#	'' => '',
 	);

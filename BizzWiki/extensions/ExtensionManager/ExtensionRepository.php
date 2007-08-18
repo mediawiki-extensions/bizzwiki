@@ -63,7 +63,7 @@ abstract class ExtensionRepository
 	/**
 		Class Factory
 	 */
-	public static function newFromClass( &$name, &$repo, &$dir )
+	public static function newFromClass( &$name, &$repo, &$project, &$dir )
 	{
 		// is the class already loaded??
 		if ( class_exists( $name ) )
@@ -76,7 +76,7 @@ abstract class ExtensionRepository
 		
 		// check if we have succeeded (!)
 		if ( class_exists( $name ) )
-			return new $name( $dir );
+			return new $name( $project, $dir );
 			
 		return null;
 	}
