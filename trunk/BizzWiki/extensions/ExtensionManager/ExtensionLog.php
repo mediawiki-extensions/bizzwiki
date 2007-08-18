@@ -27,10 +27,10 @@ class ExtensionLog
 	{
 		global $wgUser;
 		
-		$message = wfMsgForContent( 'extensionmanager'.'-'.$action
+		$message = wfMsgForContent( 'extlog'.'-'.$action
 									.'-text', $param1, $param2 );
 		
-		$log = new LogPage( 'extensionmanager' );
+		$log = new LogPage( 'extlog' );
 		$log->addEntry( $action, $wgUser->getUserPage(), $message );
 		
 	}	
