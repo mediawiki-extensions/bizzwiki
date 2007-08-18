@@ -66,7 +66,7 @@ class ExtensionMagicWords
 	);
 
 	static $wordsStatic = array(
-	'/\$id(.*)\$/siU' => '',
+	'/\$id(.*)\$/siU' 		=> 'word_sid',
 	#'' => '',	
 	#	'' => '',
 	);
@@ -91,13 +91,16 @@ class ExtensionMagicWords
 	public static function replaceMatches( &$text, &$matches, &$pattern, &$method )
 	{
 		if (!empty( $matches ))
-			foreach( $matches[1] as $match )
-				
+			foreach( $matches[1] as $index => &$match )
+			{
+				$rep = self::$method( $text, $match );
+				$text = str_replace( $matches[0][$index], $rep, $text );
+			}
 	}
 	
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
-	protected static function word_( &$text )
+	protected static function word_sid( &$text, &$id )
 	{
 		
 	}
