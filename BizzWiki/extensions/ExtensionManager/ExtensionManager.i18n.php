@@ -31,6 +31,8 @@ $msgExtensionManager['en'] = array(
 'extensionmanager'.'file-entry-withfilesystem' 		=> '* File $1',
 'extensionmanager'.'file-entry-withoutfilesystem'	=> '* File [[Filesystem:$1]]',
 
+'extensionmanager'.'list-header' 					=>	"This file is managed by [[Extension:ExtensionManager]]\n".
+														"*** DO NOT MODIFY MANUALLY ***\n\n",
 #'extensionmanager'.'' => '',
 #'' => '',
 );

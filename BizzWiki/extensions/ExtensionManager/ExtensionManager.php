@@ -100,6 +100,7 @@ require('Extension.php');
 require('ExtensionRepository.php');
 require('ExtensionMagicWords.php');
 require('ExtensionLog.php');
+require('ExtensionList.php');
 
 class ExtensionManager
 {
@@ -265,49 +266,5 @@ class ExtensionManager
 	}	
 } // end 'ExtensionManager' class definition
 
-/**
-	This class handles the file 'ExtensionList'.
-	It supports 'atomic' operations for effecting updates
-	on the file.
-	
-	Notes:
-	- file existence
-	- 
-
-		// Put 'ExtensionList' off-line
-		// update ExtensionList.php
-		// Restore 'ExtensionList' 
-	
- */
-class ExtensionList
-{
-	static $liste = array();
-	
-	public static function getList()
-	{ return self::$liste; }
-	
-	public static function add()
-	{
-		
-	}
-	
-	public static function remove( &$name )
-	{
-		
-	}
-	
-	/**
-		Enables/disables the specified extension
-	 */
-	public static function setState( &$name )
-	{}
-
-	/**
-		Gets the current status of the extension in the list
-	 */
-	public static function getState( &$name )
-	{}
-	
-} // end class declaration
 
 //</source>
