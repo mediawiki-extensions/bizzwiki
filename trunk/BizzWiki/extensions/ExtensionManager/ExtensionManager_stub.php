@@ -53,9 +53,16 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 StubManager::createStub2(	array(	'class' 		=> 'ExtensionManager', 
 									'classfilename'	=> $bwExtPath.'/ExtensionManager/ExtensionManager.php',
-									'hooks'			=> array( 'SpecialVersionExtensionTypes' ),
-									'tags'			=> array( 'gcode' ),
-									'mgs'			=> array( 'gcode' )
+									'hooks'			=> array(	'SpecialVersionExtensionTypes', 
+																'ParserBeforeStrip',
+																'OutputPageBeforeHTML' ),
+									
+									// Parser function '#extension'
+									'mgs'			=> array( 'extension' ),
+									
+									// only trigger the extension when the 
+									// current article falls in the NS_EXTENSION namespace
+									'nss'			=> array( NS_EXTENSION )
 								)
 						);
 
