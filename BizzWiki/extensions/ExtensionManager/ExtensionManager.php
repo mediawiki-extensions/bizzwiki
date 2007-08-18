@@ -52,6 +52,15 @@ The parameter <code>repo</code> specifies repository type.
 The parameter <code>project</code> specifies the project.
 The parameter <code>dir</code> specifies the directory of the repository where the extension is located.
 
+== Usage Notes ==
+=== Installation of a new extension ===
+Each time a new extension is installed, there will be a short 'off-line' time for all the extensions
+installed; this is due to the fact that [[Extension:ExtensionManager|Extension Manager]] needs to 
+update a critical file and requires some 'downtime' to effect the changes.
+
+=== Concurrency ===
+Concurrent updates are not advised; only one user should do updates at the time.
+
 == Installation notes ==
 * Parser Caching is recommended
 * Create a new namespace 'NS_EXTENSION'
@@ -195,7 +204,16 @@ class ExtensionManager
 	}
 	protected function doExtensionDoesNotExist()
 	{
+		// get extension files
 		
+		// create new filesystem directory
+		
+		// write files to filesystem
+		
+		// Put 'ExtensionList' off-line
+		// update ExtensionList.php
+		// Restore 'ExtensionList' 
+			
 	}
 	/**
 		Verify if the extension already exists on this system.
