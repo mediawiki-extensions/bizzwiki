@@ -1,4 +1,3 @@
-<wikitext>
 $Id$
 
 == Installation procedure ==
@@ -32,5 +31,3 @@ installed Mediawiki package (This is especially important on Linux/Unix platform
 == NOTES ON REPLICATION FUNCTIONALITY ==
 * Experimental at the moment - use at your own risk
 * For Windows users, a useful 'cron' can be found at: [http://www.nncron.ru/]
-
-</wikitext>
