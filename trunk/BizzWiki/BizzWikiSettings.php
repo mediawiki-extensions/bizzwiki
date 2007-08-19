@@ -393,6 +393,9 @@ require('extensions/DirectoryManager/DirectoryManager_stub.php');
 require('extensions/SecurePHP/SecurePHP_stub.php');
 
 require('extensions/GoogleCode/GoogleCode_stub.php');
+
+require('extensions/ExtensionManager/ExtensionManager_stub.php');
+
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');
 

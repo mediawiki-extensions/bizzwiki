@@ -9,3 +9,11 @@
 	//}}
 	
 */
+
+	//{{ [[Extension:ABC]]		
+	include('ABC');		
+	//}}
+
+	//{{ [[Extension:XYZ]]
+	include('XYZ');
+	//}}

@@ -250,7 +250,7 @@ class ExtensionManager
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
-		ExtensionMagicWords::doReplaceDynamic( $text );
+		#ExtensionMagicWords::doReplaceDynamic( $text );
 		
 		return true;
 	}
@@ -260,7 +260,7 @@ class ExtensionManager
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
-		ExtensionMagicWords::doReplaceStatic( $text );
+		#ExtensionMagicWords::doReplaceStatic( $text );
 		
 		return true;
 	}	
