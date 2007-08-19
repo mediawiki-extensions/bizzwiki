@@ -22,6 +22,8 @@ class ExtensionList
 
 	static $parsed = false;	
 	static $liste = array();
+
+	static $entryPattern = "//{{ [[Extension:%1]]\n%2\n//}}\n";
 	
 	public static function getList()
 	{ return self::$liste; }
@@ -76,11 +78,11 @@ class ExtensionList
 
 	protected static function getFilename()
 	{
-		return dirname(__FILE__).self::$filename;	
+		return dirname(__FILE__).'/'.self::$filename;	
 	}
 	protected static function readFromFilesystem()
 	{
-		self::$fileContents = file_get_contents( self::getFilename() );
+		self::$fileContents = @file_get_contents( self::getFilename() );
 		self::$parsed = false;
 	}
 	protected static function lock()
@@ -97,7 +99,7 @@ class ExtensionList
 			foreach( self::$liste as &$e )		
 				$content .= self::formatEntry( $e['name'], $e['stat'] );
 		
-		$count = file_put_contents( self::getFilename(), $content );
+		$count = @file_put_contents( self::getFilename(), $content );
 		
 		// make sure the write operation was successful.
 		$result = ( $count === strlen( $content ) ) ? true:false;
@@ -107,15 +109,13 @@ class ExtensionList
 	/**
 		Format an entry for the list in the filesystem.		
 	*/
-	static $entryPattern =	"//{{ [[Extension:$1]]\n".
-							"$2\n".
-							"//}}\n";
+							
 	protected static function formatEntry( &$name, &$stat )
 	{
 		$pattern = self::$entryPattern;
 		
-		$entry1 = str_replace( '$1', $name, $pattern );
-		$entry  = str_replace( '$2', $stat, $entry1 );
+		$entry1 = str_replace( '%1', $name, $pattern );
+		$entry  = str_replace( '%2', $stat, $entry1 );
 		
 		return $entry;
 	}
@@ -131,28 +131,31 @@ class ExtensionList
 	 */
 	// Subpattern #1: [[Extension: s1 ]]
 	// Subpattern #2: include...	
-	static $pattern = '/\/\/\{\{(?:.?)\[\[Extension\:(.*)\]\](.*)\/\/\{\}/siU';
+	#static $pattern = '/\/\/\{\{(?:.*)\[\[Extension\:(.*)\]\](.*)\/\/\{\}/simU';
+	static $pattern = '/\/\/\{\{(?:.*)\[\[Extension\:(.*)\]\](.*)\/\/}}/simU';
 	
 	protected static function parse()
 	{
 		if (empty( self::$fileContents ))
 			return;
 		
-		unset( self::$liste );
 		self::$liste = array();
 		
-		$r = preg_match_all( $pattern, self::$fileContents, $matches );
+		$r = preg_match_all( self::$pattern, self::$fileContents, $matches );
 		
-		foreach( $matches[0] as $index => &$fullMatch )
+		if (($r!==false) && ($r>1))
 		{
-			$name 		= $matches[1][$index];
-			$statement	= $matches[2][$index];
-			
-			self::$liste[] = array(	'name' => $name,
-									'stat' => $statement
-									);
+			foreach( $matches[0] as $index => &$fullMatch )
+			{
+				$name 		= trim( $matches[1][$index] );
+				$statement	= trim( $matches[2][$index] );
+				
+				self::$liste[] = array(	'name' => $name,
+										'stat' => $statement
+										);
+			}
+			self::$parsed = true;
 		}
-		self::$parsed = true;
 	}
 
 } // end class declaration
