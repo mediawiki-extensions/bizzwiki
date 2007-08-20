@@ -74,14 +74,36 @@ abstract class NamespaceManager extends Article
 	
 	/**
 		The view method will most probably need to be overriden
+		Handler for the default action i.e. 'action=view'		
 	 */
-	#public function view() {}	 
-	
-	
+	public function view() 
+	{
+		echo __METHOD__.": must override this method.";			
+	}	 
 	/**
+		Handler for 'action=submit'
 	 */
-	#public function submit()
-		 
+	public function submit()
+	{
+		echo __METHOD__.": must override this method.";
+	}	
+
+	/**
+		Handler for 'action=edit'	
+	 */
+	public function edit()
+	{
+		echo __METHOD__.": must override this method.";
+	}	
+	/**
+		Catch-all
+	 */
+	public function __call()
+	{
+		global $wgOut;
+		$wgOut->showErrorPage( 'nosuchaction', 'nosuchactiontext' );		
+	}
+	
 } // end class declaration
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,10 +111,10 @@ abstract class NamespaceManager extends Article
 class NamespaceManagers
 {
 	static $list = array();
-	static $supportedActions = array(	'edit', 
-										'submit'
-									);
-	
+
+	/**
+		Only 1 handler can be registered by Namespace.
+	 */		
 	public static function register( $ns, $classe, $classfile )
 	{
 		self::$list[$ns] = array(
@@ -154,13 +176,13 @@ class NamespaceManagers
 			return true;
 			
 		global $action;
-		if (!in_array( $action, self::$supportedActions ))
-			{ $article->handle_unknownAction( $action ); return false; }
+		if ( 'submit' == $action )
+			{ $article->submit(); return false; }
+			
+		if ( 'edit' == $action )
+			{ $article->edit(); return false; }
 
-		$method = 'handle_'.$action;
-		$article->$method();
-		
-		return false;	
+		return true;	
 	}
 	
 } // end class declaration
