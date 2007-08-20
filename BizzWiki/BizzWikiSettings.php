@@ -53,6 +53,8 @@ require($IP.'/includes/Namespace.php');
 	define('NS_DIRECTORY',	108);		// extension DirectoryManager
 	define('NS_EXTENSION',  110);		// for easy integration with MediaWiki.org
 	define('NS_EXT',  		112);		// [[Extension:ExtensionManager]]
+##CUSTOMIZATION	
+    #define('NS_XYZ',		nnn);
 	
 	// Add the new namespaces to the global variables
 	$wgExtraNamespaces[NS_BIZZWIKI]		= 'Bizzwiki';
@@ -62,6 +64,8 @@ require($IP.'/includes/Namespace.php');
 	$wgExtraNamespaces[NS_DIRECTORY]	= 'Directory';	
 	$wgExtraNamespaces[NS_EXTENSION]	= 'Extension';		
 	$wgExtraNamespaces[NS_EXT]  		= 'Ext';
+##CUSTOMIZATION
+	#$wgExtraNamespaces[NS_XYZ]  		= 'bla bla bla';
 
 ## }}
 
@@ -71,21 +75,25 @@ $wgCanonicalNamespaceNames[NS_MAIN] = 'Main';
 $wgCanonicalNamespaceNames = $wgCanonicalNamespaceNames + $wgExtraNamespaces;
 
 // Subpages
-$bwNamespacesWithSubpages = array ( NS_MAIN,
-									NS_TALK,
-									NS_PROJECT,
-									NS_PROJECT_TALK,
-									NS_CATEGORY,
-									NS_CATEGORY_TALK,
-									NS_MEDIAWIKI,
-									NS_MEDIAWIKI_TALK,									
-									NS_BIZZWIKI,
-									NS_FILESYSTEM,
-									NS_INTERWIKI,	// not used at the moment.
-									NS_DIRECTORY,
-									NS_EXTENSION,
-									NS_EXT,
-									);
+$bwNamespacesWithSubpages = array ( 
+NS_MAIN,
+NS_TALK,
+NS_PROJECT,
+NS_PROJECT_TALK,
+NS_CATEGORY,
+NS_CATEGORY_TALK,
+NS_MEDIAWIKI,
+NS_MEDIAWIKI_TALK,									
+NS_BIZZWIKI,
+NS_FILESYSTEM,
+NS_INTERWIKI,	// not used at the moment.
+NS_DIRECTORY,
+NS_EXTENSION,
+NS_EXT,
+##CUSTOMIZATION
+#NS_XYZ
+);
+									
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
 	

@@ -201,7 +201,14 @@ class ExtensionManager extends NamespaceManager
 				
 		$this->doEdit( $text, '', EDIT_NEW );
 	}
+	public function edit()
+	{
+		if ($this->getID() == 0)
+			return $this->handleCreate();
 
+		return $this			
+	}
+	
 	/**
 		Reports the status of this extension in the [[Special:Version]] page.
 	 */	
