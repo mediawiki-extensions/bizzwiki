@@ -3,7 +3,7 @@
 {{Extension
 |name        = NamespaceManager
 |status      = beta
-|type        = other
+|type        = hook
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -28,8 +28,13 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Purpose==
 Base class for 'Namespace Manager' extensions i.e. extensions that provide services under a specific namespace.
 
+== NOTE ==
+This file isn't an extension per-se but rather a required class for other extensions e.g. [[Extension:ExtensionManager]].
+
 == Features ==
 * Automatically sets up the declared hooks of the derived class of 'NamespaceManager'
+* Provides easy registration of 'messages'
+* Provides easy registration of log related global variables
 * Reports the number of registered namespace name
 
 == Dependancy ==
@@ -53,10 +58,10 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 $wgExtensionCredits[NamespaceManagers::thisType][] = array( 
 	'name'    		=> NamespaceManagers::thisName, 
-	'version'		=> '$Id$',
+	'version'		=> NamespaceManagers::getRevisionId( '$Id$'),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=>  'Provides a base class for namespace manager extensions. ',
-#	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'url' 			=> NamespaceManagers::getFullUrl(__FILE__),			
 );
 
 require($IP.'/includes/Article.php');
@@ -148,16 +153,14 @@ class NamespaceManagers
 							);
 	}
 	public static function getList()
-	{
-		return self::$list;
-	}
+	{ return self::$list; }
 	public static function getMsgList()
 	{ return self::$msgList; }
 	public static function getLogList()
 	{ return self::$logList; }
 
 	/**
-
+		Called during the initialization phase for extensions.
 	 */
 	public static function setupLogging( )
 	{
@@ -177,12 +180,17 @@ class NamespaceManagers
 					$wgLogActions[$logtype.'/'.$action]	= $logtype.'-'.$action.'-entry';
 		}
 	}
-	public static function addLog( $log )
-	{
-		self::$logList = array_merge( self::$logList, $log );	
-	}
 	/**
-		
+		Each registered derived classes add their logging related variables through here.
+
+		An extension's i18n file would call this function to register
+		any logging functionality related global variables.
+	 */
+	public static function addLog( $log )
+	{ self::$logList = array_merge( self::$logList, $log );	}
+	
+	/**
+		Called during the initialization phase for extensions.		
 	 */
 	public static function setupMessages( )
 	{
@@ -191,17 +199,24 @@ class NamespaceManagers
 		foreach( self::$msgList as $key => $value )
 			$wgMessageCache->addMessages( self::$msgList[$key], $key );		
 	}
+
+	/**
+		Each registered derived classes add their 'messages'
+
+		An extension's i18n file would call this function to register any messages 
+	 */
 	public static function addMessages( &$msg )
-	{
-		self::$msgList = array_merge( self::$msgList, $msg );	
-	}
+	{ self::$msgList = array_merge( self::$msgList, $msg );	 }
+	
+	/**
+		Setup the initialization phase for this extension
+	 */
 	public static function setup()
 	{
 		global $wgExtensionFunctions;
 #		$wgExtensionFunctions[] = __CLASS__.'::setup'; // PHP <v5.2.2 issues a warning on this one.
 		$wgExtensionFunctions[] = create_function( '', 'return '.__CLASS__.'::init();' );
 	
-		self::setupMessages();
 	}
 	public static function init()
 	{
@@ -214,6 +229,9 @@ class NamespaceManagers
 		if (!empty( self::$list ))
 			foreach( self::$list as $index => &$e )
 				$wgAutoloadClasses[$e['class']] = $e['file'];
+
+		self::setupMessages();
+		self::setupLogging();
 	}
 	/**
 		Reports the status of this extension in the [[Special:Version]] page.
@@ -248,6 +266,16 @@ class NamespaceManagers
 			self::$instanceList[] = new $classe();
 		}
 	}
+	
+	/**
+		This is the main hook of the extension:
+		it intercepts the process flow right at the article creation phase
+		in order to instantiate a specific class for the namespace in focus.
+		
+		Of course, each namespace must be registered through the 'register'
+		function in order for this hook to function properly.
+	 */
+	
 	public static function hArticleFromTitle( &$title, &$article )
 	{
 		$ns = $title->getNamespace();
@@ -286,6 +314,10 @@ class NamespaceManagers
 
 		return true;	
 	}
+
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// GENERIC HELPER FUNCTIONS
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	static function getRevisionId( $svnId=null )
 	{	
