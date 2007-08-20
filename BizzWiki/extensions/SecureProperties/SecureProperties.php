@@ -75,6 +75,7 @@ require('extensions/SecureProperties/SecureProperties_stub.php');
 * added '#gg' and '#gs' magic words
 * Removed dependency on ExtensionClass
 * Added '#cg' and '#cs' to deal with static properties in classes
+* Added 'addExemptNamespaces' function
 
 == Todo ==
 * Fix for 'exempt' namespaces option even considering StubManager
@@ -113,7 +114,15 @@ class SecureProperties
 	
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
-	static $exemptNamespaces;
+	static $exemptNamespaces = array();
+	
+	public static function addExemptNamespaces( $list )
+	{
+		if (!is_array( $list ))	
+			$list = array( $list );
+			
+		self::$exemptNamespaces = array_merge( self::$exemptNamespaces, $list );
+	}
 	
 	function __construct()
 	{
