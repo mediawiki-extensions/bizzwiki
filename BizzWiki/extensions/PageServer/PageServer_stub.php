@@ -55,6 +55,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
+define('EXTENSION_PAGESERVER', true);
 StubManager::createStub2(	array(	'class' 		=> 'PageServer', 
 									'classfilename'	=> dirname(__FILE__).'/PageServer.php',
 									'mgs'			=> array( 'mwmsg', 'mwmsgx' ),

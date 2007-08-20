@@ -72,9 +72,6 @@ class PageServer
 	{
 		self::$instance = $this;
 		
-		// get a copy of wgParser handy.
-		global $wgParser;
-		self::$parser = clone $wgParser;
 	}
 	/**
 		Reports the status of this extension in the [[Special:Version]] page.
@@ -107,11 +104,20 @@ class PageServer
 		if (empty( $contents ))
 			return null;
 			
+		self::initParser();
 		$po = self::$parser->parse( $contents, $title, new ParserOptions() );
 		
 		return $po->getText();
 	}
-	
+	private static function initParser()
+	{
+		if (self::$parser !== null)	
+			return;
+
+		// get a copy of wgParser handy.
+		global $wgParser;
+		self::$parser = clone $wgParser;
+	}
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 	/**
