@@ -32,15 +32,23 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 
 
 == Dependancy ==
-* [[Extension:StubManager|StubManager extension]]
+* [[Extension:NamespaceManager|NamespaceManager extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download & Install [[Extension:StubManager]] extension
+* Declare the namespace 'NS_EXT' in 'LocalSettings.php' (see example below)
+** Add to the 'extra namespaces' global variable
+* Download & Install [[Extension:NamespaceManager]] extension
 * Dowload all this extension's files and place in the desired directory
-* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
+* Apply the following changes to 'LocalSettings.php':
 <source lang=php>
-require('extensions/XYZ/XYZ_stub.php');
+require('extensions/NamespaceManager/NamespaceManager.php'); // must already be present since
+                                                             // extension NamespaceManager should be installed
+
+define('NS_EXT', 100 /* numerical ID */);                    // choose a free ID >=100 
+$wgExtraNamespaces[NS_EXT]   = 'Ext';                        // [[Ext:XYZ]]
+$wgCanonicalNamespaceNames[NS_EXT] = 'Ext'; 
+require('extensions/ExtensionManager/ExtensionManager_stub.php');
 </source>
 
 == History ==
@@ -51,20 +59,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-StubManager::createStub2(	array(	'class' 		=> 'ExtensionManager', 
-									'classfilename'	=> $bwExtPath.'/ExtensionManager/ExtensionManager.php',
-									'hooks'			=> array(	'SpecialVersionExtensionTypes', 
-																'ParserBeforeStrip',
-																'OutputPageBeforeHTML' ),
-									
-									// Parser function '#extension'
-									'mgs'			=> array( 'extension' ),
-									
-									// only trigger the extension when the 
-									// current article falls in the NS_EXTENSION namespace
-									'nss'			=> array( NS_EXTENSION )
-								)
-						);
+NamespaceManagers::register( NS_EXT, 'ExtensionManager', dirname(__FILE__).'/ExtensionManager.php' );
 						
 // This file actually contains the list of extensions installed.
 // The file gets updated dynamically by ExtensionManager.

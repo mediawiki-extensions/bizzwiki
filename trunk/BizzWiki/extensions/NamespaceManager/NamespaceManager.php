@@ -29,7 +29,8 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 Base class for 'Namespace Manager' extensions i.e. extensions that provide services under a specific namespace.
 
 == Features ==
-
+* Automatically sets up the declared hooks of the derived class of 'NamespaceManager'
+* Reports the number of registered namespace name
 
 == Dependancy ==
 None.
@@ -50,28 +51,44 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-$wgExtensionCredits['other'][] = array( 
-	'name'    		=> 'NamespaceManager', 
+$wgExtensionCredits[NamespaceManagers::thisType][] = array( 
+	'name'    		=> NamespaceManagers::thisName, 
 	'version'		=> '$Id$',
 	'author'		=> 'Jean-Lou Dupont', 
-	'description'	=>  'Provides a base class for namespace manager extensions',
+	'description'	=>  'Provides a base class for namespace manager extensions. ',
 #	'url' 			=> StubManager::getFullUrl(__FILE__),			
 );
+
+require($IP.'/includes/Article.php');
 
 /**
 	All namespace managers should derive from this class.
  */
 abstract class NamespaceManager extends Article
 {
+	static $hookList = array();
+	
 	// the namespace index in which the derived
 	// class operates ... shortcut for convenience.
 	var $ns;
 	
 	public function __construct( &$title )
 	{
+		self::setupHooks();
 		parent::__construct( $title );
 	}
-	
+	/**
+		Automatically sets up the declared hooks.
+	 */
+	protected static function setupHooks()
+	{
+		global $wgHooks;
+		
+		foreach ( self::$hookList as $index => $hookName)
+			if ( method_exists( $this, 'h'.$hookName ) )					
+					$wgHooks[$hookName][] = array( &$this, 'h'.$hookName );
+		
+	}
 	/**
 		The view method will most probably need to be overriden
 		Handler for the default action i.e. 'action=view'		
@@ -98,7 +115,7 @@ abstract class NamespaceManager extends Article
 	/**
 		Catch-all
 	 */
-	public function __call()
+	public function __call( $method, $args )
 	{
 		global $wgOut;
 		$wgOut->showErrorPage( 'nosuchaction', 'nosuchactiontext' );		
@@ -110,6 +127,9 @@ abstract class NamespaceManager extends Article
 
 class NamespaceManagers
 {
+	const thisType = 'other';
+	const thisName = 'NamespaceManagers';	
+	
 	static $list = array();
 
 	/**
@@ -137,15 +157,35 @@ class NamespaceManagers
 	public static function init()
 	{
 		global $wgHooks;
-		$wgHooks['ArticleFromTitle'][]	= 'NamespaceManagers::hArticleFromTitle';
-		$wgHooks['CustomEditor'][]		= 'NamespaceManagers::hCustomEditor';
+		$wgHooks['ArticleFromTitle'][]				= 'NamespaceManagers::hArticleFromTitle';
+		$wgHooks['CustomEditor'][]					= 'NamespaceManagers::hCustomEditor';
+		$wgHooks['SpecialVersionExtensionTypes'][]	= 'NamespaceManagers::hSpecialVersionExtensionTypes';		
 				
 		global $wgAutoloadClasses;
 		if (!empty( self::$list ))
 			foreach( self::$list as $index => &$e )
 				$wgAutoloadClasses[$e['class']] = $e['file'];
 	}
-	
+	/**
+		Reports the status of this extension in the [[Special:Version]] page.
+	 */	
+	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
+	{
+		global $wgExtensionCredits;
+
+		$result = 'There are '.count(self::$list)." namespace managers registered.";
+						
+		// Add list of managed extensions 	
+				
+		// add other checks here.
+		
+		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
+			if (isset($el['name']))		
+				if ($el['name']==self::thisName)
+					$el['description'] .= $result;
+				
+		return true; // continue hook-chain.
+	}
 	public static function hArticleFromTitle( &$title, &$article )
 	{
 		$ns = $title->getNamespace();
@@ -155,7 +195,7 @@ class NamespaceManagers
 		
 		// Look-up if we have a registered manager for the
 		// current requested namespace.
-		if (!array_key_exists( $ns, self::$nslist ))
+		if (!array_key_exists( $ns, self::$list ))
 			return true;
 			
 		// At this point, we have concluded we have a registered manager
@@ -188,5 +228,135 @@ class NamespaceManagers
 } // end class declaration
 
 NamespaceManagers::setup();
+
+// List up-to-date with MW 1.10 SVN 21828
+NamespaceManager::$hookList = array(
+'ArticlePageDataBefore', 
+'ArticlePageDataAfter', 
+'ArticleAfterFetchContent',
+'ArticleViewRedirect', 
+'ArticleViewHeader',
+'ArticlePurge',
+'ArticleSave', 					// public function hArticleSave        ( &$article, &$user, &$text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
+'ArticleInsertComplete',		
+'ArticleSaveComplete',			// public function hArticleSaveComplete( &$article, &$user, &$text, $summary, $minor, $dontcare1, $dontcare2, &$flags ) {}
+'MarkPatrolled', 
+'MarkPatrolledComplete', 
+'WatchArticle', 
+'WatchArticleComplete',
+'UnwatchArticle', 
+'UnwatchArticleComplete', 
+'ArticleProtect', 
+'ArticleProtectComplete',
+'ArticleDelete', 
+'ArticleDeleteComplete', 
+'ArticleEditUpdatesDeleteFromRecentchanges',
+'ArticleEditUpdateNewTalk',
+'DisplayOldSubtitle',
+'IsFileCacheable',
+'CategoryPageView',
+'FetchChangesList',
+'DiffViewHeader',
+'AlternateEdit', 
+'EditFormPreloadText', 			// public function hEditFormPreloadText( &$textbox, &$title ) {}
+'EditPage::attemptSave', 
+'EditFilter', 
+'EditPage::showEditForm:initial',
+'EditPage::showEditForm:fields',
+'SiteNoticeBefore',
+'SiteNoticeAfter',
+'FileUpload',
+'BadImage', 
+'MagicWordMagicWords', 
+'MagicWordwgVariableIDs',
+'MathAfterTexvc',
+'MessagesPreLoad',
+'LoadAllMessages',
+'OutputPageParserOutput',
+'OutputPageBeforeHTML',
+'AjaxAddScript', 
+'PageHistoryBeforeList',
+'PageHistoryLineEnding',
+'ParserClearState', 
+'ParserBeforeStrip',
+'ParserAfterStrip',
+'ParserBeforeTidy',
+'ParserAfterTidy',						// public function hParserAfterTidy( &$parser, &$text ) {}
+'ParserBeforeInternalParse',
+'InternalParseBeforeLinks', 
+'ParserGetVariableValueVarCache',
+'ParserGetVariableValueTs', 
+'ParserGetVariableValueSwitch',
+'IsTrustedProxy',
+'wgQueryPages', 
+'RawPageViewBeforeOutput', 
+'RecentChange_save',
+'SearchUpdate', 
+'AuthPluginSetup', 
+'LogPageValidTypes',
+'LogPageLogName', 
+'LogPageLogHeader', 
+'LogPageActionText',
+'SkinTemplateTabs', 
+'BeforePageDisplay', 
+'SkinTemplateOutputPageBeforeExec', 
+'PersonalUrls', 
+'SkinTemplatePreventOtherActiveTabs',
+'SkinTemplateTabs', 
+'SkinTemplateBuildContentActionUrlsAfterSpecialPage',
+'SkinTemplateContentActions', 
+'SkinTemplateBuildNavUrlsNav_urlsAfterPermalink',
+'SkinTemplateSetupPageCss',
+'BlockIp', 
+'BlockIpComplete', 
+'BookInformation', 
+'SpecialContributionsBeforeMainOutput',
+'EmailUser', 
+'EmailUserComplete',
+'SpecialMovepageAfterMove',
+'SpecialPage_initList',
+'SpecialPageExecuteBeforeHeader',
+'SpecialPageExecuteBeforePage',
+'SpecialPageExecuteAfterPage',
+'PreferencesUserInformationPanel',
+'SpecialSearchNogomatch',
+'ArticleUndelete',
+'UndeleteShowRevision',
+'UploadForm:BeforeProcessing',
+'UploadVerification',
+'UploadComplete',
+'UploadForm:initial',
+'AddNewAccount',
+'AbortNewAccount',
+'UserLoginComplete',
+'UserCreateForm',
+'UserLoginForm',
+'UserLogout',
+'UserLogoutComplete',
+'UserRights',
+'SpecialVersionExtensionTypes',
+'AutoAuthenticate', 
+'GetFullURL',
+'GetLocalURL',
+'GetInternalURL',
+'userCan',
+'TitleMoveComplete',
+'isValidPassword',
+'UserToggles',
+'GetBlockedStatus',
+'PingLimiter',
+'UserRetrieveNewTalks',
+'UserClearNewTalkNotification',
+'PageRenderingHash',
+'EmailConfirmed',
+'ArticleFromTitle',
+'CustomEditor',
+'UnknownAction',
+'LanguageGetMagic',
+'LangugeGetSpecialPageAliases',
+'MonoBookTemplateToolboxEnd',
+'SkinTemplateSetupPageCss',
+'SkinTemplatePreventOtherActiveTabs',
+);
 
 //</source>
