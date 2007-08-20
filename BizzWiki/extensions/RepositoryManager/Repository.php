@@ -1,6 +1,6 @@
 <?php
 /*<!--<wikitext>-->
-This file is part of the [[Extension:ExtensionManager|Extension Manager]] extension.
+This file is part of the [[Extension:RepositoryManager]] extension.
 
 <!--@@
 {{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
@@ -17,7 +17,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-abstract class ExtensionRepository
+abstract class Repository
 {
 	// relative to the installation i.e. $IP
 	const repoClassesDir = '/Repositories';

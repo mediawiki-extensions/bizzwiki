@@ -91,26 +91,48 @@ class PageServer
 	/**
 		Called using PageServer::loadPage()
 	 */
-	public static function loadPage( $filename )
+	public static function loadPage( &$filename )
 	{
 		return @file_get_contents( $filename );	
 	}
 
 	/**
 		Called using PageServer::loadAndParse()
+
+		This function is targeted at 'template' pages where newline characters
+		are used to document the said page but would otherwise cause 
+		unnecessary 'holes' once processed.
+		
+		E.g. use when combining an 'header' page to a 'form' page where the
+		'header' page consists mostly of commands/templates etc.
+
 	 */
-	public static function loadAndParse( $filename, $title )
+	public static function loadAndParse( &$filename, &$title, $minify = false )
 	{
 		$contents = @file_get_contents( $filename );
 		if (empty( $contents ))
 			return null;
+		
+		if ($minify)
+			$contents = str_replace("\n", '', $contents );
 			
 		self::initParser();
 		$po = self::$parser->parse( $contents, $title, new ParserOptions() );
 		
 		return $po->getText();
 	}
+	public static function load( &$filename, $minify = false )
+	{
+		$contents = @file_get_contents( $filename );
+		if (empty( $contents ))
+			return null;
+		
+		if ($minify)
+			$contents = str_replace("\n", '', $contents );
 
+		return $contents;		
+	}
+		
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// PARSER FUNCTIONS
 	//	

@@ -1,7 +1,7 @@
 <?php
 /*<!--<wikitext>-->
 {{Extension
-|name        = ExtensionManager
+|name        = RepositoryManager
 |status      = experimental
 |type        = pfunc
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -9,7 +9,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ExtensionManager/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/RepositoryManager/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -29,35 +29,14 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 Provides a means of easily installing 'extensions' to MediaWiki.
 
 == Features ==
-* Extensible: definition of 'repositories' can be extended
-** <code>GoogleCode</code> is the default
-* Secure: only executes in the NS_EXTENSION namespace
-* Fast: only loads & executes when the user accesses the NS_EXTENSION namespace
-** Standard feature of [[Extension:StubManager]]
-* Manifest file
-* Logging
-** Installation success / fail etc.
-* Localization
-* Enable/Disable commands
-** Requires 'manage_extension' right
-* Update command
-** Requires 'manage_extension' right
-* Integrates with [[Extension:FileManager]]
 
 == Usage ==
 
 == Usage Notes ==
-=== Installation of a new extension ===
-Each time a new extension is installed, there will be a short 'off-line' time for all the extensions
-installed; this is due to the fact that [[Extension:ExtensionManager|Extension Manager]] needs to 
-update a critical file and requires some 'downtime' to effect the changes.
-
-=== Concurrency ===
-Concurrent updates are not advised; only one user should do updates at the time.
 
 == Installation notes ==
 * Parser Caching is recommended
-* Create a new namespace 'NS_EXT'
+* Create a new namespace 'NS_REPO'
 ** Proper permission management should be put in place
 
 == Dependancy ==
@@ -85,27 +64,15 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-require('ExtensionDirectory.php');
-require('Extension.php');
-require('ExtensionRepository.php');
-require('ExtensionMagicWords.php');
-require('ExtensionLog.php');
-require('ExtensionList.php');
-
-class ExtensionManager extends NamespaceManager
+class RepositoryManager extends NamespaceManager
 {
 	const thisType = 'other';
-	const thisName = 'ExtensionManager';
+	const thisName = 'RepositoryManager';
 
 	static $thisDir;
 	static $msg = array();
 
 	// Variables
-	var $currentRepo;
-	var $currentRepoName;	
-	var $currentProject;
-	var $currentDir;
-	var $currentExtension;
 	
 	public function __construct( &$title ) 
 	{
@@ -144,9 +111,9 @@ class ExtensionManager extends NamespaceManager
 		// Make sure the user has the appropriate right
 		if ( !$this->mTitle->userCanRead() ) 
 			return $this->doPermissionError(	$article->mTitle,
-												'extensionmanager'.'-permissionerror-title',
-												'extensionmanager'.'-permissionerror-read',
-												'extensionmanager'.'-permissionerror-subtitle'
+												'repositorymanager'.'-permissionerror-title',
+												'repositorymanager'.'-permissionerror-read',
+												'repositorymanager'.'-permissionerror-subtitle'
 											);
 		
 		
@@ -159,7 +126,7 @@ class ExtensionManager extends NamespaceManager
 
 		$wgOut->setArticleFlag( true );
 		
-		wfRunHooks( 'ExtensionManagerViewHeader', array( &$this ) );
+		wfRunHooks( 'RepositoryManagerViewHeader', array( &$this ) );
 		
 		if ( !$wgOut->tryParserCache( $this, $wgUser ) )
 		{		
@@ -195,7 +162,7 @@ class ExtensionManager extends NamespaceManager
 	{
 		$header = $this->getTemplate( 'HeaderCreate.page', true );
 		$text = $header.$this->getTemplate( 'Create.page' );
-		wfRunHooks( 'ExtensionManagerCreatePage', array( &$this, &$text ) );
+		wfRunHooks( 'RepositoryManagerCreatePage', array( &$this, &$text ) );
 				
 		$this->doEdit( $text, '', EDIT_NEW );
 	}
