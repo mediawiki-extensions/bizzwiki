@@ -116,50 +116,50 @@ abstract class NamespaceManager extends Article
 	{
 		echo __METHOD__.": must override this method.";
 	}	
-	public function delete()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function watch()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function unwatch()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function protect()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function unprotect()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function revert()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function rollback()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function info()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function markpatrolled()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function render()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
-	public function deletetrackback()
-	{
-		echo __METHOD__.": must override this method.";
-	}	
+#	public function delete()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function watch()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function unwatch()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function protect()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function unprotect()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function revert()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function rollback()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function info()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function markpatrolled()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function render()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
+#	public function deletetrackback()
+#	{
+#		echo __METHOD__.": must override this method.";
+#	}	
 	/**
 		Catch-all
 	 */
