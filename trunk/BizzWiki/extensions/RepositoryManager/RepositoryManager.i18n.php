@@ -20,6 +20,8 @@ NamespaceManagers::addMessages( $a['en'] = array(
 // Other messages.
 'repositorymanager'								=> '<b>RepositoryManager: </b>',
 
+'repositorymanager'.'-select-type'				=> 'Select Repository Type',
+
 'repositorymanager'.'-missing-namespace'		=> '(<i> Repository namespace missing </i>)',
 
 // Permission Related

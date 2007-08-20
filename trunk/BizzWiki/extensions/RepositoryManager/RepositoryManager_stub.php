@@ -76,8 +76,8 @@ $wgExtensionCredits['other'][] = array(
 	'url' 		=> NamespaceManagers::getFullUrl(__FILE__),	
 );
 
-require('RepositoryManager.i18n.php');
 NamespaceManagers::register( NS_REPO, 'RepositoryManager', dirname(__FILE__).'/RepositoryManager.php' );
+require('RepositoryManager.i18n.php');
 
 }// end startup checks.
 // help the sysop.
