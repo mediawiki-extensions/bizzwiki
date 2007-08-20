@@ -17,6 +17,14 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
+class RepositoryClasses
+{
+	static $list = array();	
+}
+
+// Import the Repository Classes list.
+require('Repositories/RepositoryClasses.php');
+
 abstract class Repository
 {
 	// relative to the installation i.e. $IP

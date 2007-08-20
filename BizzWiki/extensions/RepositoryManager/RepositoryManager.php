@@ -64,6 +64,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
+require('Repository.php');
+
 class RepositoryManager extends NamespaceManager
 {
 	const thisType = 'other';

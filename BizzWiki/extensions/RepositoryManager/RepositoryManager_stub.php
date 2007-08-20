@@ -32,7 +32,10 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 
 
 == Dependancy ==
+* [[Extension:StubManager|StubManager extension]]
 * [[Extension:NamespaceManager|NamespaceManager extension]]
+* [[Extension:SecureProperties|SecureProperties extension]]
+* [[Extension:PageServer|PageServer extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -61,8 +64,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 // Do a quick check and echo a useful message
 // if the dependent extensions are not installed.
-if (class_exists('StubManager') && class_exists('NamespaceManager') 
-	&& defined('EXTENSION_PAGESERVER') && defined('NS_EXT') )
+if (class_exists('StubManager') && class_exists('NamespaceManager') && defined('EXTENSION_SECUREPROPERTIES')
+	&& defined('EXTENSION_PAGESERVER') && defined('NS_REPO') 
+	)
 {
 $wgExtensionCredits['other'][] = array( 
 	'name'    	=> 'RepositoryManager',
@@ -73,7 +77,7 @@ $wgExtensionCredits['other'][] = array(
 );
 
 require('RepositoryManager.i18n.php');
-NamespaceManagers::register( NS_EXT, 'RepositoryManager', dirname(__FILE__).'/RepositoryManager.php' );
+NamespaceManagers::register( NS_REPO, 'RepositoryManager', dirname(__FILE__).'/RepositoryManager.php' );
 
 }// end startup checks.
 // help the sysop.
@@ -85,10 +89,13 @@ else
 	if (!class_exists('NamespaceManager'))
 		echo "<b>RepositoryManager:</b> missing dependancy [[Extension:NamespaceManager]].\n";	
 
+	if (!defined('EXTENSION_SECUREPROPERTIES'))
+		echo "<b>RepositoryManager:</b> missing dependancy [[Extension:SecureProperties]].\n";	
+
 	if (!defined('EXTENSION_PAGESERVER'))
 		echo "<b>RepositoryManager:</b> missing dependancy [[Extension:PageServer]].\n";	
 
-	if (!defined('NS_EXT'))
+	if (!defined('NS_REPO'))
 		echo "<b>RepositoryManager:</b> namespace NS_REPO not defined.\n";	
 
 }

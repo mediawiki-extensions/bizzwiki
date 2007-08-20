@@ -1,2 +1,11 @@
 <!-- template used for the 'create' page in the NS_REPO namespace -->
 <!-- Page Version: $Id$ -->
+
+<html>
+	<form>
+		<select id='repository_type' class='repository_type' class='repository_type_selector'>
+			(($#foreachx|RepositoryClasses|list|<option value='$value$'>$value$</option>$))
+		</select>
+	
+	</form>
+</html>

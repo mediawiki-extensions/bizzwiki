@@ -247,4 +247,6 @@ $Id$
 * Added [[Extension:PageServer]] extension
 * Added [[Extension:ExtensionManager]] extension
 * Fixed '*' rights for skin related CSS files: 'common.css' & 'monobook.css'  (Thanks Uri)
-* 
+* Enhancements to [[Extension:ForeachFunction]]
+* Enhancements to [[Extension:SecureProperties]]
+
