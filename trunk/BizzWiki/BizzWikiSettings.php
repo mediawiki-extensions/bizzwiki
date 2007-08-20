@@ -394,6 +394,7 @@ require('extensions/SecurePHP/SecurePHP_stub.php');
 
 require('extensions/GoogleCode/GoogleCode_stub.php');
 
+require('extensions/PageServer/PageServer_stub.php');
 require('extensions/NamespaceManager/NamespaceManager.php');
 require('extensions/ExtensionManager/ExtensionManager_stub.php');
 
