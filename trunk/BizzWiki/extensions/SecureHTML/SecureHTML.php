@@ -60,6 +60,7 @@ protected in order to use 'html' tags
 * enhanced with functionality to 'add' content to the document's 'head' section
 * Removed dependency on ExtensionClass
 * Enabled for 'StubManager'
+* Added 'addExemptNamespaces' function
 
 == Todo ==
 * Fix for allowing more customization of 'exempt' namespaces even when using StubManager
@@ -85,8 +86,16 @@ class SecureHTML
 	const thisType = 'other';
 	  
 	static $enableExemptNamespaces = true;
-	static $exemptNamespaces;
-	  
+	static $exemptNamespaces = array();
+
+	public static function addExemptNamespaces( $list )
+	{
+		if (!is_array( $list ))	
+			$list = array( $list );
+			
+		self::$exemptNamespaces = array_merge( self::$exemptNamespaces, $list );
+	}
+
 	function __construct( )
 	{
 		// default exempt namespaces from the BizzWiki platform.

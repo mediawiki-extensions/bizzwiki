@@ -71,6 +71,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == History ==
 * Added 'CLASS NAME::STATIC PROPERTY' support
+* Added 'addExemptNamespaces' function
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/
@@ -98,8 +99,16 @@ class ForeachFunction
 
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
-	static $exemptNamespaces;
-		
+	static $exemptNamespaces = array();
+	
+	public static function addExemptNamespaces( $list )
+	{
+		if (!is_array( $list ))	
+			$list = array( $list );
+			
+		self::$exemptNamespaces = array_merge( self::$exemptNamespaces, $list );
+	}
+	
 	function __construct( )
 	{
 		// default exempt namespaces from the BizzWiki platform.

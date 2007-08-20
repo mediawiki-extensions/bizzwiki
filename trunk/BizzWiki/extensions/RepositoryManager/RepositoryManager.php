@@ -66,6 +66,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 require('Repository.php');
 
+SecureProperties::addExemptNamespaces( NS_REPO );
+ForeachFunction::addExemptNamespaces( NS_REPO );
+
 class RepositoryManager extends NamespaceManager
 {
 	const thisType = 'other';
