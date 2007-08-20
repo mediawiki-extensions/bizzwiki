@@ -246,7 +246,16 @@ class NamespaceManagers
 	 */
 	public static function addLog( $log )
 	{ self::$logList = array_merge( self::$logList, $log );	}
-	
+	/**
+		Each registered derived classes add their 'messages'
+
+		An extension's i18n file would call this function to register any messages 
+	 */
+	public static function addMessages( $msg )
+	{ 
+		self::$msgList[] = $msg;
+	}
+
 	/**
 		Called during the initialization phase for extensions.		
 	 */
@@ -254,18 +263,13 @@ class NamespaceManagers
 	{
 		global $wgMessageCache;
 	
-		foreach( self::$msgList as $key => $value )
-			$wgMessageCache->addMessages( self::$msgList[$key], $key );		
+		if (empty( self::$msgList ))
+			return;
+		foreach( self::$msgList as $index => &$e )
+			foreach( $e as $key => $value )
+				$wgMessageCache->addMessages( $e[$key], $key );		
 	}
 
-	/**
-		Each registered derived classes add their 'messages'
-
-		An extension's i18n file would call this function to register any messages 
-	 */
-	public static function addMessages( &$msg )
-	{ self::$msgList = array_merge( self::$msgList, $msg );	 }
-	
 	/**
 		Setup the initialization phase for this extension
 	 */
