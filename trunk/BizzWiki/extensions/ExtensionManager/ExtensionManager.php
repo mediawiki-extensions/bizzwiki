@@ -94,7 +94,7 @@ $wgExtensionCredits[ExtensionManager::thisType][] = array(
 	'url' 		=> StubManager::getFullUrl(__FILE__),	
 );
 
-require('ExtensionManager.i18n.php');
+
 require('ExtensionDirectory.php');
 require('Extension.php');
 require('ExtensionRepository.php');
@@ -102,7 +102,7 @@ require('ExtensionMagicWords.php');
 require('ExtensionLog.php');
 require('ExtensionList.php');
 
-class ExtensionManager
+class ExtensionManager extends NamespaceManager
 {
 	const thisType = 'other';
 	const thisName = 'ExtensionManager';
@@ -122,21 +122,6 @@ class ExtensionManager
 	
 	public function __construct() 
 	{
-		# Add a new log type
-		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
-		$wgLogTypes[]						= 'extlog';
-		$wgLogNames  ['extlog']				= 'extlog'.'logpage';
-		$wgLogHeaders['extlog']				= 'extlog'.'logpagetext';
-		$wgLogActions['extlog/installok']	= 'extlog'.'-installok-entry';
-		$wgLogActions['extlog/installfail']	= 'extlog'.'-installfail-entry';		
-
-		// Init the message cache.		
-		global $wgMessageCache;
-		$msg = $GLOBALS[ 'msg'.__CLASS__ ];
-		
-		foreach( $msg as $key => $value )
-			$wgMessageCache->addMessages( $msg[$key], $key );		
-		
 		// Initialize variables.
 		$this->init();
 	}

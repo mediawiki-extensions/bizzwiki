@@ -6,13 +6,11 @@ Version: $Id$
 <!--</wikitext>-->*/
 //<source lang=php>
 
-global $msgExtensionManager;		// required for StubManager
-global $logExtensionManager;		// required for StubManager
+// register the actions for the 'logging' facility.
+NamespaceManagers::addLog( $a = array( 'extlog' => array( 'installok', 'installfail' ) ));
 
-// required for StubManager. The format is important:  'log'.$classname
-$logExtensionManager = 'extlog';	
-
-$msgExtensionManager['en'] = array(
+// register the messages
+NamespaceManagers::addMessages( $a['en'] = array(
 // Logging related messages
 'extlog'				=> 'Extension Manager Log',
 'extlog'.'logpage'		=> 'Extension Manager Log',
@@ -35,5 +33,5 @@ $msgExtensionManager['en'] = array(
 														"*** DO NOT MODIFY MANUALLY ***\n\n",
 #'extensionmanager'.'' => '',
 #'' => '',
-);
+) );
 //</source>

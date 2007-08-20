@@ -131,6 +131,10 @@ class NamespaceManagers
 	const thisName = 'NamespaceManagers';	
 	
 	static $list = array();
+	static $instanceList = array();
+	
+	static $msgList = array();
+	static $logList = array();
 
 	/**
 		Only 1 handler can be registered by Namespace.
@@ -147,12 +151,57 @@ class NamespaceManagers
 	{
 		return self::$list;
 	}
+	public static function getMsgList()
+	{ return self::$msgList; }
+	public static function getLogList()
+	{ return self::$logList; }
+
+	/**
+
+	 */
+	public static function setupLogging( )
+	{
+		if (empty( self::$logList ))
+			return;
+		
+		foreach( self::$logList as $logtype => &$actions )
+		{		
+			# Add a new log type
+			global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
+			$wgLogTypes[]						= $logtype;
+			$wgLogNames  [$logtype]				= $logtype.'logpage';
+			$wgLogHeaders[$logtype]				= $logtype.'logpagetext';
+			
+			if (!empty( $actions ))
+				foreach( $actions as $action )
+					$wgLogActions[$logtype.'/'.$action]	= $logtype.'-'.$action.'-entry';
+		}
+	}
+	public static function addLog( $log )
+	{
+		self::$logList = array_merge( self::$logList, $log );	
+	}
+	/**
+		
+	 */
+	public static function setupMessages( )
+	{
+		global $wgMessageCache;
+	
+		foreach( self::$msgList as $key => $value )
+			$wgMessageCache->addMessages( self::$msgList[$key], $key );		
+	}
+	public static function addMessages( &$msg )
+	{
+		self::$msgList = array_merge( self::$msgList, $msg );	
+	}
 	public static function setup()
 	{
 		global $wgExtensionFunctions;
 #		$wgExtensionFunctions[] = __CLASS__.'::setup'; // PHP <v5.2.2 issues a warning on this one.
 		$wgExtensionFunctions[] = create_function( '', 'return '.__CLASS__.'::init();' );
-		
+	
+		self::setupMessages();
 	}
 	public static function init()
 	{
@@ -171,6 +220,8 @@ class NamespaceManagers
 	 */	
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
 	{
+		#self::loadAllRegisteredClasses();
+		
 		global $wgExtensionCredits;
 
 		$result = 'There are '.count(self::$list)." namespace managers registered.";
@@ -185,6 +236,17 @@ class NamespaceManagers
 					$el['description'] .= $result;
 				
 		return true; // continue hook-chain.
+	}
+	private static function loadAllRegisteredClasses()
+	{
+		if (empty(self::$list))	
+			return;
+			
+		foreach( self::$list as &$e )
+		{
+			$classe = $e['class'];
+			self::$instanceList[] = new $classe();
+		}
 	}
 	public static function hArticleFromTitle( &$title, &$article )
 	{
@@ -223,6 +285,26 @@ class NamespaceManagers
 			{ $article->edit(); return false; }
 
 		return true;	
+	}
+
+	static function getRevisionId( $svnId=null )
+	{	
+		// fixed annoying warning about undefined offset.
+		if ( $svnId === null || $svnId == ('$'.'Id'.'$' /* fool SVN */) )
+			return null;
+			
+		// e.g. $Id$
+		$data = explode( ' ', $svnId );
+		return $data[2];
+	}
+	static function getFullUrl( $filename )
+	{ return 'http://www.bizzwiki.org/index.php?title=Filesystem:'.self::getRelativePath( $filename );	}
+
+	static function getRelativePath( $filename )
+	{
+		global $IP;
+		$relPath = str_replace( $IP, '', $filename ); 
+		return str_replace( '\\', '/', $relPath );    // at least windows & *nix agree on this!
 	}
 	
 } // end class declaration
