@@ -10,12 +10,10 @@ Version: $Id$
 #NamespaceManagers::addLog( $a = array( 'extlog' => array( 'installok', 'installfail' ) ));
 
 // register the messages
-NamespaceManagers::addMessages( $a['en'] = array(
+NamespaceManagers::addMessages( array(
+'en' => array(
+
 // Logging related messages
-#'extlog'				=> 'Extension Manager Log',
-#'extlog'.'logpage'		=> 'Extension Manager Log',
-#'extlog'.'logpagetext'	=> 'This is a log for the [[Extension:ExtensionManager|Extension Manager]]',
-#'extlog'.''	=> '',
 
 // Other messages.
 'repositorymanager'								=> '<b>RepositoryManager: </b>',
@@ -33,5 +31,8 @@ NamespaceManagers::addMessages( $a['en'] = array(
 
 #'repositorymanager'.'' => '',
 #'' => '',
-) );
+), // end 'en'
+
+)  
+); // end 'addMessages
 //</source>

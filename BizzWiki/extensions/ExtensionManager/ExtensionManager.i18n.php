@@ -10,7 +10,8 @@ Version: $Id$
 NamespaceManagers::addLog( $a = array( 'extlog' => array( 'installok', 'installfail' ) ));
 
 // register the messages
-NamespaceManagers::addMessages( $a['en'] = array(
+NamespaceManagers::addMessages( array(
+'en' => array(
 // Logging related messages
 'extlog'				=> 'Extension Manager Log',
 'extlog'.'logpage'		=> 'Extension Manager Log',
@@ -37,5 +38,6 @@ NamespaceManagers::addMessages( $a['en'] = array(
 														"*** DO NOT MODIFY MANUALLY ***\n\n",
 #'extensionmanager'.'' => '',
 #'' => '',
+),
 ) );
 //</source>
