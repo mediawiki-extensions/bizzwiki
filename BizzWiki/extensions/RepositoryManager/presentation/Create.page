@@ -3,7 +3,9 @@
 
 <html>
 	<form>
+		((@#mwmsg|repositorymanager-select-type@))<br/>
 		<select id='repository_type' class='repository_type' class='repository_type_selector'>
+			<!-- use [[Extension:ForeachFunction]] extension -->
 			(($#foreachx|RepositoryClasses|list|<option value='$value$'>$value$</option>$))
 		</select>
 	
