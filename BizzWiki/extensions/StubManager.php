@@ -98,7 +98,8 @@ $wgExtensionCredits[StubManager::thisType][] = array(
 );
 
 if (!defined('BIZZWIKI'))
-	$bwExtPath = $IP.'/extensions';
+	if (!isset($bwExtPath))
+		$bwExtPath = $IP.'/extensions';
 
 class StubManager
 {
