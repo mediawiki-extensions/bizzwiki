@@ -45,12 +45,6 @@ Provides a means of easily installing 'extensions' to MediaWiki.
 * Integrates with [[Extension:FileManager]]
 
 == Usage ==
-To add an extension simply use the '#extension' parser function in the NS_EXTENSION namespace.
-<nowiki>{{#extension: repo=REPOSITORY TYPE | project=PROJECT NAME | dir=DIRECTORY }}</nowiki>
-The name of the extension is the title name of the page where the '#extension' magic word is used.
-The parameter <code>repo</code> specifies repository type.
-The parameter <code>project</code> specifies the project.
-The parameter <code>dir</code> specifies the directory of the repository where the extension is located.
 
 == Usage Notes ==
 === Installation of a new extension ===
@@ -68,13 +62,18 @@ Concurrent updates are not advised; only one user should do updates at the time.
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
+* [[Extension:NamespaceManager|NamespaceManager extension]]
+* [[Extension:PageServer|PageServer extension]]
 
 == Installation ==
 To install independantly from BizzWiki:
-* Download & Install [[Extension:StubManager]] extension
+* Download & Install all the dependent extensions (see above)
 * Dowload <b>all</b> this extension's files and place in the desired directory
-* Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
+=== Example 'LocalSettings.php' ===
 <source lang=php>
+require('extensions/StubManager.php');
+require('extensions/NamespaceManager/NamespaceManager_stub.php');
+require('extensions/PageServer/PageServer_stub.php');
 require('extensions/ExtensionManager/ExtensionManager_stub.php');
 </source>
 

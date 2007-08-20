@@ -26,7 +26,7 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose==
-
+Provides parser functions (#mwmsg, #mwmsgx) and services to other extensions ( 'loadAndParse' ).
 
 == Features ==
 * Loads only when required (i.e. Autoloading)
