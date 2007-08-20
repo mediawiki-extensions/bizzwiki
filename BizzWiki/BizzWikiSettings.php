@@ -119,6 +119,13 @@ require('extensions/DeSysop/SpecialDesysop.php');
 
 unset( $wgGroupPermissions );
 
+##CUSTOMIZATION
+## Define new groups starting here (i.e. not above the 'unset' statement)
+## see also [http://www.mediawiki.org/wiki/Help:User_rights]
+## E.g
+#$wgGroupPermissions['GROUP XYZ' ][hnpClass::buildPermissionKey( "NAMESPACE","PAGE","ACTION" )]	= true;	
+# MORE INFORMATION IS AVAILABLE AT [http://www.mediawiki.org/wiki/Extension:Hierarchical_Namespace_Permissions/Code]
+
 $bwNamespaceIndependantRights =  array( 'createaccount',
 										'ipblock-exempt',
 										'hideuser',
