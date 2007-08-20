@@ -238,6 +238,12 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 // to enable anonymous access to the login/create account special page.
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Userlogin","read")] = true;
 
+// CSS
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"common.css",	"read")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"common.css",	"raw")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"monobook.css",	"read")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"monobook.css",	"raw")] = true;
+
 	// 'Users' inherit all rights from '*' (anonymous)
 	// ############################################### 
 	
