@@ -35,7 +35,10 @@ Enables getting/setting global object properties securily (operations are only a
 * Method call: <nowiki>{{#pf:global object name|method name}}</nowiki>
 * Global variable 'get': <nowiki>{{#gg:global object name}}</nowiki>
 * Global variable 'set': <nowiki>{{#gs:global object name|value}}</nowiki>
+* Class static property 'get': <nowiki>{{#cg:class name|property}}</nowiki>
+* Class static property 'set': <nowiki>{{#cs:class name|property|value}}</nowiki>
 
+(($disable$))
 == Notes ==
 Of course, those functions can be called in the context of 'ParserPhase2':
 * Property 'get': <nowiki>(($#pg|global object name|property$))</nowiki>
@@ -43,6 +46,9 @@ Of course, those functions can be called in the context of 'ParserPhase2':
 * Method call: <nowiki>(($#pf|global object name|method name$))</nowiki>
 * Global variable 'get': <nowiki>(($#gg:global object name$))</nowiki>
 * Global variable 'set': <nowiki>(($#gs:global object name|value$))</nowiki>
+* Class static property 'get': <nowiki>(($#cg:class name|property$))</nowiki>
+* Class static property 'set': <nowiki>(($#cs:class name|property|value$))</nowiki>
+(($enable$))
 
 == Examples ==
 Current user name: {{#pg:wgUser|mName}}
@@ -68,6 +74,7 @@ require('extensions/SecureProperties/SecureProperties_stub.php');
 == History ==
 * added '#gg' and '#gs' magic words
 * Removed dependency on ExtensionClass
+* Added '#cg' and '#cs' to deal with static properties in classes
 
 == Todo ==
 * Fix for 'exempt' namespaces option even considering StubManager
@@ -97,9 +104,12 @@ class SecureProperties
 	const actionGGet = 2;
 	const actionGSet = 3;
 	const actionFnc = 4;	
+	const actionCGet = 5;
+	const actionCSet = 5;	
 	
 	const gobject   = 0;
 	const gvariable = 1;
+	const gclass    = 3;
 	
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
@@ -150,6 +160,21 @@ class SecureProperties
 		return $this->process( $args, self::actionGSet, self::gvariable  );
 	}
 
+	public function mg_cg( )
+	// {{#cg:class name|property}}
+	// (($#cg|class name|property$))
+	{
+		$args = func_get_args();
+		return $this->process( $args, self::actionCGet, self::gclass );
+	}
+	public function mg_cs( )
+	// {{#cs:class name|property|value}}
+	// (($#cs|class name|property|value$))
+	{
+		$args = func_get_args();
+		return $this->process( $args, self::actionCSet, self::gclass  );
+	}
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 	private function process( &$args, $action = self::actionGet, $type = self::gobject )
@@ -173,6 +198,10 @@ class SecureProperties
 			if ( !isset( $GLOBALS[$object] ) ) 
 				return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
 
+		if ($type == self::gclass)
+			if ( !class_exists( $object ) ) 
+				return "<b>SecureProperties:</b> ".wfMsg('error')." <i>$object</i>";
+
 		switch( $action )
 		{
 			case self::actionGet:
@@ -186,7 +215,12 @@ class SecureProperties
 				return $GLOBALS[ $object ];
 			case self::actionGSet:
 				$GLOBALS[ $object ] = $property;
-				return null;					
+				return null;
+			case self::actionCGet:
+				return eval("return $object::$property;");
+			case self::actionCSet:
+				eval("$object::$property = $value;");
+				return null;
 		}
 	}
 

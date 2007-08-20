@@ -33,22 +33,24 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 
 == Usage ==
 === Simple Array ===
-* <code>{{#foreachx:global object name|property|pattern}}</code>
+* <nowiki>{{#foreachx:global object name|property|pattern}}</nowiki>
 ** The global object's property will be retrieved; the property should be an 'array'
-* <code>{{#foreachx:global object name|method|pattern}}</code>
+* <nowiki>{{#foreachx:global object name|method|pattern}}</nowiki>
 ** The global object's method will be called: an array is expected as return value
-* <code>{{#foreachx:global array variable|key|pattern}}</code>
+* <nowiki>{{#foreachx:global array variable|key|pattern}}</nowiki>
 ** The global array variable will be referenced using 'key' as key
-* <code>{{#foreachx:global array variable||pattern}}</code>
+* <nowiki>{{#foreachx:global array variable||pattern}}</nowiki>
 ** The global array variable will be referenced (as a whole)
+* <nowiki>{{#foreachx:class name|static property|pattern}}</nowiki>
+** The static property of class name will be referenced (as a whole)
 === Array of Arrays ===
-* <code>{{#foreachy:global object name|property|pattern}}</code>
+* <nowiki>{{#foreachy:global object name|property|pattern}}</nowiki>
 ** The global object's property will be retrieved; the property should be an 'array'
-* <code>{{#foreachy:global object name|method|pattern}}</code>
+* <nowiki>{{#foreachy:global object name|method|pattern}}</nowiki>
 ** The global object's method will be called: an array is expected as return value
-* <code>{{#foreachy:global array variable|key|pattern}}</code>
+* <nowiki>{{#foreachy:global array variable|key|pattern}}</nowiki>
 ** The global array variable will be referenced using 'key' as key
-* <code>{{#foreachy:global array variable||pattern}}</code>
+* <nowiki>{{#foreachy:global array variable||pattern}}</nowiki>
 ** The global array variable will be referenced (as a whole)
 
 == Dependancies ==
@@ -68,6 +70,7 @@ require('extensions/ForeachFunction/ForeachFunction_stub.php');
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == History ==
+* Added 'CLASS NAME::STATIC PROPERTY' support
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/
@@ -85,6 +88,13 @@ class ForeachFunction
 	// constants.
 	const thisName = 'ForeachFunction';
 	const thisType = 'other';
+
+	const typeUnknown = 0;
+	const typeGLOBAL  = 1;
+	const typeArray   = 2;
+	const typeObject  = 3;
+	const typeClass   = 4;
+	const typeString  = 5;
 
 	// Namespace exemption functionality
 	static $enableExemptNamespaces = true;
@@ -109,6 +119,8 @@ class ForeachFunction
 		$a = self::getArray( $object, $property, $param1, $param2 );
 		
 		if (empty( $a )) return;
+		if (!is_array( $a ))
+			$a = array( $a );
 		
 		$result = '';
 		$index = 0;
@@ -131,7 +143,10 @@ class ForeachFunction
 		$a = self::getArray( $object, $property, $param1, $param2 );
 		
 		if (empty( $a )) return;
-		
+
+		if (!is_array( $a ))
+			$a = array( $a );
+			
 		$result = '';
 		foreach( $a as $index => $b )
 			if (!empty( $b ))
@@ -154,6 +169,9 @@ class ForeachFunction
 		
 		if (empty( $a )) return;
 		
+		if (!is_array( $a ))
+			$a = array( $a );
+		
 		$result = '';
 		for ( $index= $start; $index < $stop; $index++ )
 		{
@@ -169,25 +187,62 @@ class ForeachFunction
 	{
 		$o = null;
 		if (isset( $GLOBALS[$p1] ))
+		{
 			$o = $GLOBALS[$p1];
 
-		if (is_array( $o ))
-			if (!empty( $p2 ))
-				return $o[$p2];
-			else
-				return $o;
-
-		// array = object->property
-		if (is_object( $o))
-			if (is_array( $o->$p2 )) 
-				return $o->$p2;
-
-		// array = object->property()
-		if (is_object($o))
-			if (is_callable( array($o, $p2) ))
-				return $o->$p2( $param1, $param2 );
-
+			if (is_array( $o ))
+				if (!empty( $p2 ))
+					return $o[$p2];
+				else
+					return $o;
+	
+			// array = object->property
+			if (is_object( $o))
+				if (is_array( $o->$p2 )) 
+					return $o->$p2;
+	
+			// array = object->property()
+			if (is_object($o))
+				if (is_callable( array($o, $p2) ))
+					return $o->$p2( $param1, $param2 );
+		}
+		
+		// static property of a class?
+		if (property_exists( $p1, $p2 ))
+		{
+			try
+			{
+				$vars = get_class_vars( $p1 );
+				$val = $vars[ $p2 ];
+			} 
+			catch( Exception $e )
+			{
+				$val = null; 
+			}
+			return $val;
+		}
+		
 		return null;		
+	}
+	
+	public static function getType( &$p1 )
+	{
+		if (isset( $GLOBALS[$p1] ))
+			return self::typeGLOBAL;
+
+		if (is_array( $p1 ))
+			return self::typeArray;
+
+		if (is_object( $p1 ))
+			return self::typeObject;
+
+		if (class_exists( $p1 ))
+			return self::typeClass;
+
+		if (is_string( $p1 ))
+			return self::typeString;
+		
+		return self::typeUnknown;
 	}
 	public static function replaceVars( &$pattern, &$key, &$value, &$index )
 	{

@@ -41,13 +41,14 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
+define('EXTENSION_SECUREPROPERTIES', true);
 StubManager::createStub(	'SecureProperties', 
 							$bwExtPath.'/SecureProperties/SecureProperties.php',
 							null,	// no i18n
 							null, 	// no hooks
 							false,	// no need for logging support
 							null,	// tags
-							array( 'pg', 'ps', 'pf', 'gg', 'gs' ),
+							array( 'pg', 'ps', 'pf', 'gg', 'gs', 'cg', 'cs' ),
 							null,	// no magic words
 							null	// no namespace triggering
 						 );

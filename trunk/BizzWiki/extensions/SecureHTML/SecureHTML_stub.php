@@ -41,6 +41,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
+define('EXTENSION_SECUREHTML', true);
 StubManager::createStub(	'SecureHTML', 
 							$bwExtPath.'/SecureHTML/SecureHTML.php',
 							null,
