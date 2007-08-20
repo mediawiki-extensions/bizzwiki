@@ -121,6 +121,14 @@ class PageServer
 	{
 		return wfMsg( $msgId );	
 	}
+
+	/**
+		Parser Function: #mwmsgx
+	 */
+	public function mg_mwmsgx( &$parser, $msgId, $p1 = null, $p2 = null, $p3 = null, $p4 = null )
+	{
+		return wfMsgForContent( $msgId, $p1, $p2, $p3, $p4 );	
+	}
 	
 } // end class
 

@@ -57,7 +57,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 StubManager::createStub2(	array(	'class' 		=> 'PageServer', 
 									'classfilename'	=> dirname(__FILE__).'/PageServer.php',
-									'mgs'			=> array( 'mwmsg' ),
+									'mgs'			=> array( 'mwmsg', 'mwmsgx' ),
 								)
 						);
 
