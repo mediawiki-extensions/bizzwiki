@@ -243,4 +243,8 @@ $Id$
 * 'Wikified' the changelog file
 == REL1_10_12: (released ...) ==
 * Fixed [[Extension:StubManager]] for bug with 'exclude' namespaces
+* Added [[Extension:NamespaceManager]] extension
+* Added [[Extension:PageServer]] extension
+* Added [[Extension:ExtensionManager]] extension
+* Fixed '*' rights for skin related CSS files: 'common.css' & 'monobook.css'  (Thanks Uri)
 * 
