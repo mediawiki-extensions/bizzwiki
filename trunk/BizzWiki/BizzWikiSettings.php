@@ -52,14 +52,16 @@ require($IP.'/includes/Namespace.php');
 	define('NS_API',		106);	
 	define('NS_DIRECTORY',	108);		// extension DirectoryManager
 	define('NS_EXTENSION',  110);		// for easy integration with MediaWiki.org
+	define('NS_EXT',  		112);		// [[Extension:ExtensionManager]]
 	
 	// Add the new namespaces to the global variables
-	$wgExtraNamespaces[NS_BIZZWIKI]   = 'Bizzwiki';
-	$wgExtraNamespaces[NS_FILESYSTEM] = 'Filesystem';
-	$wgExtraNamespaces[NS_INTERWIKI]  = 'Interwiki';
-	$wgExtraNamespaces[NS_API]		  = 'Api';
-	$wgExtraNamespaces[NS_DIRECTORY]  = 'Directory';	
-	$wgExtraNamespaces[NS_EXTENSION]  = 'Extension';		
+	$wgExtraNamespaces[NS_BIZZWIKI]		= 'Bizzwiki';
+	$wgExtraNamespaces[NS_FILESYSTEM]	= 'Filesystem';
+	$wgExtraNamespaces[NS_INTERWIKI]	= 'Interwiki';
+	$wgExtraNamespaces[NS_API]			= 'Api';
+	$wgExtraNamespaces[NS_DIRECTORY]	= 'Directory';	
+	$wgExtraNamespaces[NS_EXTENSION]	= 'Extension';		
+	$wgExtraNamespaces[NS_EXT]  		= 'Ext';
 
 ## }}
 
@@ -82,6 +84,7 @@ $bwNamespacesWithSubpages = array ( NS_MAIN,
 									NS_INTERWIKI,	// not used at the moment.
 									NS_DIRECTORY,
 									NS_EXTENSION,
+									NS_EXT,
 									);
 foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	$wgNamespacesWithSubpages[ $bwx ] = true;
@@ -239,10 +242,10 @@ foreach( $bwAnonymousNamespaces as $index => $bwx )
 #$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,"Userlogin","read")] = true;
 
 // CSS
-$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"common.css",	"read")] = true;
-$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"common.css",	"raw")] = true;
-$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"monobook.css",	"read")] = true;
-$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"monobook.css",	"raw")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"Common.css",	"read")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"Common.css",	"raw")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"Monobook.css",	"read")] = true;
+$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_MEDIAWIKI,"Monobook.css",	"raw")] = true;
 
 	// 'Users' inherit all rights from '*' (anonymous)
 	// ############################################### 

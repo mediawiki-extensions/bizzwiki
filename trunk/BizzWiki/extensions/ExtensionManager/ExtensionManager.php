@@ -63,7 +63,7 @@ Concurrent updates are not advised; only one user should do updates at the time.
 
 == Installation notes ==
 * Parser Caching is recommended
-* Create a new namespace 'NS_EXTENSION'
+* Create a new namespace 'NS_EXT'
 ** Proper permission management should be put in place
 
 == Dependancy ==
@@ -86,15 +86,6 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-$wgExtensionCredits[ExtensionManager::thisType][] = array( 
-	'name'    	=> ExtensionManager::thisName,
-	'version' 	=> StubManager::getRevisionId('$Id$'),
-	'author'  	=> 'Jean-Lou Dupont',
-	'description' => "Provides installation and maintenance for MediaWiki extensions. ", 
-	'url' 		=> StubManager::getFullUrl(__FILE__),	
-);
-
-
 require('ExtensionDirectory.php');
 require('Extension.php');
 require('ExtensionRepository.php');
@@ -107,10 +98,7 @@ class ExtensionManager extends NamespaceManager
 	const thisType = 'other';
 	const thisName = 'ExtensionManager';
 
-	const keyREPO = 'repo';
-	const keyDIR  = 'dir';
-	const keyPRJ  = 'project';
-
+	static $thisDir;
 	static $msg = array();
 
 	// Variables
@@ -120,18 +108,100 @@ class ExtensionManager extends NamespaceManager
 	var $currentDir;
 	var $currentExtension;
 	
-	public function __construct() 
+	public function __construct( &$title ) 
 	{
 		// Initialize variables.
-		$this->init();
+		self::$thisDir = dirname(__FILE__);
+		
+		parent::__construct( $title );
 	}
 	/**
-		Initialize variables
+		This method uses the 'PageServer' extension to load and parse
+		a wikitext page stored in the filesystem.
 	 */
-	protected function init()
+	private function getTemplate( $templateName )
 	{
-		$this->currentRepo = null;	
+		$filename = self::$thisDir.'/presentation/'.$templateName;
+		return PageServer::loadAndParse( $filename, $this->mTitle );
 	}
+
+	/**
+	 */
+	public function view()
+	{
+		global $wgOut;
+		global $wgEnableParserCache;
+		global $wgUser;
+		
+		// first, check if the article already exists!
+		if ($this->getID() == 0)
+			return $this->handleCreate();
+		
+		// Make sure the user has the appropriate right
+		if ( !$this->mTitle->userCanRead() ) 
+			return $this->doPermissionError(	$article->mTitle,
+												'extensionmanager'.'-permissionerror-title',
+												'extensionmanager'.'-permissionerror-read',
+												'extensionmanager'.'-permissionerror-subtitle'
+											);
+		
+		
+		$parserCache =& ParserCache::singleton();
+	
+		$ns = $this->mTitle->getNamespace(); # shortcut
+
+		# Should the parser cache be used?
+		$pcache = $wgEnableParserCache;
+
+		$wgOut->setArticleFlag( true );
+		
+		$outputDone = false;
+		
+		wfRunHooks( 'ExtensionManagerViewHeader', array( &$this ) );
+		
+		if ( $wgOut->tryParserCache( $this, $wgUser ) )
+		{
+			$outputDone = true;
+		}
+		if ( !$outputDone ) 
+		{		
+			$text = $this->getContent();		
+
+			if ( $pcache )
+				# Display content and save to parser cache
+				$this->outputWikiText( $text );
+			else
+			{
+				# Display content and don't save to parser cache
+				# With timing hack -- TS 2006-07-26
+				$time = -wfTime();
+				$this->outputWikiText( $text, false );
+				$time += wfTime();
+			}
+		}
+
+		/* title may have been set from the cache */
+		$t = $wgOut->getPageTitle();
+		if( empty( $t ) ) {
+			$wgOut->setPageTitle( $this->mTitle->getPrefixedText() );
+		}
+
+		$this->viewUpdates();
+	} // end view method.
+
+	/**
+		Presents the 'Create' form to the user
+		and saves it in the database +/- parser cache.	
+	 */
+	public function handleCreate()
+	{
+		
+		$text = $this->getTemplate( 'Create.page' );
+		wfRunHooks( 'ExtensionManagerCreatePage', array( &$this, &$text ) );
+				
+		$this->doEdit( $text, '', EDIT_NEW );
+	}
+
 	/**
 		Reports the status of this extension in the [[Special:Version]] page.
 	 */	
@@ -140,8 +210,6 @@ class ExtensionManager extends NamespaceManager
 		global $wgExtensionCredits;
 
 		$result = '';
-		if (!defined('NS_EXTENSION'))
-			$result .= wfMsg('extensionmanager-missing-namespace');
 		
 		if (!ExtensionDirectory::exists())
 			$result .= wfMsg('extensionmanager'.'-missing-extensiondirectory');
@@ -156,34 +224,6 @@ class ExtensionManager extends NamespaceManager
 					$el['description'] .= $result;
 				
 		return true; // continue hook-chain.
-	}
-	/**
-		This method implements the 'parser function magic word' #extension.
-	 */
-	public function mg_extension( &$parser )
-	{
-		// process the argument list
-		$args = func_get_args();
-		$argv = StubManager::processArgList( $args, true );
-		
-		// get the parameters
-		$repo = $argv[self::keyREPO];
-		$dir  = $argv[self::keyDIR];
-		$prj  = $argv[self::keyPRJ];		
-		
-		$result = $this->validateParameters( $repo, $project, $dir );
-		if (!empty( $result ))
-			return $result;
-		
-		// the parameters check out.
-		$this->currentRepoName = $repo;
-		$this->currentDir      = $dir;
-		$this->currentProject  = $prj;		
-		
-		if ($this->verifyExistence( $repo, $project, $dir ))
-			return $this->doExtensionExists();
-	
-		return $this->doExtensionDoesNotExist();	
 	}
 	
 	protected function doExtensionsExists()
@@ -212,44 +252,9 @@ class ExtensionManager extends NamespaceManager
 			
 		
 	}
-	/**
-		Create the repository object.
-		This method only validates that an actual class supports
-		the requested repository.
-	 */
-	protected function validateParameters( &$repo, &$project, &$dir )
-	{
-		// First, let's try to load the class defining
-		// the requested repository
-		$this->currentRepo = ExtensionRepository::newFromClass( $repo, $project, $dir );
-		if (!is_object( $this->currentRepo ))
-			return wfMsg('extensionmanager').wfMsgForContent('extensionmanager'.'-error-loadingrepo', $repo, $project );
 
-		// everything OK.
-		return null;
-	}
 
-	/**
-		Replace the dynamic 'proprietary words' generated by this extension
-		i.e. those that get parsed on every page view.
-	 */
-	function hOutputPageBeforeHTML( &$op, &$text )
-	{
-		#ExtensionMagicWords::doReplaceDynamic( $text );
-		
-		return true;
-	}
-	/**
-		Replace the static 'proprietary words' generated by this extension
-		i.e. those that get parsed on every page edit.
-	 */
-	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
-	{
-		#ExtensionMagicWords::doReplaceStatic( $text );
-		
-		return true;
-	}	
+
 } // end 'ExtensionManager' class definition
-
 
 //</source>

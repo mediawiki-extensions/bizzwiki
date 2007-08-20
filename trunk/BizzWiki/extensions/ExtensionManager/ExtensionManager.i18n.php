@@ -22,6 +22,10 @@ NamespaceManagers::addMessages( $a['en'] = array(
 
 'extensionmanager'.'-missing-namespace'			=> '(<i> Extension namespace missing </i>)',
 
+'extensionmanager'.'-permissionerror-title'		=> 'Permission Error',
+'extensionmanager'.'-permissionerror-subtitle'	=> 'Page: $1',
+'extensionmanager'.'-permissionerror-read'		=> 'You are missing the "read" permission to access this page.',
+
 'extensionmanager'.'-error-loadingrepo'			=> 'error loading from repository type <i>$1</i> and project <i>$2</i>.',
 
 'extensionmanager'.'-missing-extensiondirectory' => '(<i> Extension directory missing </i>)',

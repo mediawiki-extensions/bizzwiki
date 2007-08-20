@@ -126,6 +126,21 @@ abstract class NamespaceManager extends Article
 		$wgOut->showErrorPage( 'nosuchaction', 'nosuchactiontext' );		
 	}
 	
+	protected function doPermissionError(	&$titleObj, 
+											&$titleMessageId, 
+											&$messageId, 
+											&$subtitleMessageId = null )
+	{
+		global $wgUser, $wgOut;
+		
+		$skin = $wgUser->getSkin();
+		$wgOut->setPageTitle( wfMsg( $titleMessageId ) );
+		if ($subtitleMessageId !== null)
+			$wgOut->setSubtitle( wfMsg( $subTitleMessageId, $skin->makeKnownLinkObj( $titleObj ) ) );
+			
+		$wgOut->addWikiText( wfMsg( $messageId ) );
+	}
+	
 } // end class declaration
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -289,7 +304,7 @@ class NamespaceManagers
 			return true;
 			
 		// At this point, we have concluded we have a registered manager
-		$classe = self::$list['class'];
+		$classe = self::$list[$ns]['class'];
 		$article = new $classe( $title );
 		$article->ns = $ns;
 		
