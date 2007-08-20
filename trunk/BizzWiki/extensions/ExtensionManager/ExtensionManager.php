@@ -206,7 +206,7 @@ class ExtensionManager extends NamespaceManager
 		if ($this->getID() == 0)
 			return $this->handleCreate();
 
-		return $this			
+		return $this->view();
 	}
 	
 	/**
