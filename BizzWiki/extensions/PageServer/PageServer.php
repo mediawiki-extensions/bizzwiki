@@ -29,17 +29,30 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 
 
 == Features ==
-* Autoloads only when required
+* Loads only when required (i.e. Autoloading)
 * On-demand loading of wiki page from filesystem
 * Optional parsing (with the MediaWiki parser) of the wiki page
 ** All stock & extended functionality (i.e. through parser functions, parser tags) available during parsing phase
+* Parser functions:
+** #mwmsg    ( 'MediaWiki Message' )
+** #mwmsgx   ( 'MediaWiki Message with parameters' )
+
+== Usage ==
+=== Parser Functions ===
+* <nowiki>{{#mwmsg:msg id}}</nowiki> will output the raw message from the message cache
+* <nowiki>{{#mwmsgx:msg id [|p1][|p2][|p3][|p4]}}</nowiki> will output the parsed message from the message cache
+including up to 4 parameters (i.e. the $n parameters when using 'wfMsgForContent' global function)
+=== Server to other extensions ===
+Use <code>PageServer::XYZ</code> where XYZ is the desired function name.
 
 == Dependancy ==
-* [[Extension:StubManager|StubManager extension]]
+* [[Extension:StubManager]]
 
 == Installation ==
 To install independantly from BizzWiki:
+* Download and install [[Extension:StubManager]]
 * Dowload all this extension's files and place in the desired directory e.g. '/extensions/PageServer'
+and place after the declaration of [[Extension:StubManager]]:
 <source lang=php>
 require('extensions/PageServer/PageServer_stub.php');
 </source>
@@ -69,35 +82,23 @@ class PageServer
 	static $parser;
 	
 	public function __construct() 
-	{
-		self::$instance = $this;
-		
-	}
-	/**
-		Reports the status of this extension in the [[Special:Version]] page.
-	 */	
-	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
-	{
-		global $wgExtensionCredits;
-
-		$result = '';
-					
-		// Add list of managed extensions 	
-				
-		// add other checks here.
-		
-		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if (isset($el['name']))		
-				if ($el['name']==self::thisName)
-					$el['description'] .= $result;
-				
-		return true; // continue hook-chain.
-	}
+	{ self::$instance = $this;	}
+	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// SERVICES to other extensions
+	//
+	
+	/**
+		Called using PageServer::loadPage()
+	 */
 	public static function loadPage( $filename )
 	{
 		return @file_get_contents( $filename );	
 	}
+
+	/**
+		Called using PageServer::loadAndParse()
+	 */
 	public static function loadAndParse( $filename, $title )
 	{
 		$contents = @file_get_contents( $filename );
@@ -109,17 +110,10 @@ class PageServer
 		
 		return $po->getText();
 	}
-	private static function initParser()
-	{
-		if (self::$parser !== null)	
-			return;
 
-		// get a copy of wgParser handy.
-		global $wgParser;
-		self::$parser = clone $wgParser;
-	}
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+	// PARSER FUNCTIONS
+	//	
 	/**
 		Parser Function: #mwmsg
 	 */
@@ -134,6 +128,20 @@ class PageServer
 	public function mg_mwmsgx( &$parser, $msgId, $p1 = null, $p2 = null, $p3 = null, $p4 = null )
 	{
 		return wfMsgForContent( $msgId, $p1, $p2, $p3, $p4 );	
+	}
+
+	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	// HELPER FUNCTIONS
+	// NOTE: CAN'T BE CALLED BY OTHER EXTENSIONS
+	//	
+	private static function initParser()
+	{
+		if (self::$parser !== null)	
+			return;
+
+		// get a copy of wgParser handy.
+		global $wgParser;
+		self::$parser = clone $wgParser;
 	}
 	
 } // end class
