@@ -3,11 +3,20 @@
 
 <html>
 	<form>
-		((@#mwmsg|repositorymanager-select-type@))<br/>
-		<select id='repository_type' class='repository_type' class='repository_type_selector'>
-			<!-- use [[Extension:ForeachFunction]] extension -->
-			(($#foreachx|RepositoryClasses|list|<option value='$value$'>$value$</option>$))
-		</select>
-	
+		<table>
+			<tbody>
+				<tr>
+					<td>((@#mwmsg|repositorymanager-select-type@))</td>
+					<td>((@#mwmsg|repositorymanager-enter-projectname@))</td>
+				</tr>
+				<tr>
+					<td><select id='repository_type' class='repository_type' class='repository_type_selector'>
+					<!-- use [[Extension:ForeachFunction]] extension -->
+					(($#foreachx|RepositoryClasses|list|<option value='$value$'>$value$</option>$))
+						</select></td>
+					<td><input type='text' name='repository_project' align='left' size=20 /></td>
+				</tr>
+			</tbody>
+		</table>
 	</form>
 </html>
