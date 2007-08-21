@@ -19,6 +19,7 @@ NamespaceManagers::addMessages( array(
 'repositorymanager'								=> '<b>RepositoryManager: </b>',
 
 'repositorymanager'.'-select-type'				=> 'Select Repository Type',
+'repositorymanager'.'-enter-projectname'		=> 'Enter Project Name',
 
 'repositorymanager'.'-missing-namespace'		=> '(<i> Repository namespace missing </i>)',
 
