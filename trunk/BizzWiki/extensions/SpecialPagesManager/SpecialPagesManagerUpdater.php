@@ -189,6 +189,12 @@ END
 	{
 		// scan through the directory and fetch all filenames
 		$d = @dir( self::getPath() );
+		
+		// some version of PHP seem to return NULL object
+		// if there are no entries
+		if (!is_object( $d ))
+			return null;
+			
 		while (false !== ($entry = $d->read() ) )
 		{
 			if (($entry=='.') || ($entry=='..'))
