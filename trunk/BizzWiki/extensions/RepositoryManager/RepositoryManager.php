@@ -88,6 +88,10 @@ class RepositoryManager extends NamespaceManager
 		// Initialize variables.
 		self::$thisDir = dirname(__FILE__);
 		
+		// Give a chance to other extensions to
+		// register 'repository classes'
+		wfRunHooks( 'RegisterRepository', array( ) );
+		
 		parent::__construct( $title );
 	}
 	/**

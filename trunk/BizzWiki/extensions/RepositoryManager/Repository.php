@@ -22,14 +22,8 @@ class RepositoryClasses
 	static $list = array();	
 }
 
-// Import the Repository Classes list.
-require('Repositories/RepositoryClasses.php');
-
 abstract class Repository
 {
-	// relative to the installation i.e. $IP
-	const repoClassesDir = '/Repositories';
-	
 	var $project;
 	var $directory;
 	var $baseURI;
@@ -56,18 +50,13 @@ abstract class Repository
 	 */
 	public static function newFromClass( &$name, &$repo, &$project, &$dir )
 	{
-		// is the class already loaded??
-		if ( class_exists( $name ) )
-			return true;
-
-		$filename = __FILE__.self::repoClassesDir.'/'.$name.'.php';
-		
-		// silently try to load the class describing the repository
-		@require( $filename );
-		
-		// check if we have succeeded (!)
 		if ( class_exists( $name ) )
 			return new $name( $project, $dir );
+
+		// Try autoloading the class
+		$obj = new @$name( $project, $dir );
+		if (is_object( $obj ))
+			return $obj;
 			
 		return null;
 	}

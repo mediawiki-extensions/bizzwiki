@@ -78,6 +78,8 @@ $wgExtensionCredits['other'][] = array(
 
 NamespaceManagers::register( NS_REPO, 'RepositoryManager', dirname(__FILE__).'/RepositoryManager.php' );
 require('RepositoryManager.i18n.php');
+#require('/Repositories/GoogleCodeRepo.php');
+$wgAutoloadClasses['GoogleCodeRepo']= dirname(__FILE__).'/Repositories/GoogleCodeRepo.php';
 
 }// end startup checks.
 // help the sysop.
