@@ -43,6 +43,15 @@ This extension provides 'looping' functionality (e.g. 'foreach') for iterating t
 ** The global array variable will be referenced (as a whole)
 * <nowiki>{{#foreachx:class name|static property|pattern}}</nowiki>
 ** The static property of class name will be referenced (as a whole)
+=== Simple Array with Conditional ===
+*  <nowiki>{{#foreachc: X | Y |pattern|match value|match value replacement}}</nowiki> where {X:Y} can be:
+** { Global Object Name: Property }
+** { Global Object Name: Method }
+** { Global Array Variable: Key }
+** { Class Name: Static Property }
+'match value' is represented by $match$ in the pattern field. When the 'value' of the current array entry
+matches the 'match' variable provided, then $match$ is replaced with 'match value'.
+
 === Array of Arrays ===
 * <nowiki>{{#foreachy:global object name|property|pattern}}</nowiki>
 ** The global object's property will be retrieved; the property should be an 'array'
@@ -72,6 +81,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == History ==
 * Added 'CLASS NAME::STATIC PROPERTY' support
 * Added 'addExemptNamespaces' function
+* Added '#foreachc' parser function
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/
@@ -136,6 +146,34 @@ class ForeachFunction
 		foreach( $a as $key => $value )
 		{
 			$result .= self::replaceVars( $pattern,  $key, $value, $index );
+			$index++;
+		}
+		return $result;
+	}
+	/**
+		Works on 'array' objects only.
+	 */
+	public function mg_foreachc( &$parser, &$X, &$Y, &$pattern, &$matchValue, &$matchValueReplacement )
+	{
+		if ( !$this->isAllowed( $parser->mTitle ) ) 
+			return "<b>ForeachFunctions:</b> ".wfMsg('badaccess');
+		
+		$a = self::getArray( $X, $Y );
+		
+		if (empty( $a )) return;
+		if (!is_array( $a ))
+			$a = array( $a );
+		
+		$result = '';
+		$index = 0;
+		foreach( $a as $key => $value )
+		{
+			if ( $value == $matchValue )
+				$match = $matchValueReplacement;
+			else
+				$match = null;
+				
+			$result .= self::replaceVars( $pattern,  $key, $value, $index, $match );
 			$index++;
 		}
 		return $result;
@@ -253,14 +291,15 @@ class ForeachFunction
 		
 		return self::typeUnknown;
 	}
-	public static function replaceVars( &$pattern, &$key, &$value, &$index )
+	public static function replaceVars( &$pattern, &$key, &$value, &$index, &$match = null )
 	{
 		// find $key$ , $value$, $index$ variables in the pattern
 		$r  = @str_replace( '$key$',   $key, $pattern );			
 		$r2 = @str_replace( '$value$', $value, $r );
-		$r3 = @str_replace( '$index$', $index, $r2 );		
-		
-		return $r3;
+		$r3 = @str_replace( '$index$', $index, $r2 );
+		$r4 = @str_replace( '$match$', $match, $r3 );			
+	
+		return $r4;
 	}
 
 	private function isAllowed( &$title )

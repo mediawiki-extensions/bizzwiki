@@ -310,7 +310,7 @@ function bwKeepYourHandsToYourself()
 
 	// Page Level Restrictions
 	// %%%%%%%%%%%%%%%%%%%%%%%
-require('extensions/PageRestrictions/PageRestrictions.php');
+require( $bwExtPath.'/PageRestrictions/PageRestrictions.php');
 
 // For testing QueryPage.php functionality
 // as in 'SpecialPopularpages.php'.
@@ -487,7 +487,7 @@ $wgEnableUploads     = true;
 #$wgFileExtensions[]  = "zip";
 $wgFileExtensions[]  = "png";
 
-// Updater extension (ongoing)
+// Updater extension (experimental)
 #require('extensions/Updater/Updater.php');
 
 
@@ -542,9 +542,7 @@ if (defined('BIZZWIKIDEMO'))
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_USER_TALK,"~",			"browse")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_SPECIAL,	"Log/~",		"browse")] = true;
 
- 
-
-	$bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
+ 	$bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 									NS_PROJECT, NS_PROJECT_TALK,
 									NS_TEMPLATE,NS_TEMPLATE_TALK,
 									NS_CATEGORY, NS_CATEGORY_TALK,

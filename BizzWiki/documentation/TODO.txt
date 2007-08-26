@@ -124,3 +124,8 @@ Is there a way to give only access to logged in users to download media files?
 
 == Check User ==
 * Incorporate CheckUser extension
+
+== Deprecation ==
+* Updater
+* SimpleReplicator
+* 

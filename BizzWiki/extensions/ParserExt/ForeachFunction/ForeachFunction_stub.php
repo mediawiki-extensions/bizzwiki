@@ -47,7 +47,7 @@ StubManager::createStub(	'ForeachFunction',
 							null,
 							false, // no need for logging support
 							null,	// tags
-							array( 'foreachx','foreachy','forx' ),  //of parser function magic words,
+							array( 'foreachx','foreachy','forx', 'foreachc' ),  //of parser function magic words,
 							null
 						 );
 //</source>
