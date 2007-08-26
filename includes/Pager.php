@@ -15,8 +15,11 @@
 	2) Adjusted for queries where 'page_namespace' is not included. 
 	   Now support queries in the 'user' table.
 	3) Adjusted to support the 'NS_IMAGE' and 'NS_CATEGORY' namespaces betters
-	
+	4) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_PAGER', '$Id$' );
+
+
 /**
  * Basic pager interface.
  * @addtogroup Pager

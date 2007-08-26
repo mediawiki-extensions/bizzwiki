@@ -11,7 +11,10 @@
 	HISTORY:
 	========
 	1) Added namespace level 'search' right.
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SEARCHENGINE', '$Id$' );
+
 /**
  * Contain a class for special pages
  * @addtogroup Search

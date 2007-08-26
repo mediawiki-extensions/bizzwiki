@@ -11,7 +11,9 @@
 	HISTORY:
 	========
 	1) Added check for 'browse' right on a per namespace basis. ( patch in 'namespaceSelector' function ) 
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_XML', '$Id$' );
 
 /**
  * Module of static functions for generating XML

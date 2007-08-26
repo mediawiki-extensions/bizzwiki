@@ -11,7 +11,10 @@
 	HISTORY:
 	========
 	1) Namespace level permission policing.
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALRANDOMPAGE', '$Id$' );
+
 /**
  * Special page to direct the user to a random page
  *

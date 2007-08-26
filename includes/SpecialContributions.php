@@ -11,8 +11,10 @@
 	History:
 	========
 	1) Fixed 'rollback' right handling
-
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALCONTRIBUTIONS', '$Id$' );
+
 
 /**
  * Special:Contributions, show user contributions in a paged list

@@ -11,8 +11,9 @@
 	HISTORY:
 	========
 	1) Added namespace level 'patrol' right management. 
-
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALNEWPAGES', '$Id$' );
 
 /**
  *

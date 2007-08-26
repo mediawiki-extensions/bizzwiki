@@ -13,7 +13,9 @@
 	1) Fixed searchable namespace listing
 	2) Fixed watchlist related toggles
 	3) Fixed searchable namespace preference saving
+	4) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALPREFERENCES', '$Id$' );
 
 /**
  * Hold things related to displaying and saving user preferences.

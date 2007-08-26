@@ -10,9 +10,11 @@
 	
 	HISTORY:
 	========
-	- Added namespace level rights management
-	
+	1) Added namespace level rights management
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALMOVEPAGE', '$Id$' );
+
 /**
  *
  * @addtogroup SpecialPage

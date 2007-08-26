@@ -13,8 +13,9 @@
 	========
 	1) disabled save article in parser cache upon article creation/update
 	2) Modified 'doDeleteArticle' so that it does not delete RecentChanges entries
-
+	3) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_ARTICLE' , '$Id$' );
 
 /**
  * File for articles

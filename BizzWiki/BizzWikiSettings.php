@@ -18,6 +18,50 @@ $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
 
+/**
+	DETECTS ONE SORT OF INSTALLATION PROBLEM:
+	when the 'includes' directory of the BIZZWIKI package
+	isn't copied in the root MediaWiki installation.
+	
+	NOTE: you can get rid of this section once the installation
+	is working properly; this will speed-up your BizzWiki.
+*/
+// REMOVE FROM HERE {{
+$bwPatchedFiles = array(
+'BIZZWIKI_ARTICLE',
+'BIZZWIKI_CHANGESLIST',
+'BIZZWIKI_JOBQUEUE',
+'BIZZWIKI_PAGER',
+'BIZZWIKI_QUERYPAGE',
+'BIZZWIKI_SEARCHENGINE',
+'BIZZWIKI_SPECIALALLPAGES',
+'BIZZWIKI_SPECIALCONTRIBUTIONS',
+'BIZZWIKI_SPECIALLOG',
+'BIZZWIKI_SPECIALMOVEPAGE',
+'BIZZWIKI_SPECIALNEWPAGES',
+'BIZZWIKI_SPECIALPREFERENCES',
+'BIZZWIKI_SPECIALRANDOM',
+'BIZZWIKI_SPECIALRECENTCHANGES',
+'BIZZWIKI_SPECIALRECENTCHANGESLINKED',
+'BIZZWIKI_SPECIALSTATISTICS',
+'BIZZWIKI_SPECIALUNDELETE',
+'BIZZWIKI_SPECIALUPLOAD',
+'BIZZWIKI_USER',
+'BIZZWIKI_XML',
+);
+
+// Do one simple check to see if the patched files have been copied
+require_once( $IP.'/includes/Article.php' );
+if ( !defined( 'BIZZWIKI_ARTICLE' ) )
+{
+	echo "<b>BizzWiki</b>: missing at least one patched file from the 'includes' directory. <br>\n".
+	"Was the 'includes' directory from the BizzWiki archive copied in the root MediaWiki installation?<br/>\n";
+	die();
+}
+// }} TO HERE once the installation is tested.
+
+
+
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');

@@ -14,8 +14,10 @@
 	2) Added namespace:page name level policy enforcement for log entries.
 	3) Fixed 'delete' namespace policy enforcement
 	4) Fixed 'protect' namespace policy enforcement
-	
+	5) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALLOG', '$Id$' );
+
 
 # Copyright (C) 2004 Brion Vibber <brion@pobox.com>
 # http://www.mediawiki.org/

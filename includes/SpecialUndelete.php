@@ -12,8 +12,9 @@
 	========
 	1) Added namespace level rights management
 	2) Added namespace independant 'undelete' right
-	
+	3) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALUNDELETE', '$Id$' );
 
 /**
  * Special page allowing users with the appropriate permissions to view

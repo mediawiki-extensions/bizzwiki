@@ -12,7 +12,10 @@
 	HISTORY:
 	========
 	1) Namespace level permission policing.
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALUPLOAD', '$Id$' );
+
 /**
  *
  * @addtogroup SpecialPage
