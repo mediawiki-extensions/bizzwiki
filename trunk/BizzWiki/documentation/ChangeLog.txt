@@ -253,4 +253,5 @@ $Id$
 * Enhancements to [[Extension:SecureProperties]]
 * Added additional check in SpecialPageManager to bullet proof against more PHP versions
 * BizzWikiSettings.php: some cleanup and normalization
-*  
+* Added '#foreachc' parser function to [[Extension:ForeachFunction]]
+ 
