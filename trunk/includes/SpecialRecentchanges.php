@@ -11,8 +11,9 @@
 	HISTORY:
 	========
 	1) Namespace:Title level policy enforcement.
-	
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALRECENTCHANGES', '$Id$' );
 
 /**
  *

@@ -12,8 +12,9 @@
 	HISTORY:
 	========
 	1) Added namespace level 'browse' right checking. 
-
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_SPECIALALLPAGES', '$Id$' );
 
 /**
  * @addtogroup SpecialPage

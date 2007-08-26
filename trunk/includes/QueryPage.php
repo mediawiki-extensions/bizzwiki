@@ -12,8 +12,10 @@
 	HISTORY:
 	========
 	1) Added namespace level permission enforcement.
-	
+	2) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_QUERYPAGE', '$Id$' );
+
 
 /**
  * Contain a class for special pages

@@ -15,8 +15,9 @@
 	   (see Bugzilla #7302)
 	2) Removed (1) in place of MW1.11 'Job::factory' method. I have adapted it
 	   to work on MW1.10 as usual but also to accept custom jobs.
-
+	3) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_JOBQUEUE', '$Id$' );
 
 if ( !defined( 'MEDIAWIKI' ) ) {
 	die( "This file is part of MediaWiki, it is not a valid entry point\n" );

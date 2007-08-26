@@ -14,8 +14,9 @@
 	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
 	2) Modified 'isAllowed' method.
 	3) Added 'UserSettingsChanged' hook
-	
+	4) Added 'define' for easying installation procedure
 */
+define( 'BIZZWIKI_USER', '$Id$' );
 
 /**
  * See user.txt

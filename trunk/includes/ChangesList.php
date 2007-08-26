@@ -11,8 +11,10 @@
 	HISTORY:
 	========
 	1) added namespace level 'patrol' right checking.
+	2) Added 'define' for easying installation procedure	
 	
 */
+define( 'BIZZWIKI_CHANGESLIST' , '$Id$' );
 
 /**
  * @todo document
