@@ -13,7 +13,7 @@
 
 ****************************************************************************/
 // Define the base of BizzWiki
-define('BIZZWIKI', '1_10_12alpha');
+define( 'BIZZWIKI', '1_10_12alpha');
 $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
@@ -33,7 +33,7 @@ $wgCachePages        = true;
 // Disable raw html
 // (There is the extension 'SecureHTML' to better cover this)
 $wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension 
-					// to achieve the same goal
+					// to achieve the same goal. It is included by default in BizzWiki.
 
 // Capital Letter Links
 // are annoying for NS_FILESYSTEM & NS_DIRECTORY namespaces
@@ -113,6 +113,8 @@ require( $bwExtPath.'/RawRight/RawRight_stub.php');
 require( $bwExtPath.'/ViewsourceRight/ViewsourceRight_stub.php');
 require( $bwExtPath.'/WatchRight/WatchRight_stub.php');
 
+// Non-BizzWiki native extensions are placed
+// in the same extensions directory as native ones.
 require('extensions/MakeSysop/SpecialMakesysop.php');
 require('extensions/DeSysop/SpecialDesysop.php');
 
@@ -129,54 +131,56 @@ unset( $wgGroupPermissions );
 #$wgGroupPermissions['GROUP XYZ' ][hnpClass::buildPermissionKey( "NAMESPACE","PAGE","ACTION" )]	= true;	
 # MORE INFORMATION IS AVAILABLE AT [http://www.mediawiki.org/wiki/Extension:Hierarchical_Namespace_Permissions/Code]
 
-$bwNamespaceIndependantRights =  array( 'createaccount',
-										'ipblock-exempt',
-										'hideuser',
-										'userrights',		
-										'siteadmin',
-										'import',
-										'importupload',										
-										'deletedhistory',
-										'deleterevision',	// TODO
-										'hiderevision',		// TODO
-										'block',
-										'oversight',
-										'bot',             	// TODO
-										'proxyunbannable', 	// TODO
-										'trackback',		// TODO
-										'unwatchedpages',	// TODO
-										'readlog',  		// BizzWiki specific
-										'siteupdate',		// BizzWiki specific
-										'undelete',			// BizzWiki specific
-										'userdetails',		// BizzWiki specific			
-																				
-										'skipcaptcha',		// ReCAPTCHA specific
-										'makesysop',		// MakeSysop extension specific
-										'desysop',			// DeSysop extension specific	
-									);
+$bwNamespaceIndependantRights =  array( 
+'createaccount',
+'ipblock-exempt',
+'hideuser',
+'userrights',		
+'siteadmin',
+'import',
+'importupload',										
+'deletedhistory',
+'deleterevision',	// TODO
+'hiderevision',		// TODO
+'block',
+'oversight',
+'bot',             	// TODO
+'proxyunbannable', 	// TODO
+'trackback',		// TODO
+'unwatchedpages',	// TODO
+'readlog',  		// BizzWiki specific
+'siteupdate',		// BizzWiki specific
+'undelete',			// BizzWiki specific
+'userdetails',		// BizzWiki specific			
+										
+'skipcaptcha',		// ReCAPTCHA specific
+'makesysop',		// MakeSysop extension specific
+'desysop',			// DeSysop extension specific	
+);
 
 
-$bwNamespaceDependantRights =  array(	'read', 'edit', 'minoredit', 'create', 'delete', 'move',								
-										'nominornewtalk', 
-										"createpage", "createtalk",
-										
-										"rollback",			// TODO
-										'protect',
-										'patrol', "autopatrol",
-										'purge',			// TODO
-										'upload', 'reupload', 'reupload-shared', // for now, those rights
-										'upload_by_url',						// are only relevant to NS_IMAGE
-										
-										'browse',     // BizzWiki specific
-										'search',     // BizzWiki specific
-										'raw',        // BizzWiki specific -- RawRight extension
-										'viewsource', // BizzWiki specific -- ViewsourceRight extension
-										'watch',	  // BizzWiki specific -- WatchRight extension
-										'unwatch',	  // BizzWiki specific -- WatchRight extension
-										'reload',	  // BizzWiki specific -- FileManager extension
-										'coding',		// BizzWiki specific -- SecurePHP extension
-									);
-									
+$bwNamespaceDependantRights =  array(	
+'read', 'edit', 'minoredit', 'create', 'delete', 'move',								
+'nominornewtalk', 
+"createpage", "createtalk",
+
+"rollback",								// TODO
+'protect',
+'patrol', "autopatrol",
+'purge',								// TODO
+'upload', 'reupload', 'reupload-shared', // for now, those rights
+'upload_by_url',						// are only relevant to NS_IMAGE
+
+'browse',		// BizzWiki specific
+'search',		// BizzWiki specific
+'raw',			// BizzWiki specific -- RawRight extension
+'viewsource',	// BizzWiki specific -- ViewsourceRight extension
+'watch',		// BizzWiki specific -- WatchRight extension
+'unwatch',		// BizzWiki specific -- WatchRight extension
+'reload',		// BizzWiki specific -- FileManager extension
+'coding',		// BizzWiki specific -- SecurePHP extension
+);
+								
 // Critical permission system initialization -- DO NOT TOUCH
 ## {{
 hnpClass::singleton()->addNamespaceIndependantRights( $bwNamespaceIndependantRights );
@@ -283,13 +287,13 @@ $bwUserNamespaces = array_merge( $bwAnonymousNamespaces, $bwUserNamespaces);
 	// Additional rights available to 'User'
 	// #####################################
 foreach( $bwUserNamespaces as $index => $bwx )
-	{
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","watch")] = true;		
-		$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","unwatch")] = true;				
-	}
+{
+	$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","read")] = true;
+	$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","browse")] = true;
+	$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","search")] = true;
+	$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","watch")] = true;		
+	$wgGroupPermissions['user' ][hnpClass::buildPermissionKey($bwx,"~","unwatch")] = true;				
+}
 
 	// Equivalent functionality to 'KeepYourHandsToYourself' extension
 	// ###############################################################
@@ -342,7 +346,7 @@ require( $bwExtPath.'/FileManager/FileManager_stub.php');
 require( $bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring_stub.php' );
 
 // New User Logging
-require('extensions/NewUserLog/Newuserlog.php');
+require( $bwExtPath.'/NewUserLog/Newuserlog.php');
 
 // Show Redirect Page Text extension
 require( $bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText_stub.php' );
@@ -351,13 +355,13 @@ require( $bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText_stub.php' );
 require( $bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager_stub.php' );
 
 // Sidebar extended
-require('extensions/SidebarEx/SidebarEx.php');
+require( $bwExtPath.'/SidebarEx/SidebarEx.php');
 
 // Generic Syntax Highlighter
 require( $bwExtPath.'/GeSHi/geshi_stub.php' );
 
 // Enhanced Special Pages
-require('extensions/SpecialPagesManager/SpecialPagesManager.php');
+require( $bwExtPath.'/SpecialPagesManager/SpecialPagesManager.php');
  // Use the following to customize the source path of the files.
  // TODO
 
@@ -378,13 +382,13 @@ require( $bwExtPath.'/AutoLanguage/AutoLanguage_stub.php' );
 	// Parser Extensions
 	// %%%%%%%%%%%%%%%%%
 // http://meta.wikimedia.org/wiki/ParserFunctions
-require( 'extensions/ParserExt/ParserFunctions/ParserFunctions.php' );
+require( $bwExtPath.'/ParserExt/ParserFunctions/ParserFunctions.php' );
 
 // http://www.mediawiki.org/wiki/Extension:StringFunctions
-require( 'extensions/ParserExt/StringFunctions/StringFunctions.php' );
+require( $bwExtPath.'/ParserExt/StringFunctions/StringFunctions.php' );
 require( $bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions_stub.php');
 
-require('extensions/ParserExt/NamespaceFunctions/NamespaceFunctions.php'); // NOT STUBBED
+require( $bwExtPath.'/ParserExt/NamespaceFunctions/NamespaceFunctions.php'); // NOT STUBBED
 
 	// Stubs
 	//  Used for rare events handling.
@@ -413,18 +417,18 @@ require( $bwExtPath.'/ParserExt/SkinTools/SkinTools_stub.php' );
 require( $bwExtPath.'/ParserExt/UserTools/UserTools_stub.php' );
 require( $bwExtPath.'/ParserExt/UserTools/UserTools_stub.php' );
 
-require('extensions/VirtualPage/VirtualPage_stub.php');
-require('extensions/AutoRedirect/AutoRedirect_stub.php');
-require('extensions/DirectoryManager/DirectoryManager_stub.php');
+require( $bwExtPath.'/VirtualPage/VirtualPage_stub.php');
+require( $bwExtPath.'/AutoRedirect/AutoRedirect_stub.php');
+require( $bwExtPath.'/DirectoryManager/DirectoryManager_stub.php');
 
-require('extensions/SecurePHP/SecurePHP_stub.php');
+require( $bwExtPath.'/SecurePHP/SecurePHP_stub.php');
 
-require('extensions/GoogleCode/GoogleCode_stub.php');
+require( $bwExtPath.'/GoogleCode/GoogleCode_stub.php');
 
-require('extensions/PageServer/PageServer_stub.php');
-require('extensions/NamespaceManager/NamespaceManager.php');
-require('extensions/ExtensionManager/ExtensionManager_stub.php');
-require('extensions/RepositoryManager/RepositoryManager_stub.php');
+require( $bwExtPath.'/PageServer/PageServer_stub.php');
+require( $bwExtPath.'/NamespaceManager/NamespaceManager.php');
+require( $bwExtPath.'/ExtensionManager/ExtensionManager_stub.php');
+require( $bwExtPath.'/RepositoryManager/RepositoryManager_stub.php');
 
 #require('extensions/ExtensionManager/ExtensionManager_stub.php');
 
@@ -503,10 +507,10 @@ if (!defined('wfScript'))
   // %%%%%%%%%%%%%%%%%%%%%%%
 if (defined('BIZZWIKIDEMO'))
 {
-	require('extensions/ReCaptcha/ReCaptcha.php');
+	require( $bwExtPath.'/ReCaptcha/ReCaptcha.php');
 
 	// EXPERIMENTAL!!
-	require($bwExtPath.'/rsync/rsync_stub.php');	
+	require( $bwExtPath.'/rsync/rsync_stub.php');	
 	
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"LocalSettings.php","!read")] = true;  
 	$wgGroupPermissions['*' ][hnpClass::buildPermissionKey(NS_FILESYSTEM,"AdminSettings.php","!read")] = true;  

@@ -116,6 +116,8 @@ Is there a way to give only access to logged in users to download media files?
 == Rights Management ==
 === Granting ===
 * Only when user X has himself right R that can he delegate/remove right R to user Y (?)
+* Craft a more user friendly method to HNP for managing rights
+** E.g.: hnpclass::setRight(...);
 
 == Rename User ==
 * Incorporate RenameUser extension
