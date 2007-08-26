@@ -148,10 +148,7 @@ class ParserPhase2
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
-	#	if ($this->disable)
-	#		return true;
-
-		$m = $this->getList3( $text );
+		$m = $this->getList( $text, self::pattern3 );		
 		if ( empty( $m ) ) return true; // nothing to do
 
 		$this->executeList( $m, $text );
@@ -169,10 +166,7 @@ class ParserPhase2
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
-	#	if ($this->disable)
-	#		return true;
-			
-		$m = $this->getList2( $text );
+		$m = $this->getList( $text, self::pattern2 );		
 		if ( empty( $m ) ) return true; // nothing to do
 
 		$this->executeList( $m, $text );
@@ -186,16 +180,17 @@ class ParserPhase2
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
-	#	if ($this->disable)
-	#		return true;
-		
 		// PHP sometimes messes up in preg_match_all returning an empty array
 		// we need to guard against this or else client side caching always get thrashed!
-		$m = $this->getList1( $text );
-		if ( empty( $m ) ) return true; // nothing to do
+		$m1a = $this->getList( $text, self::pattern1a );
+		$m1b = $this->getList( $text, self::pattern1b );		
+		if ( empty( $m1a ) && empty( $m1b ) ) return true; // nothing to do
 
-		$found = $this->executeList( $m, $text );
-
+		if ( !empty( $m1a ))
+			$found = $this->executeList( $m1a, $text );
+		else
+			$found = $this->executeList( $m1b, $text );		
+			
 		// we found some dynamic variables, disable client side caching.
 		// parser caching is not affected.
 		if ( $found )
@@ -292,47 +287,14 @@ class ParserPhase2
 
 		return $found;
 	}
-
-	private function getList1 ( &$text )
+	private function getList ( &$text, $pattern )
 	{
-		// find the (($...$)) matches
-		$r1 = preg_match_all(self::pattern1a, $text, $m1 );
+		$r = preg_match_all( $pattern, $text, $m );
 		
 		// if we found some, return.
-		if ( ($r1 !== false) && ( $r1!==0 ) )
-			return $m1;
-		
-		// find the ((...)) matches	
-		$r2 = preg_match_all(self::pattern1b, $text, $m2 );	
-		
-		return $m2;
-	}
-	/**
-		Parser After Tidy related.
-	 */
-	private function getList2 ( &$text )
-	{
-		// find the ((%...%)) matches
-		$r = preg_match_all(self::pattern2, $text, $m );
-		
-		// if we found some, return.
-		if ( ($r !== false) && ( $r!==0 ) )
+		if ( ($r !== false) && ( $r !== 0 ) )
 			return $m;
-		
-		return null;
-	}
-	/**
-		Parser Before Strip related.
-	 */
-	private function getList3 ( &$text )
-	{
-		// find the ((%...%)) matches
-		$r = preg_match_all(self::pattern3, $text, $m );
-		
-		// if we found some, return.
-		if ( ($r !== false) && ( $r!==0 ) )
-			return $m;
-		
+			
 		return null;
 	}
 	/**
