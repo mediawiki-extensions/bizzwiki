@@ -37,6 +37,7 @@ Provides a means of adding page links to the 'sidebar' based on group membership
 * No patches to standard MW installation for MW version >= 1.10
 * Group name prioritization
 * Per-User sidebars using 'username/Sidebar' page
+* Per-Namespace sidebars using 'MediaWiki:Sidebar/Ns/...namespace name here...'
  
 == DEPENDANCY ==
 * ExtensionClass extension (>v1.5)
@@ -70,12 +71,17 @@ $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
     $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
  
     Corresponding sidebar pages:
-       MediaWiki:Sidebar/somegroup
-       MediaWiki:Sidebar/sysop
-       MediaWiki:Sidebar/user
-	   MediaWiki:Sidebar/*
+		MediaWiki:Sidebar/somegroup
+		MediaWiki:Sidebar/sysop
+		MediaWiki:Sidebar/user
+		MediaWiki:Sidebar/*
  
- 4) Include the required scripts: 
+ 4) Define any 'per-namespace' sidebars through:
+		MediaWiki:Sidebar/Ns/Main
+		MediaWiki:Sidebar/Ns/Category
+		...do your customization...
+ 
+ 5) Include the required scripts: 
   require("extensions/ExtensionClass.php");
   require("extensions/SidebarEx/SidebarEx.php");
 </pre>
@@ -86,6 +92,7 @@ Edit the page 'username/Sidebar'.
 * Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
 * Moved singleton invocation to address some PHP warning
 * Added 'per-user' sidebars
+* Added 'per-namespace' sidebars
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -142,15 +149,44 @@ class SidebarExClass extends ExtensionClass
 	{
 		$gbar = $this->doGroupSidebar();
 		$ubar = $this->doUserSidebar();
+		$nbar = $this->doNsSidebar();		
 		
 		// get current sidebar text
 		$cbar = $tpl->data['sidebar'];
 
 		// add our own here
-		$tpl->set( 'sidebar', array_merge($cbar, $gbar, $ubar) );		
+		$tpl->set( 'sidebar', array_merge($cbar, $gbar, $nbar, $ubar) );		
 		
 		return true;
 	}
+	/**
+		Fetches the per-namespace sidebar according to 'MediaWiki:Sidebar/Ns/$ns'
+	 */
+	private function doNsSidebar()
+	{
+		global $wgTitle;
+		
+		// paranoia.
+		if (!($wgTitle instanceof Title))
+			return;
+			
+		$ns = $wgTitle->getNamespace();
+		$nsname = Namespace::getCanonicalName( $ns );
+
+		$title = Title::makeTitle( $this->Ns, $this->Page.'/Ns/'.$nsname );
+		$a     = new Article( $title );
+		
+		if (($a==null) || ($a->getID()==0))		
+			return array();
+			
+		$text = $a->getContent();
+		$bar  = $this->processSidebarText( $text );
+
+		return $bar;		
+	}
+	/**
+		Fetches the per-user sidebar according to 'User:username/Sidebar'
+	 */
 	private function doUserSidebar()
 	{
 		global $wgUser;
