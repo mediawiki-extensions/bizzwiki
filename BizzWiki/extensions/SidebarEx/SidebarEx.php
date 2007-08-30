@@ -38,7 +38,11 @@ Provides a means of adding page links to the 'sidebar' based on group membership
 * Group name prioritization
 * Per-User sidebars using 'username/Sidebar' page
 * Per-Namespace sidebars using 'MediaWiki:Sidebar/Ns/...namespace name here...'
- 
+
+== Usage Note ==
+This extension replaces the standard sidebar defined at [[MediaWiki:Sidebar]]. The new default sidebar
+is located at [[MediaWiki:Sidebar/*]].
+
 == DEPENDANCY ==
 * ExtensionClass extension (>v1.5)
 ** Tested Compatibility:  MW 1.10
@@ -76,17 +80,18 @@ $bwSidebarSearch = array ('somegroup', 'sysop', 'user', '*' );
 		MediaWiki:Sidebar/user
 		MediaWiki:Sidebar/*
  
- 4) Define any 'per-namespace' sidebars through:
-		MediaWiki:Sidebar/Ns/Main
-		MediaWiki:Sidebar/Ns/Category
-		...do your customization...
- 
- 5) Include the required scripts: 
+ 4) Include the required scripts: 
   require("extensions/ExtensionClass.php");
   require("extensions/SidebarEx/SidebarEx.php");
 </pre>
 === Per-User sidebars ===
-Edit the page 'username/Sidebar'.
+Edit the page 'User:username/Sidebar'.
+
+=== Per-Namespace sidebars ===
+Examples:
+* MediaWiki:Sidebar/Ns/Main
+* MediaWiki:Sidebar/Ns/Category
+* ...
 
 == History ==
 * Corrected bug with article validity checking (e.g. affects BizzWiki fresh installs)
