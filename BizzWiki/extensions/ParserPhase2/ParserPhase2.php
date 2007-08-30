@@ -121,6 +121,8 @@ class ParserPhase2
 	const thisName = 'ParserPhase2';
 	const thisType = 'other';
 	
+	const depthMax = 15;
+	
 	// (($ ... $))
 	const pattern1a = '/\(\(\$(.*)\$\)\)/siU';
 	// ((  ...  ))
@@ -129,6 +131,26 @@ class ParserPhase2
 	const pattern2  = '/\(\(\%(.*)\%\)\)/siU';
 	//  ((@ ... @))
 	const pattern3  = '/\(\(\@(.*)\@\)\)/siU';
+	
+	// new patterns
+	static $newPatterns = array(
+	'BeforeOutput' => array(
+				'(($' => '\xfe',
+				'$))' => '\xff',
+				'((' => '\xfe',
+				'))' => '\xff',
+				),
+	'AfterTidy' => array(
+				'((%' => '\xfe',
+				'%))' => '\xff',			
+				),
+	'BeforeStrip' => array(
+				'((@' => '\xfe',
+				'((@' => '\xff',			
+				)
+	);
+	
+	static $masterPattern = '/\xfe(((?>[^\xfe\xff]+)|(?R))*)\xff/si';
 	
 	// variables
 	#var $disable;
@@ -230,63 +252,73 @@ class ParserPhase2
 			if ('enable'==strtolower($action))
 			{ $rl[$index]=''; $found = true; continue; }
 
-			global $wgParser, $wgTitle, $wgContLang;
-
-			// check if the 'mTitle' property is set
-			if (!is_object($wgParser->mTitle))
-				$wgParser->mTitle = $wgTitle;
-
-			$varname = $wgContLang->lc($action);
-			$idl = MagicWord::getVariableIDs();
-							
-			// First, look for $action in 'parser variables'
-			if (in_array( $varname, $idl ))
-			{
-				$rl[$index] = $this->getValue( $varname );
-				$found = true;
-				continue;
-			}
-
-			// If not found, check for $action in 'parser functions.
-			$function = null;
-	
-			if ( isset( $wgParser->mFunctionSynonyms[1][$action] ) ) 
-				$function = $wgParser->mFunctionSynonyms[1][$action];
-			else 
-			{
-				# Case insensitive functions
-				$function = strtolower( $action );
-				if ( isset( $wgParser->mFunctionSynonyms[0][$action] ) ) 
-					$function = $wgParser->mFunctionSynonyms[0][$action];
-				else
-					$function = false;
-			}
-		
-			if ( $function ) 
+			$r = $this->getParserFunctionValue( $params, $action );
+			if ($r!==null)
 			{
 				$found = true;
-				
-				$funcArgs = array_map( 'trim', $params );
-				$funcArgs = array_merge( array( &$wgParser) , $funcArgs );
-				$result = call_user_func_array( $wgParser->mFunctionHooks[$function], $funcArgs );
-	
-				if ( is_array( $result ) ) 
-				{
-					if ( isset( $result[0] ) ) 
-						$rl[$index] = $result[0];
-					// Extract flags into the local scope
-					// This allows callers to set flags such as nowiki, noparse, found, etc.
-					// extract( $result );
-				} else 
-					$rl[ $index ] = $result;
+				$rl[$index] = $r;	
 			}
 
 		} // end foreach
-		#if (!$this->disable)
-			$this->replaceList( $text, $liste, $rl );
+
+		$this->replaceList( $text, $liste, $rl );
 
 		return $found;
 	}
+	/**
+	 */
+	private function getParserFunctionValue( &$params, &$var )
+	{
+		$value = null;
+		
+		global $wgParser, $wgTitle, $wgContLang;
+
+		// check if the 'mTitle' property is set
+		if (!is_object($wgParser->mTitle))
+			$wgParser->mTitle = $wgTitle;
+
+		$varname = $wgContLang->lc( $var );
+		$idl = MagicWord::getVariableIDs();
+						
+		// First, look for $action in 'parser variables'
+		if (in_array( $varname, $idl ))
+			return $this->getValue( $varname );
+
+		// If not found, check for $action in 'parser functions.
+		$function = null;
+
+		if ( isset( $wgParser->mFunctionSynonyms[1][$var] ) ) 
+			$function = $wgParser->mFunctionSynonyms[1][$var];
+		else 
+		{
+			# Case insensitive functions
+			$function = strtolower( $action );
+			if ( isset( $wgParser->mFunctionSynonyms[0][$var] ) ) 
+				$function = $wgParser->mFunctionSynonyms[0][$var];
+			else
+				$function = false;
+		}
+	
+		if ( $function ) 
+		{
+			$funcArgs = array_map( 'trim', $params );
+			$funcArgs = array_merge( array( &$wgParser) , $funcArgs );
+			$result = call_user_func_array( $wgParser->mFunctionHooks[$function], $funcArgs );
+
+			if ( is_array( $result ) ) 
+			{
+				if ( isset( $result[0] ) ) 
+					$value = $result[0];
+			} 
+			else 
+				$value = $result;
+		}
+
+		return $value;	
+	}
+	/**
+	
+	 */
 	private function getList ( &$text, $pattern )
 	{
 		$r = preg_match_all( $pattern, $text, $m );
@@ -296,6 +328,57 @@ class ParserPhase2
 			return $m;
 			
 		return null;
+	}
+	/**
+		This method prepares the target text for pattern matching.
+		It replaces the 'human readable' open/close delimiters
+		with more easily processable ones.
+	 */
+	private function prepareText( &$text, $phase )
+	{
+		$patterns = self::$newPatterns[ $phase ];
+
+		foreach( $patterns as $pattern => $replacement )
+		{
+			$pattern = '/'.preg_quote( $pattern ).'/';
+			$text = preg_replace( $pattern, $replacement, $text );
+		}
+	}
+	
+	/**
+	
+	 */
+	private function getListV2( &$o, $stack, $currentPattern, $depth = 0 )
+	{
+		//TODO: better error handling.
+		if ( $depth > self::depthMax )
+			return null;
+			
+		$depth++;
+		
+		if (is_string($o))
+		{
+			$r = preg_match_all( self::$masterPattern, $o, $m );
+			
+			// did we find a 'terminal' token?
+			// Accumulate those for faster replacing later on.
+			if ( ($r === false) || ( $r === 0 ) )
+			{
+				$stack[$depth][] = array( $currentPattern => $o );
+				return $o;	
+			}
+			// get rid of some junk
+			unset( $m[2] );
+		}
+		else
+			$m = $o;
+
+		// recurse.
+		if (!empty( $m[1] ))
+			foreach( $m[1] as $index => &$match )
+				$match = $this->getListV2( $match, $stack, $m[0][$index], $depth );
+		
+		return $m;
 	}
 	/**
 		Gets a value associated with a 'magic word'.
