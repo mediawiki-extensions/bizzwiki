@@ -629,13 +629,18 @@ static $hookList = array(
 
 	static function getRevisionData( &$id, &$date, $d = null )
 	{
+		if ( '$Id$' == $id )
+			return null;
+		
 		// e.g. $Id$
 		if ($d===null)
 			$data = explode( ' ', self::id );
 		else
 			$data = explode( ' ', $d );
-		$id   = $data[2];
-		$date = $data[3];
+		
+		$id   = @$data[2];
+		$date = @$data[3];
+		
 		return $id;
 	}
 	static function getRevisionId( $data=null )
