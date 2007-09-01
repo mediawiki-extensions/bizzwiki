@@ -18,6 +18,8 @@ $bwVersion = BIZZWIKI;
 $bwPath    = $IP.'/BizzWiki';
 $bwExtPath = $IP.'/BizzWiki/extensions';
 
+$bwTest    = ''; # test global variable
+
 /**
 	DETECTS ONE SORT OF INSTALLATION PROBLEM:
 	when the 'includes' directory of the BIZZWIKI package

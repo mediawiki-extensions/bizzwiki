@@ -32,7 +32,11 @@ Provides a clickable image link using an image stored in the Image namespace and
 == Features ==
 
 == Usage ==
-* <nowiki>{{#imagelink:New Clock.gif|Admin:Show Time|alternate text | width | height | border }}</nowiki>
+* <nowiki>{{#imagelink: image page name | page name |alternate text | width | height | border }}</nowiki>
+See [http://www.w3schools.com/tags/tag_img.asp W3Schools on IMG tag] for more details.
+
+Example:
+* <nowiki>{{#imagelink: New Clock.gif | Admin:Show Time | Current Time | 32 | 32 | 2 }}</nowiki>
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -52,6 +56,7 @@ Tested Compatibility: MW 1.8.2, 1.9.3, 1.10
 == History ==
 * Removed dependency on ExtensionClass
 * Added 'stubbing' capability though StubManager
+* Added non-existing link (i.e. red link) when image page does not exist
 
 == Code ==
 <!--</wikitext>--><source lang=php>*/
@@ -84,7 +89,7 @@ class ImageLink
 	 */
 	{
 		$image = Image::newFromName( $img );
-		if (!$image->exists()) return;
+		if (!$image->exists()) return '[[Image:'.$img.']]';
 		
 		if (empty($page)) return;
 			

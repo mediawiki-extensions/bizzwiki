@@ -204,6 +204,7 @@ class ParserPhase2
 	{
 		// PHP sometimes messes up in preg_match_all returning an empty array
 		// we need to guard against this or else client side caching always get thrashed!
+/*
 		$m1a = $this->getList( $text, self::pattern1a );
 		$m1b = $this->getList( $text, self::pattern1b );		
 		if ( empty( $m1a ) && empty( $m1b ) ) return true; // nothing to do
@@ -212,6 +213,9 @@ class ParserPhase2
 			$found = $this->executeList( $m1a, $text );
 		else
 			$found = $this->executeList( $m1b, $text );		
+*/
+		// V2
+		$this->executeV2( &$text, 'BeforeOutput', &$found );
 			
 		// we found some dynamic variables, disable client side caching.
 		// parser caching is not affected.
@@ -244,12 +248,12 @@ class ParserPhase2
 			$action = array_shift( $params );
 
 			// if we are asked to disable
-			if ('disable'==strtolower($action))
+			if ('disable' == strtolower($action))
 			{ $rl[$index]=''; $found = true; continue; }
 			#{ $this->disable = true; break; }
 
 			// if we are asked to enable
-			if ('enable'==strtolower($action))
+			if ('enable' == strtolower($action))
 			{ $rl[$index]=''; $found = true; continue; }
 
 			$r = $this->getParserFunctionValue( $params, $action );
@@ -344,18 +348,87 @@ class ParserPhase2
 			$text = preg_replace( $pattern, $replacement, $text );
 		}
 	}
+	/**
+	 */
+	private function executeV2( &$text, $phase, &$found )
+	{
+		// assume worst case.
+		$found = false;
+		
+		$this->prepareText( $text, $phase );
+		
+		// start with an empty stack.
+		$stack = array();
+		
+		// start processing at the top level
+		$liste = $this->getListV2( $text, $stack );
+		
+		if (empty( $stack ))
+			return;
+		
+		// corner case #1: getList returns just a string
+		// i.e. there is only one parser function call on this page.
+		var_dump( $stack );
+		
+		// we need the 'deepest' elements first.
+		krsort( $stack );
+		
+		// previous depth terminal tokens
+		$ptokens = array();
+		
+		foreach( $stack as $depth => &$e )
+		{
+			// do 'non-terminal tokens'
+			if (!empty( $e['non-terminal'] ))
+				foreach( $e['non-terminal'] as $index => &$pattern )
+				{
+					// there should be 'terminal' tokens from the previous round
+					// if we get here.
+					if (!empty( $ptokens ))	
+					{
+						foreach( $ptokens as $pattern2 => &$e )
+							$pattern = str_replace( $pattern2, $e, $pattern );
+
+						// we can't be left with 'non-terminal' tokens at this point.
+						// push down in the 'terminal' tokens list.
+						$e['terminal'][] = $pattern;
+					}
+				}
+
+			// prepare for next round
+			unset( $ptokens );
+			
+			// do 'terminal' tokens
+			if (!empty( $e['terminal'] ))	
+				foreach( $e['terminal'] as $pattern => &$f )
+					$ptokens[ $pattern ] = $this->getParserFunctionValueFromText( $f, $found );
+		}
+		
+	}
+	/**
+		E.g. #fnc|param1... 
+	 */
+	private function getParserFunctionValueFromText( &$text, &$found )
+	{
+		$params = explode('|', $text );
+		$action = array_shift( $params );
+
+		$r = $this->getParserFunctionValue( $params, $action );
+		if ($r !== null)
+			$found = true;
+	
+		return $r;	
+	}
 	
 	/**
 	
 	 */
-	private function getListV2( &$o, $stack, $currentPattern, $depth = 0 )
+	private function getListV2( &$o, &$stack, $currentPattern = null, $depth = 0 )
 	{
 		//TODO: better error handling.
 		if ( $depth > self::depthMax )
 			return null;
 			
-		$depth++;
-		
 		if (is_string($o))
 		{
 			$r = preg_match_all( self::$masterPattern, $o, $m );
@@ -364,7 +437,8 @@ class ParserPhase2
 			// Accumulate those for faster replacing later on.
 			if ( ($r === false) || ( $r === 0 ) )
 			{
-				$stack[$depth][] = array( $currentPattern => $o );
+				// add current to 'terminal' list.
+				$stack[$depth]['terminal'][] = array( $currentPattern => $o );
 				return $o;	
 			}
 			// get rid of some junk
@@ -373,11 +447,18 @@ class ParserPhase2
 		else
 			$m = $o;
 
+		$depth++;
+
 		// recurse.
 		if (!empty( $m[1] ))
 			foreach( $m[1] as $index => &$match )
+			{
 				$match = $this->getListV2( $match, $stack, $m[0][$index], $depth );
-		
+				
+				// add current to 'non-terminal' list.
+				if (!is_string( $match ))
+					$stack[$depth]['non-terminal'][] = $match;
+			}
 		return $m;
 	}
 	/**

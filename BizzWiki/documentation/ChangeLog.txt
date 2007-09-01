@@ -260,4 +260,6 @@ $Id$
 ** See if the patched file 'Article.php' is available
 * Simple re-factoring of 'ParserPhase2' extension
 * Added 'per-namespace' sidebars to 'SidebarEx' extension
-*
+* Fixed for warning in [[Extension:ExtensionClass]]
+* Small enhancement to [[Extension:ImageLink]]
+* 
