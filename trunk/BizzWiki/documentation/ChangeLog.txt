@@ -263,3 +263,4 @@ $Id$
 * Fixed for warning in [[Extension:ExtensionClass]]
 * Small enhancement to [[Extension:ImageLink]]
 * [[Extension:ParserPhase2]]: added nested (i.e. recursive) commands
+*
