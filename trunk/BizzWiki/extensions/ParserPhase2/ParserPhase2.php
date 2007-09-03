@@ -123,46 +123,27 @@ class ParserPhase2
 	
 	const depthMax = 15;
 	
-	// (($ ... $))
-	const pattern1a = '/\(\(\$(.*)\$\)\)/siU';
-	// ((  ...  ))
-	const pattern1b = '/\(\((.*)\)\)/siU';	// tracks more closely MW parser functions style
-	//  ((% ... %))
-	const pattern2  = '/\(\(\%(.*)\%\)\)/siU';
-	//  ((@ ... @))
-	const pattern3  = '/\(\(\@(.*)\@\)\)/siU';
-	
 	// new patterns
 	static $newPatterns = array(
 	'BeforeOutput' => array(
-				'(($' => '\xfe',
-				'$))' => '\xff',
-				'((' => '\xfe',
-				'))' => '\xff',
+				'(($' => "\xfe",
+				'$))' => "\xff",
+				'((' => "\xfe",
+				'))' => "\xff",
 				),
 	'AfterTidy' => array(
-				'((%' => '\xfe',
-				'%))' => '\xff',			
+				'((%' => "\xfe",
+				'%))' => "\xff",			
 				),
 	'BeforeStrip' => array(
-				'((@' => '\xfe',
-				'((@' => '\xff',			
+				'((@' => "\xfe",
+				'((@' => "\xff",			
 				)
 	);
 	
-	static $masterPattern = '/\xfe(((?>[^\xfe\xff]+)|(?R))*)\xff/si';
+	static $masterPattern = "/\xfe(((?>[^\xfe\xff]+)|(?R))*)\xff/si";
 	
-	// variables
-	#var $disable;
-	const disablePattern1a = '(($disable$))';
-	const disablePattern1b = '((disable))';	
-	const disablePattern2  = '((%disable%))';	
-	const disablePattern3  = '((@disable@))';
-	
-	function __construct( ) 
-	{
-		$this->disable = false;
-	}
+	function __construct( ) {}
 
 	/**
 		The parser functions enclosed in ((@ ... @)) are executed
@@ -170,11 +151,8 @@ class ParserPhase2
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
-		$m = $this->getList( $text, self::pattern3 );		
-		if ( empty( $m ) ) return true; // nothing to do
-
-		$this->executeList( $m, $text );
-
+		$this->execute( &$text, 'BeforeStrip', &$found );
+				
 		return true; // be nice with other extensions.
 	}
 
@@ -188,10 +166,7 @@ class ParserPhase2
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
-		$m = $this->getList( $text, self::pattern2 );		
-		if ( empty( $m ) ) return true; // nothing to do
-
-		$this->executeList( $m, $text );
+		$this->execute( &$text, 'AfterTidy', &$found );
 
 		return true; // be nice with other extensions.
 	}
@@ -202,20 +177,7 @@ class ParserPhase2
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
-		// PHP sometimes messes up in preg_match_all returning an empty array
-		// we need to guard against this or else client side caching always get thrashed!
-/*
-		$m1a = $this->getList( $text, self::pattern1a );
-		$m1b = $this->getList( $text, self::pattern1b );		
-		if ( empty( $m1a ) && empty( $m1b ) ) return true; // nothing to do
-
-		if ( !empty( $m1a ))
-			$found = $this->executeList( $m1a, $text );
-		else
-			$found = $this->executeList( $m1b, $text );		
-*/
-		// V2
-		$this->executeV2( &$text, 'BeforeOutput', &$found );
+		$this->execute( &$text, 'BeforeOutput', &$found );
 			
 		// we found some dynamic variables, disable client side caching.
 		// parser caching is not affected.
@@ -230,6 +192,47 @@ class ParserPhase2
 		return true; // be nice with other extensions.
 	}
 	/**
+		Multiplex method.
+	 */
+	private function execute( &$text, $phase, &$found )
+	{
+		// assume worst case.
+		$found = false;
+		
+		$this->prepareText( $text, $phase );
+
+		$this->recursiveReplace( $text, $found );		
+	}
+	/**
+		This method prepares the target text for pattern matching.
+		It replaces the 'human readable' open/close delimiters
+		with more easily processable ones.
+	 */
+	private function prepareText( &$text, $phase )
+	{
+		$patterns = self::$newPatterns[ $phase ];
+
+		foreach( $patterns as $pattern => $replacement )
+		{
+			$pattern = '/'.preg_quote( $pattern ).'/';
+			$text = preg_replace( $pattern, $replacement, $text );
+		}
+	}
+	/**
+		E.g. #fnc|param1... 
+	 */
+	private function getParserFunctionValueFromText( &$text, &$found )
+	{
+		$params = explode('|', $text );
+		$action = array_shift( $params );
+
+		$r = $this->getParserFunctionValue( $params, $action );
+		if ($r !== null)
+			$found = true;
+	
+		return $r;	
+	}
+	/**
 		This function handles all the hard work. It relies on MediaWiki's
 		parser to reach the registered 'parser functions' and 'magic words'.
 		
@@ -237,42 +240,63 @@ class ParserPhase2
 		'parserphase2' and 'parser after tidy' functionality. This is especially useful
 		in case of documentation pages.
 	 */
-	private function executeList( &$liste, &$text )
+	private function recursiveReplace( &$o, &$found, $depth = 0 )
 	{
-		$found = false; 
+		//TODO: better error handling.
+		if ( $depth > self::depthMax )
+			return null;
+			
+		$r = preg_match_all( self::$masterPattern, $o, $m );
 		
-		foreach( $liste[1] as $index => $str)
+		// did we find a 'terminal' token?
+		// signal it to the next level up.
+		if ( ($r === false) || ( $r === 0 ) )
+			return null;
+
+		$depth++;
+		
+		// recurse.
+		foreach( $m[1] as $index => &$match )
 		{
-			// (($magic word|... parameters...$))
-			$params = explode('|', $str);
-			$action = array_shift( $params );
+			$replacement = $this->recursiveReplace( $match, $found, $depth );
 
-			// if we are asked to disable
-			if ('disable' == strtolower($action))
-			{ $rl[$index]=''; $found = true; continue; }
-			#{ $this->disable = true; break; }
-
-			// if we are asked to enable
-			if ('enable' == strtolower($action))
-			{ $rl[$index]=''; $found = true; continue; }
-
-			$r = $this->getParserFunctionValue( $params, $action );
-			if ($r!==null)
+			if ($replacement === null)
 			{
-				$found = true;
-				$rl[$index] = $r;	
+				$r = $this->getParserFunctionValueFromText( $match, $found );
+				$p = '/'.preg_quote( $m[0][$index] ).'/si';
+				$o = preg_replace( $p, $r, $o, 1 );				
 			}
+		}
 
-		} // end foreach
-
-		$this->replaceList( $text, $liste, $rl );
-
-		return $found;
+		return null;
 	}
+	
 	/**
+		Gets a value associated with a 'magic word'.
+	 */
+	private function getValue( $varid )
+	{
+		// ask our friendly MW parser for its help.
+		global $wgParser;
+		$value = $wgParser->getVariableValue( $varid );
+		
+		return $value;
+	}
+
+	/**
+		Query our friendly MediaWiki parser
 	 */
 	private function getParserFunctionValue( &$params, &$var )
 	{
+		// enabled by default.
+		static $enable = true;
+	
+		// sectional enable/disable commands.
+		if ($var === 'enable')	{ $enable = true; return null; }
+		if ($var === 'disable')	{ $enable = false; return null; }
+		if (!$enable) return null;
+
+		// real work starts here.
 		$value = null;
 		
 		global $wgParser, $wgTitle, $wgContLang;
@@ -320,180 +344,7 @@ class ParserPhase2
 
 		return $value;	
 	}
-	/**
-	
-	 */
-	private function getList ( &$text, $pattern )
-	{
-		$r = preg_match_all( $pattern, $text, $m );
 		
-		// if we found some, return.
-		if ( ($r !== false) && ( $r !== 0 ) )
-			return $m;
-			
-		return null;
-	}
-	/**
-		This method prepares the target text for pattern matching.
-		It replaces the 'human readable' open/close delimiters
-		with more easily processable ones.
-	 */
-	private function prepareText( &$text, $phase )
-	{
-		$patterns = self::$newPatterns[ $phase ];
-
-		foreach( $patterns as $pattern => $replacement )
-		{
-			$pattern = '/'.preg_quote( $pattern ).'/';
-			$text = preg_replace( $pattern, $replacement, $text );
-		}
-	}
-	/**
-	 */
-	private function executeV2( &$text, $phase, &$found )
-	{
-		// assume worst case.
-		$found = false;
-		
-		$this->prepareText( $text, $phase );
-		
-		// start with an empty stack.
-		$stack = array();
-		
-		// start processing at the top level
-		$liste = $this->getListV2( $text, $stack );
-		
-		if (empty( $stack ))
-			return;
-		
-		// corner case #1: getList returns just a string
-		// i.e. there is only one parser function call on this page.
-		var_dump( $stack );
-		
-		// we need the 'deepest' elements first.
-		krsort( $stack );
-		
-		// previous depth terminal tokens
-		$ptokens = array();
-		
-		foreach( $stack as $depth => &$e )
-		{
-			// do 'non-terminal tokens'
-			if (!empty( $e['non-terminal'] ))
-				foreach( $e['non-terminal'] as $index => &$pattern )
-				{
-					// there should be 'terminal' tokens from the previous round
-					// if we get here.
-					if (!empty( $ptokens ))	
-					{
-						foreach( $ptokens as $pattern2 => &$e )
-							$pattern = str_replace( $pattern2, $e, $pattern );
-
-						// we can't be left with 'non-terminal' tokens at this point.
-						// push down in the 'terminal' tokens list.
-						$e['terminal'][] = $pattern;
-					}
-				}
-
-			// prepare for next round
-			unset( $ptokens );
-			
-			// do 'terminal' tokens
-			if (!empty( $e['terminal'] ))	
-				foreach( $e['terminal'] as $pattern => &$f )
-					$ptokens[ $pattern ] = $this->getParserFunctionValueFromText( $f, $found );
-		}
-		
-	}
-	/**
-		E.g. #fnc|param1... 
-	 */
-	private function getParserFunctionValueFromText( &$text, &$found )
-	{
-		$params = explode('|', $text );
-		$action = array_shift( $params );
-
-		$r = $this->getParserFunctionValue( $params, $action );
-		if ($r !== null)
-			$found = true;
-	
-		return $r;	
-	}
-	
-	/**
-	
-	 */
-	private function getListV2( &$o, &$stack, $currentPattern = null, $depth = 0 )
-	{
-		//TODO: better error handling.
-		if ( $depth > self::depthMax )
-			return null;
-			
-		if (is_string($o))
-		{
-			$r = preg_match_all( self::$masterPattern, $o, $m );
-			
-			// did we find a 'terminal' token?
-			// Accumulate those for faster replacing later on.
-			if ( ($r === false) || ( $r === 0 ) )
-			{
-				// add current to 'terminal' list.
-				$stack[$depth]['terminal'][] = array( $currentPattern => $o );
-				return $o;	
-			}
-			// get rid of some junk
-			unset( $m[2] );
-		}
-		else
-			$m = $o;
-
-		$depth++;
-
-		// recurse.
-		if (!empty( $m[1] ))
-			foreach( $m[1] as $index => &$match )
-			{
-				$match = $this->getListV2( $match, $stack, $m[0][$index], $depth );
-				
-				// add current to 'non-terminal' list.
-				if (!is_string( $match ))
-					$stack[$depth]['non-terminal'][] = $match;
-			}
-		return $m;
-	}
-	/**
-		Gets a value associated with a 'magic word'.
-	 */
-	private function getValue( $varid )
-	{
-		// ask our friendly MW parser for its help.
-		global $wgParser;
-		$value = $wgParser->getVariableValue( $varid );
-		
-		return $value;
-	}
-	/**
-		Go through the current page and replaces
-		the all the calls with the return values.
-	 */
-	private function replaceList( &$text, &$source, &$target )
-	{
-		$disable = false;
-		
-		if (!empty( $source[0] ))
-			foreach( $source[0] as $index => $marker )
-			{
-
-				if ('(($enable$))'==$marker || '((@enable@))'==$marker || '((%enable%))'==$marker)
-					$disable = false;
-				elseif ($disable)
-					continue;
-
-				if ('(($disable$))'==$marker || '((@disable@))'==$marker || '((%disable%))'==$marker)
-					$disable = true;
-				$text = str_replace( $marker, $target[$index]/*.'<!--'.$marker.'-->'*/, $text );	
-			}
-	}
 } // end class
 
 //</source>
