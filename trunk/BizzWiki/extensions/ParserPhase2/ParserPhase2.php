@@ -72,6 +72,10 @@ See [[Extension:ParserPhase2/Flow Summary]] for more details.
 === Parser Before Strip functionality ===
 <code>((@magic word|...parameters...@))</code>
 
+=== Nesting ===
+Recursive invocation is supported; example:
+* <code>(($#f1 | (($#f2$)) | (($#f3$)) $))</code>
+
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 
