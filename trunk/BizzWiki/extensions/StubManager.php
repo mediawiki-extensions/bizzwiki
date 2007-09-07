@@ -83,6 +83,7 @@ require('extensions/StubManager.php');
 * added namespace triggering functionality
 ** Only load an extension when the extension's target namespace(s) are in focus.
 * Added support for non-BizzWiki environments
+* Added automatic linking to page on MediaWiki.org for each extension
 
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
@@ -103,6 +104,9 @@ if (!defined('BIZZWIKI'))
 
 class StubManager
 {
+	
+	const MWbaseURI = 'http://www.mediawiki.org/wiki';
+	
 	static $stubList;
 	const thisType = 'other';
 	const thisName = 'StubManager';
@@ -302,7 +306,7 @@ class StubManager
 		
 		if (!empty( self::$stubList ))
 			foreach( self::$stubList as $index => $obj )
-				$result .= '[[Extension:'.$obj['class']."]]<br/>\n";
+				$result .= '['.self::MWbaseURI.'/Extension:'.$obj['class'].' '.$obj['class']."]<br/>\n";
 				
 		$result=trim($result);
 		
