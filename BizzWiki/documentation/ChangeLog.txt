@@ -264,3 +264,5 @@ $Id$
 * Small enhancement to [[Extension:ImageLink]]
 * [[Extension:ParserPhase2]]: added nested (i.e. recursive) commands
 * Added [[Extension:SpecialPagesChangeLocation]]
+* Enhanced [[Extension:StubManager]] with links to MediaWiki.org for each registered extension
+* 
