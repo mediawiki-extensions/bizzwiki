@@ -75,5 +75,3 @@ class SpecialPagesManagerClass
 	}		
 		
 } // end class declaration
-
-?>

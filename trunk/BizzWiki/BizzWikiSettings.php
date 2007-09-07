@@ -476,6 +476,9 @@ require( $bwExtPath.'/NamespaceManager/NamespaceManager.php');
 require( $bwExtPath.'/ExtensionManager/ExtensionManager_stub.php');
 require( $bwExtPath.'/RepositoryManager/RepositoryManager_stub.php');
 
+require( $bwExtPath.'/SpecialPagesChangeLocation/SpecialPagesChangeLocation.php' );
+SpecialPagesChangeLocation::setPage( 'MediaWiki:SpecialPages' );
+
 #require('extensions/ExtensionManager/ExtensionManager_stub.php');
 
 
