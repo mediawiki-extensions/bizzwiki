@@ -44,7 +44,7 @@ To install independantly from BizzWiki:
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/XYZ/XYZ_stub.php');
+require('extensions/ViewsourceRight/ViewsourceRight_stub.php');
 </source>
 
 == HISTORY ==
