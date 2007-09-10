@@ -1,18 +1,27 @@
 <?php
+/*
+<!--<wikitext>-->
+ <file>
+  <name>Backup.body.php</name>
+  <version>$Id$</version>
+  <package>Backup</package>
+ </file>
+<!--</wikitext>-->
+*/
 // <source lang=php>
 
-$wgExtensionCredits[backup::thisType][] = array( 
-	'name'    => backup::thisName,
+$wgExtensionCredits[Backup::thisType][] = array( 
+	'name'    => Backup::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'url'		=> 'http://www.mediawiki.org/wiki/Extension:Backup',	
 	'description' => "Provides the 'backup' hook.", 
 );
 
-class backup
+class Backup
 {
 	const thisType = 'other';
-	const thisName = 'backup';
+	const thisName = 'Backup';
 	
 	//
 	var $rc;
@@ -248,6 +257,8 @@ class backup_operation
 		// image related
 	const action_imagedelete = 9;
 	
+	static $deferred = array( action_protect, action_imagedelete, action_delete );
+	
 	// Commit Operation parameters
 	var $includeRevision;
 	var $deferralRequired;
@@ -316,20 +327,7 @@ class backup_operation
 	}
 	public function setIdTs( $id, $ts ) { $this->id = $id; $this->timestamp = $ts; }
 	public function setSourceTitle( &$t ) { $this->sourceTitle = $t; }
-	
-	/**
-		Delete action requires deferral
-	 */
-	public function getDeferralState( )
-	{
-		if ($this->action == self::action_delete)	
-			return true;
-
-		if ($this->action == self::action_protect)	
-			return true;
-			
-		return false;
-	}
+	public function getDeferralState( ) { return in_array( $this->action, self::$deferred ); }
 	
 } // end class
 
