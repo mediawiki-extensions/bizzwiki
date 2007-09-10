@@ -157,7 +157,15 @@ class backup
 	 */
 	public function hImageDoDeleteBegin( &$img_page )
 	{
+		$this->op = new backup_operation(backup_operation::action_imagedelete,
+										$img_page,
+										false,	// do not include last revision text
+										null,
+										null										
+									 );
 
+		$this->executeDeferredInRcHook = true;		
+		
 		return true;	
 	}
 
@@ -189,6 +197,7 @@ class backup
 			Used in the following cases:
 			- FileUpload
 			- Article Protect
+			- Image delete
 		 */
 		if ($this->executeDeferredInRcHook)
 		{
@@ -236,6 +245,9 @@ class backup_operation
 		// log related
 	const action_log		= 8;
 	
+		// image related
+	const action_imagedelete = 9;
+	
 	// Commit Operation parameters
 	var $includeRevision;
 	var $deferralRequired;
@@ -246,6 +258,7 @@ class backup_operation
 	var $action;
 	var $ns;
 	var $titre;
+	var $rev_id;
 
 	var $sourceTitle;	// for move action
 
@@ -255,7 +268,9 @@ class backup_operation
 	
 	public function __construct( $action, &$object, $includeRevision = false, $id=null, $ts=null )
 	{
-		$this->getNsTitle( $object, $this->ns, $this->titre );
+		$this->rev_id = null;
+		
+		$this->getNsTitleRevision( $object, $this->ns, $this->titre, $this->rev_id );
 	
 		$this->action = $action;
 		$this->includeRevision = $includeRevision;
@@ -272,9 +287,10 @@ class backup_operation
 			$this->timestamp = $ts;
 		}
 		
+		// for page move.
 		$this->sourceTitle = null;
 	}
-	private function getNsTitle( &$object, &$ns, &$titre )
+	private function getNsTitleRevision( &$object, &$ns, &$titre, &$rev )
 	{
 		if ( $object instanceof RecentChange )
 		{
@@ -284,7 +300,12 @@ class backup_operation
 		}
 		
 		if ( $object instanceof Article )
+		{
 			$title = $object->mTitle;
+			$rev = $object->mRevision;
+		}
+			
+		// cases: page move
 		if ( $object instanceof Title )
 			$title = $object;
 
