@@ -32,6 +32,15 @@ Defines a subclass of 'ImagePage' which provides the following hooks missing fro
 == Features ==
 * No MediaWiki patch
 
+== Installation ==
+To install in an environment outside of [[Extension:BizzWiki]]:
+* Download all the extension's files from the SVN link
+* Place all the files in a suitable folder e.g. /extensions/ImagePageEx/
+* Add the following to <code>LocalSettings.php</code>
+<source lang=php>
+require( '/extensions/ImagePageEx/ImagePageEx.php' );
+</source>
+
 == History ==
 
 == See Also ==
