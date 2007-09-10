@@ -71,6 +71,7 @@ class backup
 	 */
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
+		// complete the 'op' object with the missing data.
 		$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
 							$this->rc->mAttribs['rc_timestamp'] );
 		
@@ -159,7 +160,20 @@ class backup
 	public function hRecentChange_save( &$rc )
 	{
 		$this->rc = $rc;
+		
+		// Log entry
+		if ($this->rc->mAttribs['rc_type'])
+		{
+			$this->op = new backup_operation(backup_operation::action_log,
+											$rc
+											);
 			
+			$this->doNotify();
+			
+			// nothing else todo
+			return true;
+		}
+		
 		if ($this->executeDeferredInRcHook)
 		{
 			$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 
@@ -174,6 +188,7 @@ class backup
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 
 	/**
+		This method finally fires the 'backup' event.
 	 */
 	public function doNotify()
 	{
@@ -182,8 +197,8 @@ class backup
 	
 } // end class
 
-/**		************************************************************
-		Follows is a class that defines an 'backup' export operation.
+/**		******************************************************
+		Follows is a class that defines an 'backup' operation.
  */
 
 class backup_operation
@@ -202,6 +217,9 @@ class backup_operation
 	const action_createfile = 6;
 	const action_deletefile = 7;
 	
+		// log related
+	const action_log		= 8;
+	
 	// Commit Operation parameters
 	var $includeRevision;
 	var $deferralRequired;
@@ -219,24 +237,45 @@ class backup_operation
 	
 	var $text;
 	
-	public function __construct( $action, &$object, $includeRevision, $id, $ts )
+	public function __construct( $action, &$object, $includeRevision = false, $id=null, $ts=null )
 	{
-		if ( $object instanceof Article )
-			$title = $object->mTitle;
-		else
-			$title = $object;
-
-		$this->ns = $title->getNamespace();
-		$this->titre = $title->getText();
-
+		$this->getNsTitle( $object, $this->ns, $this->titre );
+	
 		$this->action = $action;
 		$this->includeRevision = $includeRevision;
 		$this->deferralRequired = $this->getDeferralState( );
 
-		$this->id = $id;
-		$this->timestamp = $ts;
-
+		if ( $object instanceof RecentChange )
+		{
+			$this->id = $object->mAttribs['rc_id'];
+			$this->timestamp = $object->mAttribs['rc_timestamp'];
+		}
+		else
+		{
+			$this->id = $id;
+			$this->timestamp = $ts;
+		}
+		
 		$this->sourceTitle = null;
+	}
+	private function getNsTitle( &$object, &$ns, &$titre )
+	{
+		if ( $object instanceof RecentChange )
+		{
+			$ns = $object->mAttribs['rc_namespace'];
+			$title = $object->mAttribs['rc_title'];	
+			return true;
+		}
+		
+		if ( $object instanceof Article )
+			$title = $object->mTitle;
+		if ( $object instanceof Title )
+			$title = $object;
+
+		$ns = $title->getNamespace();
+		$titre = $title->getText();
+		
+		return true;
 	}
 	public function setIdTs( $id, $ts ) { $this->id = $id; $this->timestamp = $ts; }
 	public function setSourceTitle( &$t ) { $this->sourceTitle = $t; }
