@@ -3,7 +3,7 @@
 {{Extension
 |name        = WatchLog
 |status      = beta
-|type        = other
+|type        = interface
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -16,6 +16,8 @@
 |parameters  =
 |rights      =
 |example     =
+|hook1       = WatchArticleComplete
+|hook2       = UnwatchArticleComplete
 }}
 <!--@@
 {{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}

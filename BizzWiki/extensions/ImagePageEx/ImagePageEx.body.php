@@ -44,7 +44,7 @@ class ImagePageEx extends ImagePage
 		if ( NS_IMAGE != $ns )
 			return true;
 		
-		$article = new ImagePageEx();
+		$article = new ImagePageEx( $title );
 		
 		return true;
 	}

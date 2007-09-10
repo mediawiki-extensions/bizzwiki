@@ -62,7 +62,10 @@ if ( !defined( 'BIZZWIKI_ARTICLE' ) )
 }
 // }} TO HERE once the installation is tested.
 
-
+// required for the backup/restore facility.
+// This feature is deprecated as of 1.11
+$wgSaveDeletedFiles = true;
+$wgFileStore['deleted']['directory'] = $IP.'/images/deleted';
 
 // Base class for multiple extensions
 require('extensions/ExtensionClass.php');
@@ -70,6 +73,9 @@ require('extensions/RunPHP_class.php');
 require('extensions/StubManager.php');
 
 require( $bwExtPath.'/ParserPhase2/ParserPhase2_stub.php' );
+
+// required for [[Extension:Backup]]
+require( $bwExtPath.'/ImagePageEx/ImagePageEx.php' );
 
 // Parser & Page caching.
 $wgEnableParserCache = true;
