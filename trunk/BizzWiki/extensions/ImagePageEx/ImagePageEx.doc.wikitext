@@ -1,0 +1,38 @@
+{{Extension
+|name        = ImagePageEx
+|status      = beta
+|type        = hook
+|author      = [[user:jldupont|Jean-Lou Dupont]]
+|image       =
+|version     = See SVN ($Id$)
+|update      =
+|mediawiki   = tested on 1.10 but probably works with earlier versions
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ImagePageEx/ SVN]
+|readme      =
+|changelog   =
+|description = 
+|parameters  =
+|rights      =
+|example     =
+|hook1       = ArticleFromTitle
+}}
+<!--@@
+{{#autoredirect: Extension|{{#noext:{{SUBPAGENAME}} }} }}
+== File Status ==
+This section is only valid when viewing the page in a BizzWiki environment.
+<code>(($#extractmtime|@@mtime@@$))  (($#extractfile|@@file@@$))</code>
+
+Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
+@@-->
+== Purpose==
+Defines a subclass of 'ImagePage' which provides the following hooks missing from MediaWiki:
+* ImageDoDeleteBegin
+* ImageDoDeleteEnd
+
+== Features ==
+* No MediaWiki patch
+
+== History ==
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
