@@ -10,8 +10,19 @@
 */
 //<source lang=php>
 
+$wgExtensionCredits[ImagePageEx::thisType][] = array( 
+	'name'		=> ImagePageEx::thisName,
+	'version'	=> '$Id$',
+	'author'	=> 'Jean-Lou Dupont',
+	'url'		=> 'http://www.mediawiki.org/wiki/Extension:ImagePageEx',
+	'description' => "Provides the hooks 'ImageDoDeleteBegin' & 'ImageDoDeleteEnd'.", 
+);
+
 class ImagePageEx extends ImagePage
 {
+	const thisType = 'other';
+	const thisName = 'ImagePageEx';
+	
 	/**
 		Called during the extension initialization phase.
 	 */

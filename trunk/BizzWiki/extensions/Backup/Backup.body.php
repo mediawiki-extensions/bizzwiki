@@ -5,6 +5,7 @@ $wgExtensionCredits[backup::thisType][] = array(
 	'name'    => backup::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
+	'url'		=> 'http://www.mediawiki.org/wiki/Extension:Backup',	
 	'description' => "Provides the 'backup' hook.", 
 );
 
@@ -156,7 +157,7 @@ class backup
 	 */
 	public function hImageDoDeleteBegin( &$img_page )
 	{
-		echo __METHOD__;
+
 		return true;	
 	}
 
