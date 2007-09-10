@@ -23,6 +23,8 @@ elseif (version_compare( $wgVersion, "1.10.1", '>' ))
 else
 {
 	// only hook-up if the above conditions are met.
-	$wgExtensionFunctions[] = createFunction('', 'return ImagePageEx::setup();');
+	require_once( $IP.'/includes/ImagePage.php' );
+	require( 'ImagePageEx.body.php' );	
+	$wgExtensionFunctions[] = create_function('', 'return ImagePageEx::setup();');
 }
 //</source>
