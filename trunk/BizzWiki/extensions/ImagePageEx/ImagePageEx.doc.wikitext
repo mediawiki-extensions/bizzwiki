@@ -32,6 +32,13 @@ Defines a subclass of 'ImagePage' which provides the following hooks missing fro
 == Features ==
 * No MediaWiki patch
 
+== Hooks ==
+=== ImageDoDeleteBegin ===
+Called at the very beginning of the method 'doDelete' of an ImagePageEx object.
+
+=== ImageDoDeleteEnd ===
+Called at the very end of the method 'doDelete' of an ImagePageEx object.
+
 == Installation ==
 To install in an environment outside of [[Extension:BizzWiki]]:
 * Download all the extension's files from the SVN link
