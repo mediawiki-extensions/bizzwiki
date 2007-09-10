@@ -7,6 +7,7 @@
 */
 // <source lang=php>
 
+
 if (class_exists('StubManager'))
 {
 $backupExt = array();
@@ -16,7 +17,7 @@ if (defined('NS_FILESYSTEM'))	$backupExt[] = NS_FILESYSTEM;
 if (defined('NS_DIRECTORY'))	$backupExt[] = NS_DIRECTORY;
 if (defined('NS_EXT'))			$backupExt[] = NS_EXT;
 
-StubManager::createStub2(	array(	'class' 		=> 'backup', 
+StubManager::createStub2(	array(	'class' 		=> 'Backup', 
 									'classfilename'	=> $bwExtPath.'/Backup/Backup.body.php',
 									'hooks'			=> array(	'RecentChange_save',
 																'ArticleSaveComplete',
