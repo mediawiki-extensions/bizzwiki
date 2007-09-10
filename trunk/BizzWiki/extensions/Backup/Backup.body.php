@@ -151,6 +151,14 @@ class backup
 		
 		return true;
 	}
+	/**
+	
+	 */
+	public function hImageDoDeleteBegin( &$img_page )
+	{
+		echo __METHOD__;
+		return true;	
+	}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	
@@ -161,8 +169,10 @@ class backup
 	{
 		$this->rc = $rc;
 		
-		// Log entry
-		if ($this->rc->mAttribs['rc_type'])
+		// Log entry case: useful for the following events:
+		// - general log entry
+		// - delete event (image / file)
+		if ($this->rc->mAttribs['rc_type'] == RC_LOG /*defined in Defines.php*/)
 		{
 			$this->op = new backup_operation(backup_operation::action_log,
 											$rc
@@ -174,6 +184,11 @@ class backup
 			return true;
 		}
 		
+		/*
+			Used in the following cases:
+			- FileUpload
+			- Article Protect
+		 */
 		if ($this->executeDeferredInRcHook)
 		{
 			$this->op->setIdTs(	$this->rc->mAttribs['rc_id'], 

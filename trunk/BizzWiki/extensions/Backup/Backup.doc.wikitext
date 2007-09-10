@@ -7,7 +7,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/XYZ/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/Backup/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -31,17 +31,17 @@ Defines a new hook 'backup' as a service to backup extensions.
 ** Creation   (done)
 ** Update     (done)
 ** Delete     (done)
-** Move       (done)
+** Move       
 ** Protection (done)
 * File
 ** Upload     (done)
 ** Re-upload  (done) (same as upload)
 ** Delete
 ** Move       (not allowed - hence, nothing to implement)
+* Log         (done)
 * User
 ** Account creation
 ** Account options update
-* Log         (done)
 
 == Notes ==
 === Image ===
@@ -51,10 +51,9 @@ Upon deletion:
 * log entry is created
 
 == Theory Of Operation ==
-Page change events are trapped 
-Trapping is done through the 'RecentChange_save' hook.
-
-
+Page change events are trapped and the corresponding 'Recent Change Identifier' (i.e. rc_id) field is attached
+to a 'backup_operation' object. Trapping is done through the 'RecentChange_save' hook.
+When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. the hook 'backup' is called).
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -67,8 +66,20 @@ To install independantly from BizzWiki:
 <source lang=php>
 require('extensions/Backup/Backup.php');
 </source>
+* If desired, an updated 'includes/Article.php' file can be installed. See [[{{FULLPAGENAME}}#Article.php patch]].
+
+== Article.php patch ==
+MediaWiki by default purges the 'recent changes' table for entries related to a delete article/image.
+This behavior introduces some rather annoying side effects to this extension. A patched copy of Article.php
+can be downloaded from BizzWiki's repository.
 
 == History ==
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
+
+== Todo ==
+* Move: verify that we can safely grab the article_id from the title element or else
+** Concurrency issue
+* Delete: get ArticleId from the Logging event i.e. indirectly through the 'recent change' entry that is created
+** The title object containing the article_id is kept all through the process

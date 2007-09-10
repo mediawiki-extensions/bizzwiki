@@ -24,6 +24,7 @@ StubManager::createStub2(	array(	'class' 		=> 'backup',
 																'ArticleDelete',
 																'SpecialMovepageAfterMove',
 																'ArticleProtectComplete',
+																'ImageDoDeleteBegin',  // supported through [[Extension:ImagePageEx]]
 																#'hAddNewAccount',
 																#'hUploadComplete',
 															),

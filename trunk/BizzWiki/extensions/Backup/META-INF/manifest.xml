@@ -2,9 +2,8 @@
 <!DOCTYPE manifest:manifest PUBLIC "-//BizzWiki.org//DTD Manifest 1.0//EN" "Manifest.dtd">
 
 <manifest:manifest xmlns:manifest="http://bizzwiki.org/2007/manifest">
- <manifest:file-entry manifest:media-type="" manifest:full-path="Pictures/"/>
- <manifest:file-entry manifest:media-type="text/xml" manifest:full-path="content.xml"/>
- <manifest:file-entry manifest:media-type="text/xml" manifest:full-path="styles.xml"/>
- <manifest:file-entry manifest:media-type="text/xml" manifest:full-path="meta.xml"/>
- <manifest:file-entry manifest:media-type="text/xml" manifest:full-path="settings.xml"/>
+ <manifest:file-entry manifest:media-type="application/php" manifest:full-path="Backup.body.php"/>
+ <manifest:file-entry manifest:media-type="application/php" manifest:full-path="Backup.php"/>
+ <manifest:file-entry manifest:media-type="application/php" manifest:full-path="Backup.i18n.php"/>
+ <manifest:file-entry manifest:media-type="text/wikitext" manifest:full-path="Backup.doc.wikitext"/>
 </manifest:manifest>
