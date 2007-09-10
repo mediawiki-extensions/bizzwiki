@@ -485,6 +485,8 @@ require( $bwExtPath.'/RepositoryManager/RepositoryManager_stub.php');
 require( $bwExtPath.'/SpecialPagesChangeLocation/SpecialPagesChangeLocation.php' );
 SpecialPagesChangeLocation::setPage( 'MediaWiki:SpecialPages' );
 
+require( $bwExtPath.'/Backup/Backup.php' );
+
 #require('extensions/ExtensionManager/ExtensionManager_stub.php');
 
 
