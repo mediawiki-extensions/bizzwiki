@@ -7,6 +7,15 @@
 */
 // <source lang=php>
 
+if (class_exists('StubManager'))
+{
+$backupExt = array();
+
+// Exclude the following namespaces by default.
+if (defined('NS_FILESYSTEM'))	$backupExt[] = NS_FILESYSTEM;
+if (defined('NS_DIRECTORY'))	$backupExt[] = NS_DIRECTORY;
+if (defined('NS_EXT'))			$backupExt[] = NS_EXT;
+
 StubManager::createStub2(	array(	'class' 		=> 'backup', 
 									'classfilename'	=> $bwExtPath.'/Backup/Backup.body.php',
 									'hooks'			=> array(	'RecentChange_save',
@@ -19,8 +28,12 @@ StubManager::createStub2(	array(	'class' 		=> 'backup',
 																#'hUploadComplete',
 															),
 									// exclude the following namespaces
-									'enss'			=> array( NS_FILESYSTEM, NS_DIRECTORY )
+									'enss'			=> $backupExt
 								)
 						);
-
+}
+else
+{
+	echo "Extension:Backup requires Extension:StubManager";
+}
 //</source>
