@@ -265,4 +265,5 @@ $Id$
 * [[Extension:ParserPhase2]]: added nested (i.e. recursive) commands
 * Added [[Extension:SpecialPagesChangeLocation]]
 * Enhanced [[Extension:StubManager]] with links to MediaWiki.org for each registered extension
-* 
+* Fixed PHP warning in [[Extension:SidebarEx]]
+* Added [[Extension:Backup]]

@@ -3,6 +3,7 @@
 <file>
 	<name>Backup.php</name>
 	<id>$Id$</id>
+	<package>Extension.Backup</package>
 </file>
 */
 // <source lang=php>

@@ -4,18 +4,18 @@
  <file>
   <name>Backup.body.php</name>
   <version>$Id$</version>
-  <package>Backup</package>
+  <package>Extension.Backup</package>
  </file>
 <!--</wikitext>-->
 */
 // <source lang=php>
 
 $wgExtensionCredits[Backup::thisType][] = array( 
-	'name'    => Backup::thisName,
-	'version' => StubManager::getRevisionId('$Id$'),
-	'author'  => 'Jean-Lou Dupont',
-	'url'		=> 'http://www.mediawiki.org/wiki/Extension:Backup',	
-	'description' => "Provides the 'backup' hook.", 
+	'name'    		=> Backup::thisName,
+	'version'		=> StubManager::getRevisionId('$Id$'),
+	'author'		=> 'Jean-Lou Dupont',
+	'url'			=> 'http://www.mediawiki.org/wiki/Extension:Backup',	
+	'description' 	=> "Provides the 'backup' hook.", 
 );
 
 class Backup
@@ -59,6 +59,8 @@ class Backup
 	}
 
 	/**
+		Handles Article Deletion
+		
 		WARNING: If ArticleDelete hook fails, we might have some stranded resources
 		e.g. temporary file
 	 */
@@ -77,7 +79,8 @@ class Backup
 		return true;
 	}
 	/**
-		Handles article delete.
+		Handles Article Deletion
+		along with hArticleDelete
 	 */
 	public function hArticleDeleteComplete( &$article, &$user, $reason )
 	{
@@ -95,6 +98,12 @@ class Backup
 		This hook is often called twice:
 		- Once for the page
 		- Once for the 'talk' page corresponding to 'page'
+		Each time a new 'backup_operation' is created and the
+		custom hook 'backup' is fired.
+		
+		NOTES:
+		- RecentChange_save hook is called before this hook
+		  in 'Title::moveToNewTitle' through the log entry save functionality
 	 */
 	public function hSpecialMovepageAfterMove( &$sp, &$oldTitle, &$newTitle )
 	{
@@ -132,10 +141,6 @@ class Backup
 	}
 	
 	/**
-	 */
-	#public function hUploadComplete( &$img ) {	return true;	}
-	
-	/**
 		TBD
 	 */
 	public function hAddNewAccount( &$user )
@@ -162,7 +167,8 @@ class Backup
 		return true;
 	}
 	/**
-	
+		Uses the custom hook 'ImageDoDeleteBegin' defined in [[Extension:ImagePageEx]]
+		to trap image object deletion.	
 	 */
 	public function hImageDoDeleteBegin( &$img_page )
 	{
