@@ -77,7 +77,7 @@ To install independantly from BizzWiki:
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
 $bwScriptsDirectory = '/path/to/your/scripts/relative/to/root';
-require('extensions/AddScriptCss/AddScriptCss_stub.php');
+require('/extensions/AddScriptCss/AddScriptCss_stub.php');
 </source>
 
 == TODO ==
@@ -411,3 +411,4 @@ phase 2- when the page is rendered, extract the meta information
 	}
 
 } // END CLASS DEFINITION
+//</source>
