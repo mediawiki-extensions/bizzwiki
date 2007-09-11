@@ -98,9 +98,10 @@ require('extensions/ParserPhase2/ParserPhase2_stub.php');
 * Added pattern: ((magic word|... )) which more closely maps to standard MW parser function calling
 ** DO NOT MIX PATTERNS ON THE SAME PAGE i.e. no (($...$)) mixing up with ((...))
 * Added functionality to execute parser functions/magic words just after the 'tidy' process
-* Added functionality to execute parser functions/magic words just BEFORE the 'stip' process i.e. before the parser really begins.
+* Added functionality to execute parser functions/magic words just BEFORE the 'strip' process i.e. before the parser really begins.
 * Added 'enable' magic word
 * Added support for 'sectional execution' i.e. replacement between 'enable' and 'disable' magic words
+* Added 'recursive' (aka 'nesting') processing functionality
 
 == TODO ==
 * possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)
