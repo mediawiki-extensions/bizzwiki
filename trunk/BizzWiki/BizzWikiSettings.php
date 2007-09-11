@@ -71,6 +71,7 @@ $wgFileStore['deleted']['directory'] = $IP.'/images/deleted';
 require('extensions/ExtensionClass.php');
 require('extensions/RunPHP_class.php');
 require('extensions/StubManager.php');
+#require('extensions/UserClassEx/UserClassEx.php');
 
 require( $bwExtPath.'/ParserPhase2/ParserPhase2_stub.php' );
 
@@ -479,8 +480,8 @@ require( $bwExtPath.'/GoogleCode/GoogleCode_stub.php');
 
 require( $bwExtPath.'/PageServer/PageServer_stub.php');
 require( $bwExtPath.'/NamespaceManager/NamespaceManager.php');
-require( $bwExtPath.'/ExtensionManager/ExtensionManager_stub.php');
-require( $bwExtPath.'/RepositoryManager/RepositoryManager_stub.php');
+#require( $bwExtPath.'/ExtensionManager/ExtensionManager_stub.php');
+#require( $bwExtPath.'/RepositoryManager/RepositoryManager_stub.php');
 
 require( $bwExtPath.'/SpecialPagesChangeLocation/SpecialPagesChangeLocation.php' );
 SpecialPagesChangeLocation::setPage( 'MediaWiki:SpecialPages' );

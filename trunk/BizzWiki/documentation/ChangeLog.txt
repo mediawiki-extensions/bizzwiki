@@ -267,3 +267,4 @@ $Id$
 * Enhanced [[Extension:StubManager]] with links to MediaWiki.org for each registered extension
 * Fixed PHP warning in [[Extension:SidebarEx]]
 * Added [[Extension:Backup]]
+* First pass clean-up of unused scripts in /scripts
