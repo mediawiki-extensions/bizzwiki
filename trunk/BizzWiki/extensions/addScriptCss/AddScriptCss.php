@@ -35,6 +35,7 @@ Securily insert arbitrary code to the page's head using <addtohead>.
 * <code><addtohead>some html code here></addtohead></code>
 * Security:
 ** Only 'edit' restricted pages can access 'addtohead' functionality.
+* Use global variable '$bwScriptsDirectory' to customize scripts directory
 
 == Examples ==
 <pre><addscript src='local URL' /></pre>
@@ -72,6 +73,7 @@ To install independantly from BizzWiki:
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
+$bwScriptsDirectory = '/path/to/your/scripts/relative/to/root';
 require('extensions/AddScriptCss/AddScriptCss_stub.php');
 </source>
 
