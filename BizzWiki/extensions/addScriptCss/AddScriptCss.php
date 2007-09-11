@@ -3,7 +3,8 @@
 {{Extension
 |name        = AddScriptCss
 |status      = stable
-|type        = parser
+|type1       = tag
+|type2       = parser function
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -58,6 +59,8 @@ If no 'pos' field is present, then the extension assumes 'body'
 == USAGE NOTES ==
 When using 'pos=body', it is recommended to use the extension 'ParserCacheControl' in order to better integrate this extension with the standard MW parser cache.
  
+== Dependency ==
+* Depends on [[Extension:StubManager]]
 
 == History ==
 * Adjusted for new ExtensionClass version (no automatic registering of hooks of ExtensionClass)
@@ -91,7 +94,7 @@ $wgExtensionCredits[AddScriptCss::thisType][] = array(
 	'url' 		=> StubManager::getFullUrl(__FILE__),
 );
 
-class AddScriptCss// extends ExtensionClass
+class AddScriptCss
 {
 	// constants.
 	const thisName = 'AddScriptCss';
@@ -232,14 +235,15 @@ class AddScriptCss// extends ExtensionClass
 		return 'AddScriptCss: '.$m[ $errCode ];
 	}
 
-/*  Add scripts & stylesheets functionality.
+/****************************************************************************
+Add scripts & stylesheets functionality.
 This process must be done in two phases:
 phase 1- encode information related to the required
          scripts & stylesheets in a 'meta form' in
 		 the parser cache text.
 phase 2- when the page is rendered, extract the meta information
          and include the information appropriately in the 'head' of the page.		  
-************************************************************************************/
+*****************************************************************************/
 	static $scriptsHeadList = array();
 	static $scriptsBodyList = array();
 
