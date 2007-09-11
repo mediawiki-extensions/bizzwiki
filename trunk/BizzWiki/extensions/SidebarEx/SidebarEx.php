@@ -98,6 +98,7 @@ Examples:
 * Moved singleton invocation to address some PHP warning
 * Added 'per-user' sidebars
 * Added 'per-namespace' sidebars
+* Fix for PHP warning when NS_MAIN is not defined (Thanks Dr DBW)
 
 == See Also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
@@ -132,11 +133,11 @@ class SidebarExClass extends ExtensionClass
 
 		global $wgExtensionCredits;
 		$wgExtensionCredits[self::thisType][] = array( 
-			'name'        => self::thisName, 
-			'version'     => self::getRevisionId( self::id ),
-			'author'      => 'Jean-Lou Dupont', 
-			'description' => 'Provides sidebar customization on a per-group basis',
-			'url' => self::getFullUrl(__FILE__),			
+			'name'			=> self::thisName, 
+			'version'		=> self::getRevisionId( self::id ),
+			'author'		=> 'Jean-Lou Dupont', 
+			'description'	=> 'Provides sidebar customization on a per-group basis',
+			'url' 			=> 'http://mediawiki.org/wiki/Extension:SidebarEx',			
 		);
 
 		$this->foundPage = false;
@@ -176,7 +177,13 @@ class SidebarExClass extends ExtensionClass
 			return;
 			
 		$ns = $wgTitle->getNamespace();
-		$nsname = Namespace::getCanonicalName( $ns );
+		
+		// fix for 'limitation' of stock MediaWiki
+		// where NS_MAIN is not defined.
+		if ( 0 !== $ns )
+			$nsname = Namespace::getCanonicalName( $ns );
+		else
+			$nsname = 'Main';
 
 		$title = Title::makeTitle( $this->Ns, $this->Page.'/Ns/'.$nsname );
 		$a     = new Article( $title );
