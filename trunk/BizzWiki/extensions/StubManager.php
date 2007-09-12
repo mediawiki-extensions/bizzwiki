@@ -84,6 +84,9 @@ require('extensions/StubManager.php');
 ** Only load an extension when the extension's target namespace(s) are in focus.
 * Added support for non-BizzWiki environments
 * Added automatic linking to page on MediaWiki.org for each extension
+* Added 'isExtensionRegistered' method
+* Added 'configureExtension' method
+* Added 'getVersion' method
 
 == See also ==
 This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
@@ -110,6 +113,7 @@ class StubManager
 	static $stubList;
 	const thisType = 'other';
 	const thisName = 'StubManager';
+	const thisVersion = '$Id$';
 	static $logTable;
 	
 	static $paramsList = array(	'class',		// mandatory
@@ -210,6 +214,34 @@ class StubManager
 									'mgs'			=> $mgs,
 									'mws'			=> $mws,
 									);
+	}
+	public static function configureExtension( $classe, $parameter, $value )
+	{
+		foreach( self::$stubList as &$stub )
+			if (isset( $stub['class'] ))
+				if ( $stub['class'] == $classe )
+					if (isset( $stub[$parameter] ))
+					{
+						if (is_array($stub[ $parameter]) )
+							$stub[$parameter][] = $value;
+						else
+							$stub[ $parameter ] = $value;
+					}
+					else
+						$stub[ $parameter ] = $value;
+	}
+	public static function isExtensionRegistered( $classe )
+	{
+		foreach( self::$stubList as &$stub )
+			if (isset( $stub['class'] ))
+				if ( $stub['class'] == $classe )
+					return true;
+					
+		return false;
+	}
+	public static function getVersion()
+	{
+		return self::getRevisionId( self::thisVersion );	
 	}
 	/**
 		Create callback that will initialise all the stubs.
