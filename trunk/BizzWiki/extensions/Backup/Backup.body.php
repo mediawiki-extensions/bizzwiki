@@ -232,7 +232,7 @@ class Backup
 	 */
 	public function doNotify()
 	{
-		wfRunHooks( 'backup', array( &$this->op ) );		
+		wfRunHooks( 'Backup', array( &$this->op ) );		
 	}
 	
 } // end class
