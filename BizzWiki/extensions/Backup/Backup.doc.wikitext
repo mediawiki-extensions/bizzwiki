@@ -50,6 +50,8 @@ Upon deletion:
 == Theory Of Operation ==
 Page change events are trapped and the corresponding 'Recent Change Identifier' (i.e. rc_id) field is attached
 to a 'backup_operation' object. Trapping is done through the 'RecentChange_save' hook.
+The 'revision' information is the critical information: every page change is associated with a unique 'revision id'.
+ 
 When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. the hook 'backup' is called).
 
 == Dependancy ==
@@ -76,3 +78,17 @@ can be downloaded from BizzWiki's repository.
 This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 
 == Todo ==
+Verify that the 'revision id' information is safely trapped:
+* Page
+** Creation   || ArticleSave              || rev_id OK
+** Update     || ArticleSave              || rev_id OK
+** Delete     || ArticleDeleteComplete    || rev_id OK
+** Move       || SpecialMovepageAfterMove || ???
+** Protection || ArticleProtectComplete   || rev_id OK
+* Log         || RecentChange_save        || rev_id *NOT NEEDED*
+* File
+** Upload     || FileUpload               || rev_id OK
+** Delete     || ImageDoDeleteBegin       || rev_id OK
+** Re-upload  (done) (same as upload)
+** Move       (OK)
+
