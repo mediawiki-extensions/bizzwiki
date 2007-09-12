@@ -1,5 +1,5 @@
 {{Extension
-|name        = Backup
+|name        = rsync
 |status      = beta
 |type        = other
 |author      = [[user:jldupont|Jean-Lou Dupont]]
@@ -7,7 +7,7 @@
 |version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
-|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/Backup/ SVN]
+|download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/rsync/ SVN]
 |readme      =
 |changelog   =
 |description = 
@@ -27,30 +27,10 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 Defines a new hook 'backup' as a service to backup extensions.
 
 == Features ==
-* Page
-** Creation   (done)
-** Update     (done)
-** Delete     (done)
-** Move       (done)
-** Protection (done)
-* File
-** Upload     (done)
-** Re-upload  (done) (same as upload)
-** Delete     (done)
-** Move       (not allowed - hence, nothing to implement)
-* Log         (done)
 
 == Notes ==
-=== Image ===
-Upon deletion:
-* no 'ArticleDelete' event is fired.
-* recent changes table is cleared of any related entries
-* log entry is created
 
 == Theory Of Operation ==
-Page change events are trapped and the corresponding 'Recent Change Identifier' (i.e. rc_id) field is attached
-to a 'backup_operation' object. Trapping is done through the 'RecentChange_save' hook.
-When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. the hook 'backup' is called).
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -61,7 +41,7 @@ To install independantly from BizzWiki:
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/Backup/Backup.php');
+require('extensions/rsync/Backup.php');
 </source>
 * If desired, an updated 'includes/Article.php' file can be installed. See [[{{FULLPAGENAME}}#Article.php patch]].
 

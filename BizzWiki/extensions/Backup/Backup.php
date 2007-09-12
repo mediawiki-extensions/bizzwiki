@@ -27,8 +27,6 @@ StubManager::createStub2(	array(	'class' 		=> 'Backup',
 																'SpecialMovepageAfterMove',
 																'ArticleProtectComplete',
 																'ImageDoDeleteBegin',  // supported through [[Extension:ImagePageEx]]
-																#'hAddNewAccount',
-																#'hUploadComplete',
 															),
 									// exclude the following namespaces
 									'enss'			=> $backupExt

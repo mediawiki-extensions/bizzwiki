@@ -268,3 +268,6 @@ $Id$
 * Fixed PHP warning in [[Extension:SidebarEx]]
 * Added [[Extension:Backup]]
 * First pass clean-up of unused scripts in /scripts
+* Clean of unused extensions (SimpleReplicator, Updater and UserClassEx)
+* Added 'isExtensionRegistered' & 'configureExtension' & 'getVersion' methods to [[Extension:StubManager]]
+*
