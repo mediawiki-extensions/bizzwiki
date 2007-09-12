@@ -141,15 +141,6 @@ class Backup
 	}
 	
 	/**
-		TBD
-	 */
-	public function hAddNewAccount( &$user )
-	{
-	
-		return true;		
-	}
-	
-	/**
 		Just send the 'page' details which contain the 'restrictions'
 		aka 'protection' information.	
 	 */
@@ -268,31 +259,43 @@ class backup_operation
 	// Commit Operation parameters
 	var $includeRevision;
 	var $deferralRequired;
-	
+
+	// parameters	
 	var $id;
 	var $timestamp;
 	
 	var $action;
 	var $ns;
 	var $titre;
-	var $rev_id;
+	var $revId;
 
 	var $sourceTitle;	// for move action
+		
+	// Object references
+	var $revision;
+	var $title;
 
 	var $history;		// current or full
 	
 	var $text;
 	
-	public function __construct( $action, &$object, $includeRevision = false, $id=null, $ts=null )
+	public function __construct( $action, &$object, $includeRevisionText = false, $id=null, $ts=null )
 	{
-		$this->rev_id = null;
-		
-		$this->getNsTitleRevision( $object, $this->ns, $this->titre, $this->rev_id );
+		$this->revision = null;
+		$this->title = null;		
+		// for page move.
+		$this->sourceTitle = null;
+
+		// get the critical information.		
+		$this->getNsTitleRevision( $object, $this->ns, $this->titre, $this->revision, $this->title );
 	
+		$this->revId = $this->revision->getId();
 		$this->action = $action;
-		$this->includeRevision = $includeRevision;
+		$this->includeRevisionText = $includeRevisionText;
 		$this->deferralRequired = $this->getDeferralState( );
 
+		// an 'rc' object comes in when the transaction
+		// is related to a 'logging' event.
 		if ( $object instanceof RecentChange )
 		{
 			$this->id = $object->mAttribs['rc_id'];
@@ -303,11 +306,8 @@ class backup_operation
 			$this->id = $id;
 			$this->timestamp = $ts;
 		}
-		
-		// for page move.
-		$this->sourceTitle = null;
 	}
-	private function getNsTitleRevision( &$object, &$ns, &$titre, &$rev )
+	private function getNsTitleRevision( &$object, &$ns, &$titre, &$rev, &$title )
 	{
 		if ( $object instanceof RecentChange )
 		{
@@ -315,11 +315,12 @@ class backup_operation
 			$title = $object->mAttribs['rc_title'];	
 			return true;
 		}
-		
+		// For Image Delete, the object will still be
+		// an instanceof Article
 		if ( $object instanceof Article )
 		{
 			$title = $object->mTitle;
-			$rev = $object->mRevision;
+			$rev =& $object->mRevision;
 		}
 			
 		// cases: page move
