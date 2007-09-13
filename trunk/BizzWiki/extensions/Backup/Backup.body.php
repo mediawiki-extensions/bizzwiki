@@ -325,7 +325,14 @@ class backup_operation
 			
 		// cases: page move
 		if ( $object instanceof Title )
+		{
 			$title = $object;
+			
+			// upon page move, the revision id
+			// for this object will be overriden
+			// when the 'setSourceTitle' method is invoked.
+			$rev = $object->getLatestRevID();
+		}
 
 		$ns = $title->getNamespace();
 		$titre = $title->getText();
@@ -333,8 +340,18 @@ class backup_operation
 		return true;
 	}
 	public function setIdTs( $id, $ts ) { $this->id = $id; $this->timestamp = $ts; }
-	public function setSourceTitle( &$t ) { $this->sourceTitle = $t; }
 	public function getDeferralState( ) { return in_array( $this->action, self::$deferred ); }
+	
+	/**
+		This method is used when handling the 'page move' operation.
+		The 'revision id' will be set as the 'latest revision' from the source
+		title object.
+	 */
+	public function setSourceTitle( &$t ) 
+	{ 
+		$this->sourceTitle = $t; 
+		$this->revision = $t->getLatestRevID();
+	}
 	
 } // end class
 
