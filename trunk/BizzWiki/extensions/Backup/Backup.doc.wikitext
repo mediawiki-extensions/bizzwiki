@@ -30,7 +30,7 @@ This section is only valid when viewing the page in a BizzWiki environment.
 
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
-== Purpose==
+== Purpose ==
 Defines a new hook 'backup' as a service to backup extensions.
 
 == Features ==
@@ -47,12 +47,8 @@ Defines a new hook 'backup' as a service to backup extensions.
 ** Move       (not allowed - hence, nothing to implement)
 * Log         (done)
 
-== Notes ==
-=== Image ===
-Upon deletion:
-* no 'ArticleDelete' event is fired.
-* recent changes table is cleared of any related entries
-* log entry is created
+== Usage ==
+This extension is meant to serve other extensions. It is not meant to be used 'standalone'.
 
 == Theory Of Operation ==
 Page change events are trapped and the corresponding 'Recent Change Identifier' (i.e. rc_id) field is attached
@@ -63,6 +59,7 @@ When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. t
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
+* (optional) patched Article.php
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -79,12 +76,14 @@ MediaWiki by default purges the 'recent changes' table for entries related to a 
 This behavior introduces some rather annoying side effects to this extension. A patched copy of Article.php
 can be downloaded from BizzWiki's repository.
 
-== History ==
+== Notes ==
+=== Image ===
+Upon deletion:
+* no 'ArticleDelete' event is fired.
+* recent changes table is cleared of any related entries
+* log entry is created
 
-== See Also ==
-This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
-
-== Todo ==
+=== Revision Identifier ===
 Verify that the 'revision id' information is safely trapped:
 * Page
 ** Creation   || ArticleSave              || rev_id OK
@@ -98,3 +97,8 @@ Verify that the 'revision id' information is safely trapped:
 ** Delete     || ImageDoDeleteBegin       || rev_id OK
 ** Re-upload  || FileUpload               || (done) (same as upload)
 ** Move       (OK as it is not allowed anyway)
+
+== History ==
+
+== See Also ==
+This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
