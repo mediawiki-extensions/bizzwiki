@@ -27,6 +27,21 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Purpose ==
 
 == Features ==
+=== Operations ===
+* <b>Bucket</b>
+** PUT
+** PUT ACL
+** GET     (with options e.g. prefix)
+** GET ACL
+** DELETE
+* <b>Object</b>
+** PUT
+** PUT ACL
+** GET
+** GET ACL
+** DELETE
+** HEAD
+
 == Usage ==
 
 
