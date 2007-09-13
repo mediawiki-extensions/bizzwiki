@@ -57,7 +57,7 @@ The 'revision' information is the critical information: every page change is ass
  
 When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. the hook 'backup' is called).
 
-== Dependancy ==
+== Dependancies ==
 * [[Extension:StubManager|StubManager extension]]
 * (optional) patched Article.php
 * (optional but strongly recommended) [[Extension:ImagePageEx]]

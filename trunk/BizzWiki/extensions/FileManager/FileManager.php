@@ -147,7 +147,6 @@ class FileManager
 		#$this->requestTitle = $wgRequest->getText( 'title' );
 	}
 	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
-	// setup of this hook occurs in 'ExtensionClass' base class.
 	{
 		global $wgExtensionCredits;
 
