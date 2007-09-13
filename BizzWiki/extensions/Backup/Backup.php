@@ -19,7 +19,7 @@ if (defined('NS_DIRECTORY'))	$backupExt[] = NS_DIRECTORY;
 if (defined('NS_EXT'))			$backupExt[] = NS_EXT;
 
 StubManager::createStub2(	array(	'class' 		=> 'Backup', 
-									'classfilename'	=> $bwExtPath.'/Backup/Backup.body.php',
+									'classfilename'	=> dirname(__FILE__).'/Backup.body.php',
 									'hooks'			=> array(	'RecentChange_save',
 																'ArticleSaveComplete',
 																'ArticleDeleteComplete',

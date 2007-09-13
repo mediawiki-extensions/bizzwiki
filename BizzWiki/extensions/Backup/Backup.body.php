@@ -20,7 +20,7 @@ $wgExtensionCredits[Backup::thisType][] = array(
 
 class Backup
 {
-	const thisType = 'other';
+	const thisType = 'hook';
 	const thisName = 'Backup';
 	
 	//
