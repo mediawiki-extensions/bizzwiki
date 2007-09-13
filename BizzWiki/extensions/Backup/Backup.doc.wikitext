@@ -1,7 +1,14 @@
 {{Extension
 |name        = Backup
 |status      = beta
-|type        = other
+|type        = hook
+|hook1       = RecentChange_save
+|hook2       = ArticleSaveComplete
+|hook3       = ArticleDeleteComplete
+|hook4       = ArticleDelete
+|hook5       = SpecialMovepageAfterMove
+|hook6       = ArticleProtectComplete
+|hook7       = ImageDoDeleteBegin
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)
@@ -83,12 +90,11 @@ Verify that the 'revision id' information is safely trapped:
 ** Creation   || ArticleSave              || rev_id OK
 ** Update     || ArticleSave              || rev_id OK
 ** Delete     || ArticleDeleteComplete    || rev_id OK
-** Move       || SpecialMovepageAfterMove || ???
+** Move       || SpecialMovepageAfterMove || rev_id OK (set to latest ID of source title)
 ** Protection || ArticleProtectComplete   || rev_id OK
 * Log         || RecentChange_save        || rev_id *NOT NEEDED*
 * File
 ** Upload     || FileUpload               || rev_id OK
 ** Delete     || ImageDoDeleteBegin       || rev_id OK
-** Re-upload  (done) (same as upload)
-** Move       (OK)
-
+** Re-upload  || FileUpload               || (done) (same as upload)
+** Move       (OK as it is not allowed anyway)
