@@ -60,6 +60,7 @@ When a complete 'backup_operation' is ready, the event 'backup' is fired (i.e. t
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
 * (optional) patched Article.php
+* (optional but strongly recommended) [[Extension:ImagePageEx]]
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -70,6 +71,8 @@ To install independantly from BizzWiki:
 require('extensions/Backup/Backup.php');
 </source>
 * If desired, an updated 'includes/Article.php' file can be installed. See [[{{FULLPAGENAME}}#Article.php patch]].
+* If desired but strongly recommended, [[Extension:ImagePageEx]] should be installed in order to properly
+process deletion in the NS_IMAGE namespace.
 
 == Article.php patch ==
 MediaWiki by default purges the 'recent changes' table for entries related to a delete article/image.
