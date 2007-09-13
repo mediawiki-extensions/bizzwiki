@@ -39,13 +39,20 @@ class BackupS3
 		global $wgExtensionCredits;
 
 		// TODO
-
+		$msg = $this->getDebugMessage();
+		
 		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
 			if (isset($el['name']))		
 				if ($el['name']==self::thisName)
-					$el['description'].=$hresult;
+					$el['description'] .= $msg;
 				
 		return true; // continue hook-chain.
+	}
+	/**
+	 */
+	private function getDebugMessage()
+	{
+		
 	}
 	/**
 		Main hook: this method is called when the event 'Backup'
