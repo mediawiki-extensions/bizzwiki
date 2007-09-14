@@ -89,8 +89,8 @@ $wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension
 					// to achieve the same goal. It is included by default in BizzWiki.
 
 // Required for the following extensions:
-// [[Extension:ManageNamespaces]]
-$wgUseAjax = true;
+// [[Extension:]]
+# $wgUseAjax = true;
 
 // Capital Letter Links
 // are annoying for NS_FILESYSTEM & NS_DIRECTORY namespaces
@@ -164,7 +164,7 @@ foreach ( $bwNamespacesWithSubpages as $index => $bwx )
 	3) All rights
 	4) Provision the new permission settings
 */
-require('extensions/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
+require( $bwExtPath.'/HierarchicalNamespacePermissions/HierarchicalNamespacePermissions.php');
 
 require( $bwExtPath.'/RawRight/RawRight_stub.php');
 require( $bwExtPath.'/ViewsourceRight/ViewsourceRight_stub.php');
