@@ -272,4 +272,5 @@ $Id$
 * Added 'isExtensionRegistered' & 'configureExtension' & 'getVersion' methods to [[Extension:StubManager]]
 * Moved logo related files to /logo directory
 * Deleted 'specialpages' directory
+* Added [[Extension:TagToTemplate]] extension
 * 
