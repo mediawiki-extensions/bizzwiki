@@ -88,6 +88,10 @@ $wgCachePages        = true;
 $wgRawHtml = false;  // on protected pages, one can use 'SecureHTML' extension 
 					// to achieve the same goal. It is included by default in BizzWiki.
 
+// Required for the following extensions:
+// [[Extension:ManageNamespaces]]
+$wgUseAjax = true;
+
 // Capital Letter Links
 // are annoying for NS_FILESYSTEM & NS_DIRECTORY namespaces
 $wgCapitalLinks = false;
@@ -486,8 +490,9 @@ require( $bwExtPath.'/NamespaceManager/NamespaceManager.php');
 require( $bwExtPath.'/SpecialPagesChangeLocation/SpecialPagesChangeLocation.php' );
 SpecialPagesChangeLocation::setPage( 'MediaWiki:SpecialPages' );
 
-require( $bwExtPath.'/Backup/Backup.php' );
-
+#require( $bwExtPath.'/Backup/Backup.php' );
+#require( $bwExtPath.'/Etag/Etag.php' );
+require( $bwExtPath.'/TagToTemplate/TagToTemplate.php' );
 #require('extensions/ExtensionManager/ExtensionManager_stub.php');
 
 
