@@ -271,4 +271,5 @@ $Id$
 * Clean of unused extensions (SimpleReplicator, Updater and UserClassEx)
 * Added 'isExtensionRegistered' & 'configureExtension' & 'getVersion' methods to [[Extension:StubManager]]
 * Moved logo related files to /logo directory
+* Deleted 'specialpages' directory
 * 
