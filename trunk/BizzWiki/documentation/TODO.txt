@@ -66,13 +66,6 @@ $Id$
 ** see Manual:$wgAddGroups
 ** see Manual:$wgRemoveGroups
 
-== Replication functionality ==
-* MW Special Page for managing the Replicator
-* PHP scripts / Cron Jobs for Replicator
-* SECURE way of gettings the 'user' table (ALL the fields !)
-* Waiting for bug #10644 to be resolved
-* Waiting for 'LogEvents' API to be fixed
-
 == JOBS ==
 * FetchPartnerUser table:   when an entry 'user creation log' appears in log?
 * FetchPartnerPage
@@ -88,6 +81,7 @@ $Id$
 
 == Security ==
 * HTTPS
+* Log tentative permission violation? (e.g. SecureProperties, SecureHTML etc.)
 
 == Presentation Layer ==
 * Short URL

@@ -25,24 +25,77 @@ class AmazonS3
 	
 	// current entities
 	var $bucket;
+	var $buckets;
 	var $obj_list;
 
 	public function __construct( $secret_key, $bucket = null )
 	{
 		$this->secret_key = $secret_key;
 		$this->bucket = $bucket;
-		$this->obj_list = null;
 		
+		$this->init();
+	}
+	
+	public function init()
+	{
 		// initialize the defaults.
 		$this->timeout = self::c_timeout;
 		$this->port = self::c_port;
 		$this->site = self::amazon_site;
+		
+		$this->obj_list = null;		
+		$this->buckets = null;
 	}
-	
 	public function setTimeout( $t ) { $this->timeout = $t; }
 	public function setPort( $p ) { $this->port = $p; }
 	public function setSite( $s ) { $this->site = $s; }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// BUCKET RELATED
+	public function putBucket()
+	{}
+
+	public function getBuckets()
+	{
+		if (!empty( $this->buckets ))
+			return $this->buckets;
+			
+	}
+	
+	public function deleteBucket()
+	{}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// OBJECT RELATED
+	public function getObject()
+	{}
+	
+	public function putObject()
+	{}
+
+	public function deleteObject()
+	{}
+	
+	public function headObject()
+	{}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// ACL RELATED
+	public function getBucketAcl()
+	{
+		
+	}
+
+	public function getObjectAcl()
+	{}
+	
+	public function setBucketAcl()
+	{}
+	
+	public function setObjectAcl()
+	{}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	/**
 		Uses the CURL library to fetch a WEB page.
 	 */
