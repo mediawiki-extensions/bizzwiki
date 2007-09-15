@@ -85,7 +85,7 @@ $wgExtensionCredits[FormProc::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Handles "action=formsubmit" post requests through page based PHP code',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:FormProc',			
 );
 
 class FormProc

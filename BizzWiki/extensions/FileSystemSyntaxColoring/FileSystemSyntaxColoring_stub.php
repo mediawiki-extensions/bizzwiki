@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'FileSystemSyntaxColoring', 
-							$bwExtPath.'/FileSystemSyntaxColoring/FileSystemSyntaxColoring.php',
+							dirname(__FILE__).'/FileSystemSyntaxColoring.php',
 							null,
 							array( 'ArticleAfterFetchContent', 'ParserBeforeStrip' ),
 							false,	// no need for logging support

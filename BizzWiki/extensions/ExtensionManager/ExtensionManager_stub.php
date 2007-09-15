@@ -69,7 +69,7 @@ $wgExtensionCredits['other'][] = array(
 	'version' 	=> NamespaceManagers::getRevisionId('$Id$'),
 	'author'  	=> 'Jean-Lou Dupont',
 	'description' => "Provides installation and maintenance for MediaWiki extensions. ", 
-	'url' 		=> NamespaceManagers::getFullUrl(__FILE__),	
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ExtensionManager',	
 );
 
 require('ExtensionManager.i18n.php');

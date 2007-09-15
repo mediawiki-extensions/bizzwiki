@@ -32,7 +32,7 @@ See details about this extension on [[Extension:AutoRedirect]].
 <!--</wikitext>--><source lang=php>*/
 
 StubManager::createStub2(	array(	'class' 		=> 'AutoRedirect', 
-									'classfilename'	=> $bwExtPath.'/AutoRedirect/AutoRedirect.php',
+									'classfilename'	=> dirname(__FILE__).'/AutoRedirect.php',
 									'mgs' 			=> array( 'autoredirect' ),
 								)
 						);

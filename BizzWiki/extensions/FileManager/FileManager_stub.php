@@ -37,14 +37,10 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub2(
 				array(	'class' 		=> 'FileManager', 
-						'classfilename' => $bwExtPath.'/FileManager/FileManager.php',
-						'i18nfilename'	=> $bwExtPath.'/FileManager/FileManager.i18n.php',
+						'classfilename' => dirname(__FILE__).'/FileManager.php',
+						'i18nfilename'	=> dirname(__FILE__).'/FileManager.i18n.php',
 						'logging'		=> true,
 						'hooks'			=> array( 'ArticleSave','ArticleFromTitle','EditFormPreloadText', 
 												'OutputPageBeforeHTML', 'SkinTemplateTabs', 'UnknownAction',

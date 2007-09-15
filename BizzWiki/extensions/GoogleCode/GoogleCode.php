@@ -67,7 +67,7 @@ $wgExtensionCredits[GoogleCode::thisType][] = array(
 	'version' 	=> StubManager::getRevisionId('$Id$'),
 	'author'  	=> 'Jean-Lou Dupont',
 	'description' => "Secure syntax highlighting of source code found on GoogleCode SVN", 
-	'url' 		=> StubManager::getFullUrl(__FILE__),	
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:GoogleCode',	
 );
 
 require('GoogleCode.i18n.php');

@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'AutoLanguage', 
-							$bwExtPath.'/AutoLanguage/AutoLanguage.php',
+							dirname(__FILE__).'/AutoLanguage.php',
 							null,							
 							array('ArticleFromTitle'),
 							false

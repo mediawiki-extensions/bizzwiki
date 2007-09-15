@@ -91,7 +91,7 @@ $wgExtensionCredits[AddScriptCss::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Adds javascript and css scripts to the page HEAD or BODY sections',
-	'url' 		=> StubManager::getFullUrl(__FILE__),
+	'url'		=> 'http://mediawiki.org/wiki/Extension:AddScriptCss',
 );
 
 class AddScriptCss

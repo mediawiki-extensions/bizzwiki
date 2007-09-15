@@ -37,13 +37,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'EmailLog', 
-							$bwExtPath.'/EmailLog/EmailLog.php',
-							$bwExtPath.'/EmailLog/EmailLog.i18n.php',							
+							dirname(__FILE__).'/EmailLog.php',
+							dirname(__FILE__).'/EmailLog.i18n.php',							
 							array('EmailUserComplete'),
 							true
 						 );

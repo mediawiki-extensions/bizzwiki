@@ -10,6 +10,9 @@
 
 class ManageNamespaces
 {
+	const thisType = 'parser';
+	const thisName = 'ManageNamespaces';
+	
 	// name of global variable containing the
 	// managed namespaces
 	static $gName = 'bwManagedNamespaces';
@@ -23,14 +26,6 @@ class ManageNamespaces
 	public function __construct() 
 	{ 
 		self::$spFilename = dirname(__FILE__).'/ManageNamespaces.specialpage.wikitext';
-		self::$msgFile = dirname(__FILE__).'/ManageNamespaces.i18n.php';
-				
-		parent::__construct(	"ManageNamespaces", // special page name
-								self::$spFilename,	// filename of page template
-								self::$msgFile,		// filename of i18n messages
-								'sysop' 			// required right
-							); 
-		
 		self::$mnName = dirname(__FILE__).'/ManageNamespaces.namespaces.php';
 		
 		// help the user a bit by making sure
@@ -38,6 +33,12 @@ class ManageNamespaces
 		@chmod( self::$mnName, 700 );
 	}
 	protected function init()
+	{
+		
+	}
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	public function mgs_mns( )
 	{
 		
 	}

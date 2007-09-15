@@ -172,7 +172,7 @@ class hnpClass
 			'version' => self::getRevisionId(),
 			'author'  => 'Jean-Lou Dupont',
 			'description' => 'Hierarchical permissions management system',
-			'url' => 'http://www.bizzwiki.org',
+			'url' => 'http://mediawiki.org/wiki/Extension:Hierarchical_Namespace_Permissions',
 		);
 			
 	

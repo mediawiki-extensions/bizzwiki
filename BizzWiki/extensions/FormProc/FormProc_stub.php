@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'FormProc', 
-							$bwExtPath.'/FormProc/FormProc.php',
+							dirname(__FILE__).'/FormProc.php',
 							null,
 							array( 'UnknownAction' ),
 							false,	// no need for logging support
