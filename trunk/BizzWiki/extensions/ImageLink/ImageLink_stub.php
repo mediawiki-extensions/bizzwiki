@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'ImageLink', 
-							$bwExtPath.'/ImageLink/ImageLink.php',
+							dirname(__FILE__).'/ImageLink.php',
 							null,					// i18n file			
 							array('ParserAfterTidy'),	// hooks
 							false, 					// no need for logging support

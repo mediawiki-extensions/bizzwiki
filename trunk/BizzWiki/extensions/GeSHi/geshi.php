@@ -73,7 +73,7 @@ $wgExtensionCredits[geshiClass::thisType][] = array(
 	'version'     	=> StubManager::getRevisionId( '$Id$' ),
 	'author'      	=> 'Jean-Lou Dupont', 
 	'description' 	=> 'Handles generic syntax highlighting',
-	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'url' 			=> 'http://mediawiki.org/wiki/Extension:Geshi',			
 );
 
 include_once('geshi/geshi.php');

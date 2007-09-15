@@ -51,7 +51,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 <!--</wikitext>--><source lang=php>*/
 
 StubManager::createStub2(	array(	'class' 		=> 'DirectoryManager', 
-									'classfilename'	=> $bwExtPath.'/DirectoryManager/DirectoryManager.php',
+									'classfilename'	=> dirname(__FILE__).'/DirectoryManager.php',
 									'hooks'			=> array(	'ArticleFromTitle',
 																'CustomEditor',
 															), //end hooks

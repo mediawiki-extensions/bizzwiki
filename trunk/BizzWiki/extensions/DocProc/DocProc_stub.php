@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'DocProc', 
-							$bwExtPath.'/DocProc/DocProc.php',
+							dirname(__FILE__).'/DocProc.php',
 							null,							
 							null,
 							false, 					// no need for logging support

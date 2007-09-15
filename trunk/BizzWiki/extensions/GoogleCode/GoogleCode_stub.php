@@ -52,7 +52,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 <!--</wikitext>--><source lang=php>*/
 
 StubManager::createStub2(	array(	'class' 		=> 'GoogleCode', 
-									'classfilename'	=> $bwExtPath.'/GoogleCode/GoogleCode.php',
+									'classfilename'	=> dirname(__FILE__).'/GoogleCode.php',
 									'tags'			=> array( 'gcode' ),
 									'mgs'			=> array( 'gcode' )
 								)

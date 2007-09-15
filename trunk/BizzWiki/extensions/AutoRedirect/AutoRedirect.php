@@ -62,6 +62,7 @@ $wgExtensionCredits[AutoRedirect::thisType][] = array(
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => "Provides a magic word to automatically create redirect pages", 
+	'url'		=> 'http://mediawiki.org/wiki/Extension:AutoRedirect',
 );
 
 class AutoRedirect

@@ -66,7 +66,7 @@ $wgExtensionCredits[ImageLink::thisType][] = array(
 	'version'     	=> StubManager::getRevisionId( '$Id$' ),
 	'author'      	=> 'Jean-Lou Dupont', 
 	'description' 	=> 'Provides a clickable image link',
-	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'url' 			=> 'http://mediawiki.org/wiki/Extension:ImageLink',			
 );
 
 class ImageLink

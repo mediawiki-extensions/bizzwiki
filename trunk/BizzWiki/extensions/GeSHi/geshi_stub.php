@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'geshiClass', 
-							$bwExtPath.'/GeSHi/geshi.php',
+							dirname(__FILE__).'/geshi.php',
 							null,
 							array( 'SyntaxHighlight' ),
 							false,	// no need for logging support

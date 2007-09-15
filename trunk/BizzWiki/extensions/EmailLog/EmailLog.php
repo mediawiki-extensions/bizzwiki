@@ -48,7 +48,8 @@ $wgExtensionCredits[EmailLog::thisType][] = array(
 	'name'    => EmailLog::thisName,
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
-	'description' => 'Provides logging of user-to-user emailing activities', 
+	'description' => 'Provides logging of user-to-user emailing activities',
+	'url'		=> 'http://mediawiki.org/wiki/Extension:EmailLog',
 );
 require_once('EmailLog.i18n.php');
 

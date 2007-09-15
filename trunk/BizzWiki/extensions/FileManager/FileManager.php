@@ -89,7 +89,7 @@ $wgExtensionCredits['other'][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Manages the files in a Mediawiki installation. Namespace for filesystem is ',
-	'url' 		=> StubManager::getFullUrl(__FILE__),
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:FileManager',
 );
 
 require( 'FileManager.i18n.php' );

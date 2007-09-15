@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'AddScriptCss', 
-							$bwExtPath.'/addScriptCss/AddScriptCss.php',
+							dirname(__FILE__).'/AddScriptCss.php',
 							null,							
 							array( 'OutputPageBeforeHTML', 'ParserAfterTidy' ),
 							false, 								// no need for logging support

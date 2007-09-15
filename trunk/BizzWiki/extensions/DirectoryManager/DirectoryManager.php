@@ -72,7 +72,7 @@ $wgExtensionCredits[DirectoryManager::thisType][] = array(
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => "Provides a namespace 'Directory' for browsing the filesystem of a MediaWiki installation.", 
-	'url' 		=> StubManager::getFullUrl(__FILE__),	
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:DirectoryManager',	
 );
 
 class DirectoryManager

@@ -65,7 +65,7 @@ $wgExtensionCredits[DocProc::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => "Documents wikitext with 'markup/magic words' whilst still processing as per normal.",
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:DocProc',			
 );
 
 class DocProc

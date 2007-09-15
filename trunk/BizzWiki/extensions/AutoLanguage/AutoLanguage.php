@@ -68,7 +68,7 @@ $wgExtensionCredits[AutoLanguage::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Automatic page language switching based on user preference',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url'		=> 'http://mediawiki.org/wiki/Extension:AutoLanguage',
 );
 
 class AutoLanguage
