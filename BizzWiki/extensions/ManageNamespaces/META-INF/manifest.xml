@@ -6,7 +6,6 @@
  <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ManageNamespaces.body.php"/>
  <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ManageNamespaces.php"/>
  <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ManageNamespaces.i18n.php"/>
- <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ManageNamespaces.i18n.log.php"/>
  <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ManageNamespaces.namespaces.php"/>
 
  <manifest:file-entry manifest:media-type="text/wikitext" manifest:full-path="ManageNamespaces.doc.wikitext"/>

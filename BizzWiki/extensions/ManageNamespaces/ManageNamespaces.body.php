@@ -8,7 +8,7 @@
 <!--</wikitext>-->*/
 //<source lang=php>
 
-class ManageNamespaces extends SpecialPageHelperClass
+class ManageNamespaces
 {
 	// name of global variable containing the
 	// managed namespaces
