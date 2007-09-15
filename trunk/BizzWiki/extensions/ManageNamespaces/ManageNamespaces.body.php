@@ -8,7 +8,7 @@
 <!--</wikitext>-->*/
 //<source lang=php>
 
-class ManageNamespaces extends SpecialPage
+class ManageNamespaces extends SpecialPageHelperClass
 {
 	// name of global variable containing the
 	// managed namespaces
@@ -23,8 +23,13 @@ class ManageNamespaces extends SpecialPage
 	public function __construct() 
 	{ 
 		self::$spFilename = dirname(__FILE__).'/ManageNamespaces.specialpage.wikitext';
-		
-		parent::__construct("ManageNamespaces", self::$spFilename ); 
+		self::$msgFile = dirname(__FILE__).'/ManageNamespaces.i18n.php';
+				
+		parent::__construct(	"ManageNamespaces", // special page name
+								self::$spFilename,	// filename of page template
+								self::$msgFile,		// filename of i18n messages
+								'sysop' 			// required right
+							); 
 		
 		self::$mnName = dirname(__FILE__).'/ManageNamespaces.namespaces.php';
 		
@@ -66,18 +71,18 @@ class ManageNamespaces extends SpecialPage
 	{
 		global $wgOut, $wgUser;
 
-		$wgOut->setPagetitle( wfMsg( "desysoptitle" ) );
-		$text = wfMsg( "desysopok", $this->mUser );
+		$wgOut->setPagetitle( wfMsg( "managenamespaces-" ) );
+		$text = wfMsg( "managenamespaces-", $this->mUser );
 		$text .= "\n\n";
 		$wgOut->addWikiText( $text );
 		$this->showForm();
 	}
 
-	function showFail( $msg = 'set_rights_fail' ) 
+	function showFail( $msg = 'managenamespaces-' ) 
 	{
 		global $wgOut, $wgUser;
 
-		$wgOut->setPagetitle( wfMsg( "desysoptitle" ) );
+		$wgOut->setPagetitle( wfMsg( "managenamespaces-" ) );
 		$this->showForm( wfMsg( $msg, $this->mUser ) );
 	}
 

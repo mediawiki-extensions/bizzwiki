@@ -65,8 +65,9 @@ class SpecialPageHelperClass extends SpecialPage
 	var $right;
 	var $submit;
 	var $filename;
+	static $msg;
 	
-	public function __construct( $t, &$filename, $right = null ) 
+	public function __construct( $t, &$filename, &$msgfile, $right = null ) 
 	{
 		parent::__construct( $t );
 		
@@ -76,7 +77,14 @@ class SpecialPageHelperClass extends SpecialPage
 		$this->submit = false;
 		$this->right = $right;
 		
-		$this->init();
+		// messages.
+		$this->msgfile = $msgfile;
+		@require( $msgfile );
+	}
+	public function addMessages( &$msg )
+	{
+		self::$msg = $msg;
+		$this->init();		
 	}
 	protected function init()
 	{
@@ -92,10 +100,9 @@ class SpecialPageHelperClass extends SpecialPage
 		//do permission checks first.
 		if ( $wgUser->isAnon() or $wgUser->isBlocked() ) 
 		{
-			$wgOut->errorpage( "movenologin", "movenologintext" );
+			$this->displayRestrictionError();
 			return;
 		}
-
 		if ( !$wgUser->isAllowed( $this->right ) ) 
 		{
 			$this->displayRestrictionError();
