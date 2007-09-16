@@ -12,6 +12,9 @@
 ManageNamespaces::addMessages( array(
 'en' => array(
 // en section
+'managenamespaces'.'-incorrect-page' 	=> 'The parser function <b>#mns</b> can not be used on this page.<br/>',
+'managenamespaces'.'-insufficient-right'=> 'Insufficient right to execute the parser function <b>#mns</b>.<br/>',
+
 'managenamespaces'					=> '<b>Manage Namespaces</b>',
 'managenamespaces'.'-begin'			=> '<table border="1" id="mns">'.
 										'<thead>'.
