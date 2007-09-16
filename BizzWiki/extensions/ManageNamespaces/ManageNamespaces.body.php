@@ -16,6 +16,9 @@ class ManageNamespaces
 	// Marker definition
 	static $marker = '__MNS__$1__';
 	
+	// Registry Page
+	static $rPage = 'MediaWiki:Registry/Namespaces';
+	
 	// map array containing the new
 	// namespace mapping.
 	var $nsMap;
@@ -49,6 +52,15 @@ class ManageNamespaces
 	 */
 	public function mg_mns( &$parser, $index, $name )
 	{
+		// Make sure that this parser function is only used
+		// on the allowed registry page
+		if (!$this->checkRegistryPage( $parser->mTitle))
+			return wfMsg('managenamespaces'.'-incorrect-page');
+		
+		// Also make sure that the user has the appropriate right
+		if (!$this->checkRight())
+			return wfMsg('managenamespaces'.'-insufficient-right');
+		
 		// at this point, just accumulate the requested changes	
 		$this->nsMap[] = array( $index => $name );
 		return $this->getMarker( count( $this->nsMap )-1 );
@@ -71,17 +83,32 @@ class ManageNamespaces
 	 */
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $watch, $sectionanchor, &$flags )
 	{
+		// just trap events related to the registry page in question here
+		if ( !$this->checkRegistryPage( $article ) )
+			return true;
+		
+		$r = $this->updateFile();
+		$this->updateLog( $r );
 		
 		return true;
+	}
+	protected function checkRegistryPage( &$object )
+	{
+		if ($object instanceof Title)
+			return (($object->getFullText() == self::$rPage) ? true:false );
+		return (( $object->mTitle->getFullText() == self::$rPage ) ? true:false);	
 	}
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	/**
 		The 'immutable' list contains the namespaces that cannot be
 		managed through this extension.
+		
+		The list in question is ($wgCanonicalNamespaceNames - $bwManagedNamespaces)
 	 */
 	protected function getImmutableNamespaceList()
 	{
-		
+		global $wgCanonicalNamespaceNames, $bwManagedNamespaces;
+		return array_diff($wgCanonicalNamespaceNames, $bwManagedNamespaces);	
 	}
 	
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,11 +118,14 @@ class ManageNamespaces
 		
 	}
 
-	private function writeFile()
+	private function updateFile()
 	{
 		
 	}
-
+	private function updateLog( &$result )
+	{
+		
+	}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
