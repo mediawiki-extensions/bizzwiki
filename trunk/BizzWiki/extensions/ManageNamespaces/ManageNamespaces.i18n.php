@@ -12,8 +12,16 @@
 ManageNamespaces::addMessages( array(
 'en' => array(
 // en section
-'namespacemanager'								=> '<b>Namespace Manager: </b>',
-#'extensionmanager'.'' => '',
+'managenamespaces'					=> '<b>Manage Namespaces</b>',
+'managenamespaces'.'-begin'			=> '<table border="1" id="mns">'.
+										'<thead>'.
+										 '<tr><td>Index</td><td>Canonical Name</td></tr>'.  // only this to translate
+										'</thead>'.
+										 '<tbody>',
+'managenamespaces'.'-row'			=>    '<tr><td>$1</td><td>$2</td></tr>',
+'managenamespaces'.'-end'			=>   '</tbody>'.
+										'</table>',
+#'managenamespaces'.'' => '',
 #'' => '',
 ),
 // fr section
