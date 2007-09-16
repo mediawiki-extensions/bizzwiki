@@ -62,7 +62,7 @@ $wgExtensionCredits[UserLoginLogoutLog::thisType][] = array(
 	'version' 		=> StubManager::getRevisionId('$Id$'),
 	'author'  		=> 'Jean-Lou Dupont',
 	'description'	=> 'Provides logging of user login/logout activities.', 
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:UserLoginLogoutLog',			
 );
 require_once('UserLoginLogoutLog.i18n.php');
 

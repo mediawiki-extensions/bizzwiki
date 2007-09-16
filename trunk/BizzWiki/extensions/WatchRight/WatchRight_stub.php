@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'WatchRight', 
-							$bwExtPath.'/WatchRight/WatchRight.php',
+							dirname(__FILE__).'/WatchRight.php',
 							null,
 							array( 'WatchArticle','UnwatchArticle','SkinTemplateTabs' ),
 							false,	// no need for logging support

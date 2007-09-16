@@ -76,7 +76,7 @@ $wgExtensionCredits[SecureHTML::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Enables secure HTML code on protected pages',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:SecureHTML',			
 );
 
 class SecureHTML

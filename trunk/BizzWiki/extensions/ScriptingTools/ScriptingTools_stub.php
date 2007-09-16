@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'ScriptingTools', 
-							$bwExtPath.'/ScriptingTools/ScriptingTools.php',
+							dirname(__FILE__).'/ScriptingTools.php',
 							null,					// i18n file			
 							array('ArticleSave', 'ParserAfterTidy' ),	// hooks
 							false, 					// no need for logging support

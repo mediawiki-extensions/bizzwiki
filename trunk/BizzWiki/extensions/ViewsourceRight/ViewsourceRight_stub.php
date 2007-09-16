@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'ViewsourceRight', 
-							$bwExtPath.'/ViewsourceRight/ViewsourceRight.php',
+							dirname(__FILE__).'/ViewsourceRight.php',
 							null,
 							array( 'SpecialVersionExtensionTypes','AlternateEdit', 'SkinTemplateTabs' ),
 							false,	// no need for logging support

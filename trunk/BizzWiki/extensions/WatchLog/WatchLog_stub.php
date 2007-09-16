@@ -37,13 +37,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'WatchLog', 
-							$bwExtPath.'/WatchLog/WatchLog.php',
-							$bwExtPath.'/WatchLog/WatchLog.i18n.php',							
+							dirname(__FILE__).'/WatchLog.php',
+							dirname(__FILE__).'/WatchLog.i18n.php',							
 							array('WatchArticleComplete', 'UnwatchArticleComplete' ),
 							true
 						 );

@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'ParserPhase2', 
-							$bwExtPath.'/ParserPhase2/ParserPhase2.php',
+							dirname(__FILE__).'/ParserPhase2.php',
 							null,
 							array( 'OutputPageBeforeHTML','ParserAfterTidy','ParserBeforeStrip' ),
 							false,	// no need for logging support

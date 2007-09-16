@@ -52,7 +52,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 <!--</wikitext>--><source lang=php>*/
 
 StubManager::createStub2(	array(	'class' 		=> 'SecurePHP', 
-									'classfilename'	=> $bwExtPath.'/SecurePHP/SecurePHP.php',
+									'classfilename'	=> dirname(__FILE__).'/SecurePHP.php',
 									'tags'			=> array( 'runphp' )
 								)
 						);

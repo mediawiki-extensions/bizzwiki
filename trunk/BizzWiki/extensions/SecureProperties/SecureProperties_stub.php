@@ -37,13 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
-define('EXTENSION_SECUREPROPERTIES', true);
 StubManager::createStub(	'SecureProperties', 
-							$bwExtPath.'/SecureProperties/SecureProperties.php',
+							dirname(__FILE__).'/SecureProperties.php',
 							null,	// no i18n
 							null, 	// no hooks
 							false,	// no need for logging support

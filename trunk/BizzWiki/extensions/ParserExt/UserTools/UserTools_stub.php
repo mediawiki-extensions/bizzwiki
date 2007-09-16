@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub2(	array(	'class' 		=> 'UserTools', 
-									'classfilename'	=> $bwExtPath.'/ParserExt/UserTools/UserTools.php',
+									'classfilename'	=> dirname(__FILE__).'/UserTools.php',
 									'mgs'			=> array( 'cusergetoption', 'usergetoption' ),
 								)
 						);

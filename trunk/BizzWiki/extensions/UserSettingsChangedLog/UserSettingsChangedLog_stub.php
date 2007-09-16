@@ -37,13 +37,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'UserSettingsChangedLog', 
-							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.php',
-							$bwExtPath.'/UserSettingsChangedLog/UserSettingsChangedLog.i18n.php',							
+							dirname(__FILE__).'/UserSettingsChangedLog.php',
+							dirname(__FILE__).'/UserSettingsChangedLog.i18n.php',							
 							array('UserSettingsChanged'),
 							true
 						 );

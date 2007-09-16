@@ -91,7 +91,7 @@ $wgExtensionCredits[ForeachFunction::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Looping functions for global objects using parser functions',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ForeachFunction',			
 );
 
 class ForeachFunction

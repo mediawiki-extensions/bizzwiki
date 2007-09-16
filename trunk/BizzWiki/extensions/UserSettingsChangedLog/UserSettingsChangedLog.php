@@ -56,7 +56,7 @@ $wgExtensionCredits[UserSettingsChangedLog::thisType][] = array(
 	'version' 		=> StubManager::getRevisionId('$Id$'),
 	'author'  		=> 'Jean-Lou Dupont',
 	'description'	=> 'Provides logging of user settings changed', 
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:UserSettingsChangedLogging',			
 );
 require_once('UserSettingsChangedLog.i18n.php');
 

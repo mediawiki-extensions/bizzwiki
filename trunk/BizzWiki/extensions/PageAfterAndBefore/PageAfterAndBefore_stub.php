@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'PageAfterAndBefore', 
-							$bwExtPath.'/PageAfterAndBefore/PageAfterAndBefore.php',
+							dirname(__FILE__).'/PageAfterAndBefore.php',
 							null,					// i18n file			
 							null,					// hooks
 							false, 					// no need for logging support

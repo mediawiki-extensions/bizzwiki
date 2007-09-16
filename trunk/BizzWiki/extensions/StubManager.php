@@ -94,11 +94,11 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki platform]].
 <!--</wikitext>-->*/
 //<source lang=php>
 $wgExtensionCredits[StubManager::thisType][] = array( 
-	'name'    => StubManager::thisName,
-	'version' => StubManager::getRevisionId('$Id$'),
+	'name'    		=> StubManager::thisName,
+	'version' 		=> StubManager::getRevisionId('$Id$'),
 	'author'  		=> 'Jean-Lou Dupont',
 	'description'	=> 'Provides stubbing facility for extensions handling rare events. Extensions registered: ', 
-	'url'			=> StubManager::getFullUrl(__FILE__),				
+	'url'			=> 'http://mediawiki.org/wiki/Extension:StubManager',				
 );
 
 if (!defined('BIZZWIKI'))

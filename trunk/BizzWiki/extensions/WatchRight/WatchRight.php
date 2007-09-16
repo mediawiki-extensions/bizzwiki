@@ -56,7 +56,7 @@ $wgExtensionCredits[WatchRight::thisType][] = array(
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=> "Enforces 'watch/unwatch' rights",
-	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'url' 			=> 'http://mediawiki.org/wiki/Extension:WatchRight',			
 );
 
 class WatchRight

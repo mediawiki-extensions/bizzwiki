@@ -49,7 +49,7 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 $wgHooks['ArticleFromTitle'][] = 'bwVirtualPageSwitchInit';
 
 StubManager::createStub2(	array(	'class' 		=> 'VirtualPage', 
-									'classfilename'	=> $bwExtPath.'/VirtualPage/VirtualPage.php',
+									'classfilename'	=> dirname(__FILE__).'/VirtualPage.php',
 									'hooks'			=> array( 'VirtualPage' )
 								)
 						);

@@ -63,11 +63,8 @@ global $wgSpecialPages, $wgAutoloadClasses;
 $wgSpecialPages['SpecialPagesManagerUpdater'] = 'SpecialPagesManagerUpdater';
 $wgAutoloadClasses['SpecialPagesManagerUpdater'] = dirname(__FILE__) . "/SpecialPagesManagerUpdater.php" ;		
 
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'SpecialPagesManagerClass', 
-							$bwExtPath.'/SpecialPagesManager/SpecialPagesManagerClass.php',
+							dirname(__FILE__).'/SpecialPagesManagerClass.php',
 							null,
 							array( 'SpecialPageExecuteAfterPage' ),
 							false,	// no need for logging support

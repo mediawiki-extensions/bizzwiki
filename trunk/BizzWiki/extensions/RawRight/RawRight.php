@@ -61,7 +61,7 @@ $wgExtensionCredits[RawRight::thisType][] = array(
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=> "Status: ",
-	'url'			=> StubManager::getFullUrl(__FILE__),			
+	'url'			=> 'http://mediawiki.org/wiki/Extension:RawRight',			
 );
  
 class RawRight

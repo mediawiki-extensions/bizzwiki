@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'RecentChangesManager', 
-							$bwExtPath.'/RecentChangesManager/RecentChangesManager.php',
+							dirname(__FILE__).'/RecentChangesManager.php',
 							null,					// i18n file			
 							array('ArticleEditUpdatesDeleteFromRecentchanges'),	// hooks
 							false, 					// no need for logging support
