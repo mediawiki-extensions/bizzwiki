@@ -82,7 +82,7 @@ $wgExtensionCredits[ScriptingTools::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Provides an interface between MediaWiki scripting tools',
-	'url' 		=> StubManager::getFullUrl(__FILE__),						
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ScriptingTools',						
 );
 
 class ScriptingTools

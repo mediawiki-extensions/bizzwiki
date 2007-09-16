@@ -60,7 +60,7 @@ $wgExtensionCredits[NewUserEmailNotification::thisType][] = array(
 	'version' 		=> StubManager::getRevisionId('$Id$'),
 	'author'  		=> 'Jean-Lou Dupont',
 	'description'	=> 'Provides email notification of new user account creation', 
-	'url'			=> StubManager::getFullUrl(__FILE__),				
+	'url'			=> 'http://mediawiki.org/wiki/Extension:NewUserEmailNotification',				
 );
 require_once( 'NewUserEmailNotification.i18n.php');
 		

@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'PermissionFunctions', 
-							$bwExtPath.'/ParserExt/PermissionFunctions/PermissionFunctions.php',
+							dirname(__FILE__).'/PermissionFunctions.php',
 							null,							
 							array('EndParserPhase2'),
 							false, // no need for logging support

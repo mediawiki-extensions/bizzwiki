@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'InterWikiLinkManager', 
-							$bwExtPath.'/InterWikiLinkManager/InterWikiLinkManager.php',
+							dirname(__FILE__).'/InterWikiLinkManager.php',
 							null,
 							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
 							false,	// no need for logging support

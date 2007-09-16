@@ -28,5 +28,5 @@ if (class_exists('StubManager'))
 	);
 }
 else
-	echo 'Extension:TagToTemplate <b>requires</b> [[Extension:StubManager]]';
+	echo 'Extension:TagToTemplate <b>requires</b> [[Extension:StubManager]]'."\n";
 //</source>

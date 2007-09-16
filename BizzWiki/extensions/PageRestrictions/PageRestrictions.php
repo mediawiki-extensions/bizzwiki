@@ -77,7 +77,6 @@ class PageRestrictionsClass extends ExtensionClass
 			'version'     => self::getRevisionId( self::id ),
 			'author'      => 'Jean-Lou Dupont', 
 			'description' => 'Adds page level restrictions definitions & enforcement',
-			'url' => self::getFullUrl(__FILE__),			
 		);
 		
 		self::$msg = array();

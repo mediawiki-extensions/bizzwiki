@@ -117,7 +117,7 @@ $wgExtensionCredits[ParserPhase2::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => "Enables performing a 'second pass' parsing over an already cached page for replacing dynamic variables",
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ParserPhase2',			
 );
 
 class ParserPhase2

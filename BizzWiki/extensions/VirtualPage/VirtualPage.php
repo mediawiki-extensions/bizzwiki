@@ -88,7 +88,7 @@ $wgExtensionCredits[VirtualPage::thisType][] = array(
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=>  'Provides configurable per-namespace virtual pages',
-	'url' 			=> StubManager::getFullUrl(__FILE__),			
+	'url' 			=> 'http://mediawiki.org/wiki/Extension:VirtualPage',			
 );
 class VirtualArticle extends Article
 {

@@ -42,8 +42,8 @@ if (!isset( $bwExtPath ))
 	$bwExtPath = $IP.'/extensions';
 
 StubManager::createStub(	'NewUserEmailNotification', 
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.php',
-							$bwExtPath.'/NewUserEmailNotification/NewUserEmailNotification.i18n.php',							
+							dirname(__FILE__).'/NewUserEmailNotification.php',
+							dirname(__FILE__).'/NewUserEmailNotification.i18n.php',							
 							array('AddNewAccount'),
 							false
 						 );

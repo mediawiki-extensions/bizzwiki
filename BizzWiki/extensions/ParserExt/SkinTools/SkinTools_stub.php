@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub2(	array(	'class' 		=> 'SkinTools', 
-									'classfilename'	=> $bwExtPath.'/ParserExt/SkinTools/SkinTools.php',
+									'classfilename'	=> dirname(__FILE__).'/SkinTools.php',
 									'hooks'			=> array( 'SkinTemplateTabs' ),
 									'mgs'			=> array( 'clearactions', 'removeactions', 'addaction' ),
 								)

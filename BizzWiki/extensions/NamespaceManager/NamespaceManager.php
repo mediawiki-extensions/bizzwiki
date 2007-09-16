@@ -61,7 +61,7 @@ $wgExtensionCredits[NamespaceManagers::thisType][] = array(
 	'version'		=> NamespaceManagers::getRevisionId( '$Id$'),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=>  'Provides a base class for namespace manager extensions. ',
-	'url' 			=> NamespaceManagers::getFullUrl(__FILE__),			
+	'url' 			=> 'http://mediawiki.org/wiki/Extension:NamespaceManager',			
 );
 
 require_once($IP.'/includes/Article.php');

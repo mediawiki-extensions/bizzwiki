@@ -112,6 +112,7 @@ $wgExtensionCredits[RegexNamespaceContext::thisType][] = array(
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => "Supports regex based 'edit form' text preloading and 'header'/'footer' wikitext pages insertion.", 
+	'url'		=> 'http://mediawiki.org/wiki/Extension:RegexNamespaceContext',
 );
 
 class RegexNamespaceContext

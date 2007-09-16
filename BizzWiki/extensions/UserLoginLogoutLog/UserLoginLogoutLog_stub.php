@@ -37,13 +37,9 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'UserLoginLogoutLog', 
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.php',
-							$bwExtPath.'/UserLoginLogoutLog/UserLoginLogoutLog.i18n.php',							
+							dirname(__FILE__).'/UserLoginLogoutLog.php',
+							dirname(__FILE__).'/UserLoginLogoutLog.i18n.php',							
 							array(	'UserLoginForm', 'UserLoginComplete', 
 									'UserLogout', 'UserLogoutComplete',
 									'SpecialVersionExtensionTypes' ),

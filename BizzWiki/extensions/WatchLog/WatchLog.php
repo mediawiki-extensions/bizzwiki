@@ -54,6 +54,7 @@ $wgExtensionCredits[WatchLog::thisType][] = array(
 	'version' => StubManager::getRevisionId('$Id$'),
 	'author'  => 'Jean-Lou Dupont',
 	'description' => 'Provides logging of user-to-user emailing activities', 
+	'url'		=> 'http://mediawiki.org/wiki/Extension:WatchLog',
 );
 require_once('WatchLog.i18n.php');
 

@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'RegexNamespaceContext', 
-							$bwExtPath.'/RegexNamespaceContext/RegexNamespaceContext.php',
+							dirname(__FILE__).'/RegexNamespaceContext.php',
 							null,							
 							array( 'EditFormPreloadText', 'ParserAfterTidy', 'BeforePageDisplay' ),
 							false

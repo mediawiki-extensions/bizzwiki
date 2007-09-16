@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'RawPageTools', 
-							$bwExtPath.'/RawPageTools/RawPageTools.php',
+							dirname(__FILE__).'/RawPageTools.php',
 							null,							
 							array( 'RawPageViewBeforeOutput' ),
 							false

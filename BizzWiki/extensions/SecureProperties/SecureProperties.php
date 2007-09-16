@@ -91,7 +91,7 @@ $wgExtensionCredits[ SecureProperties::thisType ][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Enables global object property get/set on protected pages',
-	'url' 		=> StubManager::getFullUrl(__FILE__),
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:SecureProperties',
 );
 
 class SecureProperties

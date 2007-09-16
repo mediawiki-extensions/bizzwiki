@@ -60,7 +60,7 @@ $wgExtensionCredits[ShowRedirectPageText::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Provides viewing a wikitext included in a redirect page',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ShowRedirectPageText',			
 );
 
 class ShowRedirectPageText

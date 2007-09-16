@@ -15,7 +15,7 @@ $wgExtensionCredits[SpecialPagesManagerClass::thisType][] = array(
 	'version'     		=> StubManager::getRevisionId( '$Id$' ),
 	'author'      		=> 'Jean-Lou Dupont', 
 	'description' 		=> 'Provides management functions for BizzWiki Special Pages',
-	'url' 				=> StubManager::getFullUrl(__FILE__),			
+	'url' 				=> 'http://mediawiki.org/wiki/Extension:SpecialPagesManager',			
 );
 
 class SpecialPagesManagerClass

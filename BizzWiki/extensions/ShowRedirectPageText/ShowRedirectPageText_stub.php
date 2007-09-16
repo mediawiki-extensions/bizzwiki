@@ -37,12 +37,8 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 == Code ==
 <!--</wikitext>--><source lang=php>*/
 
-// help non-BizzWiki installation.
-if (!isset( $bwExtPath ))
-	$bwExtPath = $IP.'/extensions';
-
 StubManager::createStub(	'ShowRedirectPageText', 
-							$bwExtPath.'/ShowRedirectPageText/ShowRedirectPageText.php',
+							dirname(__FILE__).'/ShowRedirectPageText.php',
 							null,
 							array( 'ArticleViewHeader', 'OutputPageParserOutput' ),
 							false,	// no need for logging support

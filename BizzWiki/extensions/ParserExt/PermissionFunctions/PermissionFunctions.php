@@ -67,7 +67,7 @@ $wgExtensionCredits[PermissionFunctions::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Provides a collection of permission management functionality.',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:PermissionFunctions',			
 );
 
 class PermissionFunctions

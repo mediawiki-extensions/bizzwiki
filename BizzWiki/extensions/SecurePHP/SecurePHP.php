@@ -68,11 +68,8 @@ $wgExtensionCredits[SecurePHP::thisType][] = array(
 	'version' 	=> StubManager::getRevisionId('$Id$'),
 	'author'  	=> 'Jean-Lou Dupont',
 	'description' => "Provides secure PHP code execution", 
-	'url' 		=> StubManager::getFullUrl(__FILE__),	
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:SecurePHP',	
 );
-
-#require('SecurePHP.i18n.php');
-
 class SecurePHP
 {
 	const thisType = 'other';

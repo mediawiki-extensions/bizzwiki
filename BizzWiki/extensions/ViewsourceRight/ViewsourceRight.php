@@ -63,7 +63,7 @@ $wgExtensionCredits[ViewsourceRight::thisType][] = array(
 	'version'		=> StubManager::getRevisionId( '$Id$' ),
 	'author'		=> 'Jean-Lou Dupont', 
 	'description'	=> "Enforces 'viewsource' right. Status: ",
-	'url'			=> StubManager::getFullUrl(__FILE__),			
+	'url'			=> 'http://mediawiki.org/wiki/Extension:ViewsourceRight',			
 );
 
 class ViewsourceRight

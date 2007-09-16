@@ -65,7 +65,7 @@ $wgExtensionCredits[UserTools::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => ' ',
-	'url' 		=> StubManager::getFullUrl(__FILE__),						
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:UserTools',						
 );
 class UserTools
 {

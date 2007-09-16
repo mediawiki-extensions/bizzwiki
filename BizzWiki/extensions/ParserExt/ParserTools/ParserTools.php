@@ -53,7 +53,7 @@ $wgExtensionCredits[ParserTools::thisType][] = array(
 	'version'     => StubManager::getRevisionId( '$Id$' ),
 	'author'      => 'Jean-Lou Dupont', 
 	'description' => 'Parser cache enabling/disabling through <noparsercaching/> tag',
-	'url' 		=> StubManager::getFullUrl(__FILE__),			
+	'url' 		=> 'http://mediawiki.org/wiki/Extension:ParserTools',			
 );
 
 class ParserTools
