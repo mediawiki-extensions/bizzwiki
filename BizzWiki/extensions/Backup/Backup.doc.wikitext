@@ -8,7 +8,7 @@
 |hook4       = ArticleDelete
 |hook5       = SpecialMovepageAfterMove
 |hook6       = ArticleProtectComplete
-|hook7       = ImageDoDeleteBegin
+|hook7       = ImagePageEx/ImageDoDeleteBegin
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
 |version     = See SVN ($Id$)

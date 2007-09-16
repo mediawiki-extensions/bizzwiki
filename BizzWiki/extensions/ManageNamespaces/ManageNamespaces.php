@@ -21,16 +21,16 @@ if (class_exists('StubManager'))
 {
 	$wgExtensionCredits['parser'][] = array( 
 		'name'    		=> 'ManageNamespaces',
-		'version'		=> StubManager::getRevision( '$Id$' ),
+		'version'		=> StubManager::getRevisionId( '$Id$' ),
 		'author'		=> 'Jean-Lou Dupont',
 		'url'			=> 'http://www.mediawiki.org/wiki/Extension:ManageNamespaces',	
 		'description' 	=> "Provides a special page to add/remove namespaces. "
 	);
 	
 	StubManager::createStub2(	array(	'class' 		=> 'ManageNamespaces', 
-										'classfilename'	=> dirname(__FILE__).'/ManageNamespaces/ManageNamespaces.body.php',
-										'i18n'			=> dirname(__FILE__).'/ManageNamespaces/ManageNamespaces.i18n.php',
-										'hooks'			=> array( 'ArticleSave', 'ParserAfterTidy' ),
+										'classfilename'	=> dirname(__FILE__).'/ManageNamespaces.body.php',
+										'i18n'			=> dirname(__FILE__).'/ManageNamespaces.i18n.php',
+										'hooks'			=> array( 'ArticleSave', /*'ParserAfterTidy'*/ ),
 										'mgs'			=> array( 'mns' )
 									)
 							);

@@ -9,12 +9,13 @@
 //<source lang=php>
 
 // register the messages
-ManageNamespaces::addMessages( array(
-'en' => array(
+//ManageNamespaces::addMessages( array(
+global $msgManageNamespaces;
+$msgManageNamespaces['en'] = array(
 // en section
 'managenamespaces'.'-incorrect-page' 	=> 'The parser function <b>#mns</b> can not be used on this page.<br/>',
 'managenamespaces'.'-insufficient-right'=> 'Insufficient right to execute the parser function <b>#mns</b>.<br/>',
-
+/*
 'managenamespaces'					=> '<b>Manage Namespaces</b>',
 'managenamespaces'.'-table-begin'	=> '<table border="1" id="mns">'.
 										'<thead>'.
@@ -24,17 +25,13 @@ ManageNamespaces::addMessages( array(
 'managenamespaces'.'-table-row'		=>    '<tr><td>$index</td><td>$name</td></tr>',
 'managenamespaces'.'-table-end'		=>   '</tbody>'.
 										'</table>',
-										
+*/									
 'managenamespaces'.'-file-updated'		=> '',
-'managenamespaces'.'-file-not-updated'	=> '',
+'managenamespaces'.'-file-not-updated'	=> "<br/><b>The namespace definition file couldn't be updated.</b>",
 
+'managenamespaces'.'-invalid-index'		=> 'Invalid namespace index <b>$1</b>',
+'managenamespaces'.'-invalid-name'		=> 'Invalid namespace name <b>$1</b>',
 #'managenamespaces'.'' => '',
 #'' => '',
-),
-// fr section
-# 'fr' => array(
-# '' => '',
-# '' => '',
-#),
-) );
+);
 //</source>

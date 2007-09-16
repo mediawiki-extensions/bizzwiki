@@ -494,7 +494,7 @@ SpecialPagesChangeLocation::setPage( 'MediaWiki:SpecialPages' );
 #require( $bwExtPath.'/Etag/Etag.php' );
 require( $bwExtPath.'/TagToTemplate/TagToTemplate.php' );
 #require('extensions/ExtensionManager/ExtensionManager_stub.php');
-
+require( $bwExtPath.'/ManageNamespaces/ManageNamespaces.php' );
 
 /* TODO
 require('extensions/DPL/DynamicPageList2.php');

@@ -16,7 +16,7 @@ class TagToTemplate
 	const thisName = 'Etag';
 	
 	// 
-	static $tablePageName = 'MediaWiki:Extensions/TagToTemplate/Table';
+	static $tablePageName = 'MediaWiki:Registry/TagToTemplate';
 	static $open_pattern =  '/\<$tag(.*)\>/siU';
 	static $close_pattern = '</$tag>';
 	static $open_replace = '{{$tag|$params|';
