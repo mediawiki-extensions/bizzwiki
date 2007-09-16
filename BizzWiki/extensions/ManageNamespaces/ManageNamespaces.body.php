@@ -13,6 +13,13 @@ class ManageNamespaces
 	const thisType = 'parser';
 	const thisName = 'ManageNamespaces';
 	
+	// Marker definition
+	static $marker = '__MNS__$1__';
+	
+	// map array containing the new
+	// namespace mapping.
+	var $nsMap;
+	
 	// name of global variable containing the
 	// managed namespaces
 	static $gName = 'bwManagedNamespaces';
@@ -31,19 +38,54 @@ class ManageNamespaces
 		// help the user a bit by making sure
 		// the file is writable when it comes to update it.
 		@chmod( self::$mnName, 700 );
+		
+		$this->nsMap = array();
 	}
-	protected function init()
+	
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	/**
+		$index: must be a numeric
+		$name: must be a string
+	 */
+	public function mg_mns( &$parser, $index, $name )
+	{
+		// at this point, just accumulate the requested changes	
+		$this->nsMap[] = array( $index => $name );
+		return $this->getMarker( count( $this->nsMap )-1 );
+	}
+	protected function getMarker( $index )
+	{
+		return str_replace( '$1', $index, self::$marker );
+	}
+	/**
+		This hook injects the wikitext 'special page' like text
+	 */
+	public function hParserAfterTidy( &$parser, &$text )
+	{
+		$begin = wfMsg();
+		$end = wfMsg();
+		return true;
+	}
+	/**
+		This hook saves the new namespace configuration to the file.
+	 */
+	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $watch, $sectionanchor, &$flags )
+	{
+		
+		return true;
+	}
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	/**
+		The 'immutable' list contains the namespaces that cannot be
+		managed through this extension.
+	 */
+	protected function getImmutableNamespaceList()
 	{
 		
 	}
 	
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	public function mgs_mns( )
-	{
-		
-	}
-	
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 	private function readFile()
 	{
 		
