@@ -16,14 +16,18 @@ ManageNamespaces::addMessages( array(
 'managenamespaces'.'-insufficient-right'=> 'Insufficient right to execute the parser function <b>#mns</b>.<br/>',
 
 'managenamespaces'					=> '<b>Manage Namespaces</b>',
-'managenamespaces'.'-begin'			=> '<table border="1" id="mns">'.
+'managenamespaces'.'-table-begin'	=> '<table border="1" id="mns">'.
 										'<thead>'.
 										 '<tr><td>Index</td><td>Canonical Name</td></tr>'.  // only this to translate
 										'</thead>'.
 										 '<tbody>',
-'managenamespaces'.'-row'			=>    '<tr><td>$1</td><td>$2</td></tr>',
-'managenamespaces'.'-end'			=>   '</tbody>'.
+'managenamespaces'.'-table-row'		=>    '<tr><td>$index</td><td>$name</td></tr>',
+'managenamespaces'.'-table-end'		=>   '</tbody>'.
 										'</table>',
+										
+'managenamespaces'.'-file-updated'		=> '',
+'managenamespaces'.'-file-not-updated'	=> '',
+
 #'managenamespaces'.'' => '',
 #'' => '',
 ),
