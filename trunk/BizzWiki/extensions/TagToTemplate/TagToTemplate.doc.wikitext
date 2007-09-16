@@ -1,7 +1,7 @@
 {{Extension
 |name        = TagToTemplate
 |status      = beta
-|type        = hook
+|type        = extended syntax
 |hook1       = ParserBeforeStrip
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
@@ -36,13 +36,13 @@ Substitute < tag > sections with MediaWiki templates.
 == Features ==
 * Secure: only users that have access to the 'MediaWiki' namespace can change the tag mapping
 * Tag mapping are configured through the parser function <code>#tag_to_template</code>
-* Tag mapping table is located on the page [[MediaWiki:Extensions/TagToTemplate/Table]]
+* Tag mapping table is located on the page [[MediaWiki:Registry/TagToTemplate]]
 
 == Usage ==
-* Configure the page [[MediaWiki:Extensions/TagToTemplate/Table]] with the mapping table. 
+* Configure the page [[MediaWiki:Registry/TagToTemplate]] with the mapping table. 
 To do so, use the parser function to list all the required mappings.
 === Example ===
-Here is a sample [[MediaWiki:Extensions/TagToTemplate/Table]] page:
+Here is a sample [[MediaWiki:Registry/TagToTemplate]] page:
 <pre>
  Handle 'etag' tags; 'etag' sections will be substituted with <nowiki>{{template_etag|[optional params]|...text here...}}</nowiki>
  {{#tag_to_template:etag|template_etag}}
