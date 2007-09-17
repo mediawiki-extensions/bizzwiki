@@ -1,6 +1,0 @@
-Immutable namespaces
-
-Manageable namespaces
-
-Add Namespace   [[NS_XYZ -> {canonical index, canonical name} ]]
-Remove Namespace

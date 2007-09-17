@@ -13,5 +13,5 @@
 // The global variable $bwManagedNamespaces gets initialized there
 
 //<namespaces>
-
+$contents$
 //</namespaces>
