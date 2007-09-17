@@ -30,7 +30,7 @@ if (class_exists('StubManager'))
 	StubManager::createStub2(	array(	'class' 		=> 'ManageNamespaces', 
 										'classfilename'	=> dirname(__FILE__).'/ManageNamespaces.body.php',
 										'i18n'			=> dirname(__FILE__).'/ManageNamespaces.i18n.php',
-										'hooks'			=> array( 'ArticleSave', /*'ParserAfterTidy'*/ ),
+										'hooks'			=> array( 'ParserAfterTidy' ),
 										'mgs'			=> array( 'mns' )
 									)
 							);
@@ -40,7 +40,7 @@ else
 	echo "Extension:ManageNamespaces <b>requires</b> Extension:StubManager\n";
 	
 // Now include the managed namespaces in question
-@require( 'ManageNamespaces.namespaces.php' );
+@include( 'ManageNamespaces.namespaces.php' );
 
 // Is the Namespace class defined yet?
 if (!class_exists('Namespace') && !empty( $bwManagedNamespaces ))
