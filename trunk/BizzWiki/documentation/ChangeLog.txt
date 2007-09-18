@@ -273,4 +273,5 @@ $Id$
 * Moved logo related files to /logo directory
 * Deleted 'specialpages' directory
 * Added [[Extension:TagToTemplate]] extension
+* Added [[Extension:ManageNamespaces]] extension
 * 

@@ -87,7 +87,7 @@ class DocProc
 		$docTag = (in_array($tag, self::$allowedDocTags)) ? ($tag) : (self::$defaultDocTag);		
 		
 		// parse the wikitext as per required as if the said text wasn't being automatically documented.
-		$pt = $parser->recursiveTagParse( $text, null, $parser );
+		$pt = $parser->recursiveTagParse( $text );
 		
 		return '<'.$docTag.'>'.htmlspecialchars($text).'</'.$docTag.'>'.$pt;
 	}
