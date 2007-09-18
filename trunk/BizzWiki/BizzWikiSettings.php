@@ -105,7 +105,7 @@ require($IP.'/includes/Namespace.php');
 	// define new namespaces constants
 	define('NS_BIZZWIKI',   100);
 	define('NS_FILESYSTEM', 102);
-	define('NS_INTERWIKI',  104);
+#	define('NS_INTERWIKI',  104);		// Obsolete now.
 	define('NS_API',		106);	
 	define('NS_DIRECTORY',	108);		// extension DirectoryManager
 	define('NS_EXTENSION',  110);		// for easy integration with MediaWiki.org
@@ -117,7 +117,7 @@ require($IP.'/includes/Namespace.php');
 	// Add the new namespaces to the global variables
 	$wgExtraNamespaces[NS_BIZZWIKI]		= 'Bizzwiki';
 	$wgExtraNamespaces[NS_FILESYSTEM]	= 'Filesystem';
-	$wgExtraNamespaces[NS_INTERWIKI]	= 'Interwiki';
+#	$wgExtraNamespaces[NS_INTERWIKI]	= 'Interwiki';
 	$wgExtraNamespaces[NS_API]			= 'Api';
 	$wgExtraNamespaces[NS_DIRECTORY]	= 'Directory';	
 	$wgExtraNamespaces[NS_EXTENSION]	= 'Extension';		
@@ -145,7 +145,7 @@ NS_MEDIAWIKI,
 NS_MEDIAWIKI_TALK,									
 NS_BIZZWIKI,
 NS_FILESYSTEM,
-NS_INTERWIKI,	// not used at the moment.
+#NS_INTERWIKI,
 NS_DIRECTORY,
 NS_EXTENSION,
 NS_EXT,
@@ -304,7 +304,7 @@ $bwAnonymousNamespaces = array( NS_MAIN, NS_TALK,
 								NS_CATEGORY, NS_CATEGORY_TALK,
 								NS_HELP, NS_HELP_TALK,
 								NS_SPECIAL,  // comment out this namespace to restrict access to special pages.
-								NS_INTERWIKI // BizzWiki specific
+								#NS_INTERWIKI // BizzWiki specific
 								); 
 
 	// Rights available to 'Anonymous'
@@ -375,7 +375,7 @@ require( $bwExtPath.'/PageRestrictions/PageRestrictions.php');
 ## {{
 $wgContentNamespaces[] = NS_BIZZWIKI;
 $wgContentNamespaces[] = NS_FILESYSTEM;
-$wgContentNamespaces[] = NS_INTERWIKI;
+#$wgContentNamespaces[] = NS_INTERWIKI;
 ## }}
 
 // *****************************************************************************************
@@ -384,7 +384,7 @@ $wgContentNamespaces[] = NS_INTERWIKI;
 // It is strongly suggested not to mess with this.
 $wgNonincludableNamespaces[] = NS_FILESYSTEM;
 $wgNonincludableNamespaces[] = NS_BIZZWIKI;
-$wgNonincludableNamespaces[] = NS_INTERWIKI;
+#$wgNonincludableNamespaces[] = NS_INTERWIKI;
 
 // *****************************************************************************************
 
@@ -611,7 +611,7 @@ if (defined('BIZZWIKIDEMO'))
 									NS_CATEGORY, NS_CATEGORY_TALK,
 									NS_HELP, NS_HELP_TALK,
 									NS_SPECIAL,
-									NS_INTERWIKI // BizzWiki specific
+									#NS_INTERWIKI // BizzWiki specific
 									); 
 
 	foreach( $bwAnonymousNamespaces as $index => $bwx )

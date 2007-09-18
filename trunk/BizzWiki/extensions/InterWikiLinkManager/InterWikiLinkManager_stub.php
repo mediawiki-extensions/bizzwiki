@@ -40,11 +40,11 @@ This extension is part of the [[Extension:BizzWiki|BizzWiki Platform]].
 StubManager::createStub(	'InterWikiLinkManager', 
 							dirname(__FILE__).'/InterWikiLinkManager.php',
 							null,
-							array( 'SpecialVersionExtensionTypes', 'ArticleSave', 'EditFormPreloadText' ),
-							false,	// no need for logging support
-							null,	// tags
-							array('iwl'),	// no parser functions
-							null,	// no magic words
-							array( NS_INTERWIKI )
+							array( 'ArticleSave', 'EditFormPreloadText' ),
+							false,					// no need for logging support
+							null,					// no tags
+							array('iwl'),			// 1 parser functions
+							null,					// no magic words
+							array( NS_MEDIAWIKI )	// namespace triggering
 						 );
 //</source>
