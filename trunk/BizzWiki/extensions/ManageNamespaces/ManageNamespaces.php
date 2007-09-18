@@ -29,8 +29,10 @@ if (class_exists('StubManager'))
 	
 	StubManager::createStub2(	array(	'class' 		=> 'ManageNamespaces', 
 										'classfilename'	=> dirname(__FILE__).'/ManageNamespaces.body.php',
-										'i18n'			=> dirname(__FILE__).'/ManageNamespaces.i18n.php',
+										'i18nfilename'	=> dirname(__FILE__).'/ManageNamespaces.i18n.php',
+										'logging'		=> true, 
 										'hooks'			=> array( 'ParserAfterTidy' ),
+										'nss'			=> array( NS_MEDIAWIKI ),
 										'mgs'			=> array( 'mns' )
 									)
 							);
