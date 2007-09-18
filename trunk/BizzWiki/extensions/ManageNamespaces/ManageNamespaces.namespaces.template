@@ -2,7 +2,7 @@
 /*<!--<wikitext>-->
  <file>
   <name>ManageNamespaces.namespaces.php</name>
-  <version>$Id: ManageNamespaces.namespaces.php 777 2007-09-14 23:51:39Z jeanlou.dupont $</version>
+  <version>$Id$</version>
   <package>Extension.ManageNamespaces</package>
  </file>
 <!--</wikitext>-->*/
