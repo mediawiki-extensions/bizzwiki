@@ -5,7 +5,7 @@
 |hook1       = ParserAfterTidy
 |author      = [[user:jldupont|Jean-Lou Dupont]]
 |image       =
-|version     = See SVN ($Id: Backup.doc.wikitext 786 2007-09-16 19:34:52Z jeanlou.dupont $)
+|version     = See SVN ($Id$)
 |update      =
 |mediawiki   = tested on 1.10 but probably works with a earlier versions
 |download    = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/ManageNamespaces/ SVN]
