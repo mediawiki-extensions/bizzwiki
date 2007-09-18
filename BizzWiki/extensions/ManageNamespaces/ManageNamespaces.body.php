@@ -8,6 +8,8 @@
 <!--</wikitext>-->*/
 //<source lang=php>
 
+require_once('ManageNamespaces.i18n.php');
+
 class ManageNamespaces
 {
 	const thisType = 'parser';
@@ -57,6 +59,16 @@ class ManageNamespaces
 		$this->canUpdateFile = true;
 		
 		self::$iNs = $this->getImmutableNamespaceList();
+		
+		// Log related
+		global $wgLogTypes, $wgLogNames, $wgLogHeaders, $wgLogActions;
+		$wgLogTypes[]                     = 'mngns';
+		$wgLogNames  ['mngns']            = 'mngnslogpage';
+		$wgLogHeaders['mngns']            = 'mngnslogpagetext';
+		$wgLogActions['mngns/updtok']	  = 'mngns'.'-updtok-entry';
+		$wgLogActions['mngns/updtfail1']  = 'mngns'.'-updtfail1-entry';		
+		$wgLogActions['mngns/updtfail2']  = 'mngns'.'-updtfail2-entry';				
+		$wgLogActions['mngns/updtfail3']  = 'mngns'.'-updtfail3-entry';
 		
 		// Messages.
 		global $wgMessageCache;
@@ -113,6 +125,12 @@ class ManageNamespaces
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
+		// just perform the update upon page view.
+		// Can't anyhow do this on page save.
+		global $action;
+		if ($action !== 'view' )
+			return true;
+			
 		// just trap events related to the registry page in question here
 		if ( !$this->checkRegistryPage( $parser->mTitle ) )
 			return true;
@@ -121,48 +139,23 @@ class ManageNamespaces
 		if (!$this->checkRight())
 			return true;
 
-
-		if ($this->canUpdateFile())// && !empty($this->nsMap))
-			$this->updateFile( $msg, $contents );
+		if (!$this->canUpdateFile())
+			$action = 'updtfail3';
 		else
-		{
-			$text .= wfMsg( 'managenamespaces'.'-file-not-updated' );
-			return true;
-		}	
+			$this->updateFile( $action, $contents );
 
-		$text .= $msg;
+		$this->updateLog( $action );
 
 		return true;	
 	}
-	/**
-		This hook saves the new namespace configuration to the file.
-	 */
-/*	 
-	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $watch, $sectionanchor, &$flags )
-	{
-		// just trap events related to the registry page in question here
-		if ( !$this->checkRegistryPage( $article ) )
-			return true;
-		
-		// .. and of course make sure the user has the required right
-		if (!$this->checkRight())
-			return true;
-		
-		if ($this->canUpdateFile())// && !empty($this->nsMap))
-			$this->updateFile( $msg, $contents );
-		else
-		{
-			$summary .= wfMsg( 'managenamespaces'.'-file-not-updated' );
-			return true;
-		}	
 
-		$summary .= $msg;
-		
-		return true;
-	}
-*/
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+	protected function updateLog( $action )
+	{
+		global $wgUser;
+		$log = new LogPage( 'mngns' );
+		$log->addEntry( $action, $wgUser->getUserPage(), '' );
+	}
 	protected function canUpdateFile() 
 	{ 
 		return $this->canUpdateFile; 
@@ -231,12 +224,15 @@ class ManageNamespaces
 
 	/**
 	 */
-	private function updateFile( &$msg, &$contents )
+	private function updateFile( &$action, &$contents )
 	{
 		// read the 'template' file
 		$template = $this->readFile( self::$templatePageName );
 		if ($template === false)
-		{ $msg = wfMsg( 'managenamespaces'.'-template-file-read-error' ); return false; }
+		{ 
+			$action = 'updtfail1'; 
+			return false; 
+		}
 		
 		$contents = wfMsg( 'managenamespaces'.'-open-code' );
 		foreach( $this->nsMap as $index => &$name )
@@ -248,9 +244,13 @@ class ManageNamespaces
 		$len = strlen( $code );
 		$put_len = file_put_contents( self::$mnName , $code, LOCK_EX );	
 		if ( $put_len !== $len )
-			{ $msg = wfMsg( 'managenamespaces'.'-file-write-error' ).self::$mnName; return false; }
+		{ 
+			$action = 'updtfail2';
+			return false; 
+		}
+		
+		$action = 'updtok';
 
-		$msg = wfMsg('managenamespaces'.'-file-update-success');
 		return true;
 	}
 	/**
@@ -268,5 +268,5 @@ class ManageNamespaces
 	}
 
 } // end class
-require('ManageNamespaces.i18n.php');
+
 //</source>
