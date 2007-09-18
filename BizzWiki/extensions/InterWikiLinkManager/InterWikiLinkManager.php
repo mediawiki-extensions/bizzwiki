@@ -31,17 +31,15 @@ This MediaWiki extension enables a user with the appropriate rights to manage th
 == Features ==
 * Can be used independantly of BizzWiki environment 
 * Rights policing
-* Logging
 ** Summary field contains logging info - visible in 'RecentChanges'
-* New Namespace 'NS_INTERWIKI'
 
 == USAGE NOTES ==
-* Use "Interwiki:Main Page" to manage the interwiki links
+* Use "MediaWiki:Registry/InterWikiLinks" to manage the interwiki links
 * Use the magic word <code>{{#iwl: prefix | URI | local flag | transclusion flag }}</code>
 * Appropriate rights management should be in place (e.g. Hierarchical Namespace Permissions extension)
 
 == Example ==
-An example of 'Interwiki:Main Page' using the magic word '#iwl' [[Extension:InterWikiLinkManager/Example|here]].
+An example of [[MediaWiki:Registry/InterWikiLinks]] using the magic word '#iwl' [[Extension:InterWikiLinkManager/Example|here]].
 
 == Dependancy ==
 * [[Extension:StubManager|StubManager extension]]
@@ -61,6 +59,8 @@ require('extensions/InterWikiLinkManager/InterWikiLinkManager_stub.php');
 * Fixed missing 'h' in hook 'SpecialVersionExtensionTypes' handler method
 * Added namespace trigger
 * Easier installation
+* Moved special page to [[MediaWiki:Registry/InterWikiLinks]]
+** Removed requirement for NS_INTERWIKI namespace
 
 == TODO ==
 * Add more validation
@@ -91,7 +91,7 @@ class InterWikiLinkManager
 
 	const rRead    = "read";
 	const rEdit    = "edit";
-	const mPage    = "Main Page";
+	const mPage    = "MediaWiki:Registry/InterWikiLinks";
 
 	// preload wikitext
 	// ================
@@ -117,25 +117,6 @@ class InterWikiLinkManager
 		$this->iwl     = array();
 		$this->new_iwl = array();
 	}
-	public function hSpecialVersionExtensionTypes( &$sp, &$extensionTypes )
-	// setup of this hook occurs in 'ExtensionClass' base class.
-	{
-		global $wgExtensionCredits;
-
-		// first check if the proper rights management class is in place.
-		if (defined('NS_INTERWIKI'))
-			$hresult = 'defined.';
-		else
-			$hresult = '<b>not defined!</b>';
-
-		foreach ( $wgExtensionCredits[self::thisType] as $index => &$el )
-			if (@isset($el['name']))		
-				if ($el['name']==self::thisName)
-					$el['description'].=$hresult;
-				
-		return true; // continue hook-chain.
-	}
-	
 	public function mg_iwl( &$parser, $prefix, $uri, $local, $trans, $dotableline = true )
 	// magic word handler function
 	{
@@ -154,19 +135,14 @@ class InterWikiLinkManager
 			return $this->formatLine( $prefix, $el );
 			
 	}	
-	
 	public function hArticleSave( &$article, &$user, &$text, &$summary, $minor, $dontcare1, $dontcare2, &$flags )
 	{
-		// check if we are in the right namespace
-		$ns = $article->mTitle->getNamespace();
-		if ($ns != NS_INTERWIKI) return true;
-
 		// Paranoia: this should have already been checked.
 		// does the user have the right to edit pages in this namespace?
 		if (! $article->mTitle->userCan(self::rEdit) ) return true;  
 
 		// Are we dealing with the page which contains the links to manage?
-		if ( $article->mTitle->getText() != self::mPage ) return true;
+		if ( $article->mTitle->getFullText() != self::mPage ) return true;
 
 		// Invoke the parser in order to retrieve the interwiki link data
 		// composed through the magic word 'iwl'
@@ -179,19 +155,15 @@ class InterWikiLinkManager
 		
 		return true; // continue hook-chain.
 	}
-
+	/**
+		This hook is called to preload text upon initial page creation.
+	 */
 	public function hEditFormPreloadText( &$text, &$title )
-	// This hook is called to preload text upon initial page creation.
-	// If we are in the NS_INTERWIKI namespace and no article is found ('initial creation')
-	// then let's get the database entries.
-	//
-	// NOTE that the 'edit' permission is assumed to be checked prior to entering this hook.
-	//
-	{
-		// Are we in the right namespace at all??
-		$ns = $title->getNamespace();
-		if ($ns != NS_INTERWIKI) return true; // continue hook chain.
 
+	{
+		// Are we dealing with the page which contains the links to manage?
+		if ( $title->getFullText() != self::mPage ) return true;
+		
 		// Paranoia: Is the user allowed committing??
 		// We shouldn't even get here if the 'edit' permission gets
 		// verified adequately.

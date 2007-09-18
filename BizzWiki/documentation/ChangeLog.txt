@@ -274,4 +274,4 @@ $Id$
 * Deleted 'specialpages' directory
 * Added [[Extension:TagToTemplate]] extension
 * Added [[Extension:ManageNamespaces]] extension
-* 
+* [[Extension:InterWikiLinkManager]]: moved special page to 'MediaWiki:Registry/InterWikiLinks'

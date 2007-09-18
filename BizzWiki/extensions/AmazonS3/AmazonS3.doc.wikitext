@@ -48,14 +48,18 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Theory Of Operation ==
 
 == Dependancies ==
+* PHP 'curl' module
+* PHP 'Crypt_HMAC' module
 
 == Installation ==
 To install independantly from BizzWiki:
+* Install the 'Crypt_HMAC' PHP module (through Pear)
+* Install the 'curl' module (through Pear)
 * Download & Install [[Extension:StubManager]] extension
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-require('extensions/Backup/Backup.php');
+require('extensions/AmazonS3/AmazonS3.php');
 </source>
 
 == Notes ==
