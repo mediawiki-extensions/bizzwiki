@@ -18,9 +18,6 @@ class ManageNamespaces
 	static $reqGroup = 'sysop';
 	static $iNs;
 	
-	// Marker definition
-	static $marker = '__MNS__$1__';
-	
 	// Registry Page
 	static $rPage = 'MediaWiki:Registry/Namespaces';
 	
@@ -84,13 +81,12 @@ class ManageNamespaces
 		$index: must be a numeric
 		$name: must be a string
 	 */
-	public function mg_mns( &$parser, $index, $name, $separator = '||' )
+	public function mg_mns( &$parser, 
+							$index = null, 			// numerical index
+							$name = null, 			// text
+							$identifier = null, 	// text
+							$separator = '||' )
 	{
-		// only output one error message.
-		static $error = false;
-		if ($error)
-			return;
-		
 		// Make sure that this parser function is only used
 		// on the allowed registry page
 		if (!$this->checkRegistryPage( $parser->mTitle))
@@ -108,6 +104,9 @@ class ManageNamespaces
 		if (!$this->validateName( $name, $msg ))
 			{ $name = $msg;  $this->canUpdateFile = false; }
 
+		if (!$this->validateIdentifier( $identifier, $msg ))
+			{ $identifier = $msg;  $this->canUpdateFile = false; }
+
 		// Perform validations
 		// relative to the defined ones on this page
 		if (!$this->validateIndexDefined( $index, $msg ))
@@ -115,13 +114,18 @@ class ManageNamespaces
 			
 		if (!$this->validateNameDefined( $name, $msg ))
 			{ $name = $msg;  $this->canUpdateFile = false; }
+
+		if (!$this->validateIdentifierDefined( $identifier, $msg ))
+			{ $identifier = $msg;  $this->canUpdateFile = false; }
 		
 		// at this point, just accumulate the requested changes	
-		$this->nsMap[$index] = $name;
+		$this->nsMap[$index] = array( 'name' => $name, 'identifier' => $identifier );
 		
-		return $index.$separator.$name;
+		// return the wikitext line
+		return $index.$separator.$name.$separator.$identifier;
 	}
 	/**
+		This method serves as 'trap' for the file update process.
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
@@ -150,11 +154,13 @@ class ManageNamespaces
 	}
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	protected function updateLog( $action )
+// VALIDATATION & LOGGING
+
+	protected function updateLog( $action  )
 	{
 		global $wgUser;
 		$log = new LogPage( 'mngns' );
-		$log->addEntry( $action, $wgUser->getUserPage(), '' );
+		$log->addEntry( $action, $wgUser->getUserPage(), wfMsg('mngns-'.$action.'-text') );
 	}
 	protected function canUpdateFile() 
 	{ 
@@ -171,6 +177,10 @@ class ManageNamespaces
 		global $wgUser;
 		return in_array( self::$reqGroup, $wgUser->getEffectiveGroups());
 	}
+	
+	/*
+		Checks related to the immutable entries.
+	 */
 	protected function validateIndex( $index, &$msg )
 	{
 		$r = (!isset( self::$iNs[$index] ));
@@ -186,6 +196,31 @@ class ManageNamespaces
 		
 		return $r;
 	}
+	protected function validateIdentifier( $identifier, &$msg )
+	{
+		global $bwManagedNamespacesDefines;
+		
+		// if the 'define' comes from this extension,
+		// then it is OK.
+		if (isset( $bwManagedNamespacesDefines ))
+			if (in_array( $identifier, $bwManagedNamespacesDefines ))
+				return true;
+				
+		// if we have already defined the identifier on this page update,
+		// then it is *not* OK.
+		$r = true;
+		foreach( $this->nsMap as $index => &$e )
+			if ( defined( $e['identifier'] ) )
+				{ $r = false; break; }
+		
+		if (!$r)
+			$msg = wfMsgForContent( 'managenamespaces'.'-invalid-identifier', $identifier );
+			
+		return $r;
+	}
+	/*
+		Checks related to the entries being defined at the moment on this page.
+	*/
 	protected function validateIndexDefined( $index, &$msg )
 	{
 		$r = (!isset( $this->nsMap[$index] ));
@@ -195,10 +230,24 @@ class ManageNamespaces
 	}
 	protected function validateNameDefined( $name, &$msg )
 	{
-		$r = (! in_array( $name, $this->nsMap ));
+		$r = true;
+		foreach( $this->nsMap as $index => &$e )
+			if ( $name == $e['name'] )
+				{ $r = false; break; }
+		
 		if (!$r)
 			$msg = wfMsgForContent( 'managenamespaces'.'-invalid-name-2', $name );
 		
+		return $r;
+	}
+	protected function validateIdentifierDefined( $identifier, &$msg )
+	{
+		$r = true;
+		foreach( $this->nsMap as $index => &$e )
+			if ( $identifier == $e['identifier'] )
+				{ $r = false; break; }
+		if (!$r)
+			$msg = wfMsgForContent( 'managenamespaces'.'-invalid-identifier-2', $identifier );
 		return $r;
 	}
 
@@ -222,8 +271,6 @@ class ManageNamespaces
 	
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-	/**
-	 */
 	private function updateFile( &$action, &$contents )
 	{
 		// read the 'template' file
@@ -234,11 +281,19 @@ class ManageNamespaces
 			return false; 
 		}
 		
+		// build table.
 		$contents = wfMsg( 'managenamespaces'.'-open-code' );
-		foreach( $this->nsMap as $index => &$name )
-			$contents .= wfMsg( 'managenamespaces'.'-entry-code', $index, $name );
+		foreach( $this->nsMap as $index => &$e )
+			$contents .= wfMsg( 'managenamespaces'.'-entry-code', $index, $e['name'] );
 		$contents .= wfMsg( 'managenamespaces'.'-close-code' );
 		
+		// defines.
+		$contents .= wfMsg( 'managenamespaces'.'-open-code2' );
+		foreach( $this->nsMap as $index => &$e )
+			$contents .= wfMsg( 'managenamespaces'.'-entry-code2', $index, $e['identifier'] );
+		$contents .= wfMsg( 'managenamespaces'.'-close-code2' );
+
+		// do the substitution in the template		
 		$code = $this->fillTemplate( $template, $contents );
 		
 		$len = strlen( $code );
@@ -253,8 +308,6 @@ class ManageNamespaces
 
 		return true;
 	}
-	/**
-	 */
 	private function readFile( $fn )
 	{
 		return file_get_contents( $fn );

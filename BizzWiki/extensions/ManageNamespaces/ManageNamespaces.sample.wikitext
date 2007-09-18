@@ -1,0 +1,15 @@
+
+<!-- class and border attributes are not mandatory -->
+<!-- nor is the table format -->
+{| class="mns" border='1'
+|-
+! Index
+! Name
+! Identifier
+|-
+| {{#mns:1000|namespace name1|NS_NAMESPACE_IDENTIFIER_1}}
+|-
+| {{#mns:1001|namespace name2|NS_NAMESPACE_IDENTIFIER_2}}
+|-
+| {{#mns:1002|namespace name3|NS_NAMESPACE_IDENTIFIER_3}}
+|}

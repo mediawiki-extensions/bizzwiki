@@ -25,10 +25,24 @@ This section is only valid when viewing the page in a BizzWiki environment.
 Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}:{{PAGENAME}}|action=reload}} Reload] </b>|Up to date$))
 @@-->
 == Purpose ==
+This extension allows for managing the namespaces. This process is usually handled through settings <code>LocalSettings.php</code>.
 
 == Features ==
+* No patches
+* Secure: the registry page is located in NS_MEDIAWIKI namespace
+* Safe: the 'immutable' namespaces can not be changed (the ones defined in <code>LocalSettings.php</code>)
+** Only the ones managed through this extension can be changed
+* Relies on a parser function <code>#mns</code> to perform the work
+* Definition errors appear inline with the registry page
+* Logging
 
 == Usage ==
+* Edit the page <code>MediaWiki:Registry/Namespaces</code>
+* Use the parser function <code>#mns</code> to populate the namespace definition
+* Save the page
+
+== Example ==
+An example registry page can be found [[{{FULLPAGENAME}}/Example]]
 
 == Dependancies ==
 * [[Extension:StubManager|StubManager extension]]
