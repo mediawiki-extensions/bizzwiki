@@ -59,5 +59,9 @@ if (!empty( $bwManagedNamespaces ))
 		// Add subpage support for each of the managed namespaces		
 		$wgNamespacesWithSubpages[ $name ] = true;
 	}
-
+// e.g. 	define('NS_BIZZWIKI',   100);
+if (!empty($bwManagedNamespacesDefines))
+	foreach($bwManagedNamespacesDefines as $index => $identifier )
+		define("'$identifier'", $index );
+		
 //</source>
