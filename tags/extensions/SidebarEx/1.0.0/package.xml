@@ -20,7 +20,7 @@
     <deps>
     </deps>
     <filelist>
-      <file role="php" baseinstalldir="Mediawiki/SidebarEx" md5sum="" name="SidebarEx.php"/>
+      <file role="php" baseinstalldir="Mediawiki/SidebarEx" md5sum="CD150D664584DC4D5FDE6F00CDF2D93C" name="SidebarEx.php"/>
     </filelist>
   </release>
   <changelog>
