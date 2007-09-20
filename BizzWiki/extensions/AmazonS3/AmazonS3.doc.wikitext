@@ -29,9 +29,9 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Features ==
 === Operations ===
 * <b>Bucket</b>
-** PUT
+** PUT     (aka 'create bucket')
 ** PUT ACL
-** GET     (with options e.g. prefix)
+** GET     (aka 'list objects')(with options e.g. prefix)
 ** GET ACL
 ** DELETE
 * <b>Object</b>
@@ -48,13 +48,13 @@ Status: (($#comparemtime|<b>File system copy is newer - [{{fullurl:{{NAMESPACE}}
 == Theory Of Operation ==
 
 == Dependancies ==
-* PHP 'curl' module
+* PHP 'HTTP_Request' module
 * PHP 'Crypt_HMAC' module
 
 == Installation ==
 To install independantly from BizzWiki:
 * Install the 'Crypt_HMAC' PHP module (through Pear)
-* Install the 'curl' module (through Pear)
+* Install the 'HTTP_Request' module (through Pear)
 * Download & Install [[Extension:StubManager]] extension
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:

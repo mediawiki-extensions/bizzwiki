@@ -137,9 +137,7 @@
 * Added Mediawiki 'API' specific handling
 
 */
-
-	// instantiate one
-hnpClass::singleton();
+//<source lang=php>
 
 class hnpClass
 {
@@ -150,15 +148,10 @@ class hnpClass
 	
 	public static function &singleton() 
 	{
-		static $instance;
-		if ( !isset( $instance ) ) 
+		static $instance = null;
+		if ( !is_object( $instance ) ) 
 			$instance = new hnpClass( );
 		return $instance;
-	}
-	static function getRevisionId()
-	{
-		$data = explode( ' ', self::id );
-		return $data[2];
 	}
 	function hnpClass()
 	{
@@ -168,13 +161,12 @@ class hnpClass
 		global $wgExtensionCredits;
 		
 		$wgExtensionCredits['other'][] = array(
-		    'name'    => "HierarchicalNamespacePermissions",
-			'version' => self::getRevisionId(),
-			'author'  => 'Jean-Lou Dupont',
-			'description' => 'Hierarchical permissions management system',
-			'url' => 'http://mediawiki.org/wiki/Extension:Hierarchical_Namespace_Permissions',
+		    'name'			=> "HierarchicalNamespacePermissions",
+			'version'		=> '$Id$',
+			'author'  		=> 'Jean-Lou Dupont',
+			'description'	=> 'Hierarchical permissions management sub-system',
+			'url'			=> 'http://mediawiki.org/wiki/Extension:Hierarchical_Namespace_Permissions',
 		);
-			
 	
 		global $wgHooks;
 		global $hnpObjDebug;
@@ -200,12 +192,16 @@ class hnpClass
 	}
 	public function setGroupHierarchy( $gh ) { self::$groupHierarchy = $gh; }
 	
+	/**
+		MAIN HOOK
+	 */
 	function hUserIsAllowed( &$user, $ns=null, $titre=null, $action, &$result )
 	{
 		$skipPageRestrictionsCheck = false;
 		
-		$result = false; // disallow by default.
-		if ($action == '') return true;
+		 // disallow by default.
+		$result = false;
+		if ($action == '') return false;
 		
 		// some translation required.
 		if ($action == 'view' ) $action = 'read';
@@ -220,7 +216,7 @@ class hnpClass
 		// debugging...
 		if (! in_array( $action, $this->lNsD) )
 		{
-			echo 'hnpClass: action <b>'.$action.'</b> not found in namespace dependant array. <br/>';
+			echo 'hnpClass: action <b>'.$action.'</b> not found in namespace dependent array. <br/>';
 			return false;	
 		}
 
@@ -266,12 +262,12 @@ class hnpClass
 		
 		if ( ($cns == NS_SPECIAL) && ($ns === null) )
 		{
-			echo 'hnpClass: action <b>'.$action.'</b> namespace dependant but called from NS_SPECIAL. <br/>';
+			echo 'hnpClass: action <b>'.$action.'</b> namespace dependent but called from NS_SPECIAL. <br/>';
 #			var_dump( debug_backtrace() );
 			return false;	
 		}
 
-		// Finally, the request comes from a valid namespace & with a valid namespace dependant action
+		// Finally, the request comes from a valid namespace & with a valid namespace dependent action
 		if ( $ns === null )    $ns = $cns;
 		if ( $titre === null ) $titre = $cti;
 
@@ -287,17 +283,20 @@ class hnpClass
 
 		$result = hnpClass::userCanInternal( $user, $ns, $titre , $action );
 	
-		return false;
-	}
-    function userCanStub( &$t, &$u, $a, &$r )
-	{
-		$r = true;
+		// stop hook chain.
 		return false;
 	}
 
-	// t-> title, u-> user, a-> action, r-> result
+	/**
+		This is the stock MediaWiki 'userCan' hook.
+		
+		t-> title, u-> user, a-> action, r-> result
+	 */
 	function userCan( &$t, &$u, $a, &$r )
 	{
+		// disallow by default.
+		$r = false;
+		
 		// Check if we have a case of "page creation/edition"
 		// Form posting support function.
 		$submit = hnpClass::isRequestToSubmit();
@@ -315,21 +314,13 @@ class hnpClass
 
 		// Deal with page level restrictions
 		if (!self::checkRestrictions( $u, $t, $ns, $pt, $a ) )
-		{
-			$r = false;
 			return false;	
-		}
 
 		// Normal processing path.
 		$r = hnpClass::userCanInternal( $u, $ns, $pt, $a );
 		
 		// don't let other extensions override this result.			
 		return false; 
-	}
-	static function userCanX( $ns, $pt, $a )
-	{ 
-		global $wgUser;
-		return hnpClass::userCanInternal($wgUser, $ns, $pt, $a); 
 	}
 	private static function checkRestrictions( &$user, &$title, &$ns, &$titre, &$action )
 	{
@@ -348,8 +339,8 @@ class hnpClass
 		return true;
 	}
 
-	/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	 * The complex processing takes place here.
+	/**
+	  The complex processing takes place here.
 	*/
 	static function userCanInternal( &$user, $ns, $pt, $a )
 	{
@@ -363,7 +354,10 @@ class hnpClass
 		// defined for this User) to this sub-space i.e.
 		// User can not have access to higher level pages e.g. X\*
 		//
-
+		
+		// disallow by default.
+		$r = false;
+		
 		foreach ( self::$groupHierarchy as $index => $group )
 		{
 			// is the user part of the group?
@@ -374,7 +368,7 @@ class hnpClass
 
 			// FIRST GROUP OF TESTS
 			//   EXCLUDE ACTION tests
-			$rights = hnpClass::prepareRightsTable( $grights, false );
+			$rights = hnpClass::prepareRightsTable( $grights, false /*no wildcards*/);
 			$eqs = hnpClass::buildPermissionKey( $ns, $pt, "!${a}" );		
 			$r = hnpClass::testRightsWildcard( $eqs, $rights );
 			if ($r) return false;		
@@ -391,8 +385,8 @@ class hnpClass
 			if ($r) return true;		
 		}
 
-		// If all tests fail, then conclude the user does not have the require right.
-		return false;
+		// If all tests fail, then conclude the user does not have the required right.
+		return $r;
 	}
 	/*
 	 * Translate the User's Groups array format to one compatible
@@ -423,6 +417,8 @@ class hnpClass
 		{
 			if (preg_match("/^ns/", $a)==0)           # 0
 				continue;
+				
+			// get rid of wildcards if asked to
 			if ($wildAction == false)
 			{
 				$wa = preg_match("/~$/",$a);
@@ -524,5 +520,6 @@ class hnpClass
 	}
 
 } # end class definition
-
-?>
+// instantiate one
+hnpClass::singleton();
+//</source>

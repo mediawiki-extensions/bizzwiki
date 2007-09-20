@@ -10,7 +10,7 @@
 
 // verify that the 'curl' module is available... 
 // hopefully the right version also.
-if (defined('CURLOPT_URL'))
+if (class_exists('HTTP_Request') && class_exists('Crypt_HMAC'))
 {
 	$wgAutoloadClasses['AmazonS3'] = dirname(__FILE__).'/AmazonS3.body.php';
 	
@@ -23,5 +23,5 @@ if (defined('CURLOPT_URL'))
 	);
 }
 else
-	echo 'Extension:AmazonS3 <b>requires</b> PHP CURL module.';
+	echo 'Extension:AmazonS3 <b>requires</b> PHP CURL & PHP Crypt_HMAC modules.';
 // </source>
