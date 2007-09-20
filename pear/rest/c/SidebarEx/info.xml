@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://pear.php.net/dtd/rest.category
     http://pear.php.net/dtd/rest.category.xsd">
  <n>SidebarEx</n>
- <c>bizzwiki.googlecode.com</c>
+ <c>bizzwiki.googlecode.com/svn/pear</c>
  <a>SidebarEx</a>
  <d>SidebarEx</d>
 </c>

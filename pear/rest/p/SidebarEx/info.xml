@@ -4,7 +4,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"    
 	xsi:schemaLocation="http://pear.php.net/dtd/rest.package    http://pear.php.net/dtd/rest.package.xsd">
  <n>SidebarEx</n>
- <c>bizzwiki.googlecode.com</c>
+ <c>bizzwiki.googlecode.com/svn/pear</c>
  <ca xlink:href="/rest/c/SidebarEx">SidebarEx</ca>
  <l></l>
  <s>Provides enhancements to the MediaWiki Sidebar</s>

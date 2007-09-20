@@ -4,6 +4,6 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xsi:schemaLocation="http://pear.php.net/dtd/rest.allcategories
     http://pear.php.net/dtd/rest.allcategories.xsd">
-<ch>bizzwiki.googlecode.com</ch>
+<ch>bizzwiki.googlecode.com/svn/pear</ch>
  <c xlink:href="/rest/c/SidebarEx/info.xml">SidebarEx</c>
 </a>

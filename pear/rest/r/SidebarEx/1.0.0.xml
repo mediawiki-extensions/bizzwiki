@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://pear.php.net/dtd/rest.release
     http://pear.php.net/dtd/rest.release.xsd">
  <p xlink:href="/rest/p/SidebarEx">SidebarEx</p>
- <c>bizzwiki.googlecode.com</c>
+ <c>bizzwiki.googlecode.com/svn/pear</c>
  <v>1.0.0</v>
  <st>stable</st>
  <l></l>
