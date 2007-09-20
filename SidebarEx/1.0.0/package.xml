@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<package version="1.0">
+  <name>SidebarEx</name>
+  <summary>Provides enhancements to MediaWiki's sidebar</summary>
+  <description>description here</description>
+  <maintainers>
+    <maintainer>
+      <user>jldupont</user>
+      <name>Jean-Lou Dupont</name>
+      <email>mediawiki@jldupont.com</email>
+      <role>lead</role>
+    </maintainer>
+  </maintainers>
+  <release>
+    <version>1.0.0</version>
+    <date></date>
+    <license></license>
+    <state>stable</state>
+    <notes>First release under a 'pear' packaging scheme</notes>
+    <deps>
+    </deps>
+    <filelist>
+      <file role="php" baseinstalldir="Mediawiki/SidebarEx" md5sum="" name="SidebarEx.php"/>
+    </filelist>
+  </release>
+  <changelog>
+  </changelog>
+</package>
