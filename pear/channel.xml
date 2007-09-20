@@ -8,6 +8,8 @@ xsi:schemaLocation="http://pear.php.net/channel-1.0 http://pear.php.net/dtd/chan
  <servers>
   <primary>
    <rest>
+    <baseurl type="REST1.0">http://bizzwiki.googlecode.com/svn/pear/rest/</baseurl>
+    <baseurl type="REST1.1">http://bizzwiki.googlecode.com/svn/pear/rest/</baseurl>
     <baseurl type="REST1.3">http://bizzwiki.googlecode.com/svn/pear/rest/</baseurl>
    </rest>
   </primary>
