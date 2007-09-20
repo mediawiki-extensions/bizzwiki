@@ -1,0 +1,37 @@
+{{extension
+|name = Hierarchical Namespace Permissions
+|image =
+|type = user rights
+|hook1=userCan
+|status = stable
+|mediawiki = tested on 1.8.2, 1.9.3, 1.10
+|version = 1.2
+|update = 
+|download = [http://bizzwiki.googlecode.com/svn/trunk/BizzWiki/extensions/HierarchicalNamespacePermissions/ SVN]
+|description = Provides an hierarchical namespace permissions system (aka "prefixes") to Mediawiki without changes to the base installation nor creation of new database tables.
+|author = [[user:jldupont]]
+}}
+
+Users interested in this extension might also appreciate [[Extension:BizzWiki]].
+
+== Features ==
+* Prefix based namespace access with wildcard
+* No additional database tables
+* Additional right support for ''form'' processing : '''SubmitWithoutRead'''
+* Automatic creation of a "Namespace Manager" group per declared namespace
+
+Please read about '''''[[security issues with authorization extensions]]'''''
+
+=== v1.2 ===
+* Ability to add "exclude" rights
+
+== Source Code ==
+Source Code and additional information can be found at <http://bluecortex.com/index.php?title=Bluecortex:Hierarchical_Namespace_Permissions>.
+
+Additionally, v1.2 of the code can be found on this wiki at [[Extension:Hierarchical Namespace Permissions/Code]].
+
+== LocalSettings.php example ==
+{{Extension:Hierarchical Namespace Permissions/LocalSettings Example}}
+[[Category:Namespace extensions]]
+[[Category:Edit extensions]]
+[[Category:View page extensions]]
