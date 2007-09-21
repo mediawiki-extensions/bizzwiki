@@ -5,5 +5,5 @@
     xsi:schemaLocation="http://pear.php.net/dtd/rest.allcategories
     http://pear.php.net/dtd/rest.allcategories.xsd">
 <ch>bizzwiki.googlecode.com/svn/pear</ch>
- <c xlink:href="/rest/c/SidebarEx/info.xml">SidebarEx</c>
+ <c xlink:href="/rest/c/Extensions/info.xml">Extensions</c>
 </a>
