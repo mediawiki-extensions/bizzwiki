@@ -4,4 +4,16 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xsi:schemaLocation="http://pear.php.net/dtd/rest.categorypackageinfo
     http://pear.php.net/dtd/rest.categorypackageinfo.xsd">
+<pi>
+ <p>
+  <n>SidebarEx</n>
+  <c>bizzwiki.googlecode.com/svn/pear</c>
+  <s>Summary TODO</s>
+  <d>Description TODO</d>
+  <r xlink:href="/rest/r/SidebarEx" />
+ </p>
+ <a>
+  <r><v>1.0.0</v><s>stable</s></r>
+ </a>
+</pi>
 </f>
