@@ -102,6 +102,7 @@ require('extensions/ParserPhase2/ParserPhase2_stub.php');
 * Added 'enable' magic word
 * Added support for 'sectional execution' i.e. replacement between 'enable' and 'disable' magic words
 * Added 'recursive' (aka 'nesting') processing functionality
+* Changed calls to $this->execute in order to remove PHP warning.
 
 == TODO ==
 * possibly fix to allow mixing up (($..$)) and ((..)) patterns on the same page (TBD)
@@ -156,7 +157,7 @@ class ParserPhase2
 	 */
 	public function hParserBeforeStrip( &$parser, &$text, &$mStripState )
 	{
-		$this->execute( &$text, 'BeforeStrip', &$found );
+		$this->execute( $text, 'BeforeStrip', $found );
 				
 		return true; // be nice with other extensions.
 	}
@@ -171,7 +172,7 @@ class ParserPhase2
 	 */
 	public function hParserAfterTidy( &$parser, &$text )
 	{
-		$this->execute( &$text, 'AfterTidy', &$found );
+		$this->execute( $text, 'AfterTidy', $found );
 
 		return true; // be nice with other extensions.
 	}
@@ -182,7 +183,7 @@ class ParserPhase2
 	 */
 	function hOutputPageBeforeHTML( &$op, &$text )
 	{
-		$this->execute( &$text, 'BeforeOutput', &$found );
+		$this->execute( $text, 'BeforeOutput', $found );
 			
 		// we found some dynamic variables, disable client side caching.
 		// parser caching is not affected.
