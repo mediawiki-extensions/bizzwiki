@@ -71,6 +71,7 @@ If no 'pos' field is present, then the extension assumes 'body'
 * Imported 'addtohead' tag functionality from SecureHTML extension
 * Removed dependency on ExtensionClass
 * Added support for a global setting '$bwScriptsDirectory'
+* Fixed issue when $IP !== $wgScriptPath
 
 == Installation ==
 To install independantly from BizzWiki:
@@ -78,7 +79,7 @@ To install independantly from BizzWiki:
 * Dowload all this extension's files and place in the desired directory
 * Apply the following changes to 'LocalSettings.php' after the statements of [[Extension:StubManager]]:
 <source lang=php>
-$bwScriptsDirectory = '/path/to/your/scripts/relative/to/root';
+$bwScriptsDirectory = '/path/to/your/scripts/relative/to/root.install.directory';
 require('/extensions/AddScriptCss/AddScriptCss_stub.php');
 </source>
 
@@ -180,8 +181,8 @@ class AddScriptCss
 		if (!$this->checkURI( $src, $type ))
 			return $this->errMessage( self::error_uri ); 
 
-		global $wgScriptPath;
-		$p = $wgScriptPath.'/'.self::$base.$src.'.'.$type;
+		global $IP;
+		$p = $IP.'/'.self::$base.$src.'.'.$type;
 
 		// Which type of script does the user want?
 		switch( $type )
