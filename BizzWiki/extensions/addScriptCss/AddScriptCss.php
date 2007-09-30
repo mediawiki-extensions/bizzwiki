@@ -57,7 +57,9 @@ If no 'type' field is present, then the extension assumes 'js'.
 If no 'pos' field is present, then the extension assumes 'body'
 
 == USAGE NOTES ==
-When using 'pos=body', it is recommended to use the extension 'ParserCacheControl' in order to better integrate this extension with the standard MW parser cache.
+* When using 'pos=body', it is recommended to use the extension 'ParserCacheControl' in order to better integrate this extension with the standard MW parser cache.
+* Use the global variable <code>$bwScriptsDirectory</code> to set a new directory for the scripts
+** e.g. <code>$bwScriptsDirectory = 'scripts'; </code> will result in <code>$IP.'/'.$scripts</code> to be used.
  
 == Dependency ==
 * Depends on [[Extension:StubManager]]
