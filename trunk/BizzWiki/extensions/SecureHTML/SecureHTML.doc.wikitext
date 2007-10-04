@@ -10,7 +10,7 @@
 |mediawiki   = 1.10, 1.11
 |download    = [http://mediawiki.googlecode.com/svn/trunk/extensions/SecureHTML/ SVN]
 |readme      =
-|changelog   = See SVN ($Id: SecureHTML.php 782 2007-09-16 01:22:37Z jeanlou.dupont $)
+|changelog   = See SVN ($Id$)
 |description = 
 |parameters  =
 |rights      =
