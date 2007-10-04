@@ -9,7 +9,7 @@
 |mediawiki   = 1.10, 1.11
 |download    = [http://mediawiki.googlecode.com/svn/trunk/extensions/ParserPhase2/ SVN]
 |readme      =
-|changelog   = See SVN ($Id: ParserPhase2.php 820 2007-09-26 02:23:40Z jeanlou.dupont $)
+|changelog   = See SVN ($Id$)
 |description = 
 |parameters  =
 |rights      =
