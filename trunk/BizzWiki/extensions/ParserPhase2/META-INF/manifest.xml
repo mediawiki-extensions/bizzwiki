@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE manifest:manifest PUBLIC "-//mediawiki.googlecode.com/svn//DTD Manifest 1.0//EN" "Manifest.dtd">
-
-<manifest:manifest xmlns:manifest="http://mediawiki.googlecode.com/svn/2007/manifest">
- <manifest:file-entry manifest:media-type="application/php"		manifest:full-path="ParserPhase2.php"/>
- <manifest:file-entry manifest:media-type="application/php"		manifest:full-path="ParserPhase2.body.php"/>
- <manifest:file-entry manifest:media-type="text/wikitext"		manifest:full-path="ParserPhase2.doc.wikitext"/>
-</manifest:manifest>
