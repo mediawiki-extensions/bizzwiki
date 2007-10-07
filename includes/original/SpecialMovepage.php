@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.10
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level rights management
-	2) Added 'define' for easying installation procedure
-*/
-define( 'BIZZWIKI_SPECIALMOVEPAGE', '$Id$' );
-
 /**
  *
  * @addtogroup SpecialPage
@@ -27,33 +11,11 @@ function wfSpecialMovepage( $par = null ) {
 	global $wgUser, $wgOut, $wgRequest, $action;
 
 	# Check rights
-	//BizzWiki begin {{
-	$target = isset($par) ? $par : $wgRequest->getVal( 'target' );
-	$oldTitle = $wgRequest->getText( 'wpOldTitle', $target );
-	$newTitle = $wgRequest->getText( 'wpNewTitle' );
+	if ( !$wgUser->isAllowed( 'move' ) ) {
+		$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
+		return;
+	}
 
-	$oTitle = Title::newFromText( $oldTitle );
-	$nTitle = Title::newFromText( $newTitle );	
-	if (is_object( $oTitle ))
-	{
-		$ns = $oTitle->getNamespace();	
-		if ( !$wgUser->isAllowed( 'move', $ns /* BIZZWIKI */ ) ) 
-		{
-			$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-			return;
-		}
-	}
-	if (is_object( $nTitle ))
-	{
-		$ns = $nTitle->getNamespace();	
-		if ( !$wgUser->isAllowed( 'move', $ns /* BIZZWIKI */ ) ) 
-		{
-			$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-			return;
-		}
-	}
-	//BizzWiki end }}
-	
 	# Don't allow blocked users to move pages
 	if ( $wgUser->isBlocked() ) {
 		$wgOut->blockedPage();
@@ -140,20 +102,7 @@ class MovePageForm {
 		}
 		$encReason = htmlspecialchars( $this->reason );
 
-		// BizzWiki begin {{
-		$title = Title::newFromURL( $this->newTitle );
-		if (is_object( $title) )
-		{
-			$ns = $title->getNamespace();
-			if ( !$wgUser->isAllowed( 'delete', $ns /* BIZZWIKI */ ) ) 
-			{
-				$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-				return;
-			}
-		}
-		// BizzWiki end }}
-
-		if ( $err == 'articleexists' /*&& $wgUser->isAllowed( 'delete' ) BIZZWIKI */ ) {
+		if ( $err == 'articleexists' && $wgUser->isAllowed( 'delete' ) ) {
 			$wgOut->addWikiText( wfMsg( 'delete_and_move_text', $encNewTitle ) );
 			$movepagebtn = wfMsgHtml( 'delete_and_move' );
 			$confirmText = wfMsgHtml( 'delete_and_move_confirm' );
@@ -262,13 +211,9 @@ class MovePageForm {
 
 		$ot = Title::newFromText( $this->oldTitle );
 		$nt = Title::newFromText( $this->newTitle );
-		
-		// BizzWiki begin {{
-		$bwns = $nt->getNamespace();
-		// BizzWiki end }}
-		
+
 		# Delete to make way if requested
-		if ( $wgUser->isAllowed( 'delete', $bwns /*BIZZWIKI*/ ) && $this->deleteAndMove ) {
+		if ( $wgUser->isAllowed( 'delete' ) && $this->deleteAndMove ) {
 			$article = new Article( $nt );
 			// This may output an error message and exit
 			$article->doDelete( wfMsgForContent( 'delete_and_move_reason' ) );

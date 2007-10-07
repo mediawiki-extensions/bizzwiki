@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE manifest:manifest PUBLIC "-//BizzWiki.org//DTD Manifest 1.0//EN" "Manifest.dtd">
-
-<manifest:manifest xmlns:manifest="http://bizzwiki.org/2007/manifest">
- <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ImagePageEx.body.php"/>
- <manifest:file-entry manifest:media-type="application/php" manifest:full-path="ImagePageEx.php"/>
- <manifest:file-entry manifest:media-type="text/wikitext" manifest:full-path="ImagePageEx.doc.wikitext"/>
-</manifest:manifest>

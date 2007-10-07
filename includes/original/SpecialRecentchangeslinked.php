@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.10
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level policing.
-	2) Added 'define' for easying installation procedure
-*/
-define( 'BIZZWIKI_SPECIALRECENTCHANGESLINKED', '$Id$' );
-
 /**
  * This is to display changes made to all articles linked in an article.
  * @addtogroup SpecialPage
@@ -175,9 +159,6 @@ $GROUPBY
 			--$count;
 			$rc = RecentChange::newFromRow( $obj );
 			$rc->counter = $counter++;
-			// BizzWiki {{
-			if ( $wgUser->isAllowed( 'browse', $obj->rc_namespace, $obj->rc_title ) ) 
-			// BizzWiki }}
 			$s .= $list->recentChangesLine( $rc , !empty( $obj->wl_user) );
 			--$limit;
 		}

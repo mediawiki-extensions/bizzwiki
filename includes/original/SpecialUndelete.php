@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.10
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level rights management
-	2) Added namespace independant 'undelete' right
-	3) Added 'define' for easying installation procedure
-*/
-define( 'BIZZWIKI_SPECIALUNDELETE', '$Id$' );
 
 /**
  * Special page allowing users with the appropriate permissions to view
@@ -498,18 +482,7 @@ class UndeleteForm {
 		if( $par != "" ) {
 			$this->mTarget = $par;
 		}
-		
-		// BizzWiki
-		/*
-		$title = Title::newFromText( $par );
-		if ( is_object($title) )
-			$ns = $title->getNamespace();
-		else
-		{
-			## FIXME
-		}
-		*/			
-		if ( $wgUser->isAllowed( 'undelete' /*BizzWiki*/ ) && !$wgUser->isBlocked() ) {
+		if ( $wgUser->isAllowed( 'delete' ) && !$wgUser->isBlocked() ) {
 			$this->mAllowed = true;
 		} else {
 			$this->mAllowed = false;
@@ -570,7 +543,7 @@ class UndeleteForm {
 		return $this->showHistory();
 	}
 
-	function showSearchForm() { 
+	function showSearchForm() {
 		global $wgOut, $wgScript;
 		$wgOut->addWikiText( wfMsg( 'undelete-header' ) );
 		
@@ -760,14 +733,13 @@ class UndeleteForm {
 
 		# Show relevant lines from the deletion log:
 		$wgOut->addHTML( "<h2>" . htmlspecialchars( LogPage::logName( 'delete' ) ) . "</h2>\n" );
-
 		$logViewer = new LogViewer(
 			new LogReader(
 				new FauxRequest(
 					array( 'page' => $this->mTargetObj->getPrefixedText(),
 						   'type' => 'delete' ) ) ) );
 		$logViewer->showList( $wgOut );
-	
+		
 		if( $this->mAllowed && ( $haveRevisions || $haveFiles ) ) {
 			# Format the user-visible controls (comment field, submission button)
 			# in a nice little table
