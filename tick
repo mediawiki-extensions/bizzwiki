@@ -1,5 +1,0 @@
-#!/bin/bash
-#Linux shell script for invoking the 'clocktick.php' script which serves as time base for BizzWiki
-
-cd /var/www/vhosts/default/htdocs
-/usr/bin/php clocktick.php
