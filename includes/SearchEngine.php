@@ -191,7 +191,7 @@ class SearchEngine {
 	 * @return array
 	 */
 	public static function searchableNamespaces() {
-		global $wgContLang;
+		global $wgContLang, $wgUser /*BIZZWIKI*/;
 		$arr = array();
 		foreach( $wgContLang->getNamespaces() as $ns => $name ) {
 			//BIZZWIKI {{BEGIN
