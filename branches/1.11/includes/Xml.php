@@ -127,6 +127,7 @@ class Xml {
 				$name = wfMsg( 'blanknamespace' );
 				
 			// BIZZWIKI {{BEGIN
+			global $wgUser;
 			if ( !$wgUser->isAllowed( 'browse', $index ) ) continue;
 			// END}}
 				
