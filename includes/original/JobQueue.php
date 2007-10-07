@@ -1,23 +1,4 @@
 <?php
-/*
-	Origin:	MW 1.10
-	-------
-	
-	BizzWiki: $Id$
-
-	TODO:
-	=====
-
-
-	History:
-	========
-	1) Added 'modified factory method' to enable the jobqueue for custom jobs
-	   (see Bugzilla #7302)
-	2) Removed (1) in place of MW1.11 'Job::factory' method. I have adapted it
-	   to work on MW1.10 as usual but also to accept custom jobs.
-	3) Added 'define' for easying installation procedure
-*/
-define( 'BIZZWIKI_JOBQUEUE', '$Id$' );
 
 if ( !defined( 'MEDIAWIKI' ) ) {
 	die( "This file is part of MediaWiki, it is not a valid entry point\n" );
@@ -153,17 +134,9 @@ abstract class Job {
 			case 'htmlCacheUpdate':
 			case 'html_cache_update': # BC
 				return new HTMLCacheUpdateJob( $title, $params['table'], $params['start'], $params['end'], $id );
-			default :
-				break; //{{BizzWiki}}
+			default:
+				throw new MWException( "Invalid job command \"$command\"" );
 		}
-		// {{BizzWiki 
-		global $wgJobClasses;
-		if( isset( $wgJobClasses[$command] ) ) {
-			$class = $wgJobClasses[$command];
-			return new $class( $title, $params, $id );
-		}
-		throw new MWException( "Invalid job command `{$command}`" );
-		// BizzWiki}}
 	}
 
 	static function makeBlob( $params ) {

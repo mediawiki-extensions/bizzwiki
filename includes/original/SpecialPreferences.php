@@ -1,22 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.10
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-
-	HISTORY:
-	========
-	1) Fixed searchable namespace listing
-	2) Fixed watchlist related toggles
-	3) Fixed searchable namespace preference saving
-	4) Added 'define' for easying installation procedure
-*/
-define( 'BIZZWIKI_SPECIALPREFERENCES', '$Id$' );
-
 /**
  * Hold things related to displaying and saving user preferences.
  * @addtogroup SpecialPage
@@ -105,9 +87,6 @@ class PreferencesForm {
 		if ( $this->mPosted ) {
 			$namespaces = $wgContLang->getNamespaces();
 			foreach ( $namespaces as $i => $namespace ) {
-				// BizzWiki begin {{
-				if ( !$wgUser->isAllowed( 'search', $i ) ) continue;
-				// BizzWiki end }}
 				if ( $i >= 0 ) {
 					$this->mSearchNs[$i] = $request->getCheck( "wpNs$i" ) ? 1 : 0;
 				}
@@ -296,9 +275,6 @@ class PreferencesForm {
 
 		# Set search namespace options
 		foreach( $this->mSearchNs as $i => $value ) {
-			// BizzWiki begin {{
-			if ( !$wgUser->isAllowed( 'search', $i) ) continue;
-			// BizzWiki end }}
 			$wgUser->setOption( "searchNs{$i}", $value );
 		}
 
@@ -401,9 +377,6 @@ class PreferencesForm {
 
 		$namespaces = $wgContLang->getNamespaces();
 		foreach ( $namespaces as $i => $namespace ) {
-			// BizzWiki begin {{
-			if ( !$wgUser->isAllowed('search', $i ) ) continue;
-			// BizzWiki end }}
 			if ( $i >= NS_MAIN ) {
 				$this->mSearchNs[$i] = $wgUser->getOption( 'searchNs'.$i );
 			}
@@ -414,17 +387,13 @@ class PreferencesForm {
 	 * @access private
 	 */
 	function namespacesCheckboxes() {
-		global $wgContLang, $wgUser /* BizzWiki */;
+		global $wgContLang;
 
 		# Determine namespace checkboxes
 		$namespaces = $wgContLang->getNamespaces();
 		$r1 = null;
 
 		foreach ( $namespaces as $i => $name ) {
-			// BizzWiki begin {{
-			if ( !$wgUser->isAllowed('search', $i ) ) continue;
-			// BizzWiki end }}
-
 			if ($i < 0)
 				continue;
 			$checked = $this->mSearchNs[$i] ? "checked='checked'" : '';
@@ -927,15 +896,12 @@ class PreferencesForm {
 
 		$wgOut->addHtml( $this->getToggles( array( 'watchlisthideown', 'watchlisthidebots', 'watchlisthideminor' ) ) );
 		
-		/* BizzWiki -- can't enforce namespace dependant policies here.
-		
 		if( $wgUser->isAllowed( 'createpage' ) || $wgUser->isAllowed( 'createtalk' ) )
 			$wgOut->addHtml( $this->getToggle( 'watchcreations' ) );
 		foreach( array( 'edit' => 'watchdefault', 'move' => 'watchmoves', 'delete' => 'watchdeletion' ) as $action => $toggle ) {
 			if( $wgUser->isAllowed( $action ) )
 				$wgOut->addHtml( $this->getToggle( $toggle ) );
 		}
-		*/
 		$this->mUsedToggles['watchcreations'] = true;
 		$this->mUsedToggles['watchdefault'] = true;
 		$this->mUsedToggles['watchmoves'] = true;
