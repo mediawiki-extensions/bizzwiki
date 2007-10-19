@@ -12,6 +12,7 @@
 	========
 	1) Namespace:Title level policy enforcement.
 	2) Added 'define' for easying installation procedure
+	3) Fixed 'feed' output for compliance with 'browsing' right	
 */
 define( 'BIZZWIKI_SPECIALRECENTCHANGES', '$Id$' );
 
@@ -418,9 +419,13 @@ function rcDoOutputFeed( $rows, &$feed ) {
 			$n++;
 		}
 	}
-
+	global $wgUser; //BIZZWIKI
 	foreach( $sorted as $obj ) {
 		$title = Title::makeTitle( $obj->rc_namespace, $obj->rc_title );
+		// BIZZWIKI {{BEGIN
+		if ( !$wgUser->isAllowed( 'browse', $obj->rc_namespace, $obj->rc_title ) ) continue;
+		// END}}		
+		
 		$talkpage = $title->getTalkPage();
 		$item = new FeedItem(
 			$title->getPrefixedText(),
