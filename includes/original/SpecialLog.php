@@ -1,22 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added 'readlog' right
-	2) Added namespace:page name level policy enforcement for log entries.
-	3) Fixed 'delete' namespace policy enforcement
-	4) Fixed 'protect' namespace policy enforcement
-	5) Added 'define' for easying installation procedure
-*/
-
 # Copyright (C) 2004 Brion Vibber <brion@pobox.com>
 # http://www.mediawiki.org/
 #
@@ -45,20 +27,6 @@
  */
 function wfSpecialLog( $par = '' ) {
 	global $wgRequest;
-	
-	// BIZZWIKI {{BEGIN
-	global $wgOut, $wgUser;
-
-	if ( !$wgUser->isAllowed('readlog'))
-	{
-		$skin = $wgUser->getSkin();
-		$wgOut->setPageTitle( wfMsg( 'log' ) );      // existing message.
-		$wgOut->addWikiText( wfMsg( 'badaccess' ) ); // existing message.
-		return;
-	}
-	// END}}
-	
-	
 	$logReader = new LogReader( $wgRequest );
 	if( $wgRequest->getVal( 'type' ) == '' && $par != '' ) {
 		$logReader->limitType( $par );
@@ -364,12 +332,7 @@ class LogViewer {
 		// Rewind result pointer and go through it again, making the HTML
 		$html = "\n<ul>\n";
 		$result->seek( 0 );
-		
-		global $wgUser; // BIZZWIKI		
 		while( $s = $result->fetchObject() ) {
-			// BIZZWIKI {{BEGIN
-			if (!$wgUser->isAllowed( 'browse', $s->log_namespace, $s->log_title) ) continue; // 1
-			// END}}
 			$html .= $this->logLine( $s );
 		}
 		$html .= "\n</ul>\n";
@@ -418,7 +381,7 @@ class LogViewer {
 						'&wpMovetalk=0' ) . ')';
 				}
 			// show undelete link
-			} elseif ( $s->log_action == 'delete' && $wgUser->isAllowed( 'delete', $s->log_namespace /* BIZZWIKI */  ) ) {
+			} elseif ( $s->log_action == 'delete' && $wgUser->isAllowed( 'delete' ) ) {
 				$revert = '(' . $this->skin->makeKnownLinkObj( SpecialPage::getTitleFor( 'Undelete' ),
 					wfMsg( 'undeletebtn' ) ,
 					'target='. urlencode( $title->getPrefixedDBkey() ) ) . ')';
@@ -429,7 +392,7 @@ class LogViewer {
 					wfMsg( 'unblocklink' ),
 					'action=unblock&ip=' . urlencode( $s->log_title ) ) . ')';
 			// show change protection link
-			} elseif ( ( $s->log_action == 'protect' || $s->log_action == 'modify' ) && $wgUser->isAllowed( 'protect', $s->log_namespace /* BIZZWIKI */  ) ) {
+			} elseif ( ( $s->log_action == 'protect' || $s->log_action == 'modify' ) && $wgUser->isAllowed( 'protect' ) ) {
 				$revert = '(' .  $skin->makeKnownLinkObj( $title, wfMsg( 'protect_change' ), 'action=unprotect' ) . ')';
 			// show user tool links for self created users
 			// TODO: The extension should be handling this, get it out of core!

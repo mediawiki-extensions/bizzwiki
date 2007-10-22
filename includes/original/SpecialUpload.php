@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
- 
-	
-	HISTORY:
-	========
-	1) Namespace level permission policing.
-	2) Added 'define' for easying installation procedure
-*/
 /**
  *
  * @addtogroup SpecialPage
@@ -156,7 +141,7 @@ class UploadForm {
 	private function curlCopy( $url, $dest ) {
 		global $wgUser, $wgOut;
 
-		if( !$wgUser->isAllowed( 'upload_by_url', NS_IMAGE /* BizzWiki */  ) ) {
+		if( !$wgUser->isAllowed( 'upload_by_url' ) ) {
 			$wgOut->permissionRequired( 'upload_by_url' );
 			return true;
 		}
@@ -234,7 +219,7 @@ class UploadForm {
 		}
 
 		# Check permissions
-		if( !$wgUser->isAllowed( 'upload', NS_IMAGE /* BizzWiki */ ) ) {
+		if( !$wgUser->isAllowed( 'upload' ) ) {
 			if( !$wgUser->isLoggedIn() ) {
 				$wgOut->showErrorPage( 'uploadnologin', 'uploadnologintext' );
 			} else {
@@ -784,11 +769,11 @@ wgAjaxLicensePreview = {$alp};
 			return false;
 		}
 		
-		if( $this->mDesiredDestName && $wgUser->isAllowed( 'deletedhistory', NS_IMAGE /* BizzWiki */ ) ) {
+		if( $this->mDesiredDestName && $wgUser->isAllowed( 'deletedhistory' ) ) {
 			$title = Title::makeTitleSafe( NS_IMAGE, $this->mDesiredDestName );
 			if( $title instanceof Title && ( $count = $title->isDeleted() ) > 0 ) {
 				$link = wfMsgExt(
-					$wgUser->isAllowed( 'delete', NS_IMAGE /* BizzWiki */ ) ? 'thisisdeleted' : 'viewdeleted',
+					$wgUser->isAllowed( 'delete' ) ? 'thisisdeleted' : 'viewdeleted',
 					array( 'parse', 'replaceafter' ),
 					$wgUser->getSkin()->makeKnownLinkObj(
 						SpecialPage::getTitleFor( 'Undelete', $title->getPrefixedText() ),
@@ -838,7 +823,7 @@ wgAjaxLicensePreview = {$alp};
 		$warningChecked = $this->mIgnoreWarning ? 'checked' : '';
 
 		// Prepare form for upload or upload/copy
-		if( $wgAllowCopyUploads && $wgUser->isAllowed( 'upload_by_url', NS_IMAGE /* BizzWiki */ ) ) {
+		if( $wgAllowCopyUploads && $wgUser->isAllowed( 'upload_by_url' ) ) {
 			$filename_form =
 				"<input type='radio' id='wpSourceTypeFile' name='wpSourceType' value='file' " .
 				   "onchange='toggle_element_activation(\"wpUploadFileURL\",\"wpUploadFile\")' checked />" .
@@ -1359,8 +1344,8 @@ EOT
 					$error = 'fileexists-forbidden';
 				}
 			} else {
-				if( !$wgUser->isAllowed( 'reupload', NS_IMAGE /* BizzWiki */ ) ||
-				    !$wgUser->isAllowed( 'reupload-shared', NS_IMAGE /* BizzWiki */ ) ) {
+				if( !$wgUser->isAllowed( 'reupload' ) ||
+				    !$wgUser->isAllowed( 'reupload-shared' ) ) {
 					$error = "fileexists-shared-forbidden";
 				}
 			}
@@ -1383,9 +1368,9 @@ EOT
 	 * @return bool
 	 */
 	public static function userCanReUpload( User $user, $img ) {
-		if( $user->isAllowed( 'reupload', NS_IMAGE /* BizzWiki */ ) )
+		if( $user->isAllowed( 'reupload' ) )
 			return true; // non-conditional
-		if( !$user->isAllowed( 'reupload-own', NS_IMAGE /* BizzWiki */ ) )
+		if( !$user->isAllowed( 'reupload-own' ) )
 			return false;
 		
 		$dbr = wfGetDB( DB_SLAVE );

@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added hook 'UserIsAllowed' in order to integrate with enhanced permission sub-system.
-	2) Modified 'isAllowed' method.
-	3) Added 'UserSettingsChanged' hook
-	4) Added 'define' for easying installation procedure
-*/
 /**
  * See user.txt
  *
@@ -1768,17 +1752,10 @@ class User {
 	 * @param string $action Action to be checked
 	 * @return boolean True: action is allowed, False: action should not be allowed
 	 */
-	function isAllowed($action='', $ns = null /* BizzWiki addition */, $title = null /* BizzWiki addition */) {
+	function isAllowed($action='') {
 		if ( $action === '' )
 			// In the spirit of DWIM
 			return true;
-
-		// BIZZWIKI {{BEGIN
-		$result = null;
-		wfRunHooks('UserIsAllowed', array( &$this, $ns, $title, &$action, &$result ) );
-		if ( $result !== null )
-			return $result;
-		// END}}
 
 		return in_array( $action, $this->getRights() );
 	}
@@ -2021,11 +1998,6 @@ class User {
 			), __METHOD__
 		);
 		$this->clearSharedCache();
-
-		// BIZZWIKI {{BEGIN
-		wfRunHooks( 'UserSettingsChanged', array( &$this ) );
-		// END}}
-		
 	}
 
 

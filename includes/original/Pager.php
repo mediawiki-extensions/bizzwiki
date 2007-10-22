@@ -1,21 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
- 
-	
-	HISTORY:
-	========
-	1) Namespace level permission policing ('browse' right)
-	2) Adjusted for queries where 'page_namespace' is not included. 
-	   Now support queries in the 'user' table.
-	3) Adjusted to support the 'NS_IMAGE' and 'NS_CATEGORY' namespaces betters
-*/
 
 /**
  * Basic pager interface.
@@ -230,63 +213,18 @@ abstract class IndexPager implements Pager {
 		# Don't use any extra rows returned by the query
 		$numRows = min( $this->mResult->numRows(), $this->mLimit );
 
-		global $wgUser; // BIZZWIKI
-		
 		$s = $this->getStartBody();
 		if ( $numRows ) {
 			if ( $this->mIsBackwards ) {
 				for ( $i = $numRows - 1; $i >= 0; $i-- ) {
 					$this->mResult->seek( $i );
 					$row = $this->mResult->fetchObject();
-					
-					// BIZZWIKI {{BEGIN
-#						var_dump( $this );
-					if (isset( $row->page_namespace))
-						$ns = $row->page_namespace;
-					elseif (isset( $row->user_name))
-						$ns = NS_USER;
-					elseif ( @is_object( $this->mPageHistory->mTitle ) )
-						$ns = $this->mPageHistory->mTitle->getNamespace(); 
-					elseif ( isset( $row->img_name ))
-						$ns = NS_IMAGE;
-					elseif ( isset( $row->cl_to ))
-						$ns = NS_CATEGORY;
-					else
-						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
-					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
-					// BIZZWIKI end}}
-					
-				
-					
 					$s .= $this->formatRow( $row );
 				}
 			} else {
 				$this->mResult->seek( 0 );
 				for ( $i = 0; $i < $numRows; $i++ ) {
 					$row = $this->mResult->fetchObject();
-					
-					// BIZZWIKI {{BEGIN
-#						var_dump( $this );
-					if (isset( $row->page_namespace))
-						$ns = $row->page_namespace;
-					elseif (isset( $row->user_name))
-						$ns = NS_USER;
-					elseif ( @is_object( $this->mPageHistory->mTitle ) )
-						$ns = $this->mPageHistory->mTitle->getNamespace(); 
-					elseif ( isset( $row->img_name ))
-						$ns = NS_IMAGE;
-					elseif ( isset( $row->cl_to ))
-						$ns = NS_CATEGORY;
-					else
-					{
-						echo 'Pager::getBody : no recognized namespace= '.$row->page_namespace;
-						var_dump( $row );
-					}
-					if ( !$wgUser->isAllowed( 'browse', $ns ) ) continue;
-					// BIZZWIKI END}}
-					
-					
-					
 					$s .= $this->formatRow( $row );
 				}
 			}

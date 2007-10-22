@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level rights management
-	2) Added 'define' for easying installation procedure
-*/
-
 /**
  *
  * @addtogroup SpecialPage
@@ -26,32 +11,10 @@ function wfSpecialMovepage( $par = null ) {
 	global $wgUser, $wgOut, $wgRequest, $action;
 
 	# Check rights
-	//BIZZWIKI {{BEGIN
-	$target = isset($par) ? $par : $wgRequest->getVal( 'target' );
-	$oldTitle = $wgRequest->getText( 'wpOldTitle', $target );
-	$newTitle = $wgRequest->getText( 'wpNewTitle' );
-
-	$oTitle = Title::newFromText( $oldTitle );
-	$nTitle = Title::newFromText( $newTitle );	
-	if (is_object( $oTitle ))
-	{
-		$ns = $oTitle->getNamespace();	
-		if ( !$wgUser->isAllowed( 'move', $ns /* BIZZWIKI */ ) ) 
-		{
-			$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-			return;
-		}
+	if ( !$wgUser->isAllowed( 'move' ) ) {
+		$wgOut->showPermissionsErrorPage( array( $wgUser->isAnon() ? 'movenologintext' : 'movenotallowed' ) );
+		return;
 	}
-	if (is_object( $nTitle ))
-	{
-		$ns = $nTitle->getNamespace();	
-		if ( !$wgUser->isAllowed( 'move', $ns /* BIZZWIKI */ ) ) 
-		{
-			$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-			return;
-		}
-	}
-	// END}}
 
 	# Don't allow blocked users to move pages
 	if ( $wgUser->isBlocked() ) {
@@ -139,20 +102,7 @@ class MovePageForm {
 		}
 		$encReason = htmlspecialchars( $this->reason );
 
-		// BIZZWIKI {{BEGIN
-		$title = Title::newFromURL( $this->newTitle );
-		if (is_object( $title) )
-		{
-			$ns = $title->getNamespace();
-			if ( !$wgUser->isAllowed( 'delete', $ns /* BIZZWIKI */ ) ) 
-			{
-				$wgOut->showErrorPage( 'movenologin', 'movenologintext' );
-				return;
-			}
-		}
-		// END}}
-
-		if ( $err == 'articleexists' /*&& $wgUser->isAllowed( 'delete' ) BIZZWIKI */) {
+		if ( $err == 'articleexists' && $wgUser->isAllowed( 'delete' ) ) {
 			$wgOut->addWikiText( wfMsg( 'delete_and_move_text', $encNewTitle ) );
 			$movepagebtn = wfMsgHtml( 'delete_and_move' );
 			$submitVar = 'wpDeleteAndMove';
@@ -253,12 +203,8 @@ class MovePageForm {
 		$ot = Title::newFromText( $this->oldTitle );
 		$nt = Title::newFromText( $this->newTitle );
 
-		// BIZZWIKI {{BEGIN
-		$bwns = $nt->getNamespace();
-		// END}}
-
 		# Delete to make way if requested
-		if ( $wgUser->isAllowed( 'delete', $bwns /*BIZZWIKI*/  ) && $this->deleteAndMove ) {
+		if ( $wgUser->isAllowed( 'delete' ) && $this->deleteAndMove ) {
 			$article = new Article( $nt );
 			// This may output an error message and exit
 			$article->doDelete( wfMsgForContent( 'delete_and_move_reason' ) );

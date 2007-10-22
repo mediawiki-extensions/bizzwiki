@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:	MW 1.11
-	-------
-	
-	BizzWiki: $Id$
-
-	TODO:
-	=====
-
-
-	History:
-	========
-	1) disabled save article in parser cache upon article creation/update
-	2) Modified 'doDeleteArticle' so that it does not delete RecentChanges entries
-*/
 /**
  * File for articles
  */
@@ -2176,9 +2161,7 @@ class Article {
 		if ( !$dbw->cleanupTriggers() ) {
 
 			# Clean up recentchanges entries...
-			/* BIZZWIKI {{BEGIN
 			$dbw->delete( 'recentchanges', array( 'rc_namespace' => $ns, 'rc_title' => $t ), __METHOD__ );
-			BIZZWIKI END}}*/
 		}
 
 		# Clear caches
@@ -2415,10 +2398,8 @@ class Article {
 		$poutput = $wgParser->parse( $text, $this->mTitle, $options, true, true, $newid );
 
 		# Save it to the parser cache
-		/* BIZZWIKI {{BEGIN
 		$parserCache =& ParserCache::singleton();
 		$parserCache->save( $poutput, $this, $wgUser );
-		END}}*/
 
 		# Update the links tables
 		$u = new LinksUpdate( $this->mTitle, $poutput );

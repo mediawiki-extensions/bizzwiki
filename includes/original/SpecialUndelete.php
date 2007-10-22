@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level rights management
-	2) Added namespace independant 'undelete' right
-	3) Added 'define' for easying installation procedure
-*/
 
 /**
  * Special page allowing users with the appropriate permissions to view
@@ -498,7 +483,7 @@ class UndeleteForm {
 		if( $par != "" ) {
 			$this->mTarget = $par;
 		}
-		if ( $wgUser->isAllowed( 'undelete' /*BIZZWIKI*/) && !$wgUser->isBlocked() ) {
+		if ( $wgUser->isAllowed( 'delete' ) && !$wgUser->isBlocked() ) {
 			$this->mAllowed = true;
 		} else {
 			$this->mAllowed = false;

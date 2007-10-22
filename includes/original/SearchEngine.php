@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level 'search' right.
-	2) Added 'define' for easying installation procedure
-*/
-
 /**
  * Contain a class for special pages
  * @addtogroup Search
@@ -191,12 +176,9 @@ class SearchEngine {
 	 * @return array
 	 */
 	public static function searchableNamespaces() {
-		global $wgContLang, $wgUser /*BIZZWIKI*/;
+		global $wgContLang;
 		$arr = array();
 		foreach( $wgContLang->getNamespaces() as $ns => $name ) {
-			//BIZZWIKI {{BEGIN
-			if ( !$wgUser->isAllowed( 'search', $ns ) ) continue;
-			//END}}			
 			if( $ns >= NS_MAIN ) {
 				$arr[$ns] = $name;
 			}

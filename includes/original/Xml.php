@@ -1,18 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added check for 'browse' right on a per namespace basis. ( patch in 'namespaceSelector' function ) 
-	2) Added 'define' for easying installation procedure
-*/
 
 /**
  * Module of static functions for generating XML
@@ -125,12 +111,6 @@ class Xml {
 				continue;
 			if( $index === 0 )
 				$name = wfMsg( 'blanknamespace' );
-				
-			// BIZZWIKI {{BEGIN
-			global $wgUser;
-			if ( !$wgUser->isAllowed( 'browse', $index ) ) continue;
-			// END}}
-				
 			$options[] = self::option( $name, $index, $index === $selected );
 		}
 		

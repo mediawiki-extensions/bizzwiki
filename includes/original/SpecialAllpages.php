@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	1) Add nice message 'forbidden to browse'.
-	
-	HISTORY:
-	========
-	1) Added namespace level 'browse' right checking. 
-	2) Added 'define' for easying installation procedure
-*/
-
 /**
  * @addtogroup SpecialPage
  */
@@ -39,11 +23,6 @@ function wfSpecialAllpages( $par=NULL, $specialPage ) {
 		wfMsg( 'allinnamespace', str_replace( '_', ' ', $namespaces[$namespace] ) ) :
 		wfMsg( 'allarticles' )
 		);
-
-	// BIZZWIKI {{BEGIN
-	global $wgUser;
-	if ( !$wgUser->isAllowed( 'browse', $namespace ) ) return; //FIXME
-	// END}}
 
 	if ( isset($par) ) {
 		$indexPage->showChunk( $namespace, $par, $specialPage->including() );

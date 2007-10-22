@@ -1,20 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	====
-	
-	HISTORY:
-	========
-	1) Namespace:Title level policy enforcement.
-	2) Added 'define' for easying installation procedure
-	3) Fixed 'feed' output for compliance with 'browsing' right
-*/
-
 /**
  *
  * @addtogroup SpecialPage
@@ -254,14 +238,6 @@ function wfSpecialRecentchanges( $par, $specialPage ) {
 				break;
 			}
 
-			// BIZZWIKI {{BEGIN
-			$ns    = $obj->rc_namespace;
-			$title = $obj->rc_title;
-			
-			if ( !$wgUser->isAllowed( 'browse', $ns, $title ) ) continue;
-			// END}}
-
-
 			if ( ! ( $hideminor     && $obj->rc_minor     ) &&
 			     ! ( $hidepatrolled && $obj->rc_patrolled ) ) {
 				$rc = RecentChange::newFromRow( $obj );
@@ -418,13 +394,8 @@ function rcDoOutputFeed( $rows, &$feed ) {
 		}
 	}
 
-	global $wgUser; //BIZZWIKI
 	foreach( $sorted as $obj ) {
 		$title = Title::makeTitle( $obj->rc_namespace, $obj->rc_title );
-		// BIZZWIKI {{BEGIN
-		if ( !$wgUser->isAllowed( 'browse', $obj->rc_namespace, $obj->rc_title ) ) continue;
-		// END}}		
-		
 		$talkpage = $title->getTalkPage();
 		$item = new FeedItem(
 			$title->getPrefixedText(),

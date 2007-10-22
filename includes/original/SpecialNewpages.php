@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Added namespace level 'patrol' right management. 
-	2) Added 'define' for easying installation procedure
-*/
-
 /**
  *
  * @addtogroup SpecialPage
@@ -59,7 +44,7 @@ class NewPagesPage extends QueryPage {
 
 	function getSQL() {
 		global $wgUser, $wgUseRCPatrol;
-		$usepatrol = ( $wgUseRCPatrol && $wgUser->isAllowed( 'patrol', $this->namespace /*BIZZWIKI*/ ) ) ? 1 : 0;
+		$usepatrol = ( $wgUseRCPatrol && $wgUser->isAllowed( 'patrol' ) ) ? 1 : 0;
 		$dbr = wfGetDB( DB_SLAVE );
 		list( $recentchanges, $page ) = $dbr->tableNamesN( 'recentchanges', 'page' );
 
@@ -132,7 +117,7 @@ class NewPagesPage extends QueryPage {
 	 */
 	function patrollable( $result ) {
 		global $wgUser, $wgUseRCPatrol;
-		return $wgUseRCPatrol && $wgUser->isAllowed( 'patrol', $this->namespace /*BIZZWIKI*/ ) && !$result->patrolled;
+		return $wgUseRCPatrol && $wgUser->isAllowed( 'patrol' ) && !$result->patrolled;
 	}
 
 	function feedItemDesc( $row ) {

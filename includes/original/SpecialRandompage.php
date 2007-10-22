@@ -1,18 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) Namespace level permission policing.
-	2) Added 'define' for easying installation procedure
-*/
 
 /**
  * Special page to direct the user to a random page
@@ -103,11 +89,6 @@ class RandomPage {
 
 		$ns = (int) $this->namespace;
 		$redirect = $this->redirect ? 1 : 0;
-
-		// BIZZWIKI {{BEGIN
-		global $wgUser;
-		if ( !$wgUser->isAllowed( 'browse', $ns ) ) return null;
-		// END}}
 
 		$extra = $wgExtraRandompageSQL ? "AND ($wgExtraRandompageSQL)" : "";
 		$sql = "SELECT page_title

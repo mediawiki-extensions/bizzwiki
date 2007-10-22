@@ -1,18 +1,5 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-	
-	HISTORY:
-	========
-	1) added namespace level 'patrol' & 'patrolmarks' right checking.
-	
-*/
+
 /**
  * @todo document
  */
@@ -216,9 +203,9 @@ class ChangesList {
 	 * Check whether to enable recent changes patrol features
 	 * @return bool
 	 */
-	function usePatrol($ns=null /* BIZZWIKI: added namespace parameter */) {
+	function usePatrol() {
 		global $wgUseRCPatrol, $wgUser;
-		return( $wgUseRCPatrol && ($wgUser->isAllowed('patrol', $ns /*BIZZWIKI*/) || $wgUser->isAllowed('patrolmarks', $ns /*BIZZWIKI*/)) );
+		return( $wgUseRCPatrol && ($wgUser->isAllowed('patrol') || $wgUser->isAllowed('patrolmarks')) );
 	}
 
 	/**
@@ -258,8 +245,7 @@ class OldChangesList extends ChangesList {
 		extract( $rc->mAttribs );
 
 		# Should patrol-related stuff be shown?
-		global $wgUser; //BIZZWIKI change
-		$unpatrolled = $this->usePatrol($rc_namespace /* BizzWiki */) && $rc_patrolled == 0;
+		$unpatrolled = $this->usePatrol() && $rc_patrolled == 0;
 
 		$this->insertDateHeader($s,$rc_timestamp);
 
@@ -341,17 +327,13 @@ class EnhancedChangesList extends ChangesList {
 			$this->lastdate = $date;
 		}
 
-		// BIZZWIKI {{BEGIN
-		$ns = $rc->getTitle()->getNamespace();
-
 		# Should patrol-related stuff be shown?
-		if( $this->usePatrol( $ns /*BIZZWIKI*/) ) {
+		if( $this->usePatrol() ) {
 		  	$rc->unpatrolled = !$rc_patrolled;
 		} else {
 			$rc->unpatrolled = false;
 		}
-		// BIZZWIKI END}}
-		
+
 		# Make article link
 		if( $rc_type == RC_MOVE || $rc_type == RC_MOVE_OVER_REDIRECT ) {
 			$msg = ( $rc_type == RC_MOVE ) ? "1movedto2" : "1movedto2_redir";

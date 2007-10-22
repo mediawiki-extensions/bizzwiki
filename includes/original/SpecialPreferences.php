@@ -1,21 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
-
-	HISTORY:
-	========
-	1) Fixed searchable namespace listing
-	2) Fixed watchlist related toggles
-	3) Fixed searchable namespace preference saving
-	4) Added 'define' for easying installation procedure
-*/
-
 /**
  * Hold things related to displaying and saving user preferences.
  * @addtogroup SpecialPage
@@ -104,10 +87,6 @@ class PreferencesForm {
 		if ( $this->mPosted ) {
 			$namespaces = $wgContLang->getNamespaces();
 			foreach ( $namespaces as $i => $namespace ) {
-				// BIZZWIKI {{BEGIN
-				if ( !$wgUser->isAllowed( 'search', $i ) ) continue;
-				// END}}
-				
 				if ( $i >= 0 ) {
 					$this->mSearchNs[$i] = $request->getCheck( "wpNs$i" ) ? 1 : 0;
 				}
@@ -309,10 +288,6 @@ class PreferencesForm {
 
 		# Set search namespace options
 		foreach( $this->mSearchNs as $i => $value ) {
-			// BIZZWIKI {{BEGIN
-			if ( !$wgUser->isAllowed( 'search', $i) ) continue;
-			// END}}
-	
 			$wgUser->setOption( "searchNs{$i}", $value );
 		}
 
@@ -978,15 +953,12 @@ class PreferencesForm {
 
 		$wgOut->addHtml( $this->getToggles( array( 'watchlisthideown', 'watchlisthidebots', 'watchlisthideminor' ) ) );
 		
-		/* BIZZWIKI -- can't enforce namespace dependant policies here.		
-		//{{BEGIN
 		if( $wgUser->isAllowed( 'createpage' ) || $wgUser->isAllowed( 'createtalk' ) )
 			$wgOut->addHtml( $this->getToggle( 'watchcreations' ) );
 		foreach( array( 'edit' => 'watchdefault', 'move' => 'watchmoves', 'delete' => 'watchdeletion' ) as $action => $toggle ) {
 			if( $wgUser->isAllowed( $action ) )
 				$wgOut->addHtml( $this->getToggle( $toggle ) );
 		}
-		END}}*/
 		$this->mUsedToggles['watchcreations'] = true;
 		$this->mUsedToggles['watchdefault'] = true;
 		$this->mUsedToggles['watchmoves'] = true;

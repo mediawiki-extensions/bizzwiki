@@ -1,18 +1,4 @@
 <?php
-/*
-	Origin:	MW 1.11
-	-------
-	
-	BizzWiki: $Id$
-
-	TODO:
-	=====
-
-	History:
-	========
-	1) Fixed 'rollback' right handling
-	2) Added 'define' for easying installation procedure
-*/
 /**
  * Special:Contributions, show user contributions in a paged list
  * @addtogroup SpecialPage
@@ -173,7 +159,7 @@ class ContribsPager extends IndexPager {
 				$difftext .= $this->messages['newarticle'];
 			}
 
-			if( $wgUser->isAllowed( 'rollback', $row->page_namespace /* BIZZWIKI */  ) ) {
+			if( $wgUser->isAllowed( 'rollback' ) ) {
 				$topmarktext .= ' '.$sk->generateRollback( $rev );
 			}
 
@@ -279,8 +265,7 @@ function wfSpecialContributions( $par = null ) {
 	} else {
 		$options['namespace'] = '';
 	}
-	/* BIZZWIKI */ if ( ( $ns == null ) || ( $ns=="" ) ) $ns = 0;	
-	if ( $wgUser->isAllowed( 'rollback', $ns /* BIZZWIKI */  ) && $wgRequest->getBool( 'bot' ) ) {
+	if ( $wgUser->isAllowed( 'rollback' ) && $wgRequest->getBool( 'bot' ) ) {
 		$options['bot'] = '1';
 	}
 	

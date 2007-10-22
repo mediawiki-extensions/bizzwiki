@@ -1,19 +1,4 @@
 <?php
-/*
-	Origin:  MW 1.11
-	-------
-	
-	BizzWiki:  $Id$
-	
-	TODO:
-	=====
- 
-	
-	HISTORY:
-	========
-	1) Namespace level permission policing.
-	2) Added 'define' for easying installation procedure
-*/
 
 /**
  * Special page lists various statistics, including the contents of
@@ -90,10 +75,6 @@ function wfSpecialStatistics( $par = '' ) {
 			if( $res->numRows() > 0 ) {
 				$text .= "==" . wfMsg( 'statistics-mostpopular' ) . "==\n";
 				while( $row = $res->fetchObject() ) {
-					// BIZZWIKI {{BEGIN
-					if ( !$wgUser->isAllowed( 'browse', $row->page_namespace ) ) continue;
-					// END}}
-					
 					$title = Title::makeTitleSafe( $row->page_namespace, $row->page_title );
 					if( $title instanceof Title )
 						$text .= '* [[:' . $title->getPrefixedText() . ']] (' . $wgLang->formatNum( $row->page_counter ) . ")\n";
