@@ -1,9 +1,8 @@
-<map version="0.8.0">
+<map version="0.9.0_Beta_8">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
-<node CREATED="1181953354546" ID="Freemind_Link_1894811961" MODIFIED="1181954446718" TEXT="Addressing">
-<hook NAME="accessories/plugins/NodeNote.properties">
-<text>$Id$&#xa;</text>
-</hook>
+<node COLOR="#999900" CREATED="1181953354546" ID="Freemind_Link_1894811961" MODIFIED="1197403126046" TEXT="Addressing">
+<richcontent TYPE="NOTE"><html><head/><body><p align="left">$Id$
+</p></body></html></richcontent>
 <node CREATED="1181953751171" HGAP="45" ID="_" MODIFIED="1181954460859" POSITION="right" TEXT="DNS" VSHIFT="-76">
 <node CREATED="1181954465812" ID="Freemind_Link_1282421958" MODIFIED="1181954492046" TEXT="machine.rgroup.cluster.domain" VSHIFT="-19"/>
 </node>
